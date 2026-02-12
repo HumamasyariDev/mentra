@@ -89,4 +89,14 @@ export const chatApi = {
   clear: () => api.delete('/chat/clear'),
 };
 
+// Sandboxes
+export const sandboxApi = {
+  list: (params) => api.get('/sandboxes', { params }),
+  create: (data) => api.post('/sandboxes', data),
+  get: (id) => api.get(`/sandboxes/${id}`),
+  update: (id, data) => api.put(`/sandboxes/${id}`, data),
+  delete: (id) => api.delete(`/sandboxes/${id}`),
+  sendMessage: (id, content) => api.post(`/sandboxes/${id}/messages`, { content }),
+};
+
 export default api;

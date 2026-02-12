@@ -9,6 +9,8 @@ import Pomodoro from './pages/Pomodoro';
 import Schedules from './pages/Schedules';
 import Mood from './pages/Mood';
 import Chat from './pages/Chat';
+import Sandbox from './pages/Sandbox';
+import SandboxChat from './pages/SandboxChat';
 
 export default function App() {
   return (
@@ -27,6 +29,8 @@ export default function App() {
           <Route path="/pomodoro" element={<Pomodoro />} />
           <Route path="/schedules" element={<Schedules />} />
           <Route path="/mood" element={<Mood />} />
+          <Route path="/sandbox" element={<Sandbox />} />
+          <Route path="/sandbox/:id" element={<SandboxChat />} />
           <Route path="/chat" element={<Chat />} />
         </Route>
 

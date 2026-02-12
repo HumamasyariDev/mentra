@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\PomodoroController;
 use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Api\SandboxController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -52,4 +53,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/chat/send', [ChatController::class, 'send']);
     Route::get('/chat/history', [ChatController::class, 'history']);
     Route::delete('/chat/clear', [ChatController::class, 'clear']);
+
+    // Sandboxes
+    Route::get('/sandboxes', [SandboxController::class, 'index']);
+    Route::post('/sandboxes', [SandboxController::class, 'store']);
+    Route::get('/sandboxes/{sandbox}', [SandboxController::class, 'show']);
+    Route::put('/sandboxes/{sandbox}', [SandboxController::class, 'update']);
+    Route::delete('/sandboxes/{sandbox}', [SandboxController::class, 'destroy']);
+    Route::post('/sandboxes/{sandbox}/messages', [SandboxController::class, 'sendMessage']);
 });

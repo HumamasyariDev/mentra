@@ -66,6 +66,11 @@ class User extends Authenticatable
         return $this->hasOne(Streak::class);
     }
 
+    public function sandboxes(): HasMany
+    {
+        return $this->hasMany(Sandbox::class);
+    }
+
     public function getExpToNextLevelAttribute(): int
     {
         return $this->level * 100;

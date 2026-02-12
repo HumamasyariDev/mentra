@@ -13,7 +13,8 @@ class PomodoroController extends Controller
     public function __construct(
         private ExpService $expService,
         private StreakService $streakService,
-    ) {}
+    ) {
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -33,12 +34,25 @@ class PomodoroController extends Controller
             'break_minutes' => ['nullable', 'integer', 'min:1', 'max:30'],
         ]);
 
+        // Auto-cancel any old incomplete sessions (older than 24 hours)
+        $request->user()->pomodoroSessions()
+            ->whereIn('status', ['running', 'paused'])
+            ->where('created_at', '<', now()->subDay())
+            ->update([
+                'status' => 'cancelled',
+                'ended_at' => now(),
+            ]);
+
+        // Check for recent active sessions
         $running = $request->user()->pomodoroSessions()
-            ->where('status', 'running')
+            ->whereIn('status', ['running', 'paused'])
+            ->where('created_at', '>=', now()->subDay())
             ->first();
 
         if ($running) {
-            return response()->json(['message' => 'A session is already running.'], 422);
+            return response()->json([
+                'message' => 'Please complete or cancel your current session first.',
+            ], 422);
         }
 
         $session = $request->user()->pomodoroSessions()->create([
