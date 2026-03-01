@@ -1,0 +1,356 @@
+/* ============================================================
+   GameWorld.css — Consistent with Mentra app design
+   Clean white backgrounds, centered elements, Duolingo-style
+   ============================================================ */
+
+/* ---------- Camera Viewport ---------- */
+.game-viewport {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #ffffff;
+  z-index: 9999;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Overlay mode — soft backdrop over /tasks */
+.game-viewport--overlay {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+/* ---------- World Container ---------- */
+.world-container {
+  display: flex;
+  height: 100vh;
+  will-change: transform;
+}
+
+.world-container--two-zones {
+  width: 200vw;
+}
+
+.world-container--forest {
+  width: 200vw;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+}
+
+/* ---------- Zones ---------- */
+.zone {
+  width: 100vw;
+  height: 100vh;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+}
+
+.world-container--forest .zone {
+  scroll-snap-align: start;
+}
+
+/* ============================================================
+   FLOATING CARD — Clones the original task card exactly
+   ============================================================ */
+/* The floating card copies className from the original card,
+   so it inherits the exact same visual. We only add positioning. */
+.floating-card {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+}
+
+/* ============================================================
+   TREE ZONE — White bg, tree centered, Duolingo-style
+   ============================================================ */
+.zone--tree {
+  flex-direction: column;
+  gap: 0;
+}
+
+.tree-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.tree-image {
+  width: min(700px, 80vw, 65vh);
+  height: auto;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.08));
+  z-index: 2;
+  will-change: transform;
+}
+
+/* ---------- Flying Log (fixed overlay — not inside any zone) ---------- */
+.flying-log {
+  position: fixed;
+  width: min(160px, 30vw);
+  height: auto;
+  z-index: 10001;
+  pointer-events: none;
+  opacity: 0;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+  will-change: transform, opacity;
+}
+
+/* ---------- Ambient particles (subtle indigo dots) ---------- */
+.tree-particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.tree-particle {
+  position: absolute;
+  background: rgba(99, 102, 241, 0.15);
+  border-radius: 50%;
+  animation: floatParticle 8s ease-in-out infinite;
+}
+
+@keyframes floatParticle {
+
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+
+  50% {
+    transform: translateY(-50px) translateX(12px);
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   CAMPFIRE ZONE — White bg, fire centered
+   ============================================================ */
+.zone--campfire {
+  flex-direction: column;
+  gap: 0;
+}
+
+.campfire-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.campfire-image {
+  width: min(600px, 75vw, 55vh);
+  height: auto;
+  z-index: 2;
+  will-change: transform, filter;
+  transition: filter 0.5s ease;
+}
+
+/* Dying — dim, grayscale */
+.campfire-image--dying {
+  filter: brightness(0.5) saturate(0.3) grayscale(0.5) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.06));
+}
+
+/* Roaring — vibrant with warm glow */
+.campfire-image--roaring {
+  filter: brightness(1.05) saturate(1.2) drop-shadow(0 0 20px rgba(245, 158, 11, 0.3)) drop-shadow(0 0 50px rgba(239, 68, 68, 0.12));
+}
+
+/* Glow ring removed — kept clean */
+
+/* ---------- Status text (+EXP) ---------- */
+.campfire-status {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(1rem, 4vw, 1.4rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  z-index: 5;
+  opacity: 0;
+  will-change: opacity, transform;
+  white-space: nowrap;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #1e293b;
+}
+
+.campfire-status--roaring {
+  color: #d97706;
+}
+
+/* ---------- Embers ---------- */
+.campfire-embers {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.ember {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #f59e0b;
+  border-radius: 50%;
+  opacity: 0;
+  animation: riseEmber 2.5s ease-out infinite;
+}
+
+@keyframes riseEmber {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: translateY(-140px) scale(0);
+    opacity: 0;
+  }
+}
+
+/* ============================================================
+   BACK BUTTON — matches app btn-secondary
+   ============================================================ */
+.game-back-btn {
+  position: fixed;
+  top: 1.25rem;
+  left: 1.25rem;
+  z-index: 10001;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #1e293b;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'Inter', system-ui, sans-serif;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.game-back-btn:hover {
+  background: #f8fafc;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+}
+
+/* ============================================================
+   FOREST PAGE — Stats overlay
+   ============================================================ */
+.forest-stats {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 10001;
+  display: flex;
+  gap: 1.25rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.forest-stats__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.forest-stats__value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.forest-stats__label {
+  font-size: 0.6rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+.forest-scroll-hint {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  animation: pulseHint 2.5s ease-in-out infinite;
+}
+
+@keyframes pulseHint {
+
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+  .floating-card {
+    padding: 0.75rem;
+    border-radius: 10px;
+  }
+
+  .campfire-status {
+    font-size: 0.9rem;
+  }
+
+  .forest-stats {
+    top: auto;
+    bottom: 3.25rem;
+    right: 50%;
+    transform: translateX(50%);
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .game-back-btn {
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}

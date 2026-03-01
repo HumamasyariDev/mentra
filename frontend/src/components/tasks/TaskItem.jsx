@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { CheckCircle2, Circle, Trash2, Clock, Zap } from 'lucide-react';
 import { checkQuizzability, generateQuiz } from '../../utils/quizHelpers';
 import QuizModal from './QuizModal';
@@ -11,6 +11,7 @@ const priorityColors = {
 
 export default function TaskItem({ task, onComplete, onUncomplete, onDelete, compact = false }) {
   const isCompleted = task.status === 'completed';
+  const cardRef = useRef(null);
 
   // --- Quiz state ---
   const [isQuizzable, setIsQuizzable] = useState(false);
@@ -33,7 +34,8 @@ export default function TaskItem({ task, onComplete, onUncomplete, onDelete, com
     if (isCompleted) {
       onUncomplete?.(task.id);
     } else {
-      onComplete?.(task.id);
+      // Pass the card DOM element along with the id for cutscene
+      onComplete?.(task.id, cardRef.current);
     }
   };
 
@@ -56,7 +58,7 @@ export default function TaskItem({ task, onComplete, onUncomplete, onDelete, com
   // ── Compact view (used in Dashboard, etc.) ───────────────────────
   if (compact) {
     return (
-      <div className={`flex items-center gap-2 py-1.5 group ${isCompleted ? 'opacity-50' : ''}`}>
+      <div ref={cardRef} className={`flex items-center gap-2 py-1.5 group ${isCompleted ? 'opacity-50' : ''}`}>
         <button onClick={handleToggle} className="flex-shrink-0">
           {isCompleted ? (
             <CheckCircle2 className="w-4 h-4 text-emerald-500 hover:text-amber-500 transition-colors" />
@@ -80,7 +82,7 @@ export default function TaskItem({ task, onComplete, onUncomplete, onDelete, com
   // ── Full card view ───────────────────────────────────────────────
   return (
     <>
-      <div className={`card flex items-start gap-3 p-4 ${isCompleted ? 'opacity-60' : ''}`}>
+      <div ref={cardRef} className={`card flex items-start gap-3 p-4 ${isCompleted ? 'opacity-60' : ''}`}>
         <button onClick={handleToggle} className="mt-0.5 flex-shrink-0">
           {isCompleted ? (
             <CheckCircle2 className="w-5 h-5 text-emerald-500 hover:text-amber-500 transition-colors" />

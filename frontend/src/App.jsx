@@ -11,6 +11,7 @@ import Mood from './pages/Mood';
 import Chat from './pages/Chat';
 import Sandbox from './pages/Sandbox';
 import SandboxChat from './pages/SandboxChat';
+import ForestWorld from './components/gameworld/ForestWorld';
 
 export default function App() {
   return (
@@ -21,6 +22,9 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Route>
+
+        {/* Forest visualization — full viewport, outside AppLayout */}
+        <Route path="/forest" element={<ForestWorld />} />
 
         {/* Protected routes */}
         <Route element={<AppLayout />}>
