@@ -11,6 +11,7 @@ import {
     Zap,
     Trophy,
     Boxes,
+    BrainCircuit,
 } from 'lucide-react';
 
 const navItems = [
@@ -21,6 +22,7 @@ const navItems = [
     { to: '/mood', label: 'Mood', icon: Smile },
     { to: '/sandbox', label: 'Sandbox', icon: Boxes },
     { to: '/chat', label: 'AI Chat', icon: Bot },
+    { to: '/agent', label: 'Agent', icon: BrainCircuit },
 ];
 
 export default function Sidebar({ user, sidebarOpen, onClose, onLogout, theme, isPomodoroPage }) {

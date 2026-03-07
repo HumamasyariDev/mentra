@@ -40,4 +40,10 @@ return [
         'model' => env('OPENAI_MODEL', 'gpt-3.5-turbo'),
     ],
 
+    'huggingface' => [
+        'key' => env('HUGGINGFACE_API_KEY'),
+        'embedding_model' => env('HUGGINGFACE_EMBEDDING_MODEL', 'BAAI/bge-small-en-v1.5'),
+        'api_url' => 'https://api-inference.huggingface.co/models',
+    ],
+
 ];

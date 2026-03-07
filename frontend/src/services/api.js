@@ -99,4 +99,13 @@ export const sandboxApi = {
   sendMessage: (id, content) => api.post(`/sandboxes/${id}/messages`, { content }),
 };
 
+// Agent API (LangChain Tools)
+export const agentApi = {
+  vectorSearch: (query, limit = 3) => api.post('/agent/vector-search', { query, limit }),
+  createTask: (data) => api.post('/agent/tasks', data),
+  addKnowledge: (content, source = 'user_note', metadata = {}) =>
+    api.post('/agent/knowledge', { content, source, metadata }),
+};
+
 export default api;
+

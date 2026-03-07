@@ -1,0 +1,109 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Services\KnowledgeBaseService;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\App;
+
+/**
+ * KnowledgeBaseSeeder
+ *
+ * Seeds the knowledge_base table with default productivity tips and information.
+ * These global entries (user_id = null) are available to all users.
+ *
+ * Run with:
+ *   php artisan db:seed --class=KnowledgeBaseSeeder
+ *
+ * NOTE: Requires HUGGINGFACE_API_KEY to be set. Without it, entries
+ * will be saved without embeddings (not yet searchable via vector search).
+ */
+class KnowledgeBaseSeeder extends Seeder
+{
+    /**
+     * The default knowledge entries.
+     * Adding more here will improve agent response quality.
+     *
+     * @var array<string, string>  [content => source]
+     */
+    private array $entries = [
+        //  Productivity
+        "The Pomodoro Technique is a time management method that uses 25-minute focused work intervals followed by 5-minute breaks. After 4 Pomodoros, take a longer break of 15-30 minutes. This technique helps maintain deep focus and prevents mental fatigue."
+        => 'system',
+
+        "Prioritization matrix: Use Eisenhower Matrix to categorize tasks by Urgency and Importance. Do Urgent+Important tasks immediately. Schedule Important+Not-Urgent tasks. Delegate Urgent+Not-Important tasks. Eliminate Not-Urgent+Not-Important tasks."
+        => 'system',
+
+        "Deep work is the ability to focus without distraction on cognitively demanding tasks. To do deep work: eliminate distractions (phone on DND, close social media), work in blocks of at least 90 minutes, start with your hardest task first."
+        => 'system',
+
+        "Task batching means grouping similar tasks and doing them together. Examples: answer all emails at once (not throughout the day), do all coding in morning, all meetings in afternoon. Reduces context-switching which can waste up to 40% of productive time."
+        => 'system',
+
+        //  Learning 
+        "The Feynman Technique is one of the best learning methods: 1) Pick a concept to learn, 2) Explain it in simple terms as if teaching a child, 3) Identify gaps in your explanation, 4) Review source material to fill those gaps, 5) Simplify your explanation further."
+        => 'system',
+
+        "Spaced repetition is a learning technique that involves reviewing information at increasing intervals over time. It leverages the spacing effect to improve long-term memory retention. Apps like Anki use spaced repetition algorithms to schedule reviews."
+        => 'system',
+
+        "Active recall means testing yourself on material rather than passively re-reading. This is more effective for learning than highlighting or re-reading. Practice by: closing your notes and writing down what you remember, using flashcards, explaining concepts aloud."
+        => 'system',
+
+        //  Mental Health & Energy 
+        "To maintain high mental energy: sleep 7-9 hours consistently, exercise at least 3x per week, take real breaks (not scrolling), eat regular meals without skipping, and practice gratitude or meditation for 5-10 minutes daily."
+        => 'system',
+
+        "Managing motivation: It follows action, not the other way around. Instead of waiting to feel motivated, start with a 2-minute version of the task. Once you begin, momentum builds. Use implementation intentions: 'When X happens, I will do Y.'"
+        => 'system',
+
+        //  Study Tips 
+        "Effective note-taking with Cornell Method: divide page into 3 sections. Right column (70%): main notes during class/reading. Left column (30%): keywords and questions. Bottom row: summary in your own words after the session."
+        => 'system',
+
+        "When you feel overwhelmed by a task, break it into the smallest possible subtasks. Each subtask should take no more than 30 minutes. This makes it easier to start and tracks progress clearly. Use the 'Next Action' principle from GTD."
+        => 'system',
+
+        //  Goal Setting 
+        "SMART goals are: Specific (what exactly), Measurable (how will you know), Achievable (realistically possible), Relevant (aligned with bigger goals), Time-bound (has a deadline). Convert vague goals like 'get better at coding' to SMART: 'Complete 2 LeetCode medium problems per day for 30 days'."
+        => 'system',
+    ];
+
+    public function run(KnowledgeBaseService $service): void
+    {
+        $this->command->info('Seeding knowledge base with productivity content...');
+
+        $count = 0;
+        $noEmbed = 0;
+
+        foreach ($this->entries as $content => $source) {
+            $entry = $service->store(
+                content: $content,
+                source: $source,
+                metadata: ['seeded' => true, 'version' => '1.0'],
+                userId: null,  // Global — accessible to all users
+            );
+
+            if ($entry->exists) {
+                $count++;
+                // Check if embedding was generated by re-querying
+                $hasEmbedding = \Illuminate\Support\Facades\DB::selectOne(
+                    'SELECT embedding IS NOT NULL AS has_embedding FROM knowledge_base WHERE id = ?',
+                    [$entry->id]
+                );
+                if (!$hasEmbedding?->has_embedding) {
+                    $noEmbed++;
+                }
+                $this->command->line("  Entry #{$entry->id}: " . substr($content, 0, 60) . '…');
+            }
+        }
+
+        $this->command->newLine();
+        $this->command->info("Seeded {$count} knowledge base entries.");
+
+        if ($noEmbed > 0) {
+            $this->command->warn("{$noEmbed} entries seeded without embeddings (check HUGGINGFACE_API_KEY).");
+            $this->command->warn("   Run 'php artisan knowledge:embed' to generate embeddings later.");
+        }
+    }
+}

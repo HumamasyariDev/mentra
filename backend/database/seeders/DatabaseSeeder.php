@@ -202,5 +202,11 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
         ]);
+
+        // ── Knowledge Base (global productivity tips for AI agent) ────────────
+        // Run separately if HuggingFace API key is not yet configured:
+        //   php artisan db:seed --class=KnowledgeBaseSeeder
+        $this->call(KnowledgeBaseSeeder::class);
     }
 }
+

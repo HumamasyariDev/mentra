@@ -1,21 +1,23 @@
 <?php
 
+use App\Http\Controllers\Api\AgentController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\MoodController;
 use App\Http\Controllers\Api\PomodoroController;
+use App\Http\Controllers\Api\SandboxController;
 use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\TaskController;
-use App\Http\Controllers\Api\ChatController;
-use App\Http\Controllers\Api\SandboxController;
 use Illuminate\Support\Facades\Route;
 
-// Public routes
+//  Public Routes ──
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Protected routes
+//  Protected Routes (Sanctum) ─
 Route::middleware('auth:sanctum')->group(function () {
+
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
@@ -61,4 +63,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/sandboxes/{sandbox}', [SandboxController::class, 'update']);
     Route::delete('/sandboxes/{sandbox}', [SandboxController::class, 'destroy']);
     Route::post('/sandboxes/{sandbox}/messages', [SandboxController::class, 'sendMessage']);
+
+    // Agent API (LangChain.js Tools)
+    // These endpoints are designed to be called by the frontend LangChain agent.
+    // Each route corresponds to a DynamicTool defined in MentraTools.js.
+    Route::prefix('agent')->name('agent.')->group(function () {
+        // Tool: search_knowledge — embed query + cosine similarity search via pgvector
+        Route::post('/vector-search', [AgentController::class, 'vectorSearch'])->name('vector-search');
+
+        // Tool: create_task — create a task and return XP info for the agent
+        Route::post('/tasks', [AgentController::class, 'createTask'])->name('tasks');
+
+        // Utility: add entries to the knowledge base (with auto-embedding)
+        Route::post('/knowledge', [AgentController::class, 'addKnowledge'])->name('knowledge');
+    });
 });
