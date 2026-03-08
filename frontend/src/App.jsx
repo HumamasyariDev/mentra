@@ -11,6 +11,7 @@ import Mood from './pages/Mood';
 import Chat from './pages/Chat';
 import Sandbox from './pages/Sandbox';
 import SandboxChat from './pages/SandboxChat';
+import Forum from './pages/Forum';
 import ForestWorld from './components/gameworld/ForestWorld';
 import MentraAgent from './agents/MentraAgent';
 
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="/sandbox/:id" element={<SandboxChat />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/agent" element={<MentraAgent />} />
+          <Route path="/forum" element={<Forum />} />
         </Route>
 
         {/* Default redirect */}

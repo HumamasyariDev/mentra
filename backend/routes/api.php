@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AgentController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\ForumMessageController;
 use App\Http\Controllers\Api\MoodController;
 use App\Http\Controllers\Api\PomodoroController;
 use App\Http\Controllers\Api\SandboxController;
@@ -64,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/sandboxes/{sandbox}', [SandboxController::class, 'destroy']);
     Route::post('/sandboxes/{sandbox}/messages', [SandboxController::class, 'sendMessage']);
 
+<<<<<<< HEAD
     // Agent API (LangChain.js Tools)
     // These endpoints are designed to be called by the frontend LangChain agent.
     // Each route corresponds to a DynamicTool defined in MentraTools.js.
@@ -77,4 +79,10 @@ Route::middleware('auth:sanctum')->group(function () {
         // Utility: add entries to the knowledge base (with auto-embedding)
         Route::post('/knowledge', [AgentController::class, 'addKnowledge'])->name('knowledge');
     });
+
+    // Forum posts routes
+    Route::get('/posts', [ForumMessageController::class, 'index']);
+    Route::post('/posts', [ForumMessageController::class, 'store']);
+    Route::put('/posts/{message}', [ForumMessageController::class, 'update']);
+    Route::delete('/posts/{message}', [ForumMessageController::class, 'destroy']);
 });

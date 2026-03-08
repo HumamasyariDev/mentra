@@ -71,6 +71,11 @@ class User extends Authenticatable
         return $this->hasMany(Sandbox::class);
     }
 
+    public function forumMessages(): HasMany
+    {
+        return $this->hasMany(ForumMessage::class);
+    }
+
     public function getExpToNextLevelAttribute(): int
     {
         return $this->level * 100;

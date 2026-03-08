@@ -12,6 +12,7 @@ import {
     Trophy,
     Boxes,
     BrainCircuit,
+    MessageSquare,
 } from 'lucide-react';
 
 const navItems = [
@@ -23,6 +24,7 @@ const navItems = [
     { to: '/sandbox', label: 'Sandbox', icon: Boxes },
     { to: '/chat', label: 'AI Chat', icon: Bot },
     { to: '/agent', label: 'Agent', icon: BrainCircuit },
+    { to: '/forum', label: 'Forum', icon: MessageSquare },
 ];
 
 export default function Sidebar({ user, sidebarOpen, onClose, onLogout, theme, isPomodoroPage }) {

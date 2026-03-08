@@ -107,5 +107,13 @@ export const agentApi = {
     api.post('/agent/knowledge', { content, source, metadata }),
 };
 
+// Forum Posts API
+export const forumPostApi = {
+  list: () => api.get('/posts'),
+  create: (data) => api.post('/posts', data),
+  update: (id, data) => api.put(`/posts/${id}`, data),
+  delete: (id) => api.delete(`/posts/${id}`),
+};
+
 export default api;
 

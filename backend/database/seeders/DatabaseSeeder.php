@@ -172,6 +172,9 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
+        // Forum data
+        $this->call(ForumSeeder::class);
+
         // Mood entries
         Mood::insert([
             [
