@@ -4,7 +4,7 @@
  * Main Tasks page. When a task is completed, the GameWorld cutscene
  * overlay plays on top of this page before refreshing the task list.
  */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { taskApi } from '../services/api';
 import { Plus, X, List, CalendarDays, Columns3, TreePine } from 'lucide-react';
@@ -26,6 +26,20 @@ export default function Tasks() {
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState('list');
   const [showForm, setShowForm] = useState(false);
+
+  /* ===== Listen for Agent task events (from MentraAgent) ===== */
+  useEffect(() => {
+    const refresh = () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+    };
+    window.addEventListener('mentra:task-created',   refresh);
+    window.addEventListener('mentra:task-completed', refresh);
+    return () => {
+      window.removeEventListener('mentra:task-created',   refresh);
+      window.removeEventListener('mentra:task-completed', refresh);
+    };
+  }, [queryClient]);
 
   /* ===== Cutscene overlay state ===== */
   const [cutscene, setCutscene] = useState(null); // { task, element }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, CheckCircle2, XCircle, Loader2, Zap, ChevronLeft, ChevronRight, SkipForward } from 'lucide-react';
+import { X, CheckCircle2, XCircle, Loader2, Zap, ChevronLeft, ChevronRight, SkipForward, RefreshCw } from 'lucide-react';
 
 /**
  * QuizModal — multi-question quiz with back/skip navigation.
@@ -8,9 +8,10 @@ import { X, CheckCircle2, XCircle, Loader2, Zap, ChevronLeft, ChevronRight, Skip
  *   quizList: array of { question, options, correct_index, explanation } | null
  *   isLoading: boolean
  *   onClose: () => void
- *   onCorrect: (count: number) => void  — called on modal close with correct count
+ *   onCorrect: (count: number) => void
+ *   onRegenerate: () => Promise<void>  — force regenerate quiz from Puter
  */
-export default function QuizModal({ quizList, isLoading, onClose, onCorrect }) {
+export default function QuizModal({ quizList, isLoading, onClose, onCorrect, onRegenerate }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     // answers[i] = selected option index, or null if skipped/unanswered
     const [answers, setAnswers] = useState({});
@@ -75,9 +76,21 @@ export default function QuizModal({ quizList, isLoading, onClose, onCorrect }) {
                             <Zap className="w-5 h-5 fill-white" />
                             <span className="font-bold text-lg">Challenge Quiz</span>
                         </div>
-                        <button onClick={handleClose} className="text-white/70 hover:text-white transition-colors">
-                            <X className="w-5 h-5" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            {/* Regenerate button — always visible when not loading */}
+                            {!isLoading && onRegenerate && (
+                                <button
+                                    onClick={onRegenerate}
+                                    title="Regenerate quiz"
+                                    className="text-white/70 hover:text-white transition-colors"
+                                >
+                                    <RefreshCw className="w-4 h-4" />
+                                </button>
+                            )}
+                            <button onClick={handleClose} className="text-white/70 hover:text-white transition-colors">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Progress bar + counter */}
@@ -101,7 +114,7 @@ export default function QuizModal({ quizList, isLoading, onClose, onCorrect }) {
                     {isLoading && (
                         <div className="flex flex-col items-center justify-center py-12 gap-3 text-slate-500">
                             <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
-                            <p className="text-sm">Generating quiz questions...</p>
+                            <p className="text-sm">{quizList === null ? 'Mengambil atau membuat kuis…' : 'Generating quiz questions...'}</p>
                         </div>
                     )}
 

@@ -107,6 +107,12 @@ export const agentApi = {
     api.post('/agent/knowledge', { content, source, metadata }),
 };
 
+// Quiz API
+export const quizApi = {
+  get:  (taskId)            => api.get(`/tasks/${taskId}/quiz`),
+  save: (taskId, questions) => api.post(`/tasks/${taskId}/quiz`, { questions }),
+};
+
 // Forum Posts API
 export const forumPostApi = {
   list: () => api.get('/posts'),

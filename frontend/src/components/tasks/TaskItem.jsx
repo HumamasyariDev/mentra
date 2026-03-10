@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { CheckCircle2, Circle, Trash2, Clock, Zap } from 'lucide-react';
-import { checkQuizzability, generateQuiz } from '../../utils/quizHelpers';
+import { checkQuizzability } from '../../utils/quizHelpers';
+import { quizApi } from '../../services/api';
 import QuizModal from './QuizModal';
 
 const priorityColors = {
@@ -15,12 +16,11 @@ export default function TaskItem({ task, onComplete, onUncomplete, onDelete, com
 
   // --- Quiz state ---
   const [isQuizzable, setIsQuizzable] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [quizList, setQuizList] = useState(null);
+  const [showModal, setShowModal]     = useState(false);
+  const [quizList, setQuizList]       = useState(null);
   const [quizLoading, setQuizLoading] = useState(false);
-  const [bonusMsg, setBonusMsg] = useState('');
+  const [bonusMsg, setBonusMsg]       = useState('');
 
-  // Check quizzability once on mount (only for non-compact full cards)
   useEffect(() => {
     if (compact) return;
     let cancelled = false;
@@ -34,18 +34,109 @@ export default function TaskItem({ task, onComplete, onUncomplete, onDelete, com
     if (isCompleted) {
       onUncomplete?.(task.id);
     } else {
-      // Pass the card DOM element along with the id for cutscene
       onComplete?.(task.id, cardRef.current);
     }
   };
 
+  /**
+   * generateAndSave — call Puter.js, parse JSON output, save to DB.
+   */
+  const generateAndSave = async () => {
+    if (!window.puter?.ai?.chat) {
+      throw new Error('Puter.js tidak tersedia. Pastikan kamu sudah login.');
+    }
+
+    const prompt = `Buatkan 3 soal pilihan ganda (bahasa Indonesia) tentang task: "${task.title}".
+Output WAJIB JSON murni tanpa teks pengantar, format array:
+[
+  {
+    "question": "Pertanyaan?",
+    "options": ["Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D"],
+    "answer": 0,
+    "explanation": "Penjelasan singkat mengapa jawaban ini benar."
+  }
+]
+answer adalah indeks (0-3) dari options yang benar.`;
+
+    const raw = await window.puter.ai.chat([
+      { role: 'system', content: 'Kamu adalah pembuat soal kuis. Output HANYA JSON murni, tanpa teks lain.' },
+      { role: 'user',   content: prompt },
+    ], { model: 'claude-sonnet-4-5' });
+
+    const text = typeof raw === 'string' ? raw
+        : raw?.message?.content?.[0]?.text ?? raw?.text ?? String(raw);
+
+    // Extract JSON array from response (safe parse)
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('AI tidak mengembalikan format JSON yang valid.');
+
+    const parsed = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      throw new Error('Format pertanyaan kuis tidak valid.');
+    }
+
+    // Normalize: map "answer" field to correct_index for QuizModal
+    const normalized = parsed.map((q) => ({
+      question:      q.question,
+      options:       q.options,
+      correct_index: typeof q.answer === 'string'
+          ? (isNaN(Number(q.answer)) ? q.options.findIndex((o) => o === q.answer) : Number(q.answer))
+          : Number(q.answer ?? q.correct_index ?? 0),
+      explanation: q.explanation ?? '',
+    }));
+
+    // Save to Supabase
+    await quizApi.save(task.id, normalized);
+
+    return normalized;
+  };
+
+  /**
+   * handleOpenQuiz — fetch from DB first, generate if not found.
+   */
   const handleOpenQuiz = async () => {
     setQuizList(null);
     setShowModal(true);
     setQuizLoading(true);
-    const result = await generateQuiz(task.title, 5);
-    setQuizList(result);
-    setQuizLoading(false);
+
+    try {
+      // 1. Try to get cached quiz from DB
+      const response = await quizApi.get(task.id);
+      setQuizList(response.data.questions);
+    } catch (err) {
+      if (err.response?.status === 404) {
+        // 2. Not found → generate with Puter, then save
+        try {
+          const questions = await generateAndSave();
+          setQuizList(questions);
+        } catch (genErr) {
+          console.error('[Quiz] Generation error:', genErr);
+          setQuizList(null);
+        }
+      } else {
+        console.error('[Quiz] Fetch error:', err);
+        setQuizList(null);
+      }
+    } finally {
+      setQuizLoading(false);
+    }
+  };
+
+  /**
+   * handleRegenerate — force a new quiz from Puter (ignore DB cache).
+   */
+  const handleRegenerate = async () => {
+    setQuizList(null);
+    setQuizLoading(true);
+    try {
+      const questions = await generateAndSave();
+      setQuizList(questions);
+    } catch (err) {
+      console.error('[Quiz] Regenerate error:', err);
+      setQuizList(null);
+    } finally {
+      setQuizLoading(false);
+    }
   };
 
   const handleCorrect = (count) => {
@@ -148,6 +239,7 @@ export default function TaskItem({ task, onComplete, onUncomplete, onDelete, com
           isLoading={quizLoading}
           onClose={() => setShowModal(false)}
           onCorrect={handleCorrect}
+          onRegenerate={handleRegenerate}
         />
       )}
     </>
