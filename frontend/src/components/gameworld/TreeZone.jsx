@@ -4,6 +4,7 @@
  * Log is no longer here — it's a fixed overlay in GameWorld.
  */
 import { forwardRef, useMemo } from 'react';
+import '../../styles/components/gameworld/GameWorld.css';
 import treeImg from '../../assets/gameworld/new_tree.png';
 
 const TreeZone = forwardRef(function TreeZone({ treeRef }, ref) {

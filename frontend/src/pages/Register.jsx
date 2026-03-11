@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
+import '../styles/pages/Auth.css';
 
 export default function Register() {
   const { register } = useAuth();
@@ -33,68 +34,68 @@ export default function Register() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <h2 className="text-xl font-semibold text-center">Create Account</h2>
+    <form onSubmit={handleSubmit} className="auth-form">
+      <h2 className="auth-title">Create Account</h2>
 
       {error && (
-        <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">{error}</div>
+        <div className="auth-error">{error}</div>
       )}
 
-      <div>
-        <label className="label">Name</label>
+      <div className="auth-field-group">
+        <label className="auth-label">Name</label>
         <input
           type="text"
-          className="input-field"
+          className="auth-input"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           required
         />
-        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name[0]}</p>}
+        {errors.name && <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.name[0]}</p>}
       </div>
 
-      <div>
-        <label className="label">Email</label>
+      <div className="auth-field-group">
+        <label className="auth-label">Email</label>
         <input
           type="email"
-          className="input-field"
+          className="auth-input"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           required
         />
-        {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email[0]}</p>}
+        {errors.email && <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.email[0]}</p>}
       </div>
 
-      <div>
-        <label className="label">Password</label>
+      <div className="auth-field-group">
+        <label className="auth-label">Password</label>
         <input
           type="password"
-          className="input-field"
+          className="auth-input"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           required
         />
-        {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password[0]}</p>}
+        {errors.password && <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.password[0]}</p>}
       </div>
 
-      <div>
-        <label className="label">Confirm Password</label>
+      <div className="auth-field-group">
+        <label className="auth-label">Confirm Password</label>
         <input
           type="password"
-          className="input-field"
+          className="auth-input"
           value={form.password_confirmation}
           onChange={(e) => setForm({ ...form, password_confirmation: e.target.value })}
           required
         />
       </div>
 
-      <button type="submit" className="btn-primary w-full flex items-center justify-center gap-2" disabled={loading}>
-        {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+      <button type="submit" className="auth-submit-btn" disabled={loading}>
+        {loading && <Loader2 className="auth-loading-spinner" />}
         Create Account
       </button>
 
-      <p className="text-center text-sm text-slate-500">
+      <p className="auth-footer-text">
         Already have an account?{' '}
-        <Link to="/login" className="text-indigo-600 font-medium hover:underline">
+        <Link to="/login" className="auth-link">
           Sign In
         </Link>
       </p>

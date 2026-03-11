@@ -1,9 +1,10 @@
-import { Users } from 'lucide-react';
+import { Crown, Circle } from 'lucide-react';
+import '../../styles/components/forum/ForumComponents.css';
 import { useAuth } from '../../contexts/AuthContext';
 
 const AVATAR_COLORS = [
-  'bg-indigo-600', 'bg-emerald-600', 'bg-amber-600', 'bg-rose-600',
-  'bg-cyan-600', 'bg-purple-600', 'bg-pink-600', 'bg-teal-600',
+  '#4f46e5', '#059669', '#d97706', '#e11d48',
+  '#0891b2', '#7c3aed', '#db2777', '#0d9488',
 ];
 
 function getAvatarColor(userId) {
@@ -27,44 +28,44 @@ export default function ForumMemberList({ members }) {
   }
 
   return (
-    <div className="w-60 bg-slate-50 border-l border-slate-200 flex flex-col flex-shrink-0">
-      <div className="px-4 py-3 border-b border-slate-200">
-        <div className="flex items-center gap-2 text-slate-700">
+    <div className="forum-member-panel">
+      <div className="forum-member-header">
+        <div className="forum-member-header-content">
           <Users size={16} />
-          <span className="text-xs font-semibold uppercase tracking-wider">
+          <span className="forum-member-header-title">
             Members — {uniqueMembers.length}
           </span>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-2">
+      <div className="forum-member-list">
         {uniqueMembers.map((member) => (
           <div
             key={member.id}
-            className="flex items-center gap-3 px-4 py-1.5 hover:bg-slate-100 transition"
+            className="forum-member-item"
           >
-            <div className="relative">
-              <div className={`w-8 h-8 rounded-full ${getAvatarColor(member.id)} flex items-center justify-center text-white text-xs font-bold`}>
+            <div className="forum-member-avatar-container">
+              <div className="forum-member-avatar" style={{ backgroundColor: getAvatarColor(member.id) }}>
                 {member.name?.charAt(0).toUpperCase() || 'U'}
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-slate-50 rounded-full" />
+              <div className="forum-member-status" />
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-slate-700 truncate">
+            <div className="forum-member-info">
+              <p className="forum-member-name">
                 {member.name}
                 {member.id === currentUser?.id && (
-                  <span className="text-xs text-slate-400 ml-1">(you)</span>
+                  <span className="forum-member-you">(you)</span>
                 )}
               </p>
               {member.level && (
-                <p className="text-[10px] text-slate-400">Level {member.level}</p>
+                <p className="forum-member-level">Level {member.level}</p>
               )}
             </div>
           </div>
         ))}
 
         {uniqueMembers.length === 0 && (
-          <div className="px-4 py-8 text-center text-sm text-slate-400">
+          <div className="forum-member-empty">
             No members yet
           </div>
         )}

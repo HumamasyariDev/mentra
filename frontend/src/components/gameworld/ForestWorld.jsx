@@ -7,10 +7,11 @@
  *
  * This is a read-only visualization — no animation sequence.
  */
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { taskApi } from '../../services/api';
+import '../../styles/components/gameworld/GameWorld.css';
 
 import TreeZone from './TreeZone';
 import CampfireZone from './CampfireZone';

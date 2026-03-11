@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Calendar, Loader2 } from 'lucide-react';
 import ScheduleItem from './ScheduleItem';
+import '../../styles/components/schedules/ScheduleComponents.css';
 
 const typeFilters = ['', 'daily', 'weekly', 'monthly'];
 
@@ -12,18 +13,14 @@ export default function ScheduleListView({ schedules, isLoading, onComplete, onU
     : schedules;
 
   return (
-    <div className="space-y-4">
+    <div className="schedule-list-view">
       {/* Type Filters */}
-      <div className="flex gap-2">
+      <div className="schedule-filters">
         {typeFilters.map((t) => (
           <button
             key={t}
             onClick={() => setTypeFilter(t)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              typeFilter === t
-                ? 'bg-indigo-100 text-indigo-700'
-                : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
-            }`}
+            className={`schedule-filter-btn ${typeFilter === t ? 'active' : ''}`}
           >
             {t === '' ? 'All' : t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
@@ -32,16 +29,16 @@ export default function ScheduleListView({ schedules, isLoading, onComplete, onU
 
       {/* List */}
       {isLoading ? (
-        <div className="flex justify-center py-12">
-          <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
+        <div className="schedule-loading">
+          <Loader2 className="schedule-loading-spinner" />
         </div>
       ) : filtered?.length === 0 ? (
-        <div className="text-center py-12 text-slate-400">
-          <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50" />
+        <div className="schedule-list-empty">
+          <Calendar style={{ width: '3rem', height: '3rem', margin: '0 auto 0.75rem', opacity: '0.5' }} />
           <p>No schedules yet</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="schedule-list">
           {filtered?.map((schedule) => (
             <ScheduleItem
               key={schedule.id}

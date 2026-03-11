@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Loader2, Bot, User, Trash2, Sparkles } from 'lucide-react';
+import '../styles/pages/CommonPages.css';
 
 const SYSTEM_PROMPT = `You are Mentra AI, a helpful and friendly productivity assistant built into the Mentra app. 
 You help users manage their tasks, focus sessions (Pomodoro), schedules, mood tracking, and streaks. 
@@ -92,51 +93,55 @@ export default function Chat() {
   ];
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] lg:h-[calc(100vh-6rem)] max-w-3xl mx-auto">
+    <div className="page-container" style={{ maxWidth: '48rem', margin: '0 auto', height: 'calc(100vh - 8rem)' }}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="page-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: 'none', padding: '0' }}>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <Bot className="w-6 h-6 text-indigo-500" />
+          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Sparkles size={24} style={{ color: '#6366f1' }} />
             Mentra AI
           </h1>
-          <p className="text-slate-500 text-sm mt-0.5 flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            Powered by Puter.js · Your productivity assistant
-          </p>
+          <p className="page-subtitle">Your productivity AI assistant</p>
         </div>
         {messages.length > 0 && (
           <button
             onClick={handleClear}
-            className="text-sm text-slate-400 hover:text-red-500 flex items-center gap-1 transition-colors"
+            style={{ padding: '0.5rem 0.75rem', fontSize: '0.875rem', color: '#475569', borderRadius: '0.5rem', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'none', border: 'none', cursor: 'pointer' }}
+            onMouseEnter={(e) => { e.target.style.color = '#0f172a'; e.target.style.backgroundColor = '#f1f5f9'; }}
+            onMouseLeave={(e) => { e.target.style.color = '#475569'; e.target.style.backgroundColor = 'transparent'; }}
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 size={16} />
             Clear
           </button>
         )}
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-4 pb-4 pr-1">
+      <div className="message-list" style={{ flex: 1, overflowY: 'auto', paddingBottom: '1rem', paddingRight: '0.25rem' }}>
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center px-4">
-            <div className="bg-indigo-50 p-4 rounded-2xl mb-4">
-              <Bot className="w-10 h-10 text-indigo-500" />
+          <div className="chat-empty-state">
+            <div className="chat-empty-icon">
+              <Bot size={40} style={{ color: '#6366f1' }} />
             </div>
-            <h3 className="text-lg font-semibold text-slate-900 mb-1">Hi! I'm Mentra AI</h3>
-            <p className="text-slate-500 text-sm mb-6 max-w-sm">
+            <h3 className="chat-empty-title">Hi! I'm Mentra AI</h3>
+            <p className="chat-empty-subtitle">
               Ask me anything about productivity, focus techniques, task management, and more!
             </p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {quickActions.map((action) => (
-                <button
-                  key={action.label}
-                  onClick={() => handleSend(action.message)}
-                  className="px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-700 transition-colors"
-                >
-                  {action.label}
-                </button>
-              ))}
+            <div style={{ marginBottom: '1rem' }}>
+              <p style={{ fontSize: '0.75rem', fontWeight: '500', color: '#64748b', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Quick Actions</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+                {quickActions.map((action, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => handleSend(action.message)}
+                    style={{ padding: '0.5rem 0.75rem', fontSize: '0.875rem', textAlign: 'left', border: '1px solid #e2e8f0', borderRadius: '0.5rem', transition: 'all 0.2s', background: '#ffffff', cursor: 'pointer' }}
+                    onMouseEnter={(e) => { e.target.style.borderColor = '#6366f1'; e.target.style.backgroundColor = '#eef2ff'; }}
+                    onMouseLeave={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.backgroundColor = '#ffffff'; }}
+                  >
+                    {action.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         ) : (
@@ -144,32 +149,42 @@ export default function Chat() {
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className="message-item"
+                style={{ justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}
               >
                 {msg.role === 'assistant' && (
-                  <div className="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                    <Bot className="w-4 h-4 text-indigo-600" />
+                  <div className="message-avatar" style={{ backgroundColor: '#eef2ff' }}>
+                    <Bot size={16} style={{ color: '#6366f1' }} />
                   </div>
                 )}
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === 'user'
-                    ? 'bg-indigo-500 text-white rounded-br-md'
-                    : msg.isError
-                      ? 'bg-red-50 border border-red-200 text-red-700 rounded-bl-md'
-                      : 'bg-white border border-slate-200 text-slate-700 rounded-bl-md'
-                    }`}
+                  style={{
+                    maxWidth: '80%',
+                    borderRadius: '1rem',
+                    padding: '0.75rem 1rem',
+                    fontSize: '0.875rem',
+                    lineHeight: '1.6',
+                    backgroundColor: msg.role === 'user' ? '#6366f1' : msg.isError ? '#fef2f2' : '#ffffff',
+                    color: msg.role === 'user' ? '#ffffff' : msg.isError ? '#991b1b' : '#334155',
+                    border: msg.role === 'user' ? 'none' : msg.isError ? '1px solid #fecaca' : '1px solid #e2e8f0',
+                    borderBottomRightRadius: msg.role === 'user' ? '0.25rem' : '1rem',
+                    borderBottomLeftRadius: msg.role === 'assistant' ? '0.25rem' : '1rem'
+                  }}
                 >
                   {msg.role === 'assistant' ? (
                     <div
-                      className="prose prose-sm prose-slate max-w-none [&>p]:mb-2 [&>p:last-child]:mb-0 [&>ul]:mb-2 [&>ul]:list-disc [&>ul]:pl-4"
+                      style={{ maxWidth: '100%' }}
                       dangerouslySetInnerHTML={{ __html: formatMarkdown(msg.content) }}
                     />
                   ) : (
                     <p>{msg.content}</p>
                   )}
                   <p
-                    className={`text-xs mt-2 ${msg.role === 'user' ? 'text-indigo-200' : 'text-slate-400'
-                      }`}
+                    style={{
+                      fontSize: '0.75rem',
+                      marginTop: '0.5rem',
+                      color: msg.role === 'user' ? 'rgba(255,255,255,0.7)' : '#94a3b8'
+                    }}
                   >
                     {new Date(msg.created_at).toLocaleTimeString([], {
                       hour: '2-digit',
@@ -178,8 +193,8 @@ export default function Chat() {
                   </p>
                 </div>
                 {msg.role === 'user' && (
-                  <div className="flex-shrink-0 w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
+                  <div className="message-avatar" style={{ backgroundColor: '#6366f1' }}>
+                    <User size={16} style={{ color: '#ffffff' }} />
                   </div>
                 )}
               </div>
@@ -187,25 +202,12 @@ export default function Chat() {
 
             {/* Typing indicator */}
             {isLoading && (
-              <div className="flex gap-3 justify-start">
-                <div className="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
-                  <Bot className="w-4 h-4 text-indigo-600" />
+              <div className="message-item">
+                <div className="message-avatar" style={{ backgroundColor: '#6366f1' }}>
+                  <Bot size={18} style={{ color: '#ffffff' }} />
                 </div>
-                <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-md px-4 py-3">
-                  <div className="flex gap-1 items-center">
-                    <span
-                      className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
-                      style={{ animationDelay: '0ms' }}
-                    />
-                    <span
-                      className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
-                      style={{ animationDelay: '150ms' }}
-                    />
-                    <span
-                      className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
-                      style={{ animationDelay: '300ms' }}
-                    />
-                  </div>
+                <div style={{ backgroundColor: '#f1f5f9', padding: '0.75rem 1rem', borderRadius: '1rem' }}>
+                  <Loader2 size={16} className="page-loading-spinner" />
                 </div>
               </div>
             )}
@@ -215,26 +217,25 @@ export default function Chat() {
       </div>
 
       {/* Input */}
-      <form onSubmit={handleSubmit} className="flex gap-2 pt-3 border-t border-slate-200">
+      <form onSubmit={handleSubmit} className="message-input-form">
         <input
           ref={inputRef}
           type="text"
-          className="input-field flex-1"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Ask about productivity, tasks, focus..."
+          placeholder="Ask me anything about productivity..."
           disabled={isLoading}
-          autoComplete="off"
+          className="message-input"
         />
         <button
           type="submit"
-          className="btn-primary px-4"
           disabled={!inputValue.trim() || isLoading}
+          className="message-send-btn"
         >
           {isLoading ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Loader2 size={20} className="page-loading-spinner" />
           ) : (
-            <Send className="w-5 h-5" />
+            <Send size={20} />
           )}
         </button>
       </form>

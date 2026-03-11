@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, Hash, Volume2 } from 'lucide-react';
+import '../../styles/components/forum/ForumModals.css';
 
 export default function CreateChannelModal({ forumId, onClose, onSubmit }) {
   const [name, setName] = useState('');
@@ -27,83 +28,75 @@ export default function CreateChannelModal({ forumId, onClose, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-5 border-b border-slate-200">
-          <h3 className="text-lg font-bold text-slate-900">Create Channel</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition">
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">Create Channel</h3>
+          <button onClick={onClose} className="modal-close-btn">
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="modal-form">
           {/* Channel Type */}
-          <div>
-            <label className="label">Channel Type</label>
-            <div className="flex gap-3">
+          <div className="form-group">
+            <label className="form-label">Channel Type</label>
+            <div className="channel-type-buttons">
               <button
                 type="button"
                 onClick={() => setType('text')}
-                className={`flex-1 flex items-center gap-2 px-4 py-3 rounded-lg border-2 transition ${
-                  type === 'text'
-                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                    : 'border-slate-200 text-slate-600 hover:border-slate-300'
-                }`}
+                className={`channel-type-btn ${type === 'text' ? 'selected' : ''}`}
               >
                 <Hash size={20} />
-                <div className="text-left">
-                  <p className="font-medium text-sm">Text</p>
-                  <p className="text-xs opacity-70">Send messages</p>
+                <div className="channel-type-info">
+                  <p className="channel-type-title">Text</p>
+                  <p className="channel-type-desc">Send messages</p>
                 </div>
               </button>
               <button
                 type="button"
                 onClick={() => setType('voice')}
-                className={`flex-1 flex items-center gap-2 px-4 py-3 rounded-lg border-2 transition ${
-                  type === 'voice'
-                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                    : 'border-slate-200 text-slate-600 hover:border-slate-300'
-                }`}
+                className={`channel-type-btn ${type === 'voice' ? 'selected' : ''}`}
               >
                 <Volume2 size={20} />
-                <div className="text-left">
-                  <p className="font-medium text-sm">Voice</p>
-                  <p className="text-xs opacity-70">Hang out together</p>
+                <div className="channel-type-info">
+                  <p className="channel-type-title">Voice</p>
+                  <p className="channel-type-desc">Hang out together</p>
                 </div>
               </button>
             </div>
           </div>
 
           {/* Channel Name */}
-          <div>
-            <label className="label">Channel Name</label>
-            <div className="flex items-center gap-2 input-field">
-              {type === 'text' ? <Hash size={16} className="text-slate-400" /> : <Volume2 size={16} className="text-slate-400" />}
+          <div className="form-group">
+            <label className="form-label">Channel Name</label>
+            <div className="channel-name-input">
+              {type === 'text' ? <Hash size={16} style={{ color: '#94a3b8' }} /> : <Volume2 size={16} style={{ color: '#94a3b8' }} />}
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="new-channel"
-                className="flex-1 bg-transparent focus:outline-none text-sm"
+                className="channel-name-field"
                 autoFocus
               />
             </div>
           </div>
 
           {/* Description */}
-          <div>
-            <label className="label">Description (optional)</label>
+          <div className="form-group">
+            <label className="form-label">Description (optional)</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What's this channel about?"
-              className="input-field"
+              className="form-input"
             />
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="modal-actions">
             <button type="button" onClick={onClose} className="btn-secondary">
               Cancel
             </button>

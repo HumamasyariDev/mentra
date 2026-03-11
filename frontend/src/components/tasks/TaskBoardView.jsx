@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import TaskItem from './TaskItem';
+import '../../styles/components/tasks/TaskComponents.css';
 
 const columns = [
-  { key: 'pending', label: 'Pending', color: 'border-slate-300', bg: 'bg-slate-50' },
-  { key: 'in_progress', label: 'In Progress', color: 'border-blue-400', bg: 'bg-blue-50' },
-  { key: 'completed', label: 'Completed', color: 'border-emerald-400', bg: 'bg-emerald-50' },
+  { key: 'pending', label: 'Pending', color: '#cbd5e1', bg: '#f8fafc' },
+  { key: 'in_progress', label: 'In Progress', color: '#60a5fa', bg: '#eff6ff' },
+  { key: 'completed', label: 'Completed', color: '#34d399', bg: '#ecfdf5' },
 ];
 
 export default function TaskBoardView({ tasks, isLoading, onComplete, onUncomplete, onDelete, onUpdateStatus }) {
@@ -13,8 +14,8 @@ export default function TaskBoardView({ tasks, isLoading, onComplete, onUncomple
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
+      <div className="task-loading">
+        <Loader2 className="task-loading-spinner" />
       </div>
     );
   }
@@ -49,7 +50,7 @@ export default function TaskBoardView({ tasks, isLoading, onComplete, onUncomple
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="task-board-grid">
       {columns.map((col) => {
         const colTasks = tasks?.filter((t) => t.status === col.key) || [];
         const isDragOver = dragOverCol === col.key;
@@ -57,31 +58,29 @@ export default function TaskBoardView({ tasks, isLoading, onComplete, onUncomple
         return (
           <div
             key={col.key}
-            className="flex flex-col"
+            className="task-board-column"
             onDragOver={(e) => handleDragOver(e, col.key)}
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, col.key)}
           >
             {/* Column header */}
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${col.bg} border-l-4 ${col.color} mb-3`}>
-              <h3 className="text-sm font-semibold text-slate-700">{col.label}</h3>
-              <span className="text-xs bg-white text-slate-500 px-2 py-0.5 rounded-full font-medium">
+            <div className="task-board-header" style={{ backgroundColor: col.bg, borderLeftColor: col.color }}>
+              <h3 className="task-board-title">{col.label}</h3>
+              <span className="task-board-count">
                 {colTasks.length}
               </span>
             </div>
 
             {/* Column tasks */}
             <div
-              className={`space-y-2 flex-1 min-h-[100px] rounded-xl p-1 transition-colors ${
-                isDragOver ? 'bg-indigo-50 ring-2 ring-indigo-300 ring-dashed' : ''
-              }`}
+              className={`task-board-content ${isDragOver ? 'drag-over' : ''}`}
             >
               {colTasks.length === 0 && !isDragOver ? (
-                <div className="text-center py-8 text-slate-300 text-sm border-2 border-dashed border-slate-200 rounded-xl">
+                <div className="task-board-empty">
                   No tasks
                 </div>
               ) : colTasks.length === 0 && isDragOver ? (
-                <div className="text-center py-8 text-indigo-400 text-sm border-2 border-dashed border-indigo-300 rounded-xl">
+                <div className="task-board-drop-zone">
                   Drop here
                 </div>
               ) : (
@@ -90,7 +89,7 @@ export default function TaskBoardView({ tasks, isLoading, onComplete, onUncomple
                     key={task.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, task.id)}
-                    className="cursor-grab active:cursor-grabbing"
+                    className="task-board-item"
                   >
                     <TaskItem
                       task={task}

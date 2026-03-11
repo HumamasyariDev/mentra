@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Loader2, CheckCircle2 } from 'lucide-react';
 import TaskItem from './TaskItem';
+import '../../styles/components/tasks/TaskComponents.css';
 
 const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -77,26 +78,26 @@ export default function TaskCalendarView({ tasks, isLoading, onComplete, onUncom
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
+      <div className="task-loading">
+        <Loader2 className="task-loading-spinner" />
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+    <div className="task-calendar-grid">
       {/* Left: Task list for selected date */}
-      <div className="lg:col-span-2 card p-4 flex flex-col">
-        <h4 className="text-sm font-semibold text-slate-900 mb-1">{selectedDateLabel}</h4>
-        <p className="text-xs text-slate-400 mb-3">
+      <div className="task-list-panel">
+        <h4 className="task-list-title">{selectedDateLabel}</h4>
+        <p className="task-list-count">
           {selectedTasks.length} task{selectedTasks.length !== 1 ? 's' : ''}
         </p>
 
-        <div className="flex-1 overflow-y-auto space-y-2 max-h-[500px]">
+        <div className="task-list-container">
           {selectedTasks.length === 0 ? (
-            <div className="text-center py-10 text-slate-300">
-              <CheckCircle2 className="w-10 h-10 mx-auto mb-2 opacity-40" />
-              <p className="text-sm">No tasks for this day</p>
+            <div className="task-list-empty">
+              <CheckCircle2 style={{ width: '2.5rem', height: '2.5rem', margin: '0 auto 0.5rem', opacity: '0.4' }} />
+              <p>No tasks for this day</p>
             </div>
           ) : (
             selectedTasks.map((task) => (
@@ -113,34 +114,34 @@ export default function TaskCalendarView({ tasks, isLoading, onComplete, onUncom
       </div>
 
       {/* Right: Mini calendar */}
-      <div className="lg:col-span-3 card p-4">
+      <div className="task-calendar-panel">
         {/* Calendar Header */}
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-slate-900">{monthLabel}</h3>
-          <div className="flex items-center gap-1">
-            <button onClick={goToday} className="px-2 py-1 text-[10px] font-medium bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition-colors">
+        <div className="task-calendar-header">
+          <h3 className="task-calendar-month">{monthLabel}</h3>
+          <div className="task-calendar-nav">
+            <button onClick={goToday} className="task-today-btn">
               Today
             </button>
-            <button onClick={prevMonth} className="p-1 rounded-md hover:bg-slate-100 transition-colors">
-              <ChevronLeft className="w-4 h-4 text-slate-600" />
+            <button onClick={prevMonth} className="task-nav-btn">
+              <ChevronLeft style={{ width: '1rem', height: '1rem' }} />
             </button>
-            <button onClick={nextMonth} className="p-1 rounded-md hover:bg-slate-100 transition-colors">
-              <ChevronRight className="w-4 h-4 text-slate-600" />
+            <button onClick={nextMonth} className="task-nav-btn">
+              <ChevronRight style={{ width: '1rem', height: '1rem' }} />
             </button>
           </div>
         </div>
 
         {/* Day headers */}
-        <div className="grid grid-cols-7 mb-1">
+        <div className="task-calendar-days-header">
           {dayNames.map((d) => (
-            <div key={d} className="text-center text-[10px] font-semibold text-slate-400 py-1">
+            <div key={d} className="task-day-name">
               {d}
             </div>
           ))}
         </div>
 
         {/* Day cells */}
-        <div className="grid grid-cols-7">
+        <div className="task-calendar-days">
           {calendarDays.map(({ date, isCurrentMonth }, i) => {
             const dateStr = formatDate(date);
             const dayTasks = tasksByDate[dateStr] || [];
@@ -154,29 +155,27 @@ export default function TaskCalendarView({ tasks, isLoading, onComplete, onUncom
               <button
                 key={i}
                 onClick={() => setSelectedDate(dateStr)}
-                className={`relative p-1 min-h-[56px] border border-slate-50 text-left transition-all flex flex-col rounded-lg ${
-                  !isCurrentMonth ? 'opacity-30' : 'hover:bg-slate-50'
-                } ${isSelected ? 'ring-2 ring-indigo-500 bg-indigo-50/60' : ''}`}
+                className={`task-calendar-cell ${!isCurrentMonth ? 'other-month' : ''} ${isSelected ? 'selected' : ''}`}
               >
                 <span
-                  className={`text-[11px] font-medium inline-flex items-center justify-center w-5 h-5 rounded-full ${
-                    isToday
-                      ? 'bg-indigo-500 text-white'
-                      : 'text-slate-600'
-                  }`}
+                  className="task-calendar-date"
+                  style={{
+                    backgroundColor: isToday ? '#6366f1' : 'transparent',
+                    color: isToday ? '#ffffff' : '#475569'
+                  }}
                 >
                   {date.getDate()}
                 </span>
 
                 {dayTasks.length > 0 && isCurrentMonth && (
-                  <div className="mt-auto flex flex-wrap gap-0.5 px-0.5 pb-0.5">
+                  <div className="task-calendar-badge-container">
                     {pendingCount > 0 && (
-                      <span className="text-[9px] bg-amber-100 text-amber-700 px-1 rounded font-medium leading-tight">
+                      <span className="task-calendar-badge pending">
                         {pendingCount}
                       </span>
                     )}
                     {completedCount > 0 && (
-                      <span className="text-[9px] bg-emerald-100 text-emerald-700 px-1 rounded font-medium leading-tight">
+                      <span className="task-calendar-badge completed">
                         {completedCount}✓
                       </span>
                     )}

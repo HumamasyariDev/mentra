@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import ScheduleItem from './ScheduleItem';
+import '../../styles/components/schedules/ScheduleComponents.css';
 
 const columns = [
-  { key: 'daily', label: 'Daily', color: 'border-blue-400', bg: 'bg-blue-50' },
-  { key: 'weekly', label: 'Weekly', color: 'border-purple-400', bg: 'bg-purple-50' },
-  { key: 'monthly', label: 'Monthly', color: 'border-amber-400', bg: 'bg-amber-50' },
+  { key: 'daily', label: 'Daily', color: '#60a5fa', bg: '#eff6ff' },
+  { key: 'weekly', label: 'Weekly', color: '#a78bfa', bg: '#f5f3ff' },
+  { key: 'monthly', label: 'Monthly', color: '#fbbf24', bg: '#fffbeb' },
 ];
 
 export default function ScheduleBoardView({ schedules, isLoading, onComplete, onUncomplete, onDelete, onUpdateType }) {
@@ -13,8 +14,8 @@ export default function ScheduleBoardView({ schedules, isLoading, onComplete, on
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
+      <div className="schedule-loading">
+        <Loader2 className="schedule-loading-spinner" />
       </div>
     );
   }
@@ -45,7 +46,7 @@ export default function ScheduleBoardView({ schedules, isLoading, onComplete, on
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="schedule-board-grid">
       {columns.map((col) => {
         const colSchedules = schedules?.filter((s) => s.type === col.key) || [];
         const isDragOver = dragOverCol === col.key;
@@ -53,31 +54,29 @@ export default function ScheduleBoardView({ schedules, isLoading, onComplete, on
         return (
           <div
             key={col.key}
-            className="flex flex-col"
+            className="schedule-board-column"
             onDragOver={(e) => handleDragOver(e, col.key)}
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, col.key)}
           >
             {/* Column header */}
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${col.bg} border-l-4 ${col.color} mb-3`}>
-              <h3 className="text-sm font-semibold text-slate-700">{col.label}</h3>
-              <span className="text-xs bg-white text-slate-500 px-2 py-0.5 rounded-full font-medium">
+            <div className="schedule-board-header" style={{ backgroundColor: col.bg, borderLeftColor: col.color }}>
+              <h3 className="schedule-board-title">{col.label}</h3>
+              <span className="schedule-board-count">
                 {colSchedules.length}
               </span>
             </div>
 
             {/* Column schedules */}
             <div
-              className={`space-y-2 flex-1 min-h-[100px] rounded-xl p-1 transition-colors ${
-                isDragOver ? 'bg-indigo-50 ring-2 ring-indigo-300 ring-dashed' : ''
-              }`}
+              className={`schedule-board-content ${isDragOver ? 'drag-over' : ''}`}
             >
               {colSchedules.length === 0 && !isDragOver ? (
-                <div className="text-center py-8 text-slate-300 text-sm border-2 border-dashed border-slate-200 rounded-xl">
+                <div className="schedule-board-empty">
                   No schedules
                 </div>
               ) : colSchedules.length === 0 && isDragOver ? (
-                <div className="text-center py-8 text-indigo-400 text-sm border-2 border-dashed border-indigo-300 rounded-xl">
+                <div className="schedule-board-drop-zone">
                   Drop here
                 </div>
               ) : (
@@ -86,7 +85,7 @@ export default function ScheduleBoardView({ schedules, isLoading, onComplete, on
                     key={schedule.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, schedule.id)}
-                    className="cursor-grab active:cursor-grabbing"
+                    className="schedule-board-item"
                   >
                     <ScheduleItem
                       schedule={schedule}

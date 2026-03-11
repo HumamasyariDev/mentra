@@ -1,14 +1,15 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
+import '../styles/layouts/AuthLayout.css';
 
 export default function AuthLayout() {
   const { user, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+      <div className="auth-layout-loading">
+        <Loader2 className="auth-layout-loading-spinner" />
       </div>
     );
   }
@@ -18,13 +19,13 @@ export default function AuthLayout() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50 p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-indigo-600">Mentra</h1>
-          <p className="text-slate-500 mt-1">Gamified Productivity</p>
+    <div className="auth-layout-container">
+      <div className="auth-layout-content">
+        <div className="auth-layout-header">
+          <h1 className="auth-layout-logo">Mentra</h1>
+          <p className="auth-layout-tagline">Gamified Productivity</p>
         </div>
-        <div className="card">
+        <div className="auth-layout-card">
           <Outlet />
         </div>
       </div>

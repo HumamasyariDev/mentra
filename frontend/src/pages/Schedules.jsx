@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { scheduleApi } from '../services/api';
 import { Plus, X, List, CalendarDays, Columns3 } from 'lucide-react';
+import '../styles/pages/Schedules.css';
 import ScheduleCreateForm from '../components/schedules/ScheduleCreateForm';
 import ScheduleListView from '../components/schedules/ScheduleListView';
 import ScheduleCalendarView from '../components/schedules/ScheduleCalendarView';
@@ -77,18 +78,18 @@ export default function Schedules() {
   const handleUpdateType = (id, data) => updateTypeMutation.mutate({ id, data });
 
   return (
-    <div className="space-y-6">
+    <div className="schedules-page">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Schedules</h1>
-          <p className="text-slate-500 text-sm mt-1">Build habits and routines</p>
+      <div className="schedules-header">
+        <div className="schedules-header-content">
+          <h1 className="schedules-title">Schedules</h1>
+          <p className="schedules-subtitle">Build habits and routines</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="btn-primary flex items-center gap-2"
+          className="schedules-action-btn"
         >
-          {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+          {showForm ? <X style={{ width: '1rem', height: '1rem' }} /> : <Plus style={{ width: '1rem', height: '1rem' }} />}
           {showForm ? 'Cancel' : 'New Schedule'}
         </button>
       </div>
@@ -99,19 +100,15 @@ export default function Schedules() {
       )}
 
       {/* View Tabs */}
-      <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 w-fit">
+      <div className="schedules-view-tabs">
         {views.map(({ key, label, icon: Icon }) => (
           <button
             key={key}
             onClick={() => setActiveView(key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-              activeView === key
-                ? 'bg-indigo-500 text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-            }`}
+            className={`schedules-view-tab ${activeView === key ? 'active' : ''}`}
           >
-            <Icon className="w-4 h-4" />
-            <span className="hidden sm:inline">{label}</span>
+            <Icon style={{ width: '1rem', height: '1rem' }} />
+            <span className="schedules-view-label">{label}</span>
           </button>
         ))}
       </div>

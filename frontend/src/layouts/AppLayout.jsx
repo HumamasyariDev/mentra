@@ -4,6 +4,7 @@ import { Loader2, Menu } from 'lucide-react';
 import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import { PomodoroThemeProvider, usePomodoroTheme } from '../contexts/PomodoroThemeContext';
+import '../styles/layouts/AppLayout.css';
 
 function AppLayoutContent() {
   const { user, loading, logout } = useAuth();
@@ -12,8 +13,8 @@ function AppLayoutContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+      <div className="app-layout-loading">
+        <Loader2 className="app-layout-loading-spinner" />
       </div>
     );
   }
@@ -23,11 +24,11 @@ function AppLayoutContent() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="app-layout-container">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/30 z-40 lg:hidden"
+          className="app-layout-overlay"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -43,16 +44,16 @@ function AppLayoutContent() {
       />
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="app-layout-main">
         {/* Mobile header */}
-        <header className="lg:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3">
-          <button onClick={() => setSidebarOpen(true)}>
-            <Menu className="w-6 h-6 text-slate-600" />
+        <header className="app-layout-mobile-header">
+          <button onClick={() => setSidebarOpen(true)} className="app-layout-menu-btn">
+            <Menu className="app-layout-menu-icon" />
           </button>
-          <h1 className="text-lg font-bold text-indigo-600">Mentra</h1>
+          <h1 className="app-layout-mobile-logo">Mentra</h1>
         </header>
 
-        <main className="flex-1 p-4 lg:p-8 overflow-auto">
+        <main className="app-layout-content">
           <Outlet />
         </main>
       </div>

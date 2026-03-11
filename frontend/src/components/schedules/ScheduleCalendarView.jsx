@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Loader2, Calendar } from 'lucide-react';
 import ScheduleItem, { isCompletedOnDate } from './ScheduleItem';
+import '../../styles/components/schedules/ScheduleComponents.css';
 
 const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -84,26 +85,26 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
+      <div className="schedule-loading">
+        <Loader2 className="schedule-loading-spinner" />
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+    <div className="schedule-calendar-grid">
       {/* Left: Schedule list for selected date */}
-      <div className="lg:col-span-2 card p-4 flex flex-col">
-        <h4 className="text-sm font-semibold text-slate-900 mb-1">{selectedDateLabel}</h4>
-        <p className="text-xs text-slate-400 mb-3">
+      <div className="schedule-list-panel">
+        <h4 className="schedule-list-title">{selectedDateLabel}</h4>
+        <p className="schedule-list-count">
           {selectedDaySchedules.length} schedule{selectedDaySchedules.length !== 1 ? 's' : ''}
         </p>
 
-        <div className="flex-1 overflow-y-auto space-y-2 max-h-[500px]">
+        <div className="schedule-list-container">
           {selectedDaySchedules.length === 0 ? (
-            <div className="text-center py-10 text-slate-300">
-              <Calendar className="w-10 h-10 mx-auto mb-2 opacity-40" />
-              <p className="text-sm">No schedules for this day</p>
+            <div className="schedule-list-empty">
+              <Calendar style={{ width: '2.5rem', height: '2.5rem', margin: '0 auto 0.5rem', opacity: '0.4' }} />
+              <p>No schedules for this day</p>
             </div>
           ) : (
             selectedDaySchedules.map((schedule) => (
@@ -121,34 +122,34 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
       </div>
 
       {/* Right: Mini calendar */}
-      <div className="lg:col-span-3 card p-4">
+      <div className="schedule-calendar-panel">
         {/* Calendar Header */}
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-slate-900">{monthLabel}</h3>
-          <div className="flex items-center gap-1">
-            <button onClick={goToday} className="px-2 py-1 text-[10px] font-medium bg-indigo-50 text-indigo-600 rounded-md hover:bg-indigo-100 transition-colors">
+        <div className="schedule-calendar-header">
+          <h3 className="schedule-calendar-month">{monthLabel}</h3>
+          <div className="schedule-calendar-nav">
+            <button onClick={goToday} className="schedule-today-btn">
               Today
             </button>
-            <button onClick={prevMonth} className="p-1 rounded-md hover:bg-slate-100 transition-colors">
-              <ChevronLeft className="w-4 h-4 text-slate-600" />
+            <button onClick={prevMonth} className="schedule-nav-btn">
+              <ChevronLeft style={{ width: '1rem', height: '1rem' }} />
             </button>
-            <button onClick={nextMonth} className="p-1 rounded-md hover:bg-slate-100 transition-colors">
-              <ChevronRight className="w-4 h-4 text-slate-600" />
+            <button onClick={nextMonth} className="schedule-nav-btn">
+              <ChevronRight style={{ width: '1rem', height: '1rem' }} />
             </button>
           </div>
         </div>
 
         {/* Day headers */}
-        <div className="grid grid-cols-7 mb-1">
+        <div className="schedule-calendar-days-header">
           {dayNames.map((d) => (
-            <div key={d} className="text-center text-[10px] font-semibold text-slate-400 py-1">
+            <div key={d} className="schedule-day-name">
               {d}
             </div>
           ))}
         </div>
 
         {/* Day cells */}
-        <div className="grid grid-cols-7">
+        <div className="schedule-calendar-days">
           {calendarDays.map(({ date, isCurrentMonth }, i) => {
             const dateStr = formatDate(date);
             const daySchedules = getSchedulesForDate(date);
@@ -162,29 +163,24 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
               <button
                 key={i}
                 onClick={() => setSelectedDate(dateStr)}
-                className={`relative p-1 min-h-[56px] border border-slate-50 text-left transition-all flex flex-col rounded-lg ${
-                  !isCurrentMonth ? 'opacity-30' : 'hover:bg-slate-50'
-                } ${isSelected ? 'ring-2 ring-indigo-500 bg-indigo-50/60' : ''}`}
+                className={`schedule-calendar-cell ${!isCurrentMonth ? 'other-month' : ''} ${isSelected ? 'selected' : ''}`}
               >
                 <span
-                  className={`text-[11px] font-medium inline-flex items-center justify-center w-5 h-5 rounded-full ${
-                    isToday
-                      ? 'bg-indigo-500 text-white'
-                      : 'text-slate-600'
-                  }`}
+                  className="schedule-calendar-date"
+                  style={{
+                    backgroundColor: isToday ? '#6366f1' : 'transparent',
+                    color: isToday ? '#ffffff' : '#475569'
+                  }}
                 >
                   {date.getDate()}
                 </span>
 
                 {totalCount > 0 && isCurrentMonth && (
-                  <div className="mt-auto flex flex-wrap gap-0.5 px-0.5 pb-0.5">
-                    <span className={`text-[9px] px-1 rounded font-medium leading-tight ${
-                      completedCount === totalCount
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : completedCount > 0
-                        ? 'bg-amber-100 text-amber-700'
-                        : 'bg-blue-100 text-blue-700'
-                    }`}>
+                  <div className="schedule-calendar-badge-container">
+                    <span className="schedule-calendar-badge" style={{
+                      backgroundColor: completedCount === totalCount ? '#d1fae5' : completedCount > 0 ? '#fef3c7' : '#dbeafe',
+                      color: completedCount === totalCount ? '#047857' : completedCount > 0 ? '#a16207' : '#1e40af'
+                    }}>
                       {completedCount}/{totalCount}
                     </span>
                   </div>
@@ -195,15 +191,15 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 text-[10px] text-slate-400 mt-3 pt-3 border-t border-slate-100">
-          <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded bg-blue-100 border border-blue-200" /> Pending
+        <div className="schedule-calendar-legend">
+          <span className="schedule-legend-item">
+            <span className="schedule-legend-dot" style={{ backgroundColor: '#dbeafe', border: '1px solid #bfdbfe' }} /> Pending
           </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded bg-amber-100 border border-amber-200" /> Partial
+          <span className="schedule-legend-item">
+            <span className="schedule-legend-dot" style={{ backgroundColor: '#fef3c7', border: '1px solid #fde68a' }} /> Partial
           </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2.5 h-2.5 rounded bg-emerald-100 border border-emerald-200" /> Done
+          <span className="schedule-legend-item">
+            <span className="schedule-legend-dot" style={{ backgroundColor: '#d1fae5', border: '1px solid #a7f3d0' }} /> Done
           </span>
         </div>
       </div>

@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Play, Pause, RotateCcw, Coffee, Brain, Square, Loader2, Palette, ChevronDown, Fish, Clock, CheckCircle } from 'lucide-react';
+import '../styles/pages/CommonPages.css';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { pomodoroApi, taskApi } from '../services/api';
-import { Play, Pause, Square, Loader2, Palette, ChevronDown, Fish, Clock, CheckCircle } from 'lucide-react';
 import { usePomodoroTheme } from '../contexts/PomodoroThemeContext';
 
 const catMoods = {
@@ -129,37 +130,42 @@ export default function Pomodoro() {
 
   return (
     // Full page theme wrapper - negates parent padding to extend to edges
-    <div className={`min-h-screen -m-4 lg:-m-8 p-4 lg:p-8 bg-gradient-to-br ${theme.gradient} transition-colors duration-300`}>
-      <div className="space-y-6">
+    <div className="pomodoro-wrapper" style={{ background: `linear-gradient(to bottom right, ${theme.gradient})` }}>
+      <div className="pomodoro-container">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="pomodoro-header">
           <div>
-            <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : theme.accent}`}>Pomodoro</h1>
-            <p className={`text-sm mt-1 ${isDark ? 'text-white/60' : 'text-slate-600'}`}>Feed your cat by staying focused</p>
+            <h1 className="pomodoro-title" style={{ color: isDark ? '#ffffff' : theme.accent }}>Pomodoro</h1>
+            <p className="pomodoro-subtitle" style={{ color: isDark ? 'rgba(255,255,255,0.6)' : '#475569' }}>Feed your cat by staying focused</p>
           </div>
           {/* Theme picker */}
-          <div className="relative">
+          <div className="pomodoro-theme-picker">
             <button
               onClick={() => setShowBgPicker(!showBgPicker)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${isDark
-                ? 'bg-white/10 text-white hover:bg-white/20'
-                : 'bg-white/50 backdrop-blur-sm border border-white/50 text-slate-700 hover:bg-white/70'
-                }`}
+              className="pomodoro-theme-btn"
+              style={{
+                backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)',
+                color: isDark ? '#ffffff' : '#334155',
+                border: isDark ? 'none' : '1px solid rgba(255,255,255,0.5)'
+              }}
             >
-              <Palette className="w-4 h-4" />
-              <span className="hidden sm:inline">{theme.label}</span>
-              <ChevronDown className="w-3 h-3" />
+              <Palette style={{ width: '1rem', height: '1rem' }} />
+              <span className="pomodoro-theme-label">{theme.label}</span>
+              <ChevronDown style={{ width: '0.75rem', height: '0.75rem' }} />
             </button>
             {showBgPicker && (
-              <div className="absolute right-0 top-full mt-2 bg-white rounded-xl shadow-lg border border-slate-200 p-2 z-50 w-48">
+              <div className="pomodoro-theme-dropdown">
                 {backgrounds.map((b) => (
                   <button
                     key={b.key}
                     onClick={() => handleBgChange(b.key)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${theme.key === b.key ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50'
-                      }`}
+                    className="pomodoro-theme-option"
+                    style={{
+                      backgroundColor: theme.key === b.key ? '#eef2ff' : 'transparent',
+                      color: theme.key === b.key ? '#4338ca' : '#475569'
+                    }}
                   >
-                    <span className={`w-5 h-5 rounded-full bg-gradient-to-br ${b.gradient} border border-slate-200`} />
+                    <span className="pomodoro-theme-preview" style={{ background: `linear-gradient(to bottom right, ${b.gradient})` }} />
                     {b.label}
                   </button>
                 ))}
@@ -169,63 +175,69 @@ export default function Pomodoro() {
         </div>
 
         {/* 2-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="pomodoro-grid">
           {/* Main Timer Card (2x width) */}
-          <div className="lg:col-span-2">
-            <div className={`rounded-2xl ${isDark ? 'bg-white/5 backdrop-blur-sm' : 'bg-white/40 backdrop-blur-sm'} p-6 md:p-8 relative overflow-hidden border ${isDark ? 'border-white/10' : 'border-white/50'}`}>
+          <div className="pomodoro-timer-col">
+            <div className="pomodoro-timer-card" style={{
+              backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.4)',
+              border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)'}`,
+              backdropFilter: 'blur(10px)'
+            }}>
               {/* Cat Scene */}
-              <div className="text-center mb-6">
+              <div className="pomodoro-cat-scene">
                 {/* Food bowl progress */}
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <Fish className={`w-4 h-4 ${isDark ? 'text-white/40' : 'text-slate-400'}`} />
-                  <div className={`flex-1 max-w-[200px] h-2 rounded-full ${isDark ? 'bg-white/10' : 'bg-black/5'} overflow-hidden`}>
+                <div className="pomodoro-food-progress">
+                  <Fish style={{ width: '1rem', height: '1rem', color: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }} />
+                  <div className="pomodoro-food-bar" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }}>
                     <div
-                      className="h-full bg-gradient-to-r from-amber-400 to-orange-400 rounded-full transition-all duration-1000"
+                      className="pomodoro-food-fill"
                       style={{ width: `${foodProgress}%` }}
                     />
                   </div>
-                  <span className={`text-xs font-medium ${isDark ? 'text-white/50' : 'text-slate-400'}`}>
+                  <span className="pomodoro-food-percent" style={{ color: isDark ? 'rgba(255,255,255,0.5)' : '#94a3b8' }}>
                     {Math.round(foodProgress)}%
                   </span>
                 </div>
 
                 {/* Cat */}
-                <div className={`inline-flex flex-col items-center ${mood.animation}`}>
-                  <span className="text-7xl leading-none select-none" role="img" aria-label="cat">
+                <div className="pomodoro-cat" style={{ animation: mood.animation }}>
+                  <span className="pomodoro-cat-emoji" role="img" aria-label="cat">
                     {mood.emoji}
                   </span>
-                  <span className={`text-xs mt-2 font-medium ${isDark ? 'text-white/60' : theme.accent}`}>
+                  <span className="pomodoro-cat-label" style={{ color: isDark ? 'rgba(255,255,255,0.6)' : theme.accent }}>
                     {mood.label}
                   </span>
                 </div>
               </div>
 
               {/* Timer */}
-              <div className="text-center mb-6">
-                <p className={`text-5xl font-mono font-bold tracking-wider ${isDark ? 'text-white' : 'text-slate-800'}`}>
+              <div className="pomodoro-timer-display">
+                <p className="pomodoro-timer-time" style={{ color: isDark ? '#ffffff' : '#1e293b' }}>
                   {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
                 </p>
-                <p className={`text-sm mt-2 ${isDark ? 'text-white/40' : 'text-slate-500'}`}>
+                <p className="pomodoro-timer-status" style={{ color: isDark ? 'rgba(255,255,255,0.4)' : '#64748b' }}>
                   {sessionId ? (isRunning ? 'Feeding in progress...' : 'Paused — cat is waiting') : 'Start to feed your cat'}
                 </p>
               </div>
 
               {/* Duration selector */}
               {!sessionId && (
-                <div className="flex flex-col items-center gap-2 mb-5">
-                  <div className="flex justify-center gap-2 flex-wrap">
+                <div className="pomodoro-duration-section">
+                  <div className="pomodoro-duration-buttons">
                     {[15, 25, 45, 60].map((d) => (
                       <button
                         key={d}
                         onClick={() => setDuration(d)}
-                        className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${duration === d
-                            ? isDark
-                              ? 'bg-white/20 text-white shadow-sm'
-                              : 'bg-white text-slate-800 shadow-sm'
-                            : isDark
-                              ? 'bg-white/5 text-white/50 hover:bg-white/10'
-                              : 'bg-white/30 text-slate-600 hover:bg-white/50'
-                          }`}
+                        className="pomodoro-duration-btn"
+                        style={{
+                          backgroundColor: duration === d 
+                            ? (isDark ? 'rgba(255,255,255,0.2)' : '#ffffff')
+                            : (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.3)'),
+                          color: duration === d
+                            ? (isDark ? '#ffffff' : '#1e293b')
+                            : (isDark ? 'rgba(255,255,255,0.5)' : '#475569'),
+                          boxShadow: duration === d ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'
+                        }}
                       >
                         {d}m
                       </button>
@@ -233,8 +245,8 @@ export default function Pomodoro() {
                   </div>
 
                   {/* Custom duration input */}
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs ${isDark ? 'text-white/60' : 'text-slate-500'}`}>or custom:</span>
+                  <div className="pomodoro-custom-duration">
+                    <span style={{ color: isDark ? 'rgba(255,255,255,0.6)' : '#64748b' }}>or custom:</span>
                     <input
                       type="number"
                       min="1"
@@ -246,20 +258,26 @@ export default function Pomodoro() {
                           setDuration(val);
                         }
                       }}
-                      className={`w-16 px-2 py-1 rounded-lg text-sm text-center border-0 focus:ring-2 focus:ring-indigo-400 ${isDark ? 'bg-white/10 text-white/80' : 'bg-white/60 text-slate-700'
-                        }`}
+                      className="pomodoro-custom-input"
+                      style={{
+                        backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.6)',
+                        color: isDark ? 'rgba(255,255,255,0.8)' : '#334155'
+                      }}
                     />
-                    <span className={`text-xs ${isDark ? 'text-white/60' : 'text-slate-500'}`}>min</span>
+                    <span style={{ color: isDark ? 'rgba(255,255,255,0.6)' : '#64748b' }}>min</span>
                   </div>
                 </div>
               )}
 
               {/* Task selector */}
               {!sessionId && (
-                <div className="mb-5">
+                <div className="pomodoro-task-section">
                   <select
-                    className={`w-full rounded-xl px-4 py-2.5 text-sm border-0 focus:ring-2 focus:ring-indigo-400 ${isDark ? 'bg-white/10 text-white/80' : 'bg-white/60 text-slate-700'
-                      }`}
+                    className="pomodoro-task-select"
+                    style={{
+                      backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.6)',
+                      color: isDark ? 'rgba(255,255,255,0.8)' : '#334155'
+                    }}
                     value={selectedTask}
                     onChange={(e) => setSelectedTask(e.target.value)}
                   >
@@ -274,39 +292,46 @@ export default function Pomodoro() {
               )}
 
               {/* Controls */}
-              <div className="flex justify-center gap-3">
+              <div className="pomodoro-controls">
                 {!sessionId ? (
                   <button
                     onClick={handleStart}
-                    className="flex items-center gap-2 px-8 py-3 rounded-xl bg-indigo-500 text-white font-medium hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-500/25"
+                    className="pomodoro-start-btn"
                     disabled={startMutation.isPending}
                   >
                     {startMutation.isPending ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="page-loading-spinner" style={{ width: '1.25rem', height: '1.25rem' }} />
                     ) : (
-                      <Play className="w-5 h-5" />
+                      <Play style={{ width: '1.25rem', height: '1.25rem' }} />
                     )}
                     Feed Cat
                   </button>
                 ) : catState === 'completed' ? (
-                  <div className={`px-6 py-3 rounded-xl font-medium ${isDark ? 'bg-emerald-500/20 text-emerald-300' : 'bg-emerald-100 text-emerald-700'}`}>
+                  <div className="pomodoro-completed-msg" style={{
+                    backgroundColor: isDark ? 'rgba(16, 185, 129, 0.2)' : '#d1fae5',
+                    color: isDark ? '#6ee7b7' : '#047857'
+                  }}>
                     Cat is happy! +EXP earned
                   </div>
                 ) : (
                   <>
                     <button
                       onClick={handlePauseResume}
-                      className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium transition-colors ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-white text-slate-700 hover:bg-slate-50 shadow-sm'
-                        }`}
+                      className="pomodoro-pause-btn"
+                      style={{
+                        backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : '#ffffff',
+                        color: isDark ? '#ffffff' : '#334155',
+                        boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.05)'
+                      }}
                     >
-                      {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                      {isRunning ? <Pause style={{ width: '1.25rem', height: '1.25rem' }} /> : <Play style={{ width: '1.25rem', height: '1.25rem' }} />}
                       {isRunning ? 'Pause' : 'Resume'}
                     </button>
                     <button
                       onClick={handleStop}
-                      className="flex items-center gap-2 px-5 py-3 rounded-xl bg-red-500/10 text-red-500 font-medium hover:bg-red-500/20 transition-colors"
+                      className="pomodoro-stop-btn"
                     >
-                      <Square className="w-5 h-5" />
+                      <Square style={{ width: '1.25rem', height: '1.25rem' }} />
                       Stop
                     </button>
                   </>
@@ -316,25 +341,29 @@ export default function Pomodoro() {
           </div>
 
           {/* Stats & Recent Sessions Card (1x width) */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="pomodoro-sidebar">
             {/* Stats Card */}
             {stats && (
-              <div className={`rounded-xl p-5 space-y-4 ${isDark ? 'bg-white/5 backdrop-blur-sm border border-white/10' : 'bg-white/40 backdrop-blur-sm border border-white/50'}`}>
-                <h3 className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>Today's Progress</h3>
-                <div className="space-y-3">
-                  <div className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-white/5' : 'bg-white/50'}`}>
-                    <div className="flex items-center gap-2">
-                      <Clock className={`w-4 h-4 ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`} />
-                      <span className={`text-xs ${isDark ? 'text-white/70' : 'text-slate-600'}`}>Today Sessions</span>
+              <div className="pomodoro-stats-card" style={{
+                backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.4)',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)'}`,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <h3 className="pomodoro-stats-title" style={{ color: isDark ? '#ffffff' : '#0f172a' }}>Today's Progress</h3>
+                <div className="pomodoro-stats-list">
+                  <div className="pomodoro-stat-item" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)' }}>
+                    <div className="pomodoro-stat-label">
+                      <Clock style={{ width: '1rem', height: '1rem', color: isDark ? '#818cf8' : '#4f46e5' }} />
+                      <span style={{ color: isDark ? 'rgba(255,255,255,0.7)' : '#475569' }}>Today Sessions</span>
                     </div>
-                    <span className={`text-lg font-bold ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`}>{stats.today_sessions}</span>
+                    <span className="pomodoro-stat-value" style={{ color: isDark ? '#818cf8' : '#4f46e5' }}>{stats.today_sessions}</span>
                   </div>
-                  <div className={`flex items-center justify-between p-3 rounded-lg ${isDark ? 'bg-white/5' : 'bg-white/50'}`}>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                      <span className={`text-xs ${isDark ? 'text-white/70' : 'text-slate-600'}`}>Total Focus</span>
+                  <div className="pomodoro-stat-item" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)' }}>
+                    <div className="pomodoro-stat-label">
+                      <CheckCircle style={{ width: '1rem', height: '1rem', color: isDark ? '#6ee7b7' : '#059669' }} />
+                      <span style={{ color: isDark ? 'rgba(255,255,255,0.7)' : '#475569' }}>Total Focus</span>
                     </div>
-                    <span className={`text-lg font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{stats.total_focus_minutes}m</span>
+                    <span className="pomodoro-stat-value" style={{ color: isDark ? '#6ee7b7' : '#059669' }}>{stats.total_focus_minutes}m</span>
                   </div>
                 </div>
               </div>
@@ -342,26 +371,39 @@ export default function Pomodoro() {
 
             {/* Recent Sessions */}
             {history?.data?.length > 0 && (
-              <div className={`rounded-xl p-5 ${isDark ? 'bg-white/5 backdrop-blur-sm border border-white/10' : 'bg-white/40 backdrop-blur-sm border border-white/50'}`}>
-                <h3 className={`font-semibold mb-3 text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>Recent Sessions</h3>
-                <div className="space-y-2">
+              <div className="pomodoro-history-card" style={{
+                backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.4)',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)'}`,
+                backdropFilter: 'blur(10px)'
+              }}>
+                <h3 className="pomodoro-history-title" style={{ color: isDark ? '#ffffff' : '#0f172a' }}>Recent Sessions</h3>
+                <div className="pomodoro-history-list">
                   {history.data.map((session) => (
-                    <div key={session.id} className={`flex items-center justify-between py-2 border-b last:border-0 ${isDark ? 'border-white/10' : 'border-slate-100'}`}>
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-xs font-medium truncate ${isDark ? 'text-white/80' : 'text-slate-700'}`}>
+                    <div key={session.id} className="pomodoro-history-item" style={{
+                      borderBottom: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f1f5f9'
+                    }}>
+                      <div className="pomodoro-history-info">
+                        <p className="pomodoro-history-task" style={{ color: isDark ? 'rgba(255,255,255,0.8)' : '#334155' }}>
                           {session.task?.title || 'No task'}
                         </p>
-                        <p className={`text-[10px] ${isDark ? 'text-white/40' : 'text-slate-400'}`}>
+                        <p className="pomodoro-history-meta" style={{ color: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}>
                           {session.duration_minutes}min · {new Date(session.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                         </p>
                       </div>
                       <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-medium flex-shrink-0 ml-2 ${session.status === 'completed'
-                          ? isDark ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
-                          : session.status === 'cancelled'
-                            ? isDark ? 'bg-red-500/20 text-red-400' : 'bg-red-100 text-red-700'
-                            : isDark ? 'bg-yellow-500/20 text-yellow-400' : 'bg-yellow-100 text-yellow-700'
-                          }`}
+                        className="pomodoro-history-badge"
+                        style={{
+                          backgroundColor: session.status === 'completed'
+                            ? (isDark ? 'rgba(16, 185, 129, 0.2)' : '#d1fae5')
+                            : session.status === 'cancelled'
+                              ? (isDark ? 'rgba(239, 68, 68, 0.2)' : '#fee2e2')
+                              : (isDark ? 'rgba(234, 179, 8, 0.2)' : '#fef3c7'),
+                          color: session.status === 'completed'
+                            ? (isDark ? '#6ee7b7' : '#047857')
+                            : session.status === 'cancelled'
+                              ? (isDark ? '#fca5a5' : '#991b1b')
+                              : (isDark ? '#fde047' : '#a16207')
+                        }}
                       >
                         {session.status === 'completed' ? '✓' : session.status === 'cancelled' ? '×' : '...'}
                       </span>

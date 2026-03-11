@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import '../../styles/components/forum/ForumModals.css';
 
-export default function CreatePostModal({ onClose, onSubmit }) {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+export default function EditPostModal({ post, onClose, onSubmit }) {
+  const [title, setTitle] = useState(post?.title || '');
+  const [content, setContent] = useState(post?.content || '');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -16,7 +16,7 @@ export default function CreatePostModal({ onClose, onSubmit }) {
       await onSubmit({ title: title.trim(), content: content.trim() });
       onClose();
     } catch (err) {
-      console.error('Failed to create post:', err);
+      console.error('Failed to update post:', err);
     } finally {
       setLoading(false);
     }
@@ -26,7 +26,7 @@ export default function CreatePostModal({ onClose, onSubmit }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">Create New Post</h3>
+          <h3 className="modal-title">Edit Post</h3>
           <button onClick={onClose} className="modal-close-btn">
             <X size={20} />
           </button>
@@ -71,7 +71,7 @@ export default function CreatePostModal({ onClose, onSubmit }) {
                 disabled={!title.trim() || !content.trim() || loading} 
                 className="btn btn-primary"
               >
-                {loading ? 'Creating...' : 'Create Post'}
+                {loading ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </div>

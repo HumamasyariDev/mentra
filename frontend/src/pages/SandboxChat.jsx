@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { sandboxApi } from '../services/api';
 import { Send, ArrowLeft, Loader2 } from 'lucide-react';
+import '../styles/pages/CommonPages.css';
 
 export default function SandboxChat() {
     const { id } = useParams();
@@ -37,53 +38,62 @@ export default function SandboxChat() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center h-[calc(100vh-12rem)]">
-                <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+            <div className="page-loading" style={{ height: 'calc(100vh - 12rem)' }}>
+                <Loader2 className="page-loading-spinner" style={{ width: '2rem', height: '2rem' }} />
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col h-[calc(100vh-8rem)]">
+        <div className="page-container" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 8rem)' }}>
             {/* Header */}
-            <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center gap-4">
+            <div className="sandbox-chat-header">
                 <button
                     onClick={() => navigate('/sandbox')}
-                    className="text-slate-600 hover:text-slate-900 transition-colors"
+                    className="sandbox-back-btn"
                 >
-                    <ArrowLeft className="w-5 h-5" />
+                    <ArrowLeft style={{ width: '1.25rem', height: '1.25rem' }} />
                 </button>
                 <div>
-                    <h2 className="text-lg font-semibold text-slate-900">{sandbox?.name}</h2>
+                    <h2 className="sandbox-chat-title">{sandbox?.name}</h2>
                     {sandbox?.description && (
-                        <p className="text-sm text-slate-500">{sandbox.description}</p>
+                        <p className="sandbox-chat-subtitle">{sandbox.description}</p>
                     )}
                 </div>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto bg-slate-50 p-6">
-                <div className="max-w-3xl mx-auto space-y-4">
+            <div className="message-list" style={{ flex: 1, overflowY: 'auto', backgroundColor: '#f8fafc', padding: '1.5rem' }}>
+                <div style={{ maxWidth: '48rem', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     {sandbox?.messages?.length === 0 ? (
-                        <div className="text-center py-12 text-slate-400">
+                        <div className="chat-empty-state" style={{ padding: '3rem 0' }}>
                             <p>No messages yet. Start a conversation!</p>
                         </div>
                     ) : (
                         sandbox?.messages?.map((message) => (
                             <div
                                 key={message.id}
-                                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                                className="message-item"
+                                style={{ justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start' }}
                             >
                                 <div
-                                    className={`max-w-[70%] rounded-2xl px-4 py-3 ${message.role === 'user'
-                                            ? 'bg-indigo-600 text-white'
-                                            : 'bg-white text-slate-800 shadow-sm border border-slate-200'
-                                        }`}
+                                    style={{
+                                        maxWidth: '70%',
+                                        borderRadius: '1rem',
+                                        padding: '0.75rem 1rem',
+                                        backgroundColor: message.role === 'user' ? '#6366f1' : '#ffffff',
+                                        color: message.role === 'user' ? '#ffffff' : '#1e293b',
+                                        boxShadow: message.role === 'user' ? 'none' : '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                                        border: message.role === 'user' ? 'none' : '1px solid #e2e8f0'
+                                    }}
                                 >
-                                    <div className="text-sm whitespace-pre-wrap break-words">{message.content}</div>
+                                    <div style={{ fontSize: '0.875rem', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{message.content}</div>
                                     <div
-                                        className={`text-xs mt-1 ${message.role === 'user' ? 'text-indigo-200' : 'text-slate-400'
-                                            }`}
+                                        style={{
+                                            fontSize: '0.75rem',
+                                            marginTop: '0.25rem',
+                                            color: message.role === 'user' ? 'rgba(255,255,255,0.7)' : '#94a3b8'
+                                        }}
                                     >
                                         {new Date(message.created_at).toLocaleTimeString([], {
                                             hour: '2-digit',
@@ -99,30 +109,31 @@ export default function SandboxChat() {
             </div>
 
             {/* Input */}
-            <div className="bg-white border-t border-slate-200 p-4">
-                <form onSubmit={handleSend} className="max-w-3xl mx-auto flex gap-3">
+            <div className="message-input-container" style={{ backgroundColor: '#ffffff', borderTop: '1px solid #e2e8f0', padding: '1rem' }}>
+                <form onSubmit={handleSend} className="message-input-form" style={{ maxWidth: '48rem', margin: '0 auto' }}>
                     <input
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Type your message..."
-                        className="flex-1 rounded-lg border-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
+                        className="message-input"
                         disabled={sendMutation.isPending}
                     />
                     <button
                         type="submit"
-                        className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="message-send-btn"
                         disabled={sendMutation.isPending || !input.trim()}
+                        style={{ padding: '0.5rem 1.5rem' }}
                     >
                         {sendMutation.isPending ? (
-                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <Loader2 className="page-loading-spinner" style={{ width: '1.25rem', height: '1.25rem' }} />
                         ) : (
-                            <Send className="w-5 h-5" />
+                            <Send style={{ width: '1.25rem', height: '1.25rem' }} />
                         )}
                         Send
                     </button>
                 </form>
-                <p className="text-xs text-slate-400 text-center mt-2">
+                <p style={{ fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', marginTop: '0.5rem' }}>
                     Currently using mock AI responses. Puter.com integration coming soon!
                 </p>
             </div>

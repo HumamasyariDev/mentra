@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, X, Plus, Smile } from 'lucide-react';
+import '../../styles/components/forum/ForumComponents.css';
 
 export default function ForumMessageInput({ onSend, replyTo, onCancelReply, editMessage, onCancelEdit }) {
   const [message, setMessage] = useState('');
@@ -37,17 +38,17 @@ export default function ForumMessageInput({ onSend, replyTo, onCancelReply, edit
   };
 
   return (
-    <div className="px-4 pb-4 bg-white">
+    <div className="forum-input-container">
       {/* Reply Bar */}
       {replyTo && (
-        <div className="mb-2 px-3 py-2 bg-indigo-50 border border-indigo-100 rounded-t-lg flex items-center justify-between">
-          <div className="flex-1 min-w-0">
-            <span className="text-xs font-medium text-indigo-600">
-              Replying to <span className="font-bold">{replyTo.user?.name}</span>
+        <div className="forum-reply-bar">
+          <div className="forum-reply-info">
+            <span className="forum-reply-label">
+              Replying to <span className="forum-reply-username">{replyTo.user?.name}</span>
             </span>
-            <p className="text-xs text-slate-600 truncate">{replyTo.content}</p>
+            <p className="forum-reply-content">{replyTo.content}</p>
           </div>
-          <button onClick={onCancelReply} className="text-slate-400 hover:text-slate-600 ml-2 transition">
+          <button onClick={onCancelReply} className="forum-cancel-btn">
             <X size={16} />
           </button>
         </div>
@@ -55,17 +56,17 @@ export default function ForumMessageInput({ onSend, replyTo, onCancelReply, edit
 
       {/* Edit Bar */}
       {editMessage && (
-        <div className="mb-2 px-3 py-2 bg-amber-50 border border-amber-100 rounded-t-lg flex items-center justify-between">
-          <span className="text-xs font-medium text-amber-700">Editing message</span>
-          <button onClick={onCancelEdit} className="text-amber-600 hover:text-amber-700 ml-2 transition">
+        <div className="forum-edit-bar">
+          <span className="forum-edit-label">Editing message</span>
+          <button onClick={onCancelEdit} className="forum-cancel-edit-btn">
             <X size={16} />
           </button>
         </div>
       )}
 
       {/* Input */}
-      <form onSubmit={handleSubmit} className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-1 border border-slate-200 focus-within:border-indigo-300 focus-within:ring-2 focus-within:ring-indigo-100 transition">
-        <button type="button" className="text-slate-400 hover:text-slate-600 transition p-1">
+      <form onSubmit={handleSubmit} className="forum-input-form">
+        <button type="button" className="forum-input-action-btn">
           <Plus size={20} />
         </button>
         <input
@@ -75,17 +76,17 @@ export default function ForumMessageInput({ onSend, replyTo, onCancelReply, edit
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Write a reply..."
-          className="flex-1 bg-transparent text-sm text-slate-900 placeholder-slate-400 py-2 focus:outline-none"
+          className="forum-input-field"
           maxLength={2000}
         />
-        <div className="flex items-center gap-1">
-          <button type="button" className="text-slate-400 hover:text-slate-600 transition p-1">
+        <div className="forum-input-actions">
+          <button type="button" className="forum-input-action-btn">
             <Smile size={20} />
           </button>
           {message.trim() && (
             <button
               type="submit"
-              className="p-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+              className="forum-input-send-btn"
             >
               <Send size={16} />
             </button>

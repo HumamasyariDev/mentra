@@ -14,6 +14,7 @@ import gsap from 'gsap';
 import TreeZone from './TreeZone';
 import CampfireZone from './CampfireZone';
 import logImg from '../../assets/gameworld/log.png';
+import '../../styles/components/gameworld/GameWorld.css';
 
 import './GameWorld.css';
 

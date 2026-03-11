@@ -5,6 +5,7 @@
  */
 import { forwardRef, useMemo } from 'react';
 import dyingFireImg from '../../assets/gameworld/dying_fire.png';
+import '../../styles/components/gameworld/GameWorld.css';
 import roarFireImg from '../../assets/gameworld/roar_fire.png';
 
 const CampfireZone = forwardRef(function CampfireZone(

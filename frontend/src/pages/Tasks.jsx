@@ -14,6 +14,7 @@ import TaskListView from '../components/tasks/TaskListView';
 import TaskCalendarView from '../components/tasks/TaskCalendarView';
 import TaskBoardView from '../components/tasks/TaskBoardView';
 import GameWorld from '../components/gameworld/GameWorld';
+import '../styles/pages/Tasks.css';
 
 const views = [
   { key: 'list', label: 'List', icon: List },
@@ -129,27 +130,27 @@ export default function Tasks() {
 
   return (
     <>
-      <div className="space-y-6">
+      <div className="tasks-container">
         {/* Header */}
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900">Tasks</h1>
-            <p className="text-slate-500 text-sm mt-1">Manage your tasks and earn EXP</p>
+        <div className="tasks-header">
+          <div className="tasks-header-info">
+            <h1 className="tasks-title">Tasks</h1>
+            <p className="tasks-subtitle">Manage your tasks and earn EXP</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="tasks-header-actions">
             {/* Forest link */}
             <button
               onClick={() => navigate('/forest')}
-              className="btn-secondary flex items-center gap-2"
+              className="tasks-forest-btn"
             >
-              <TreePine className="w-4 h-4" />
+              <TreePine className="tasks-forest-icon" />
               Forest
             </button>
             <button
               onClick={() => setShowForm(!showForm)}
-              className="btn-primary flex items-center gap-2"
+              className="tasks-new-btn"
             >
-              {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+              {showForm ? <X className="tasks-new-icon" /> : <Plus className="tasks-new-icon" />}
               {showForm ? 'Cancel' : 'New Task'}
             </button>
           </div>
@@ -161,18 +162,15 @@ export default function Tasks() {
         )}
 
         {/* View Tabs */}
-        <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 w-fit">
+        <div className="tasks-view-tabs">
           {views.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
               onClick={() => setActiveView(key)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeView === key
-                ? 'bg-indigo-500 text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-                }`}
+              className={`tasks-view-tab ${activeView === key ? 'active' : 'inactive'}`}
             >
-              <Icon className="w-4 h-4" />
-              <span className="hidden sm:inline">{label}</span>
+              <Icon className="tasks-view-tab-icon" />
+              <span className="tasks-view-tab-label">{label}</span>
             </button>
           ))}
         </div>

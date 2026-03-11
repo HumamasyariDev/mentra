@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import '../../styles/components/tasks/TaskComponents.css';
 
 export default function TaskCreateForm({ onSubmit, isPending }) {
   const [form, setForm] = useState({
@@ -17,59 +18,64 @@ export default function TaskCreateForm({ onSubmit, isPending }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card space-y-4">
-      <div>
-        <label className="label">Title</label>
-        <input
-          type="text"
-          className="input-field"
-          value={form.title}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
-          placeholder="What needs to be done?"
-          required
-        />
-      </div>
-      <div>
-        <label className="label">Description (optional)</label>
-        <textarea
-          className="input-field"
-          rows={2}
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-          placeholder="Add details..."
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="label">Priority</label>
-          <select
-            className="input-field"
-            value={form.priority}
-            onChange={(e) => setForm({ ...form, priority: e.target.value })}
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </div>
-        <div>
-          <label className="label">Due Date (optional)</label>
+    <form onSubmit={handleSubmit} className="task-create-form">
+      <div className="task-create-form-grid">
+        <div className="task-form-group">
+          <label className="task-form-label">Title</label>
           <input
-            type="date"
-            className="input-field"
-            value={form.due_date}
-            onChange={(e) => setForm({ ...form, due_date: e.target.value })}
+            type="text"
+            className="task-form-input"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+            placeholder="What needs to be done?"
+            required
           />
         </div>
+        <div className="task-form-group">
+          <label className="task-form-label">Description (optional)</label>
+          <textarea
+            className="task-form-input task-form-textarea"
+            rows={2}
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            placeholder="Add details..."
+          />
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+          <div className="task-form-group">
+            <label className="task-form-label">Priority</label>
+            <select
+              className="task-form-select"
+              value={form.priority}
+              onChange={(e) => setForm({ ...form, priority: e.target.value })}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div className="task-form-group">
+            <label className="task-form-label">Due Date (optional)</label>
+            <input
+              type="date"
+              className="task-form-input"
+              value={form.due_date}
+              onChange={(e) => setForm({ ...form, due_date: e.target.value })}
+            />
+          </div>
+        </div>
       </div>
-      <button
-        type="submit"
-        className="btn-primary flex items-center gap-2"
-        disabled={isPending}
-      >
-        {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-        Create Task
-      </button>
+      <div className="task-form-actions">
+        <button
+          type="submit"
+          className="task-form-btn task-form-btn-primary"
+          disabled={isPending}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+        >
+          {isPending && <Loader2 style={{ width: '1rem', height: '1rem', animation: 'spin 1s linear infinite' }} />}
+          Create Task
+        </button>
+      </div>
     </form>
   );
 }

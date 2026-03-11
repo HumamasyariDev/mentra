@@ -1,0 +1,185 @@
+/* Schedule Components Shared Styles */
+
+/* Similar structure to TaskComponents.css */
+.schedule-item-compact {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+}
+
+.schedule-item-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+}
+
+.schedule-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.schedule-item-title {
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.schedule-item-description {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-top: 0.125rem;
+}
+
+.schedule-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.schedule-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.schedule-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.schedule-list-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+}
+
+.schedule-list-loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  animation: spin 1s linear infinite;
+  color: #6366f1;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.schedule-list-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #94a3b8;
+}
+
+.schedule-create-form {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+}
+
+.schedule-form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.schedule-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 0.5rem;
+}
+
+.schedule-form-input {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.schedule-form-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.schedule-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.schedule-form-btn {
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.schedule-form-btn-primary {
+  background-color: #6366f1;
+  color: #ffffff;
+}
+
+.schedule-form-btn-primary:hover:not(:disabled) {
+  background-color: #4f46e5;
+}
+
+.schedule-form-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.schedule-calendar-container {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+}
+
+.schedule-board-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.schedule-board-column {
+  padding: 1rem;
+  background-color: #f8fafc;
+  border-radius: 0.75rem;
+}
+
+.schedule-board-column-header {
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.schedule-board-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}

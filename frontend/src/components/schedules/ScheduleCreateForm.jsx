@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import '../../styles/components/schedules/ScheduleComponents.css';
 
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -44,32 +45,32 @@ export default function ScheduleCreateForm({ onSubmit, isPending }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card space-y-4">
-      <div>
-        <label className="label">Title</label>
+    <form onSubmit={handleSubmit} className="schedule-create-form">
+      <div className="form-group">
+        <label className="form-label">Title</label>
         <input
           type="text"
-          className="input-field"
+          className="form-input"
           value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })}
           placeholder="e.g., Morning Exercise"
           required
         />
       </div>
-      <div>
-        <label className="label">Description (optional)</label>
+      <div className="form-group">
+        <label className="form-label">Description (optional)</label>
         <textarea
-          className="input-field"
+          className="form-input"
           rows={2}
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
       </div>
-      <div className="grid grid-cols-3 gap-4">
-        <div>
-          <label className="label">Type</label>
+      <div className="schedule-form-grid">
+        <div className="form-group">
+          <label className="form-label">Type</label>
           <select
-            className="input-field"
+            className="form-input"
             value={form.type}
             onChange={(e) => setForm({ ...form, type: e.target.value })}
           >
@@ -78,20 +79,20 @@ export default function ScheduleCreateForm({ onSubmit, isPending }) {
             <option value="monthly">Monthly</option>
           </select>
         </div>
-        <div>
-          <label className="label">Start Time</label>
+        <div className="form-group">
+          <label className="form-label">Start Time</label>
           <input
             type="time"
-            className="input-field"
+            className="form-input"
             value={form.start_time}
             onChange={(e) => setForm({ ...form, start_time: e.target.value })}
           />
         </div>
-        <div>
-          <label className="label">End Time</label>
+        <div className="form-group">
+          <label className="form-label">End Time</label>
           <input
             type="time"
-            className="input-field"
+            className="form-input"
             value={form.end_time}
             onChange={(e) => setForm({ ...form, end_time: e.target.value })}
           />
@@ -99,19 +100,15 @@ export default function ScheduleCreateForm({ onSubmit, isPending }) {
       </div>
 
       {form.type === 'weekly' && (
-        <div>
-          <label className="label">Days of Week</label>
-          <div className="flex gap-2">
+        <div className="form-group">
+          <label className="form-label">Days of Week</label>
+          <div className="schedule-days-grid">
             {dayNames.map((name, i) => (
               <button
                 key={i}
                 type="button"
                 onClick={() => toggleDay(i)}
-                className={`w-10 h-10 rounded-lg text-xs font-medium transition-colors ${
-                  form.days_of_week.includes(i)
-                    ? 'bg-indigo-500 text-white'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
+                className={`schedule-day-btn ${form.days_of_week.includes(i) ? 'selected' : ''}`}
               >
                 {name}
               </button>
@@ -121,11 +118,11 @@ export default function ScheduleCreateForm({ onSubmit, isPending }) {
       )}
 
       {form.type === 'monthly' && (
-        <div>
-          <label className="label">Day of Month</label>
+        <div className="form-group">
+          <label className="form-label">Day of Month</label>
           <input
             type="number"
-            className="input-field w-24"
+            className="schedule-day-input"
             min={1}
             max={31}
             value={form.day_of_month}
@@ -136,10 +133,10 @@ export default function ScheduleCreateForm({ onSubmit, isPending }) {
 
       <button
         type="submit"
-        className="btn-primary flex items-center gap-2"
+        className="schedule-submit-btn"
         disabled={isPending}
       >
-        {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+        {isPending && <Loader2 className="schedule-submit-spinner" />}
         Create Schedule
       </button>
     </form>

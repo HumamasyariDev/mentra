@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import '../../styles/components/forum/ForumModals.css';
 
 const EMOJI_OPTIONS = ['💬', '🚀', '🎮', '📚', '🎨', '💡', '🔥', '⭐', '🎯', '🌟', '💪', '🧠'];
 
@@ -28,30 +29,26 @@ export default function CreateForumModal({ onClose, onSubmit }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-5 border-b border-slate-200">
-          <h3 className="text-lg font-bold text-slate-900">Create Forum</h3>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition">
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3 className="modal-title">Create Forum</h3>
+          <button onClick={onClose} className="modal-close-btn">
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="modal-form">
           {/* Icon Picker */}
-          <div>
-            <label className="label">Icon</label>
-            <div className="flex gap-2 flex-wrap">
+          <div className="form-group">
+            <label className="form-label">Icon</label>
+            <div className="emoji-picker">
               {EMOJI_OPTIONS.map((emoji) => (
                 <button
                   key={emoji}
                   type="button"
                   onClick={() => setIcon(emoji)}
-                  className={`w-10 h-10 rounded-lg text-lg flex items-center justify-center transition ${
-                    icon === emoji
-                      ? 'bg-indigo-100 border-2 border-indigo-500'
-                      : 'bg-slate-100 border-2 border-transparent hover:border-slate-300'
-                  }`}
+                  className={`emoji-btn ${icon === emoji ? 'selected' : ''}`}
                 >
                   {emoji}
                 </button>
@@ -60,32 +57,32 @@ export default function CreateForumModal({ onClose, onSubmit }) {
           </div>
 
           {/* Forum Name */}
-          <div>
-            <label className="label">Forum Name</label>
+          <div className="form-group">
+            <label className="form-label">Forum Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="My Forum"
-              className="input-field"
+              className="form-input"
               autoFocus
             />
           </div>
 
           {/* Description */}
-          <div>
-            <label className="label">Description (optional)</label>
+          <div className="form-group">
+            <label className="form-label">Description (optional)</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What's this forum about?"
-              className="input-field"
+              className="form-input"
             />
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="modal-actions">
             <button type="button" onClick={onClose} className="btn-secondary">
               Cancel
             </button>

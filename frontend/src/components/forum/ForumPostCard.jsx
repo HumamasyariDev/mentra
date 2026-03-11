@@ -1,4 +1,5 @@
 import { MessageCircle, User, Clock } from 'lucide-react';
+import '../../styles/components/forum/ForumComponents.css';
 
 function formatTimestamp(timestamp) {
   const date = new Date(timestamp);
@@ -22,36 +23,36 @@ export default function ForumPostCard({ post, onClick }) {
   return (
     <button
       onClick={() => onClick(post)}
-      className="w-full bg-white border border-slate-200 rounded-lg p-4 hover:border-indigo-300 hover:shadow-md transition-all text-left group"
+      className="forum-post-card"
     >
-      <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center flex-shrink-0 font-semibold">
+      <div className="forum-post-card-content">
+        <div className="forum-post-avatar">
           {post.user?.name?.charAt(0).toUpperCase() || 'U'}
         </div>
         
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-slate-900 group-hover:text-indigo-600 transition mb-1 line-clamp-2">
+        <div className="forum-post-body">
+          <h3 className="forum-post-card-title">
             {post.title || 'Untitled Post'}
           </h3>
           
-          <p className="text-sm text-slate-600 line-clamp-2 mb-3">
+          <p className="forum-post-card-preview">
             {post.content}
           </p>
           
-          <div className="flex items-center gap-4 text-xs text-slate-500">
-            <div className="flex items-center gap-1">
+          <div className="forum-post-card-meta">
+            <div className="forum-post-meta-item">
               <User size={14} />
               <span>{post.user?.name || 'Anonymous'}</span>
             </div>
             
             {replyCount > 0 && (
-              <div className="flex items-center gap-1">
+              <div className="forum-post-meta-item">
                 <MessageCircle size={14} />
                 <span>{replyCount}</span>
               </div>
             )}
             
-            <div className="flex items-center gap-1">
+            <div className="forum-post-meta-item">
               <Clock size={14} />
               <span>{formatTimestamp(post.created_at)}</span>
             </div>

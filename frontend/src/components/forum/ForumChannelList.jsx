@@ -1,4 +1,5 @@
 import { Hash, Volume2, Plus, ChevronDown, Settings, Trash2 } from 'lucide-react';
+import '../../styles/components/forum/ForumComponents.css';
 import { useState } from 'react';
 
 export default function ForumChannelList({
@@ -18,17 +19,18 @@ export default function ForumChannelList({
   if (!forum) return null;
 
   return (
-    <div className="w-60 bg-slate-50 border-r border-slate-200 flex flex-col flex-shrink-0">
+    <div className="forum-channel-panel">
       {/* Channel List */}
-      <div className="flex-1 overflow-y-auto py-2 pt-3">
+      <div className="forum-channel-list">
         {/* Category Header */}
         <button
           onClick={() => toggleCategory(forum.id)}
-          className="w-full px-2 py-1 flex items-center gap-1 text-xs font-semibold text-slate-500 uppercase tracking-wider hover:text-slate-700 transition"
+          className="forum-channel-category"
         >
           <ChevronDown
             size={12}
-            className={`transition-transform ${collapsed[forum.id] ? '-rotate-90' : ''}`}
+            className="forum-category-chevron"
+            style={{ transform: collapsed[forum.id] ? 'rotate(-90deg)' : 'rotate(0deg)' }}
           />
           Text Channels
         </button>
@@ -37,21 +39,17 @@ export default function ForumChannelList({
           channels
             .filter((c) => c.type === 'text')
             .map((channel) => (
-              <div key={channel.id} className="group px-2">
+              <div key={channel.id} className="forum-channel-item-wrapper">
                 <button
                   onClick={() => onChannelSelect(channel)}
-                  className={`w-full px-2 py-1.5 rounded flex items-center gap-2 transition text-sm ${
-                    activeChannelId === channel.id
-                      ? 'bg-indigo-50 text-indigo-700 font-medium'
-                      : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
-                  }`}
+                  className={`forum-channel-btn ${activeChannelId === channel.id ? 'active' : ''}`}
                 >
-                  <Hash size={18} className={activeChannelId === channel.id ? 'text-indigo-500' : 'text-slate-400'} />
-                  <span className="truncate flex-1 text-left">{channel.name}</span>
+                  <Hash size={18} style={{ color: activeChannelId === channel.id ? '#6366f1' : '#94a3b8' }} />
+                  <span className="forum-channel-name">{channel.name}</span>
                   {onDeleteChannel && (
                     <Trash2
                       size={14}
-                      className="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
+                      className="forum-channel-delete"
                       onClick={(e) => {
                         e.stopPropagation();
                         onDeleteChannel(channel);
@@ -65,24 +63,20 @@ export default function ForumChannelList({
         {/* Voice Channels */}
         {channels.some((c) => c.type === 'voice') && (
           <>
-            <button className="w-full px-2 py-1 mt-3 flex items-center gap-1 text-xs font-semibold text-slate-500 uppercase tracking-wider hover:text-slate-700 transition">
+            <button className="forum-channel-category" style={{ marginTop: '0.75rem' }}>
               <ChevronDown size={12} />
               Voice Channels
             </button>
             {channels
               .filter((c) => c.type === 'voice')
               .map((channel) => (
-                <div key={channel.id} className="group px-2">
+                <div key={channel.id} className="forum-channel-item-wrapper">
                   <button
                     onClick={() => onChannelSelect(channel)}
-                    className={`w-full px-2 py-1.5 rounded flex items-center gap-2 transition text-sm ${
-                      activeChannelId === channel.id
-                        ? 'bg-indigo-50 text-indigo-700 font-medium'
-                        : 'text-slate-600 hover:bg-slate-200/60 hover:text-slate-900'
-                    }`}
+                    className={`forum-channel-btn ${activeChannelId === channel.id ? 'active' : ''}`}
                   >
-                    <Volume2 size={18} className={activeChannelId === channel.id ? 'text-indigo-500' : 'text-slate-400'} />
-                    <span className="truncate flex-1 text-left">{channel.name}</span>
+                    <Volume2 size={18} style={{ color: activeChannelId === channel.id ? '#6366f1' : '#94a3b8' }} />
+                    <span className="forum-channel-name">{channel.name}</span>
                   </button>
                 </div>
               ))}
@@ -91,10 +85,10 @@ export default function ForumChannelList({
       </div>
 
       {/* Create Channel Button */}
-      <div className="p-3 border-t border-slate-200">
+      <div className="forum-channel-footer">
         <button
           onClick={onCreateChannel}
-          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:bg-slate-200 rounded-lg transition"
+          className="forum-create-channel-btn"
         >
           <Plus size={16} />
           Create Channel

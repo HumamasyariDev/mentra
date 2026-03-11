@@ -1,0 +1,97 @@
+/* AppLayout Styles */
+
+.app-layout-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8fafc;
+}
+
+.app-layout-loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  animation: spin 1s linear infinite;
+  color: #6366f1;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.app-layout-container {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  display: flex;
+}
+
+.app-layout-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 40;
+}
+
+@media (min-width: 1024px) {
+  .app-layout-overlay {
+    display: none;
+  }
+}
+
+.app-layout-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.app-layout-mobile-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@media (min-width: 1024px) {
+  .app-layout-mobile-header {
+    display: none;
+  }
+}
+
+.app-layout-menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.app-layout-menu-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #475569;
+}
+
+.app-layout-mobile-logo {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+.app-layout-content {
+  flex: 1;
+  padding: 1rem;
+  overflow: auto;
+}
+
+@media (min-width: 1024px) {
+  .app-layout-content {
+    padding: 2rem;
+  }
+}

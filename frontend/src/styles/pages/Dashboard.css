@@ -1,0 +1,336 @@
+/* Dashboard Page Styles */
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dashboard-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dashboard-subtitle {
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.dashboard-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 16rem;
+}
+
+.dashboard-loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  animation: spin 1s linear infinite;
+  color: #6366f1;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Level Card */
+.dashboard-level-card {
+  background: linear-gradient(to right, #6366f1, #4f46e5);
+  color: #ffffff;
+  border: none;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+}
+
+.dashboard-level-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-level-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-level-label {
+  color: #c7d2fe;
+  font-size: 0.875rem;
+}
+
+.dashboard-level-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 0.25rem;
+}
+
+.dashboard-level-icon-container {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+}
+
+.dashboard-level-icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+.dashboard-level-progress {
+  margin-top: 1rem;
+}
+
+.dashboard-level-progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #c7d2fe;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-level-progress-bar {
+  height: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.dashboard-level-progress-fill {
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 9999px;
+  transition: width 0.7s ease;
+}
+
+/* Stats Grid */
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.dashboard-stat-card {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+}
+
+.dashboard-stat-icon-container {
+  display: inline-flex;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.dashboard-stat-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.dashboard-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dashboard-stat-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.dashboard-stat-sub {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.25rem;
+}
+
+/* Bottom Grid */
+.dashboard-bottom-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-bottom-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.dashboard-card {
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+}
+
+.dashboard-card-title {
+  font-weight: 600;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-card-title-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Mood Card */
+.dashboard-mood-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dashboard-mood-emoji {
+  font-size: 2.25rem;
+}
+
+.dashboard-mood-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-mood-label {
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.dashboard-mood-energy {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.dashboard-mood-note {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-top: 0.25rem;
+}
+
+.dashboard-mood-empty {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+/* Recent Activity */
+.dashboard-activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dashboard-activity-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-activity-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-activity-description {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.dashboard-activity-source {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.dashboard-activity-exp {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #10b981;
+}
+
+.dashboard-activity-empty {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+/* Mood Colors */
+.mood-great {
+  color: #10b981;
+}
+
+.mood-good {
+  color: #22c55e;
+}
+
+.mood-okay {
+  color: #eab308;
+}
+
+.mood-bad {
+  color: #f97316;
+}
+
+.mood-terrible {
+  color: #ef4444;
+}
+
+/* Stat Card Colors */
+.stat-bg-emerald {
+  background-color: #ecfdf5;
+}
+
+.stat-color-emerald {
+  color: #10b981;
+}
+
+.stat-bg-blue {
+  background-color: #eff6ff;
+}
+
+.stat-color-blue {
+  color: #3b82f6;
+}
+
+.stat-bg-orange {
+  background-color: #fff7ed;
+}
+
+.stat-color-orange {
+  color: #f97316;
+}
+
+.stat-bg-indigo {
+  background-color: #eef2ff;
+}
+
+.stat-color-indigo {
+  color: #6366f1;
+}
+
+.stat-bg-yellow {
+  background-color: #fef9c3;
+}
+
+.stat-color-yellow {
+  color: #eab308;
+}
