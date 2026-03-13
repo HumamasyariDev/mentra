@@ -14,11 +14,15 @@ import SandboxChat from './pages/SandboxChat';
 import Forum from './pages/Forum';
 import ForestWorld from './components/gameworld/ForestWorld';
 import MentraAgent from './agents/MentraAgent';
+import LandingPage from './pages/LandingPage';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Landing Page */}
+        <Route path="/" element={<LandingPage />} />
+
         {/* Auth routes */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />

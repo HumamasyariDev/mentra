@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Play, Pause, RotateCcw, Coffee, Brain, Square, Loader2, Palette, ChevronDown, Fish, Clock, CheckCircle } from 'lucide-react';
 import '../styles/pages/CommonPages.css';
+import '../styles/pages/Pomodoro.css';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { pomodoroApi, taskApi } from '../services/api';
 import { usePomodoroTheme } from '../contexts/PomodoroThemeContext';
