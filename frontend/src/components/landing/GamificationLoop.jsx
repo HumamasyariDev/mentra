@@ -25,35 +25,40 @@ export default function GamificationLoop() {
     let mm = gsap.matchMedia();
 
     mm.add("(min-width: 1024px)", () => {
-      // We calculate how far the track needs to slide to the left
-      // It's the total width of the track minus the width of its container (the right column)
-      const trackWidth = trackRef.current.scrollWidth;
-      const viewportWidth = window.innerWidth;
-      // Let's just move it by a set amount relative to the cards
-      const scrollDistance = trackWidth - (viewportWidth * 0.5);
+      // Robust calculation that updates on resize
+      const getScrollAmount = () => {
+        if (!trackRef.current) return 0;
+        let trackWidth = trackRef.current.scrollWidth;
+        let windowWidth = window.innerWidth;
+        // We want to scroll far enough that the last card is visible on the right side
+        // Subtract 40% of viewport width since the left header takes up 40%
+        return trackWidth - (windowWidth * 0.6); 
+      };
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: `+=${scrollDistance}`, // Scroll exactly the distance needed
+          end: () => `+=${getScrollAmount() + 500}`, // Add 500px padding for safety
           pin: true,
-          scrub: 1, // Smooth scrubbing
+          scrub: 1, 
           pinSpacing: true,
+          invalidateOnRefresh: true, // Recalculates on resize or DOM load
         }
       });
 
       // Move the track horizontally
       tl.to(trackRef.current, {
-        x: -scrollDistance,
+        x: () => -getScrollAmount(),
         ease: "none"
       });
 
       // Add a cool stagger effect to the cards as they move
       const cards = gsap.utils.toArray('.horizontal-card');
       cards.forEach((card, i) => {
+        if (i === 0) return; // First card is already visible
         gsap.from(card, {
-          opacity: 0,
+          opacity: 0.2,
           scale: 0.8,
           y: 50,
           duration: 0.5,
@@ -71,12 +76,15 @@ export default function GamificationLoop() {
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
   return (
-    <section ref={sectionRef} id="how-it-works" className="landing-section" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', margin: 0, maxWidth: '100%', padding: 0 }}>
-      
-      <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center' }}>
+    <section ref={sectionRef} id="how-it-works" style={{ width: '100%', position: 'relative', zIndex: 10, background: 'var(--bg-base)' }}>
+      {/* 
+        CRITICAL: The pinned element MUST be a clean wrapper without overflow: hidden. 
+        The inner div holds the 100vh and overflow: hidden.
+      */}
+      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', width: '100%' }}>
         
         {/* Left Sticky Header */}
-        <div style={{ flex: '0 0 40%', padding: '0 4rem', zIndex: 10 }}>
+        <div style={{ flex: '0 0 40%', padding: '0 4rem', zIndex: 10, position: 'relative' }}>
           <h2 className="landing-section-heading" style={{ textAlign: 'left', marginBottom: '1.5rem', fontSize: 'clamp(3rem, 5vw, 5rem)' }}>
             The<br/>Productivity<br/>Loop.
           </h2>
@@ -88,11 +96,12 @@ export default function GamificationLoop() {
         </div>
 
         {/* Right Horizontal Scrolling Track */}
-        <div style={{ flex: '1', overflow: 'visible', position: 'relative' }}>
-          <div ref={trackRef} style={{ display: 'flex', gap: '2rem', paddingRight: '20vw', willChange: 'transform' }}>
+        <div style={{ flex: '1', position: 'relative' }}>
+          {/* trackRef needs enough explicit width/padding to scroll properly */}
+          <div ref={trackRef} style={{ display: 'flex', gap: '2rem', paddingRight: '20vw', width: 'max-content', willChange: 'transform' }}>
             {STEPS.map((step, i) => (
               <div key={i} className="horizontal-card" style={{ 
-                flex: '0 0 400px', 
+                width: '400px', // Explicit width is safer for scrollWidth calculations
                 background: 'rgba(15, 23, 42, 0.6)', 
                 border: '1px solid rgba(255,255,255,0.1)', 
                 borderRadius: '32px', 
@@ -102,7 +111,8 @@ export default function GamificationLoop() {
                 boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '1.5rem'
+                gap: '1.5rem',
+                transformOrigin: 'left center'
               }}>
                 <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', color: '#fff', width: '80px', height: '80px', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(99, 102, 241, 0.4)' }}>
                   <step.icon size={40} />
@@ -115,7 +125,6 @@ export default function GamificationLoop() {
         </div>
 
       </div>
-
     </section>
   );
 }
