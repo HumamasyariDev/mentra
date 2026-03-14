@@ -24,49 +24,32 @@ export default function FeatureShowcase() {
   useGSAP(() => {
     if (prefersReducedMotion) return;
 
-    let mm = gsap.matchMedia();
-
-    // The Masterpiece: 3D Flip Cascade
-    mm.add("(min-width: 1024px)", () => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top top',
-          end: '+=1500', // Smooth pinning duration
-          scrub: 1, // Tie strictly to scroll
-          pin: true,
-          pinSpacing: true, 
-        }
-      });
-
-      // Start state: Cards dropped below viewport and rotated backward 90deg like a drawbridge
-      gsap.set('.bento-card', {
-        y: 200,
-        rotationX: 90,
-        opacity: 0,
-        transformOrigin: "bottom center"
-      });
-
-      // Title fades in first and lifts
-      tl.fromTo('.features-title', 
-        { opacity: 0, y: 50, scale: 0.9 }, 
-        { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power2.out' }
-      );
-
-      // Cards slam down like heavy drawbridges sequentially
-      tl.to('.bento-card', {
-        y: 0,
-        rotationX: 0,
-        opacity: 1,
-        stagger: 0.15, // Cascading sequence
-        ease: 'back.out(1.2)', // Slight bounce as they hit flat
-        duration: 1
-      }, "-=0.2");
-      
-      // Once fully assembled, the grid breathes once
-      tl.to('.bento-grid', { scale: 1.02, duration: 0.3, ease: 'sine.inOut' });
-      tl.to('.bento-grid', { scale: 1, duration: 0.3, ease: 'sine.inOut' });
+    // Elegant Scroll-Triggered Cascade (No Pinning, no layout breaking)
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 75%', // Trigger when section is 25% into view
+        toggleActions: 'play none none reverse'
+      }
     });
+
+    // 1. Title fades up
+    tl.fromTo('.features-title', 
+      { opacity: 0, y: 60, scale: 0.9 }, 
+      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'expo.out' }
+    );
+
+    // 2. Cards fly up with 3D rotation in a gorgeous stagger
+    tl.fromTo('.bento-card', 
+      { y: 150, opacity: 0, rotationX: 45, rotationY: -10, scale: 0.8, z: -500 },
+      { 
+        y: 0, opacity: 1, rotationX: 0, rotationY: 0, scale: 1, z: 0, 
+        duration: 1.2, 
+        stagger: 0.1, 
+        ease: 'back.out(1.2)' 
+      }, 
+      "-=0.4"
+    );
 
     // 3D Magnetic Hover Tilt (runs independently)
     const cards = gsap.utils.toArray('.bento-card');
@@ -103,9 +86,9 @@ export default function FeatureShowcase() {
   };
 
   return (
-    <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+    <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '10rem 2rem' }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 10 }}>
-        <h2 className="features-title" style={{ textAlign: 'center', marginBottom: '4rem' }}>
+        <h2 className="features-title" style={{ textAlign: 'center', marginBottom: '5rem', fontSize: 'clamp(3rem, 6vw, 5rem)', fontWeight: 900, color: '#fff', letterSpacing: '-0.03em' }}>
           Everything you need.
         </h2>
         
