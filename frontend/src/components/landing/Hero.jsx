@@ -2,11 +2,8 @@ import { useRef, useEffect } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { Link } from 'react-router-dom';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useMagneticHover } from '../../hooks/useMagneticHover';
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function Hero() {
   const containerRef = useRef(null);
@@ -20,20 +17,24 @@ export default function Hero() {
   ];
 
   useGSAP(() => {
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion) {
+      gsap.to('.hero-content, .hero-3d-scene', { opacity: 1, duration: 0.5 });
+      return;
+    }
 
-    // --- ENTRANCE ANIMATION (Letters) ---
-    const introTl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+    // --- ENTRANCE ANIMATION (Words instead of letters to fix spacing) ---
+    const introTl = gsap.timeline({ defaults: { ease: 'expo.out' } });
 
-    introTl.fromTo('.hero-title-letter', 
-      { y: 150, opacity: 0, rotateX: 90, scale: 0.8 },
-      { y: 0, opacity: 1, rotateX: 0, scale: 1, duration: 1.5, stagger: 0.02 } // Fast letter stagger
+    introTl.fromTo('.hero-title-word', 
+      { y: 150, opacity: 0, rotateZ: 10, scale: 0.9 },
+      { y: 0, opacity: 1, rotateZ: 0, scale: 1, duration: 1.5, stagger: 0.05 }
     )
     .fromTo(['.hero-subtitle', '.hero-actions'], 
-      { y: 50, opacity: 0, filter: 'blur(10px)' },
-      { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.5, stagger: 0.2 }, 
-      "-=1.2"
+      { y: 30, opacity: 0, filter: 'blur(5px)' },
+      { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.2, stagger: 0.2 }, 
+      "-=1"
     )
+    // Beautiful 3D glass layers entrance
     .fromTo('.glass-layer',
       { y: 200, opacity: 0, rotationX: 45, rotationY: -20 },
       { y: 0, opacity: 1, rotationX: 10, rotationY: -10, duration: 2, stagger: 0.15, ease: 'expo.out' },
@@ -71,17 +72,22 @@ export default function Hero() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [prefersReducedMotion]);
 
+  const scrollToHowItWorks = (e) => {
+    e.preventDefault();
+    document.querySelector('#how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
-    <section ref={containerRef} className="hero-wrapper">
+    <section ref={containerRef} className="hero-wrapper" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: '10rem', paddingBottom: '5rem', position: 'relative' }}>
       <div className="hero-glow"></div>
       
       <div className="hero-content">
         <h1 className="hero-title">
           {titleLines.map((line, i) => (
             <div key={i} className="hero-title-line">
-              {line.text.split('').map((char, j) => (
-                <span key={j} className={`hero-title-letter ${line.highlight ? 'hero-title-highlight' : ''}`} style={{ display: 'inline-block' }}>
-                  {char === ' ' ? '\u00A0' : char}
+              {line.text.split(' ').map((word, j) => (
+                <span key={j} className={`hero-title-word ${line.highlight ? 'hero-title-highlight' : ''}`}>
+                  {word}&nbsp;
                 </span>
               ))}
             </div>
@@ -94,6 +100,9 @@ export default function Hero() {
           <Link to="/register" ref={btn1Ref} className="hero-btn-primary">
             Start Your Journey
           </Link>
+          <a href="#how-it-works" className="hero-btn-outline" onClick={scrollToHowItWorks}>
+            See How It Works
+          </a>
         </div>
       </div>
 

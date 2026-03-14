@@ -26,78 +26,46 @@ export default function FeatureShowcase() {
 
     let mm = gsap.matchMedia();
 
-    // The Ultimate "Orbital Assembly" Grid
+    // The Masterpiece: 3D Flip Cascade
     mm.add("(min-width: 1024px)", () => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: '+=2500', // Massive scroll duration for the sequence
-          scrub: 1.5, // Super smooth
+          end: '+=1500', // Smooth pinning duration
+          scrub: 1, // Tie strictly to scroll
           pin: true,
-          pinSpacing: true, // ESSENTIAL so it doesn't break the forest below it!
+          pinSpacing: true, 
         }
       });
 
-      const cards = gsap.utils.toArray('.bento-card');
-
-      // Set extreme initial 3D states
-      gsap.set(cards, { 
-        z: () => gsap.utils.random(-2000, 2000), 
-        x: () => gsap.utils.random(-1500, 1500),
-        y: () => gsap.utils.random(-1500, 1500),
-        rotationX: () => gsap.utils.random(-180, 180),
-        rotationY: () => gsap.utils.random(-180, 180),
-        rotationZ: () => gsap.utils.random(-90, 90),
+      // Start state: Cards dropped below viewport and rotated backward 90deg like a drawbridge
+      gsap.set('.bento-card', {
+        y: 200,
+        rotationX: 90,
         opacity: 0,
-        scale: 0.1
+        transformOrigin: "bottom center"
       });
 
-      // 1. The Title slowly fades in and floats up
+      // Title fades in first and lifts
       tl.fromTo('.features-title', 
-        { y: 100, opacity: 0, scale: 0.8 }, 
-        { y: 0, opacity: 1, scale: 1, duration: 1, ease: 'power2.out' }, 
-        0
+        { opacity: 0, y: 50, scale: 0.9 }, 
+        { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power2.out' }
       );
 
-      // 2. The Great Orbital Assembly
-      cards.forEach((card, i) => {
-        // Cards sweep into a chaotic floating holding pattern
-        tl.to(card, {
-          z: () => gsap.utils.random(-500, 500),
-          x: () => gsap.utils.random(-500, 500),
-          y: () => gsap.utils.random(-500, 500),
-          rotationX: () => gsap.utils.random(-45, 45),
-          rotationY: () => gsap.utils.random(-45, 45),
-          rotationZ: () => gsap.utils.random(-20, 20),
-          opacity: 0.5,
-          scale: 0.5,
-          duration: 1.5,
-          ease: 'power1.inOut'
-        }, 0.2 + (i * 0.1)); // Stagger the initial approach
-      });
-
-      // 3. The Collapse into the Perfect Grid
-      tl.to(cards, { 
-        z: 0, 
-        x: 0, 
-        y: 0, 
-        rotationX: 0, 
-        rotationY: 0,
-        rotationZ: 0,
-        opacity: 1, 
-        scale: 1,
-        duration: 2, 
-        ease: 'power4.inOut', 
-        stagger: 0.1 
-      }, 1.5); // Starts after the holding pattern
-
-      // 4. A final celebratory pulse on the entire grid
-      tl.to('.bento-grid', { scale: 1.05, duration: 0.5, ease: 'sine.inOut' }, ">-0.5");
-      tl.to('.bento-grid', { scale: 1, duration: 0.5, ease: 'sine.inOut' });
+      // Cards slam down like heavy drawbridges sequentially
+      tl.to('.bento-card', {
+        y: 0,
+        rotationX: 0,
+        opacity: 1,
+        stagger: 0.15, // Cascading sequence
+        ease: 'back.out(1.2)', // Slight bounce as they hit flat
+        duration: 1
+      }, "-=0.2");
       
-      // Leave some dead space at the end of the timeline so the user can admire the assembled grid
-      tl.to({}, {duration: 0.5});
+      // Once fully assembled, the grid breathes once
+      tl.to('.bento-grid', { scale: 1.02, duration: 0.3, ease: 'sine.inOut' });
+      tl.to('.bento-grid', { scale: 1, duration: 0.3, ease: 'sine.inOut' });
     });
 
     // 3D Magnetic Hover Tilt (runs independently)
@@ -110,8 +78,8 @@ export default function FeatureShowcase() {
         const { left, top, width, height } = card.getBoundingClientRect();
         const relX = (e.clientX - left - width / 2) / (width / 2); 
         const relY = -(e.clientY - top - height / 2) / (height / 2);
-        xTo(relX * 15);
-        yTo(relY * -15); // Correctly inverted for natural feel
+        xTo(relX * 10);
+        yTo(relY * -10);
       });
       
       card.addEventListener("mouseleave", () => {
@@ -124,6 +92,7 @@ export default function FeatureShowcase() {
 
   // CSS Variable Mouse Tracking for Glow Effect
   const handleMouseMove = (e) => {
+    if (!gridRef.current) return;
     for (const card of gridRef.current.children) {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -134,7 +103,7 @@ export default function FeatureShowcase() {
   };
 
   return (
-    <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
+    <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 10 }}>
         <h2 className="features-title" style={{ textAlign: 'center', marginBottom: '4rem' }}>
           Everything you need.
