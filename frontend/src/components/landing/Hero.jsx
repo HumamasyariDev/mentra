@@ -1,73 +1,102 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
+import { Link } from 'react-router-dom';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useMagneticHover } from '../../hooks/useMagneticHover';
 
 export default function Hero() {
   const containerRef = useRef(null);
+  const visualRef = useRef(null);
+  const prefersReducedMotion = useReducedMotion();
+  
+  const btn1Ref = useMagneticHover(0.3);
+  const btn2Ref = useMagneticHover(0.3);
 
   useGSAP(() => {
-    const tl = gsap.timeline();
+    if (prefersReducedMotion) {
+      gsap.to('.landing-hero-content > *', { opacity: 1, y: 0, duration: 0.5 });
+      gsap.to('.landing-hero-visual', { opacity: 1, duration: 0.5 });
+      return;
+    }
+
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+    tl.from('.landing-hero-tagline', { x: -60, opacity: 0, duration: 1 })
+      .from('.landing-hero-subtitle', { x: -40, opacity: 0, duration: 0.8 }, '-=0.5')
+      .from('.landing-hero-cta', { y: 30, opacity: 0, duration: 0.6, stagger: 0.15, ease: 'back.out(1.2)' }, '-=0.4')
+      .from('.landing-hero-badge', { y: 20, opacity: 0, duration: 0.5 }, '-=0.3')
+      .from('.landing-hero-visual', { x: 60, opacity: 0, duration: 1 }, '-=1.2');
+
+    // Infinite Float
+    gsap.to('.landing-hero-shape', {
+      y: -15,
+      rotation: 'random(-5, 5)',
+      duration: 2.5,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+      stagger: { each: 0.4, from: 'random' },
+    });
+  }, { scope: containerRef, dependencies: [prefersReducedMotion] });
+
+  // Cursor Parallax Background
+  useEffect(() => {
+    if (prefersReducedMotion || !visualRef.current) return;
     
-    tl.from('.hero-logo', {
-      y: -50,
-      opacity: 0,
-      duration: 0.8,
-      ease: 'power3.out'
-    })
-    .from('.hero-heading', {
-      y: 50,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out'
-    }, '-=0.4')
-    .from('.hero-subheading', {
-      y: 50,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out'
-    }, '-=0.6')
-    .from('.hero-button', {
-      y: 50,
-      opacity: 0,
-      duration: 1,
-      stagger: 0.2,
-      ease: 'power3.out'
-    }, '-=0.6');
-  }, { scope: containerRef });
+    const shapes = visualRef.current.querySelectorAll('.landing-hero-shape');
+    const xTo = gsap.quickTo(shapes, "x", { duration: 0.8, ease: "power3.out" });
+    const yTo = gsap.quickTo(shapes, "y", { duration: 0.8, ease: "power3.out" });
+
+    const handleMouseMove = (e) => {
+      const { innerWidth, innerHeight } = window;
+      const xPos = (e.clientX / innerWidth - 0.5) * 40; // max 20px
+      const yPos = (e.clientY / innerHeight - 0.5) * 40;
+      xTo(xPos);
+      yTo(yPos);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [prefersReducedMotion]);
+
+  const scrollToHowItWorks = (e) => {
+    e.preventDefault();
+    document.querySelector('#how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[#FAF8F5] flex flex-col items-center justify-center px-6 py-20">
-      {/* Logo */}
-      <div className="hero-logo mb-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-[#0A142F]">
-          <span className="text-[#108B50]">{'{'}</span>
-          JS
-          <span className="text-[#108B50]">{'}'}</span>
-          {' '}MASTERY
-        </h2>
+    <section ref={containerRef} className="landing-hero">
+      <div className="landing-hero-content">
+        <h1 className="landing-hero-tagline">
+          Productivity that grows with you
+        </h1>
+        <p className="landing-hero-subtitle">
+          Complete tasks. Earn XP. Level up. Watch your forest come alive.
+        </p>
+        <div className="landing-hero-actions">
+          <Link to="/register" ref={btn1Ref} className="landing-hero-cta landing-btn-primary block">
+            Get Started
+          </Link>
+          <a
+            href="#how-it-works"
+            ref={btn2Ref}
+            className="landing-hero-cta landing-btn-outline block"
+            onClick={scrollToHowItWorks}
+          >
+            See How It Works
+          </a>
+        </div>
+        <p className="landing-hero-badge">Built with React, Laravel &amp; AI</p>
       </div>
 
-      {/* Main Heading */}
-      <h1 className="hero-heading text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] text-center max-w-5xl">
-        <span className="text-[#0A142F]">The Ultimate Animations Course: </span>
-        <span className="text-[#108B50]">From Basic Motion To Awwwards Featured</span>
-      </h1>
-
-      {/* Subheading */}
-      <p className="hero-subheading max-w-3xl mx-auto mt-6 text-[#4A5568] text-lg text-center">
-        Master the art of web animations with GSAP. Learn to create stunning, award-winning animations 
-        that will make your portfolio stand out and land you your dream job.
-      </p>
-
-      {/* Buttons */}
-      <div className="flex flex-wrap gap-4 mt-10">
-        <button className="hero-button px-8 py-4 bg-[#24D38F] text-white font-semibold rounded-full text-lg hover:bg-[#1fb87a] transition-colors">
-          Enroll Now
-        </button>
-        <button className="hero-button px-8 py-4 bg-white text-[#0A142F] font-semibold rounded-full text-lg border-2 border-[#E2E8F0] hover:border-[#108B50] transition-colors">
-          View Curriculum
-        </button>
+      <div ref={visualRef} className="landing-hero-visual">
+        <div className="landing-hero-shape landing-hero-shape-1" />
+        <div className="landing-hero-shape landing-hero-shape-2" />
+        <div className="landing-hero-shape landing-hero-shape-3" />
+        <div className="landing-hero-shape landing-hero-shape-4" />
+        <div className="landing-hero-shape landing-hero-shape-5" />
       </div>
-    </div>
+    </section>
   );
 }
