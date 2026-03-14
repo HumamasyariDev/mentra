@@ -24,50 +24,67 @@ export default function GamificationLoop() {
 
     let mm = gsap.matchMedia();
 
-    // The Horizontal Scroll / Pin
     mm.add("(min-width: 1024px)", () => {
       const panels = gsap.utils.toArray('.loop-panel');
-      const totalPanels = panels.length;
+      const totalWidth = (panels.length - 1) * window.innerWidth;
       
-      const tl = gsap.timeline({
+      // Master timeline that scrubs the container horizontally
+      const scrollTween = gsap.to(containerRef.current, {
+        x: () => -totalWidth,
+        ease: "none",
         scrollTrigger: {
           trigger: sectionRef.current,
           pin: true,
           scrub: 1,
-          snap: 1 / (totalPanels - 1),
-          // Scroll length depends on the width of the horizontal container
-          end: () => "+=" + containerRef.current.offsetWidth,
+          snap: 1 / (panels.length - 1),
+          end: () => "+=" + totalWidth,
         }
       });
 
-      // Move the container horizontally
-      tl.to(containerRef.current, {
-        xPercent: -100 * (totalPanels - 1) / totalPanels,
-        ease: "none"
-      }, 0);
-
-      // Animate the progress bar width
-      tl.to('.loop-progress-fill', {
+      // Tie the progress bar to the exact same trigger
+      gsap.to('.loop-progress-fill', {
         width: '100%',
-        ease: "none"
-      }, 0);
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top top",
+          end: () => "+=" + totalWidth,
+          scrub: 1,
+        }
+      });
 
-      // Parallax effect on the content inside each panel as it moves
+      // Animate elements INSIDE the panels based on containerAnimation
       panels.forEach((panel, i) => {
-        if (i === 0) return; // Skip the first one since it's already there
+        if (i === 0) return; // First one is already visible
         
-        const content = panel.querySelector('.loop-panel-content');
+        const icon = panel.querySelector('.loop-panel-icon');
+        const text = panel.querySelectorAll('h3, p');
         
-        // As the panel slides in from the right, the content moves slightly faster
-        gsap.from(content, {
-          x: 200,
+        // Massive slide-in effect inside the scrolling container
+        gsap.from(icon, {
+          x: window.innerWidth * 0.5,
           opacity: 0,
-          scale: 0.8,
+          scale: 0.5,
+          rotation: -45,
+          duration: 1,
           scrollTrigger: {
-            trigger: sectionRef.current,
-            start: () => `top top-=${(i - 0.5) * window.innerWidth}`,
-            end: () => `top top-=${i * window.innerWidth}`,
-            scrub: true,
+            trigger: panel,
+            containerAnimation: scrollTween,
+            start: "left center",
+            toggleActions: "play none none reverse"
+          }
+        });
+
+        gsap.from(text, {
+          x: window.innerWidth * 0.3,
+          opacity: 0,
+          stagger: 0.2,
+          duration: 1,
+          scrollTrigger: {
+            trigger: panel,
+            containerAnimation: scrollTween,
+            start: "left center",
+            toggleActions: "play none none reverse"
           }
         });
       });

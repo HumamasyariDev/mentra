@@ -21,13 +21,11 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   
-  // Magnetic Hovers for Nav items
   const logoRef = useMagneticHover(0.3);
   const ctaRef = useMagneticHover(0.2);
 
   useGSAP(() => {
     if (!prefersReducedMotion) {
-      // Elegant heavy drop-in
       gsap.from(navRef.current, { 
         y: -150, 
         opacity: 0, 
@@ -37,39 +35,41 @@ export default function Navbar() {
       });
     }
 
-    // Velocity-based Skewing & Width reduction
+    // Static clean scroll effect - NO WIGGLE/SKEW
     ScrollTrigger.create({
-      start: 0,
-      end: "max",
-      onUpdate: (self) => {
-        if (prefersReducedMotion) return;
-        
-        let velocity = self.getVelocity();
-        // Clamp skew between -3 and 3 degrees based on scroll speed
-        let skew = gsap.utils.clamp(-3, 3, velocity / -300);
-        
+      start: 'top -50',
+      end: 99999,
+      toggleClass: { className: 'nav-scrolled', targets: navRef.current },
+      onEnter: () => {
         gsap.to(navRef.current, { 
-          skewY: skew, 
-          duration: 0.1, 
-          overwrite: true 
+          backgroundColor: 'rgba(2, 6, 23, 0.85)', 
+          backdropFilter: 'blur(24px)',
+          width: '80%',
+          duration: 0.4, 
+          ease: 'power2.out' 
         });
-        
-        // Return to 0 when stopped
-        gsap.delayedCall(0.1, () => {
-          gsap.to(navRef.current, { skewY: 0, duration: 0.4, ease: "power2.out" });
+      },
+      onLeaveBack: () => {
+        gsap.to(navRef.current, { 
+          backgroundColor: 'rgba(2, 6, 23, 0.6)', 
+          backdropFilter: 'blur(16px)',
+          width: '90%',
+          duration: 0.4, 
+          ease: 'power2.out' 
         });
-
-        // Width reduction when scrolling past top
-        if (self.progress > 0.05) {
-          gsap.to(navRef.current, { width: '80%', backgroundColor: 'rgba(2, 6, 23, 0.8)', duration: 0.4 });
-          gsap.to('.landing-nav-logo', { scale: 0.9, duration: 0.4 });
-        } else {
-          gsap.to(navRef.current, { width: '90%', backgroundColor: 'rgba(2, 6, 23, 0.6)', duration: 0.4 });
-          gsap.to('.landing-nav-logo', { scale: 1, duration: 0.4 });
-        }
       }
     });
   }, { scope: navRef, dependencies: [prefersReducedMotion] });
+
+  const scrollTo = (e, href) => {
+    e.preventDefault();
+    if (mobileOpen) {
+      setMobileOpen(false);
+      setTimeout(() => document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' }), 300);
+    } else {
+      document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <nav ref={navRef} className="landing-nav">
@@ -78,7 +78,7 @@ export default function Navbar() {
 
         <div className="landing-nav-links">
           {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className="landing-nav-link" onClick={(e) => { e.preventDefault(); document.querySelector(link.href)?.scrollIntoView({ behavior: 'smooth' }); }}>
+            <a key={link.href} href={link.href} className="landing-nav-link" onClick={(e) => scrollTo(e, link.href)}>
               {link.label}
             </a>
           ))}
@@ -95,11 +95,9 @@ export default function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="landing-nav-mobile-overlay" style={{ opacity: 1, pointerEvents: 'auto' }}>
-           {/* Mobile menu handled via standard conditional rendering for simplicity, 
-               but CSS ensures it sits perfectly behind the pill */}
+        <div className="landing-nav-mobile-overlay" style={{ opacity: 1, pointerEvents: 'auto', transition: 'opacity 0.3s' }}>
           {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} style={{ color: '#fff', fontSize: '2rem', fontWeight: 'bold', textDecoration: 'none' }} onClick={() => setMobileOpen(false)}>
+            <a key={link.href} href={link.href} style={{ color: '#fff', fontSize: '2rem', fontWeight: 'bold', textDecoration: 'none' }} onClick={(e) => scrollTo(e, link.href)}>
               {link.label}
             </a>
           ))}

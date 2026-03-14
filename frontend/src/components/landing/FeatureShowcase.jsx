@@ -24,26 +24,49 @@ export default function FeatureShowcase() {
   useGSAP(() => {
     if (prefersReducedMotion) return;
 
-    // Elegant Cascading Entrance
-    gsap.from('.features-title', {
-      y: 50, opacity: 0, duration: 1, ease: 'power3.out',
-      scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' }
+    let mm = gsap.matchMedia();
+
+    // 3D Assembled Grid linked to Scroll Scrub
+    mm.add("(min-width: 1024px)", () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: '+=1500', // Pin duration
+          scrub: 1, // Tie strictly to scroll
+          pin: true,
+          pinSpacing: true,
+        }
+      });
+
+      // Start state: Cards dropped below viewport and rotated backward
+      gsap.set('.bento-card', {
+        y: () => window.innerHeight,
+        z: () => gsap.utils.random(-500, 0),
+        rotationX: () => gsap.utils.random(45, 90),
+        opacity: 0,
+      });
+
+      // Title fades in first
+      tl.fromTo('.features-title', { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.5 });
+
+      // Cards stagger in dynamically based on scroll
+      tl.to('.bento-card', {
+        y: 0,
+        z: 0,
+        rotationX: 0,
+        opacity: 1,
+        stagger: 0.2, // This creates the staggered cascading reveal over the scroll distance
+        ease: 'power3.out',
+        duration: 1
+      }, 0.2);
+      
+      // Once fully assembled, the last little bit of scroll makes the grid pop slightly
+      tl.to('.bento-grid', { scale: 1.02, duration: 0.5, ease: 'sine.inOut' }, ">-0.2");
+      tl.to('.bento-grid', { scale: 1, duration: 0.5, ease: 'sine.inOut' });
     });
 
-    gsap.from('.bento-card', {
-      y: 100,
-      scale: 0.9,
-      opacity: 0,
-      duration: 1,
-      stagger: 0.1,
-      ease: 'back.out(1.5)',
-      scrollTrigger: { 
-        trigger: gridRef.current, 
-        start: 'top 75%' 
-      }
-    });
-
-    // 3D Magnetic Hover Tilt (Ultra smooth, keeps layout intact)
+    // 3D Magnetic Hover Tilt (runs independently)
     const cards = gsap.utils.toArray('.bento-card');
     cards.forEach(card => {
       const xTo = gsap.quickTo(card, "rotationY", { duration: 0.6, ease: "power3.out" });
@@ -53,7 +76,6 @@ export default function FeatureShowcase() {
         const { left, top, width, height } = card.getBoundingClientRect();
         const relX = (e.clientX - left - width / 2) / (width / 2); 
         const relY = -(e.clientY - top - height / 2) / (height / 2);
-        
         xTo(relX * 10);
         yTo(relY * 10);
       });
@@ -78,8 +100,8 @@ export default function FeatureShowcase() {
   };
 
   return (
-    <section ref={sectionRef} id="features" className="features-section">
-      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+    <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
         <h2 className="features-title" style={{ textAlign: 'center', marginBottom: '4rem' }}>
           Everything you need.
         </h2>
