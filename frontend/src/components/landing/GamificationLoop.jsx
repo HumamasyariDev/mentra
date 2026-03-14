@@ -57,36 +57,25 @@ export default function GamificationLoop() {
       panels.forEach((panel, i) => {
         if (i === 0) return; // First one is already visible
         
-        const icon = panel.querySelector('.loop-panel-icon');
-        const text = panel.querySelectorAll('h3, p');
+        const content = panel.querySelector('.loop-panel-content');
         
-        // Massive slide-in effect inside the scrolling container
-        gsap.from(icon, {
-          x: window.innerWidth * 0.5,
-          opacity: 0,
-          scale: 0.5,
-          rotation: -45,
-          duration: 1,
-          scrollTrigger: {
-            trigger: panel,
-            containerAnimation: scrollTween,
-            start: "left center",
-            toggleActions: "play none none reverse"
+        // Simple clean fade/scale that doesn't mess with X coords
+        gsap.fromTo(content, 
+          { opacity: 0, scale: 0.8, filter: 'blur(10px)' },
+          {
+            opacity: 1,
+            scale: 1,
+            filter: 'blur(0px)',
+            duration: 1,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: panel,
+              containerAnimation: scrollTween,
+              start: "left center+=300",
+              toggleActions: "play none none reverse"
+            }
           }
-        });
-
-        gsap.from(text, {
-          x: window.innerWidth * 0.3,
-          opacity: 0,
-          stagger: 0.2,
-          duration: 1,
-          scrollTrigger: {
-            trigger: panel,
-            containerAnimation: scrollTween,
-            start: "left center",
-            toggleActions: "play none none reverse"
-          }
-        });
+        );
       });
     });
 

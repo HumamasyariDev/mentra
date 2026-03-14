@@ -26,53 +26,78 @@ export default function FeatureShowcase() {
 
     let mm = gsap.matchMedia();
 
-    // The Awwwards Flow
+    // The Ultimate "Orbital Assembly" Grid
     mm.add("(min-width: 1024px)", () => {
-      // Title reveal
-      gsap.fromTo('.features-title', 
-        { y: 100, opacity: 0, filter: 'blur(10px)' }, 
-        { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.5, ease: 'expo.out',
-          scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' }
-        }
-      );
-
-      // We tie the grid assembly to the scroll progress directly for that premium feel
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 70%',
-          end: '+=800', // Unfolds as you scroll
-          scrub: 1.5, // buttery smooth scrub
+          start: 'top top',
+          end: '+=2500', // Massive scroll duration for the sequence
+          scrub: 1.5, // Super smooth
+          pin: true,
+          pinSpacing: true, // ESSENTIAL so it doesn't break the forest below it!
         }
       });
 
-      // Cards start folded down and transparent
-      gsap.set('.bento-card', {
-        y: 400,
-        rotationX: -60,
-        scale: 0.8,
+      const cards = gsap.utils.toArray('.bento-card');
+
+      // Set extreme initial 3D states
+      gsap.set(cards, { 
+        z: () => gsap.utils.random(-2000, 2000), 
+        x: () => gsap.utils.random(-1500, 1500),
+        y: () => gsap.utils.random(-1500, 1500),
+        rotationX: () => gsap.utils.random(-180, 180),
+        rotationY: () => gsap.utils.random(-180, 180),
+        rotationZ: () => gsap.utils.random(-90, 90),
         opacity: 0,
-        transformOrigin: "bottom center"
+        scale: 0.1
       });
 
-      // As you scroll, they cascade open like a deck of cards
-      tl.to('.bento-card', {
-        y: 0,
-        rotationX: 0,
+      // 1. The Title slowly fades in and floats up
+      tl.fromTo('.features-title', 
+        { y: 100, opacity: 0, scale: 0.8 }, 
+        { y: 0, opacity: 1, scale: 1, duration: 1, ease: 'power2.out' }, 
+        0
+      );
+
+      // 2. The Great Orbital Assembly
+      cards.forEach((card, i) => {
+        // Cards sweep into a chaotic floating holding pattern
+        tl.to(card, {
+          z: () => gsap.utils.random(-500, 500),
+          x: () => gsap.utils.random(-500, 500),
+          y: () => gsap.utils.random(-500, 500),
+          rotationX: () => gsap.utils.random(-45, 45),
+          rotationY: () => gsap.utils.random(-45, 45),
+          rotationZ: () => gsap.utils.random(-20, 20),
+          opacity: 0.5,
+          scale: 0.5,
+          duration: 1.5,
+          ease: 'power1.inOut'
+        }, 0.2 + (i * 0.1)); // Stagger the initial approach
+      });
+
+      // 3. The Collapse into the Perfect Grid
+      tl.to(cards, { 
+        z: 0, 
+        x: 0, 
+        y: 0, 
+        rotationX: 0, 
+        rotationY: 0,
+        rotationZ: 0,
+        opacity: 1, 
         scale: 1,
-        opacity: 1,
-        stagger: 0.15,
-        ease: 'power3.out',
-        duration: 1
-      });
-    });
+        duration: 2, 
+        ease: 'power4.inOut', 
+        stagger: 0.1 
+      }, 1.5); // Starts after the holding pattern
 
-    // Mobile fallback
-    mm.add("(max-width: 1023px)", () => {
-      gsap.from('.bento-card', {
-        y: 50, opacity: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out',
-        scrollTrigger: { trigger: gridRef.current, start: 'top 80%' }
-      });
+      // 4. A final celebratory pulse on the entire grid
+      tl.to('.bento-grid', { scale: 1.05, duration: 0.5, ease: 'sine.inOut' }, ">-0.5");
+      tl.to('.bento-grid', { scale: 1, duration: 0.5, ease: 'sine.inOut' });
+      
+      // Leave some dead space at the end of the timeline so the user can admire the assembled grid
+      tl.to({}, {duration: 0.5});
     });
 
     // 3D Magnetic Hover Tilt (runs independently)
@@ -85,8 +110,8 @@ export default function FeatureShowcase() {
         const { left, top, width, height } = card.getBoundingClientRect();
         const relX = (e.clientX - left - width / 2) / (width / 2); 
         const relY = -(e.clientY - top - height / 2) / (height / 2);
-        xTo(relX * 10);
-        yTo(relY * 10);
+        xTo(relX * 15);
+        yTo(relY * -15); // Correctly inverted for natural feel
       });
       
       card.addEventListener("mouseleave", () => {
@@ -109,21 +134,21 @@ export default function FeatureShowcase() {
   };
 
   return (
-    <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '10rem 2rem' }}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
-        <h2 className="features-title" style={{ textAlign: 'center', marginBottom: '6rem', fontSize: 'clamp(3rem, 8vw, 6rem)', fontWeight: 900, letterSpacing: '-0.04em', color: '#fff' }}>
+    <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 10 }}>
+        <h2 className="features-title" style={{ textAlign: 'center', marginBottom: '4rem' }}>
           Everything you need.
         </h2>
         
         <div ref={gridRef} className="bento-grid" onMouseMove={handleMouseMove}>
           {FEATURES.map((feature, i) => (
-            <div key={i} className="bento-card" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '32px', padding: '3rem', position: 'relative', overflow: 'hidden', transformStyle: 'preserve-3d', willChange: 'transform, opacity' }}>
-              <div className="bento-content" style={{ position: 'relative', zIndex: 1, transform: 'translateZ(40px)', transformStyle: 'preserve-3d' }}>
-                <div className="bento-icon" style={{ width: '64px', height: '64px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', marginBottom: '2rem', transform: 'translateZ(30px)' }}>
+            <div key={i} className="bento-card">
+              <div className="bento-content">
+                <div className="bento-icon">
                   <feature.icon size={32} />
                 </div>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', marginBottom: '1rem', letterSpacing: '-0.02em' }}>{feature.title}</h3>
-                <p style={{ color: 'var(--text-muted)', lineHeight: 1.6, fontSize: '1.1rem' }}>{feature.desc}</p>
+                <h3>{feature.title}</h3>
+                <p>{feature.desc}</p>
               </div>
             </div>
           ))}
