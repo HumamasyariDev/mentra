@@ -11,7 +11,6 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Hero() {
   const containerRef = useRef(null);
   const sceneRef = useRef(null);
-  const contentRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
   const btn1Ref = useMagneticHover(0.5);
 
@@ -20,6 +19,7 @@ export default function Hero() {
     { text: "Your Work.", highlight: true }
   ];
 
+  // Create an array for our massive 3D fragment field
   const fragments = Array.from({ length: 15 });
 
   useGSAP(() => {
@@ -28,16 +28,18 @@ export default function Hero() {
     // --- ENTRANCE ANIMATION ---
     const introTl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
-    introTl.fromTo('.hero-title-letter', 
-      { y: 150, opacity: 0, rotateX: 90, scale: 0.8 },
-      { y: 0, opacity: 1, rotateX: 0, scale: 1, duration: 1.5, stagger: 0.02 } 
+    // Word by word reveal (not letter by letter)
+    introTl.fromTo('.hero-title-word', 
+      { y: 150, opacity: 0, rotateZ: 10, scale: 0.8 },
+      { y: 0, opacity: 1, rotateZ: 0, scale: 1, duration: 1.5, stagger: 0.1 } 
     )
     .fromTo(['.hero-subtitle', '.hero-actions'], 
-      { y: 50, opacity: 0, filter: 'blur(10px)' },
-      { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.5, stagger: 0.2 }, 
-      "-=1.2"
+      { y: 30, opacity: 0, filter: 'blur(5px)' },
+      { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.2, stagger: 0.2 }, 
+      "-=1"
     );
 
+    // Initial random scatter of the 3D fragments
     gsap.set('.glass-fragment', {
       x: () => gsap.utils.random(-800, 800),
       y: () => gsap.utils.random(-600, 600),
@@ -49,6 +51,7 @@ export default function Hero() {
       opacity: 0
     });
 
+    // Fade them in and start continuous orbital rotation
     introTl.to('.glass-fragment', {
       opacity: () => gsap.utils.random(0.3, 0.8),
       duration: 2,
@@ -66,37 +69,25 @@ export default function Hero() {
 
   }, { scope: containerRef, dependencies: [prefersReducedMotion] });
 
-  // 3D Parallax tracking on the ENTIRE container (content + scene)
+  // 3D Parallax tracking on the entire scene based on mouse
   useEffect(() => {
-    if (prefersReducedMotion || !containerRef.current) return;
+    if (prefersReducedMotion || !sceneRef.current) return;
     
-    const content = contentRef.current;
-    const scene = sceneRef.current;
-
-    // Content moves subtly opposite to mouse for parallax depth
-    const xToContent = gsap.quickTo(content, "x", { duration: 1, ease: "power3.out" });
-    const yToContent = gsap.quickTo(content, "y", { duration: 1, ease: "power3.out" });
-    
-    // Scene moves more aggressively to follow the mouse
-    const xToScene = gsap.quickTo(scene, "x", { duration: 1.5, ease: "power3.out" });
-    const yToScene = gsap.quickTo(scene, "y", { duration: 1.5, ease: "power3.out" });
-    const rotXScene = gsap.quickTo(scene, "rotationX", { duration: 1.5, ease: "power3.out" });
-    const rotYScene = gsap.quickTo(scene, "rotationY", { duration: 1.5, ease: "power3.out" });
+    const el = sceneRef.current;
+    const xTo = gsap.quickTo(el, "rotationY", { duration: 1.5, ease: "power3.out" });
+    const yTo = gsap.quickTo(el, "rotationX", { duration: 1.5, ease: "power3.out" });
+    const xMoveTo = gsap.quickTo(el, "x", { duration: 1.5, ease: "power3.out" });
+    const yMoveTo = gsap.quickTo(el, "y", { duration: 1.5, ease: "power3.out" });
 
     const handleMouseMove = (e) => {
       const { innerWidth, innerHeight } = window;
       const xPos = (e.clientX / innerWidth - 0.5); 
       const yPos = (e.clientY / innerHeight - 0.5); 
       
-      // Move content opposite to cursor
-      xToContent(xPos * -30);
-      yToContent(yPos * -30);
-
-      // Move scene to follow cursor
-      xToScene(xPos * 60); 
-      yToScene(yPos * 60);
-      rotXScene(yPos * -15); // Tilt up/down
-      rotYScene(xPos * 15);  // Tilt left/right
+      xTo(xPos * 15); // Max 7.5 deg
+      yTo(yPos * -15); 
+      xMoveTo(xPos * -60); // Parallax shift
+      yMoveTo(yPos * -60);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -114,13 +105,13 @@ export default function Hero() {
         ))}
       </div>
 
-      <div ref={contentRef} className="hero-content">
+      <div className="hero-content">
         <h1 className="hero-title">
           {titleLines.map((line, i) => (
             <div key={i} className="hero-title-line">
-              {line.text.split('').map((char, j) => (
-                <span key={j} className={`hero-title-letter ${line.highlight ? 'hero-title-highlight' : ''}`} style={{ display: 'inline-block' }}>
-                  {char === ' ' ? '\u00A0' : char}
+              {line.text.split(' ').map((word, j) => (
+                <span key={j} className={`hero-title-word ${line.highlight ? 'hero-title-highlight' : ''}`} style={{ display: 'inline-block' }}>
+                  {word}&nbsp;
                 </span>
               ))}
             </div>

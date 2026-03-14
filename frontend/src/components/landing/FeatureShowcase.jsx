@@ -26,11 +26,11 @@ export default function FeatureShowcase() {
 
     let mm = gsap.matchMedia();
 
-    // Simplified, Elegant "Cascade Unfold" sequence
+    // Elegant 3D Cascade Assembly (No messy explosions that break DOM)
     mm.add("(min-width: 1024px)", () => {
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: sectionRef.current, // Pin the outer wrapper
+          trigger: sectionRef.current,
           start: 'top top',
           end: '+=1500', // Sane scroll duration
           scrub: 1, 
@@ -41,23 +41,16 @@ export default function FeatureShowcase() {
 
       const cards = gsap.utils.toArray('.bento-card');
 
-      // 1. Initial State: Folded down and slightly away
+      // 1. Initial State: Folded down and away
       gsap.set(cards, { 
-        y: 300,
-        z: -300,
-        rotationX: -30,
+        y: 400,
+        z: -500,
+        rotationX: -60,
         opacity: 0,
         scale: 0.8
       });
 
-      // Show Title
-      tl.fromTo('.features-title', 
-        { y: 50, opacity: 0 }, 
-        { y: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }, 
-        0
-      );
-
-      // 2. Cascade them into place beautifully
+      // 2. Cascade them into place cleanly
       tl.to(cards, {
         y: 0,
         z: 0,
@@ -66,24 +59,22 @@ export default function FeatureShowcase() {
         scale: 1,
         stagger: 0.1,
         ease: 'power3.out',
-        duration: 1.5
-      }, 0.2);
-
-      // 3. A subtle pulse on the whole grid to signify completion
-      tl.to('.bento-grid', {
-        scale: 1.02,
-        duration: 0.5,
-        ease: 'sine.inOut'
-      }, ">-0.5");
-      
-      tl.to('.bento-grid', {
-        scale: 1,
-        duration: 0.5,
-        ease: 'sine.inOut'
+        duration: 1
       });
 
-      // Final rest period
-      tl.to({}, {duration: 0.5});
+      // 3. Highlight Shockwave Flash
+      tl.to('.big-bang-flash', {
+        opacity: 0.8,
+        scale: 2,
+        duration: 0.3,
+        ease: "power2.inOut"
+      });
+
+      tl.to('.big-bang-flash', {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.out"
+      });
     });
 
     // 3D Magnetic Hover Tilt (runs independently)
@@ -97,9 +88,9 @@ export default function FeatureShowcase() {
         const { left, top, width, height } = card.getBoundingClientRect();
         const relX = (e.clientX - left - width / 2) / (width / 2); 
         const relY = -(e.clientY - top - height / 2) / (height / 2);
-        xTo(relX * 15);
-        yTo(relY * -15); 
-        zTo(20); // Lift up slightly
+        xTo(relX * 10);
+        yTo(relY * -10); 
+        zTo(20); 
       });
       
       card.addEventListener("mouseleave", () => {
@@ -123,29 +114,29 @@ export default function FeatureShowcase() {
   };
 
   return (
-    <section ref={sectionRef} id="features" style={{ width: '100%', position: 'relative', zIndex: 20, background: 'var(--bg-base)' }}>
-      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
+    <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
+      
+      {/* Shockwave flash element */}
+      <div className="big-bang-flash" style={{ zIndex: 0 }}></div>
+
+      <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 10 }}>
+        <h2 className="landing-section-heading" style={{ marginBottom: '4rem' }}>
+          Everything you need.
+        </h2>
         
-        <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 10 }}>
-          <h2 className="features-title" style={{ textAlign: 'center', marginBottom: '4rem', fontSize: 'clamp(3rem, 8vw, 6rem)', fontWeight: 900, color: '#fff', letterSpacing: '-0.04em' }}>
-            Everything you need.
-          </h2>
-          
-          <div ref={gridRef} className="bento-grid" onMouseMove={handleMouseMove}>
-            {FEATURES.map((feature, i) => (
-              <div key={i} className="bento-card">
-                <div className="bento-content">
-                  <div className="bento-icon">
-                    <feature.icon size={32} />
-                  </div>
-                  <h3>{feature.title}</h3>
-                  <p>{feature.desc}</p>
+        <div ref={gridRef} className="bento-grid" onMouseMove={handleMouseMove}>
+          {FEATURES.map((feature, i) => (
+            <div key={i} className="bento-card">
+              <div className="bento-content">
+                <div className="bento-icon">
+                  <feature.icon size={32} />
                 </div>
+                <h3>{feature.title}</h3>
+                <p>{feature.desc}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-        
       </div>
     </section>
   );

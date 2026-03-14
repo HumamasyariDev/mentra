@@ -16,7 +16,7 @@ const STEPS = [
 
 export default function GamificationLoop() {
   const sectionRef = useRef(null);
-  const trackRef = useRef(null);
+  const containerRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
 
   useGSAP(() => {
@@ -25,47 +25,57 @@ export default function GamificationLoop() {
     let mm = gsap.matchMedia();
 
     mm.add("(min-width: 1024px)", () => {
-      const getScrollAmount = () => {
-        if (!trackRef.current) return 0;
-        let trackWidth = trackRef.current.scrollWidth;
-        let windowWidth = window.innerWidth;
-        // Exactly scroll to the end of the track
-        return trackWidth - (windowWidth * 0.6) + 100; // Adding a bit of padding
-      };
-
-      const tl = gsap.timeline({
+      const panels = gsap.utils.toArray('.loop-panel');
+      const totalWidth = (panels.length - 1) * window.innerWidth;
+      
+      // Master timeline that scrubs the container horizontally
+      const scrollTween = gsap.to(containerRef.current, {
+        x: () => -totalWidth,
+        ease: "none",
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top top",
-          end: () => `+=${getScrollAmount() + 500}`, 
           pin: true,
-          scrub: 1, 
-          pinSpacing: true,
-          invalidateOnRefresh: true,
+          scrub: 1,
+          snap: 1 / (panels.length - 1),
+          end: () => "+=" + totalWidth,
         }
       });
 
-      // Move the track horizontally
-      tl.to(trackRef.current, {
-        x: () => -getScrollAmount(),
-        ease: "none"
+      // Tie the progress bar to the exact same trigger
+      gsap.to('.loop-progress-fill', {
+        width: '100%',
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top top",
+          end: () => "+=" + totalWidth,
+          scrub: 1,
+        }
       });
 
-      // Subtle scale and fade for cards as they enter
-      const cards = gsap.utils.toArray('.horizontal-card');
-      cards.forEach((card, i) => {
-        if (i === 0) return; // First card is already visible
-        gsap.from(card, {
-          opacity: 0.2,
-          scale: 0.9, // Less extreme scale
-          duration: 0.5,
-          scrollTrigger: {
-            trigger: card,
-            containerAnimation: tl,
-            start: "left 85%", // Trigger slightly earlier
-            toggleActions: "play none none reverse"
+      // Animate elements INSIDE the panels based on containerAnimation
+      panels.forEach((panel, i) => {
+        if (i === 0) return; // First one is already visible
+        
+        const content = panel.querySelector('.loop-panel-content');
+        
+        // Simple clean fade/scale that doesn't mess with X coords
+        gsap.fromTo(content, 
+          { opacity: 0, scale: 0.8, filter: 'blur(10px)' },
+          {
+            opacity: 1,
+            scale: 1,
+            filter: 'blur(0px)',
+            duration: 1,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: panel,
+              containerAnimation: scrollTween,
+              start: "left center+=300",
+              toggleActions: "play none none reverse"
+            }
           }
-        });
+        );
       });
     });
 
@@ -73,50 +83,26 @@ export default function GamificationLoop() {
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
   return (
-    <section ref={sectionRef} id="how-it-works" style={{ width: '100%', position: 'relative', zIndex: 10, background: 'var(--bg-base)' }}>
-      <div style={{ height: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', width: '100%' }}>
-        
-        {/* Left Sticky Header */}
-        <div style={{ flex: '0 0 40%', padding: '0 4rem', zIndex: 10, position: 'relative' }}>
-          <h2 className="landing-section-heading" style={{ textAlign: 'left', marginBottom: '1.5rem', fontSize: 'clamp(3rem, 5vw, 5rem)' }}>
-            The<br/>Productivity<br/>Loop.
-          </h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '1.25rem', lineHeight: 1.6, maxWidth: '400px' }}>
-            Mentra uses game design psychology to make doing your work feel incredibly rewarding. 
-            <br/><br/>
-            Scroll to see how it works &rarr;
-          </p>
-        </div>
-
-        {/* Right Horizontal Scrolling Track */}
-        <div style={{ flex: '1', position: 'relative' }}>
-          <div ref={trackRef} style={{ display: 'flex', gap: '2rem', paddingRight: '10vw', width: 'max-content', willChange: 'transform' }}>
-            {STEPS.map((step, i) => (
-              <div key={i} className="horizontal-card" style={{ 
-                width: '400px', 
-                background: 'rgba(15, 23, 42, 0.6)', 
-                border: '1px solid rgba(255,255,255,0.1)', 
-                borderRadius: '32px', 
-                padding: '3rem 2rem',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1.5rem',
-                transformOrigin: 'left center'
-              }}>
-                <div style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)', color: '#fff', width: '80px', height: '80px', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 30px rgba(99, 102, 241, 0.4)' }}>
-                  <step.icon size={40} />
-                </div>
-                <h3 style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em', margin: 0 }}>{step.title}</h3>
-                <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1.6, margin: 0 }}>{step.desc}</p>
+    <section ref={sectionRef} id="how-it-works" className="loop-horizontal-wrapper">
+      
+      <div ref={containerRef} className="loop-horizontal-container">
+        {STEPS.map((step, i) => (
+          <div key={i} className="loop-panel">
+            <div className="loop-panel-content">
+              <div className="loop-panel-icon">
+                <step.icon size={64} />
               </div>
-            ))}
+              <h3>{step.title}</h3>
+              <p>{step.desc}</p>
+            </div>
           </div>
-        </div>
-
+        ))}
       </div>
+
+      <div className="loop-progress-bar">
+        <div className="loop-progress-fill"></div>
+      </div>
+
     </section>
   );
 }
