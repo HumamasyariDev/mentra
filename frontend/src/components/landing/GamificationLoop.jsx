@@ -26,63 +26,56 @@ export default function GamificationLoop() {
 
     mm.add("(min-width: 1024px)", () => {
       const panels = gsap.utils.toArray('.loop-panel');
+      const totalWidth = (panels.length - 1) * window.innerWidth;
       
-      // Calculate how far to scroll horizontally
-      // It's (number of panels - 1) * 100vw
-      const xTravel = -100 * (panels.length - 1);
-
-      // Create the main horizontal scroll timeline
-      const tl = gsap.timeline({
+      // Master timeline that scrubs the container horizontally
+      const scrollTween = gsap.to(containerRef.current, {
+        x: () => -totalWidth,
+        ease: "none",
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top top",
-          end: "+=3000", // Give it plenty of scroll room
-          scrub: 1, // Smooth scrubbing
           pin: true,
-          pinSpacing: true,
-          anticipatePin: 1
+          scrub: 1,
+          snap: 1 / (panels.length - 1),
+          end: () => "+=" + totalWidth,
         }
       });
 
-      // 1. Move the container left
-      tl.to(containerRef.current, {
-        xPercent: xTravel,
-        ease: "none"
-      }, 0);
-
-      // 2. Fill the progress bar
-      tl.to('.loop-progress-fill', {
+      // Tie the progress bar to the exact same trigger
+      gsap.to('.loop-progress-fill', {
         width: '100%',
-        ease: "none"
-      }, 0);
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top top",
+          end: () => "+=" + totalWidth,
+          scrub: 1,
+        }
+      });
 
-      // 3. Add beautiful parallax to the content inside each panel so they don't look static while moving
+      // Animate elements INSIDE the panels based on containerAnimation
       panels.forEach((panel, i) => {
+        if (i === 0) return; // First one is already visible
+        
         const content = panel.querySelector('.loop-panel-content');
         
-        // This is a neat trick: As the container moves left, move the content slightly right 
-        // to create a depth parallax effect, then snap it to 0.
-        tl.fromTo(content, 
-          { x: 200, opacity: i === 0 ? 1 : 0, scale: i === 0 ? 1 : 0.8 }, 
-          { 
-            x: 0, 
-            opacity: 1, 
-            scale: 1, 
-            duration: 0.5, 
-            ease: "power2.out" 
-          }, 
-          (i - 0.5) * (1 / (panels.length - 1)) // Trigger precisely as the panel enters the center
+        // Simple clean fade/scale that doesn't mess with X coords
+        gsap.fromTo(content, 
+          { opacity: 0, scale: 0.8, filter: 'blur(10px)' },
+          {
+            opacity: 1,
+            scale: 1,
+            filter: 'blur(0px)',
+            duration: 1,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: panel,
+              containerAnimation: scrollTween,
+              start: "left center+=300",
+              toggleActions: "play none none reverse"
+            }
+          }
         );
-        
-        // Cosmic pulse on the icon when it's active
-        const icon = panel.querySelector('.loop-panel-icon');
-        tl.to(icon, {
-          scale: 1.1,
-          boxShadow: '0 0 50px rgba(99, 102, 241, 0.8)',
-          duration: 0.2,
-          yoyo: true,
-          repeat: 1
-        }, (i) * (1 / (panels.length - 1))); // Trigger when perfectly centered
       });
     });
 
@@ -99,8 +92,8 @@ export default function GamificationLoop() {
               <div className="loop-panel-icon">
                 <step.icon size={64} />
               </div>
-              <h3 style={{ fontSize: 'clamp(3rem, 6vw, 5rem)', fontWeight: 900, marginBottom: '1.5rem' }}>{step.title}</h3>
-              <p style={{ fontSize: 'clamp(1.2rem, 2vw, 1.5rem)', color: 'var(--text-muted)' }}>{step.desc}</p>
+              <h3>{step.title}</h3>
+              <p>{step.desc}</p>
             </div>
           </div>
         ))}

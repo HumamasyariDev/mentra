@@ -24,50 +24,110 @@ export default function FeatureShowcase() {
   useGSAP(() => {
     if (prefersReducedMotion) return;
 
-    // Elegant Scroll-Triggered Cascade (No Pinning, no layout breaking)
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top 75%', // Trigger when section is 25% into view
-        toggleActions: 'play none none reverse'
-      }
+    let mm = gsap.matchMedia();
+
+    // The True "Big Bang" Orbital Assembly
+    mm.add("(min-width: 1024px)", () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: '+=3000', // Massive scroll duration for the sequence
+          scrub: 1.5, 
+          pin: true,
+          pinSpacing: true, 
+        }
+      });
+
+      const cards = gsap.utils.toArray('.bento-card');
+
+      // 1. Initial State: The Singularity (everything compressed to a tiny dot far away)
+      gsap.set(cards, { 
+        z: -5000, 
+        x: 0,
+        y: 0,
+        rotationX: 0,
+        rotationY: 0,
+        rotationZ: 0,
+        opacity: 0,
+        scale: 0.01
+      });
+
+      // Show Title
+      tl.fromTo('.features-title', 
+        { y: 100, opacity: 0, scale: 0.8 }, 
+        { y: 0, opacity: 1, scale: 1, duration: 1, ease: 'power2.out' }, 
+        0
+      );
+
+      // 2. The Big Bang: Explode outwards past the camera
+      tl.to(cards, {
+        z: () => gsap.utils.random(500, 2000), // Fly super close/past the camera
+        x: () => gsap.utils.random(-2000, 2000),
+        y: () => gsap.utils.random(-2000, 2000),
+        rotationX: () => gsap.utils.random(-360, 360),
+        rotationY: () => gsap.utils.random(-360, 360),
+        rotationZ: () => gsap.utils.random(-180, 180),
+        opacity: 1,
+        scale: () => gsap.utils.random(1, 3), // Huge fragments
+        duration: 2,
+        ease: 'power3.out',
+        stagger: 0.05
+      }, 0.5);
+
+      // 3. The Collapse: Snap everything violently into the perfect Bento grid
+      tl.to(cards, { 
+        z: 0, 
+        x: 0, 
+        y: 0, 
+        rotationX: 0, 
+        rotationY: 0,
+        rotationZ: 0,
+        scale: 1,
+        duration: 1.5, 
+        ease: 'expo.inOut', 
+        stagger: 0.05
+      }, 2.5);
+
+      // 4. Highlight Shockwave Flash
+      tl.to('.big-bang-flash', {
+        opacity: 1,
+        scale: 1.5,
+        duration: 0.2,
+        ease: "power2.in"
+      }, 4); // Hits exactly as the last card snaps in
+
+      tl.to('.big-bang-flash', {
+        opacity: 0,
+        scale: 3,
+        duration: 1,
+        ease: "power3.out"
+      }, 4.2);
+
+      // Final rest period
+      tl.to({}, {duration: 0.5});
     });
-
-    // 1. Title fades up
-    tl.fromTo('.features-title', 
-      { opacity: 0, y: 60, scale: 0.9 }, 
-      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'expo.out' }
-    );
-
-    // 2. Cards fly up with 3D rotation in a gorgeous stagger
-    tl.fromTo('.bento-card', 
-      { y: 150, opacity: 0, rotationX: 45, rotationY: -10, scale: 0.8, z: -500 },
-      { 
-        y: 0, opacity: 1, rotationX: 0, rotationY: 0, scale: 1, z: 0, 
-        duration: 1.2, 
-        stagger: 0.1, 
-        ease: 'back.out(1.2)' 
-      }, 
-      "-=0.4"
-    );
 
     // 3D Magnetic Hover Tilt (runs independently)
     const cards = gsap.utils.toArray('.bento-card');
     cards.forEach(card => {
       const xTo = gsap.quickTo(card, "rotationY", { duration: 0.6, ease: "power3.out" });
       const yTo = gsap.quickTo(card, "rotationX", { duration: 0.6, ease: "power3.out" });
+      const zTo = gsap.quickTo(card, "z", { duration: 0.6, ease: "power3.out" });
       
       card.addEventListener("mousemove", (e) => {
         const { left, top, width, height } = card.getBoundingClientRect();
         const relX = (e.clientX - left - width / 2) / (width / 2); 
         const relY = -(e.clientY - top - height / 2) / (height / 2);
-        xTo(relX * 10);
-        yTo(relY * -10);
+        xTo(relX * 15);
+        yTo(relY * -15); 
+        zTo(20); // Lift up slightly
       });
       
       card.addEventListener("mouseleave", () => {
         xTo(0);
         yTo(0);
+        zTo(0);
       });
     });
 
@@ -75,7 +135,6 @@ export default function FeatureShowcase() {
 
   // CSS Variable Mouse Tracking for Glow Effect
   const handleMouseMove = (e) => {
-    if (!gridRef.current) return;
     for (const card of gridRef.current.children) {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -86,9 +145,13 @@ export default function FeatureShowcase() {
   };
 
   return (
-    <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '10rem 2rem' }}>
+    <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
+      
+      {/* Shockwave flash element */}
+      <div className="big-bang-flash"></div>
+
       <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 10 }}>
-        <h2 className="features-title" style={{ textAlign: 'center', marginBottom: '5rem', fontSize: 'clamp(3rem, 6vw, 5rem)', fontWeight: 900, color: '#fff', letterSpacing: '-0.03em' }}>
+        <h2 className="features-title" style={{ textAlign: 'center', marginBottom: '4rem' }}>
           Everything you need.
         </h2>
         
