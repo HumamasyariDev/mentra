@@ -26,44 +26,53 @@ export default function FeatureShowcase() {
 
     let mm = gsap.matchMedia();
 
-    // 3D Assembled Grid linked to Scroll Scrub
+    // The Awwwards Flow
     mm.add("(min-width: 1024px)", () => {
+      // Title reveal
+      gsap.fromTo('.features-title', 
+        { y: 100, opacity: 0, filter: 'blur(10px)' }, 
+        { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.5, ease: 'expo.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' }
+        }
+      );
+
+      // We tie the grid assembly to the scroll progress directly for that premium feel
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top top',
-          end: '+=1500', // Pin duration
-          scrub: 1, // Tie strictly to scroll
-          pin: true,
-          pinSpacing: true,
+          start: 'top 70%',
+          end: '+=800', // Unfolds as you scroll
+          scrub: 1.5, // buttery smooth scrub
         }
       });
 
-      // Start state: Cards dropped below viewport and rotated backward
+      // Cards start folded down and transparent
       gsap.set('.bento-card', {
-        y: () => window.innerHeight,
-        z: () => gsap.utils.random(-500, 0),
-        rotationX: () => gsap.utils.random(45, 90),
+        y: 400,
+        rotationX: -60,
+        scale: 0.8,
         opacity: 0,
+        transformOrigin: "bottom center"
       });
 
-      // Title fades in first
-      tl.fromTo('.features-title', { opacity: 0, y: -50 }, { opacity: 1, y: 0, duration: 0.5 });
-
-      // Cards stagger in dynamically based on scroll
+      // As you scroll, they cascade open like a deck of cards
       tl.to('.bento-card', {
         y: 0,
-        z: 0,
         rotationX: 0,
+        scale: 1,
         opacity: 1,
-        stagger: 0.2, // This creates the staggered cascading reveal over the scroll distance
+        stagger: 0.15,
         ease: 'power3.out',
         duration: 1
-      }, 0.2);
-      
-      // Once fully assembled, the last little bit of scroll makes the grid pop slightly
-      tl.to('.bento-grid', { scale: 1.02, duration: 0.5, ease: 'sine.inOut' }, ">-0.2");
-      tl.to('.bento-grid', { scale: 1, duration: 0.5, ease: 'sine.inOut' });
+      });
+    });
+
+    // Mobile fallback
+    mm.add("(max-width: 1023px)", () => {
+      gsap.from('.bento-card', {
+        y: 50, opacity: 0, duration: 0.8, stagger: 0.1, ease: 'power3.out',
+        scrollTrigger: { trigger: gridRef.current, start: 'top 80%' }
+      });
     });
 
     // 3D Magnetic Hover Tilt (runs independently)
@@ -100,21 +109,21 @@ export default function FeatureShowcase() {
   };
 
   return (
-    <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+    <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '10rem 2rem' }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
-        <h2 className="features-title" style={{ textAlign: 'center', marginBottom: '4rem' }}>
+        <h2 className="features-title" style={{ textAlign: 'center', marginBottom: '6rem', fontSize: 'clamp(3rem, 8vw, 6rem)', fontWeight: 900, letterSpacing: '-0.04em', color: '#fff' }}>
           Everything you need.
         </h2>
         
         <div ref={gridRef} className="bento-grid" onMouseMove={handleMouseMove}>
           {FEATURES.map((feature, i) => (
-            <div key={i} className="bento-card">
-              <div className="bento-content">
-                <div className="bento-icon">
+            <div key={i} className="bento-card" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderRadius: '32px', padding: '3rem', position: 'relative', overflow: 'hidden', transformStyle: 'preserve-3d', willChange: 'transform, opacity' }}>
+              <div className="bento-content" style={{ position: 'relative', zIndex: 1, transform: 'translateZ(40px)', transformStyle: 'preserve-3d' }}>
+                <div className="bento-icon" style={{ width: '64px', height: '64px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', marginBottom: '2rem', transform: 'translateZ(30px)' }}>
                   <feature.icon size={32} />
                 </div>
-                <h3>{feature.title}</h3>
-                <p>{feature.desc}</p>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', marginBottom: '1rem', letterSpacing: '-0.02em' }}>{feature.title}</h3>
+                <p style={{ color: 'var(--text-muted)', lineHeight: 1.6, fontSize: '1.1rem' }}>{feature.desc}</p>
               </div>
             </div>
           ))}
