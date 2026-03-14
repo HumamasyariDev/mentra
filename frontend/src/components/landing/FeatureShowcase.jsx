@@ -153,7 +153,7 @@ export default function FeatureShowcase() {
       <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden', position: 'relative' }}>
         
         {/* Shockwave flash element */}
-        <div className="big-bang-flash"></div>
+        <div className="big-bang-flash" style={{ zIndex: 0 }}></div>
 
         <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 10 }}>
           <h2 className="features-title" style={{ textAlign: 'center', marginBottom: '4rem' }}>
