@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useMagneticHover } from '../../hooks/useMagneticHover';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -19,136 +20,90 @@ export default function Navbar() {
   const mobileMenuRef = useRef(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const prefersReducedMotion = useReducedMotion();
+  
+  // Magnetic Hovers for Nav items
+  const logoRef = useMagneticHover(0.3);
+  const ctaRef = useMagneticHover(0.2);
 
   useGSAP(() => {
-    // Nav entrance drop-in
     if (!prefersReducedMotion) {
+      // Elegant heavy drop-in
       gsap.from(navRef.current, { 
-        yPercent: -100, 
+        y: -150, 
         opacity: 0, 
-        duration: 1.2, 
-        ease: 'expo.out', 
-        delay: 0.2 
+        duration: 1.5, 
+        ease: 'elastic.out(1, 0.5)', 
+        delay: 0.5 
       });
     }
 
-    // Scroll Frost Effect
+    // Velocity-based Skewing & Width reduction
     ScrollTrigger.create({
-      trigger: document.body,
-      start: 'top -80',
-      onEnter: () => {
-        navRef.current?.classList.add('landing-nav-scrolled');
-        gsap.to('.landing-nav-logo', { scale: 0.9, duration: 0.3 });
-      },
-      onLeaveBack: () => {
-        navRef.current?.classList.remove('landing-nav-scrolled');
-        gsap.to('.landing-nav-logo', { scale: 1, duration: 0.3 });
-      },
+      start: 0,
+      end: "max",
+      onUpdate: (self) => {
+        if (prefersReducedMotion) return;
+        
+        let velocity = self.getVelocity();
+        // Clamp skew between -3 and 3 degrees based on scroll speed
+        let skew = gsap.utils.clamp(-3, 3, velocity / -300);
+        
+        gsap.to(navRef.current, { 
+          skewY: skew, 
+          duration: 0.1, 
+          overwrite: true 
+        });
+        
+        // Return to 0 when stopped
+        gsap.delayedCall(0.1, () => {
+          gsap.to(navRef.current, { skewY: 0, duration: 0.4, ease: "power2.out" });
+        });
+
+        // Width reduction when scrolling past top
+        if (self.progress > 0.05) {
+          gsap.to(navRef.current, { width: '80%', backgroundColor: 'rgba(2, 6, 23, 0.8)', duration: 0.4 });
+          gsap.to('.landing-nav-logo', { scale: 0.9, duration: 0.4 });
+        } else {
+          gsap.to(navRef.current, { width: '90%', backgroundColor: 'rgba(2, 6, 23, 0.6)', duration: 0.4 });
+          gsap.to('.landing-nav-logo', { scale: 1, duration: 0.4 });
+        }
+      }
     });
   }, { scope: navRef, dependencies: [prefersReducedMotion] });
 
-  // Mobile menu open/close animation
-  useEffect(() => {
-    if (!mobileMenuRef.current) return;
-    
-    if (mobileOpen) {
-      gsap.fromTo(mobileMenuRef.current, 
-        { height: 0, opacity: 0 }, 
-        { height: 'auto', opacity: 1, duration: 0.4, ease: 'power3.out' }
-      );
-      gsap.fromTo('.landing-nav-mobile-link, .landing-nav-mobile .landing-nav-cta',
-        { y: 20, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.3, stagger: 0.05, ease: 'power2.out', delay: 0.1 }
-      );
-      gsap.to('.landing-nav-hamburger svg', { rotation: 90, duration: 0.3 });
-    } else {
-      gsap.to('.landing-nav-hamburger svg', { rotation: 0, duration: 0.3 });
-    }
-  }, [mobileOpen]);
-
-  const scrollTo = (e, href) => {
-    e.preventDefault();
-    if (mobileOpen) {
-      gsap.to(mobileMenuRef.current, { 
-        height: 0, opacity: 0, duration: 0.3, ease: 'power2.in',
-        onComplete: () => {
-          setMobileOpen(false);
-          document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
-        }
-      });
-    } else {
-      document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
-    <nav ref={navRef} className="landing-nav" style={{ willChange: 'transform' }}>
+    <nav ref={navRef} className="landing-nav">
       <div className="landing-nav-inner">
-        <Link to="/" className="landing-nav-logo" style={{ display: 'inline-block', transformOrigin: 'left center' }}>Mentra</Link>
+        <Link to="/" ref={logoRef} className="landing-nav-logo">Mentra.</Link>
 
         <div className="landing-nav-links">
           {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="landing-nav-link"
-              onClick={(e) => scrollTo(e, link.href)}
-            >
+            <a key={link.href} href={link.href} className="landing-nav-link" onClick={(e) => { e.preventDefault(); document.querySelector(link.href)?.scrollIntoView({ behavior: 'smooth' }); }}>
               {link.label}
             </a>
           ))}
         </div>
 
         <div className="landing-nav-actions">
-          <Link to="/login" className="landing-nav-login">Login</Link>
-          <Link to="/register" className="landing-nav-cta">Get Started</Link>
+          <Link to="/login" className="landing-nav-link">Log in</Link>
+          <Link to="/register" ref={ctaRef} className="landing-nav-cta">Get Started</Link>
         </div>
 
-        <button
-          className="landing-nav-hamburger"
-          onClick={() => {
-            if (mobileOpen) {
-              gsap.to(mobileMenuRef.current, { height: 0, opacity: 0, duration: 0.3, ease: 'power2.in', onComplete: () => setMobileOpen(false) });
-            } else {
-              setMobileOpen(true);
-            }
-          }}
-          aria-label="Toggle menu"
-        >
+        <button className="landing-nav-hamburger" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {mobileOpen && (
-        <div ref={mobileMenuRef} className="landing-nav-mobile" style={{ overflow: 'hidden' }}>
+        <div className="landing-nav-mobile-overlay" style={{ opacity: 1, pointerEvents: 'auto' }}>
+           {/* Mobile menu handled via standard conditional rendering for simplicity, 
+               but CSS ensures it sits perfectly behind the pill */}
           {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="landing-nav-mobile-link"
-              onClick={(e) => scrollTo(e, link.href)}
-            >
+            <a key={link.href} href={link.href} style={{ color: '#fff', fontSize: '2rem', fontWeight: 'bold', textDecoration: 'none' }} onClick={() => setMobileOpen(false)}>
               {link.label}
             </a>
           ))}
-          <Link
-            to="/login"
-            className="landing-nav-mobile-link"
-            onClick={() => {
-              gsap.to(mobileMenuRef.current, { height: 0, opacity: 0, duration: 0.3, onComplete: () => setMobileOpen(false) });
-            }}
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="landing-nav-cta"
-            onClick={() => {
-              gsap.to(mobileMenuRef.current, { height: 0, opacity: 0, duration: 0.3, onComplete: () => setMobileOpen(false) });
-            }}
-          >
-            Get Started
-          </Link>
+          <Link to="/login" style={{ color: '#94a3b8', fontSize: '1.5rem', textDecoration: 'none', marginTop: '2rem' }} onClick={() => setMobileOpen(false)}>Log in</Link>
         </div>
       )}
     </nav>

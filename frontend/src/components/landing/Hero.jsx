@@ -1,101 +1,116 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { Link } from 'react-router-dom';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useMagneticHover } from '../../hooks/useMagneticHover';
 
+gsap.registerPlugin(ScrollTrigger);
+
 export default function Hero() {
   const containerRef = useRef(null);
-  const visualRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
-  
-  const btn1Ref = useMagneticHover(0.3);
-  const btn2Ref = useMagneticHover(0.3);
+  const btn1Ref = useMagneticHover(0.5);
+
+  const titleLines = [
+    { text: "Level Up", highlight: false },
+    { text: "Your Work.", highlight: true }
+  ];
 
   useGSAP(() => {
-    if (prefersReducedMotion) {
-      gsap.to('.landing-hero-content > *', { opacity: 1, y: 0, duration: 0.5 });
-      gsap.to('.landing-hero-visual', { opacity: 1, duration: 0.5 });
-      return;
-    }
+    if (prefersReducedMotion) return;
 
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    // --- ENTRANCE ANIMATION ---
+    const introTl = gsap.timeline({ defaults: { ease: 'expo.out' } });
 
-    tl.from('.landing-hero-tagline', { x: -60, opacity: 0, duration: 1 })
-      .from('.landing-hero-subtitle', { x: -40, opacity: 0, duration: 0.8 }, '-=0.5')
-      .from('.landing-hero-cta', { y: 30, opacity: 0, duration: 0.6, stagger: 0.15, ease: 'back.out(1.2)' }, '-=0.4')
-      .from('.landing-hero-badge', { y: 20, opacity: 0, duration: 0.5 }, '-=0.3')
-      .from('.landing-hero-visual', { x: 60, opacity: 0, duration: 1 }, '-=1.2');
+    introTl.fromTo('.hero-title-word', 
+      { y: 200, opacity: 0, rotateZ: 15, scale: 0.5 },
+      { y: 0, opacity: 1, rotateZ: 0, scale: 1, duration: 2, stagger: 0.05 }
+    )
+    .fromTo(['.hero-subtitle', '.hero-actions'], 
+      { y: 50, opacity: 0, filter: 'blur(10px)' },
+      { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.5, stagger: 0.2 }, 
+      "-=1.5"
+    )
+    .fromTo('.glass-layer',
+      { z: -2000, opacity: 0, rotationX: 60, rotationY: -60 },
+      { z: (i) => i * 60, opacity: 1, rotationX: 10, rotationY: -10, duration: 2.5, stagger: 0.2, ease: 'power4.out' },
+      "-=2"
+    );
 
-    // Infinite Float
-    gsap.to('.landing-hero-shape', {
-      y: -15,
-      rotation: 'random(-5, 5)',
-      duration: 2.5,
-      ease: 'sine.inOut',
-      yoyo: true,
-      repeat: -1,
-      stagger: { each: 0.4, from: 'random' },
+    // --- "WARP DRIVE" SCROLL TRIGGER ---
+    // When the user scrolls down, the entire hero explodes into the camera (Z-space)
+    const scrollTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: '#hero-pin',
+        start: 'top top',
+        end: '+=1500',
+        scrub: 1.5,
+        pin: true,
+      }
     });
+
+    // Text gets sucked backwards into a void
+    scrollTl.to('.hero-title-word', { 
+      z: -2000, 
+      rotationZ: 'random(-45, 45)', 
+      opacity: 0, 
+      filter: 'blur(20px)', 
+      stagger: 0.02,
+      ease: 'power2.in'
+    }, 0);
+    
+    scrollTl.to('.hero-subtitle, .hero-actions', { 
+      z: -1000, opacity: 0, filter: 'blur(10px)', ease: 'power2.in'
+    }, 0);
+
+    // The 3D Glass layers fly forwards past the camera
+    scrollTl.to('.glass-layer', { 
+      z: 2000, // Blow past the camera
+      rotationX: 'random(-45, 45)',
+      rotationY: 'random(-45, 45)',
+      opacity: 0, 
+      filter: 'blur(30px)',
+      stagger: 0.1,
+      ease: 'power3.in'
+    }, 0);
+
   }, { scope: containerRef, dependencies: [prefersReducedMotion] });
 
-  // Cursor Parallax Background
-  useEffect(() => {
-    if (prefersReducedMotion || !visualRef.current) return;
-    
-    const shapes = visualRef.current.querySelectorAll('.landing-hero-shape');
-    const xTo = gsap.quickTo(shapes, "x", { duration: 0.8, ease: "power3.out" });
-    const yTo = gsap.quickTo(shapes, "y", { duration: 0.8, ease: "power3.out" });
-
-    const handleMouseMove = (e) => {
-      const { innerWidth, innerHeight } = window;
-      const xPos = (e.clientX / innerWidth - 0.5) * 40; // max 20px
-      const yPos = (e.clientY / innerHeight - 0.5) * 40;
-      xTo(xPos);
-      yTo(yPos);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [prefersReducedMotion]);
-
-  const scrollToHowItWorks = (e) => {
-    e.preventDefault();
-    document.querySelector('#how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
-    <section ref={containerRef} className="landing-hero">
-      <div className="landing-hero-content">
-        <h1 className="landing-hero-tagline">
-          Productivity that grows with you
+    <section ref={containerRef} id="hero-pin" className="hero-pin-wrapper">
+      <div className="hero-glow"></div>
+      
+      <div className="hero-content">
+        <h1 className="hero-title">
+          {titleLines.map((line, i) => (
+            <div key={i} className="hero-title-line">
+              {line.text.split(' ').map((word, j) => (
+                <span key={j} className={`hero-title-word ${line.highlight ? 'hero-title-highlight' : ''}`}>
+                  {word}&nbsp;
+                </span>
+              ))}
+            </div>
+          ))}
         </h1>
-        <p className="landing-hero-subtitle">
-          Complete tasks. Earn XP. Level up. Watch your forest come alive.
+        <p className="hero-subtitle">
+          Turn your daily tasks into an epic journey. Build habits, earn XP, and watch your virtual forest come alive with every checked box.
         </p>
-        <div className="landing-hero-actions">
-          <Link to="/register" ref={btn1Ref} className="landing-hero-cta landing-btn-primary block">
-            Get Started
+        <div className="hero-actions">
+          <Link to="/register" ref={btn1Ref} className="hero-btn-primary">
+            Start Your Journey
           </Link>
-          <a
-            href="#how-it-works"
-            ref={btn2Ref}
-            className="landing-hero-cta landing-btn-outline block"
-            onClick={scrollToHowItWorks}
-          >
-            See How It Works
-          </a>
         </div>
-        <p className="landing-hero-badge">Built with React, Laravel &amp; AI</p>
       </div>
 
-      <div ref={visualRef} className="landing-hero-visual">
-        <div className="landing-hero-shape landing-hero-shape-1" />
-        <div className="landing-hero-shape landing-hero-shape-2" />
-        <div className="landing-hero-shape landing-hero-shape-3" />
-        <div className="landing-hero-shape landing-hero-shape-4" />
-        <div className="landing-hero-shape landing-hero-shape-5" />
+      <div className="hero-3d-scene">
+        <div className="glass-layer layer-base"></div>
+        <div className="glass-layer layer-grid"></div>
+        <div className="glass-layer layer-ui">
+           <div className="mock-ui-element" style={{ width: '50%', height: '15%', top: '25%' }}></div>
+           <div className="mock-ui-element" style={{ width: '30%', height: '30%', bottom: '25%', left: '25%' }}></div>
+        </div>
       </div>
     </section>
   );

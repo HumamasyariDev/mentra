@@ -8,15 +8,14 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
 gsap.registerPlugin(ScrollTrigger);
 
 const STEPS = [
-  { icon: CheckSquare, title: 'Complete Tasks', desc: 'Manage your daily tasks with list, calendar, or board views' },
-  { icon: Sparkles, title: 'Earn XP', desc: 'Every completed task earns experience points' },
-  { icon: Trophy, title: 'Level Up', desc: 'Hit milestones, maintain streaks, climb levels' },
-  { icon: TreePine, title: 'Grow Your Forest', desc: 'Watch your virtual world come alive as you stay productive' },
+  { icon: CheckSquare, title: 'Check it off', desc: 'Manage your daily tasks with beautiful list, calendar, or board views.' },
+  { icon: Sparkles, title: 'Earn XP', desc: 'Every completed task earns experience points. Your productivity directly fuels your progress.' },
+  { icon: Trophy, title: 'Level Up', desc: 'Hit milestones, maintain daily streaks, and climb levels as you build better habits.' },
+  { icon: TreePine, title: 'Watch it Grow', desc: 'Your progress manifests as a living, breathing virtual forest that grows with you.' },
 ];
 
 export default function GamificationLoop() {
   const sectionRef = useRef(null);
-  const containerRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
 
   useGSAP(() => {
@@ -24,84 +23,67 @@ export default function GamificationLoop() {
 
     let mm = gsap.matchMedia();
 
-    // Desktop: Pinned Narrative with aggressive masking and blur
     mm.add("(min-width: 1024px)", () => {
-      const steps = gsap.utils.toArray('.landing-loop-step');
-      const lines = gsap.utils.toArray('.landing-loop-connector-line');
+      const cards = gsap.utils.toArray('.tunnel-card');
+      
+      // Initial state: Cards are placed deep in Z-space, far away
+      cards.forEach((card, i) => {
+        gsap.set(card, { 
+          z: -4000 - (i * 2000), // Card 0 is at -4000, Card 1 at -6000, etc.
+          opacity: 0,
+          scale: 0.5
+        });
+      });
 
-      // Initial aggressive state
-      gsap.set(steps.slice(1), { opacity: 0.1, scale: 0.7, filter: 'blur(8px)' });
-      gsap.set(lines, { scaleX: 0, transformOrigin: "left center" });
-      gsap.set(steps[0].querySelector('.landing-loop-icon'), { boxShadow: '0 0 30px rgba(99, 102, 241, 0.4)' });
-
+      // Pin the tunnel and scrub the track forward
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: containerRef.current,
-          start: "center center",
-          end: "+=2500", // Much longer scroll for a premium feel
-          scrub: 1, // Smooth scrubbing
+          trigger: '#loop-pin',
+          start: "top top",
+          end: `+=${cards.length * 1500}`, // Deep scroll length
           pin: true,
-          anticipatePin: 1,
+          scrub: 1.5, // Super smooth
         }
       });
 
-      steps.forEach((step, i) => {
-        if (i > 0) {
-          // Progressively draw the line
-          tl.to(lines[i - 1], { scaleX: 1, duration: 1, ease: "none" });
-          
-          // Crossfade: Previous step recedes heavily into the background
-          tl.to(steps[i - 1], { 
-            opacity: 0.1, 
-            scale: 0.7, 
-            filter: 'blur(8px)',
-            duration: 0.8,
-            ease: "power2.inOut"
-          }, "<");
-          
-          tl.to(steps[i - 1].querySelector('.landing-loop-icon'), { 
-            boxShadow: '0 0 0px rgba(99, 102, 241, 0)', duration: 0.8 
-          }, "<");
+      // The entire track moves forward by (total depth + extra) to bring all cards past camera
+      const totalTravel = 4000 + (cards.length * 2000) + 1000;
+      
+      tl.to('.tunnel-track', {
+        z: totalTravel,
+        ease: "none" // Linear travel speed
+      });
 
-          // Current step blasts into focus
-          tl.to(step, { 
-            opacity: 1, 
-            scale: 1, 
-            filter: 'blur(0px)',
-            duration: 0.8,
-            ease: "power2.out"
-          }, "<");
-
-          // Icon pop with cosmic pulse
-          tl.fromTo(step.querySelector('.landing-loop-icon'), 
-            { rotation: -90, scale: 0.5 }, 
-            { 
-              rotation: 0, 
-              scale: 1, 
-              boxShadow: '0 0 30px rgba(99, 102, 241, 0.6)',
-              duration: 1, 
-              ease: "elastic.out(1, 0.5)" 
-            }, 
-            "<0.2"
-          );
+      // Link opacity/blur to absolute Z-position relative to camera
+      // GSAP ScrollTrigger onUpdate is perfect for this dynamic calculation
+      ScrollTrigger.create({
+        trigger: '#loop-pin',
+        start: "top top",
+        end: `+=${cards.length * 1500}`,
+        onUpdate: () => {
+          const trackZ = gsap.getProperty('.tunnel-track', 'z');
+          
+          cards.forEach((card, i) => {
+            const cardZ = -4000 - (i * 2000);
+            const currentRelativeZ = trackZ + cardZ;
+            
+            // Calculate effects based on how close it is to camera (z=0)
+            if (currentRelativeZ < -2000) {
+              gsap.set(card, { opacity: 0, filter: 'blur(20px)' });
+            } else if (currentRelativeZ >= -2000 && currentRelativeZ < -500) {
+              // Fading in from distance
+              const progress = gsap.utils.normalize(-2000, -500, currentRelativeZ);
+              gsap.set(card, { opacity: progress, filter: `blur(${(1-progress)*20}px)` });
+            } else if (currentRelativeZ >= -500 && currentRelativeZ < 200) {
+              // In perfect focus zone
+              gsap.set(card, { opacity: 1, filter: 'blur(0px)' });
+            } else if (currentRelativeZ >= 200) {
+              // Blasting past the camera - fade out and blur heavily
+              const progress = gsap.utils.normalize(200, 800, currentRelativeZ);
+              gsap.set(card, { opacity: 1 - progress, filter: `blur(${progress*40}px)` });
+            }
+          });
         }
-      });
-    });
-
-    // Mobile: Parallax Stagger
-    mm.add("(max-width: 1023px)", () => {
-      gsap.from('.landing-loop-step', {
-        x: 100, 
-        opacity: 0, 
-        rotationY: 45,
-        duration: 0.8, 
-        stagger: 0.3, 
-        ease: 'power3.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' }
-      });
-      gsap.from('.landing-loop-connector-line', {
-        scaleY: 0, transformOrigin: "top center", duration: 0.6, stagger: 0.3, delay: 0.4, ease: 'power2.out',
-        scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' }
       });
     });
 
@@ -109,30 +91,22 @@ export default function GamificationLoop() {
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
   return (
-    <section ref={sectionRef} id="how-it-works" className="landing-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-      <h2 className="landing-section-heading" style={{ overflow: 'hidden' }}>
-        <span style={{ display: 'block', transform: 'translateY(0)', transition: 'transform 1s cubic-bezier(0.16, 1, 0.3, 1)' }}>The Productivity Loop</span>
-      </h2>
-      <div ref={containerRef} className="landing-loop-container">
-        <div className="landing-loop-grid">
-          {STEPS.map((step, i) => (
-            <div key={step.title} className="landing-loop-item" style={{ perspective: '1000px' }}>
-              <div className={`landing-loop-step ${i === 0 ? 'active' : 'inactive'}`} style={{ willChange: 'transform, opacity, filter', transformOrigin: 'center center' }}>
-                <div className="landing-loop-icon" style={{ transition: 'box-shadow 0.3s' }}>
-                  <step.icon size={32} />
-                </div>
-                <h3 className="landing-loop-title" style={{ fontSize: '1.25rem' }}>{step.title}</h3>
-                <p className="landing-loop-desc" style={{ fontSize: '1rem' }}>{step.desc}</p>
-              </div>
-              {i < STEPS.length - 1 && (
-                <div className="landing-loop-connector">
-                  <div className="landing-loop-connector-line" style={{ willChange: 'transform' }} />
-                </div>
-              )}
+    <section ref={sectionRef} id="loop-pin" className="tunnel-pin-wrapper">
+      
+      <div className="tunnel-title">The Loop.</div>
+
+      <div className="tunnel-track">
+        {STEPS.map((step, i) => (
+          <div key={i} className="tunnel-card">
+            <div className="tunnel-icon">
+              <step.icon size={64} />
             </div>
-          ))}
-        </div>
+            <h3>{step.title}</h3>
+            <p>{step.desc}</p>
+          </div>
+        ))}
       </div>
+
     </section>
   );
 }
