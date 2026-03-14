@@ -16,6 +16,7 @@ const STEPS = [
 
 export default function GamificationLoop() {
   const sectionRef = useRef(null);
+  const pinWrapperRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
 
   useGSAP(() => {
@@ -26,60 +27,55 @@ export default function GamificationLoop() {
     mm.add("(min-width: 1024px)", () => {
       const cards = gsap.utils.toArray('.tunnel-card');
       
-      // Initial state: Cards are placed deep in Z-space, far away
+      // Set cards up in deep Z-space
       cards.forEach((card, i) => {
         gsap.set(card, { 
-          z: -4000 - (i * 2000), // Card 0 is at -4000, Card 1 at -6000, etc.
+          z: -3000 - (i * 2000), 
           opacity: 0,
           scale: 0.5
         });
       });
 
-      // Pin the tunnel and scrub the track forward
+      // Pin the section wrapper, animate the track inside it
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: '#loop-pin',
+          trigger: sectionRef.current, // Pin the outer section
           start: "top top",
-          end: `+=${cards.length * 1500}`, // Deep scroll length
+          end: `+=${cards.length * 1500}`, 
           pin: true,
-          scrub: 1.5, // Super smooth
+          scrub: 1,
+          pinSpacing: true // Ensure it pushes content down correctly
         }
       });
 
-      // The entire track moves forward by (total depth + extra) to bring all cards past camera
-      const totalTravel = 4000 + (cards.length * 2000) + 1000;
+      const totalTravel = 3000 + (cards.length * 2000) + 1000;
       
       tl.to('.tunnel-track', {
         z: totalTravel,
-        ease: "none" // Linear travel speed
+        ease: "none"
       });
 
-      // Link opacity/blur to absolute Z-position relative to camera
-      // GSAP ScrollTrigger onUpdate is perfect for this dynamic calculation
+      // Update card focus based on absolute track Z
       ScrollTrigger.create({
-        trigger: '#loop-pin',
+        trigger: sectionRef.current,
         start: "top top",
         end: `+=${cards.length * 1500}`,
         onUpdate: () => {
-          const trackZ = gsap.getProperty('.tunnel-track', 'z');
+          const trackZ = gsap.getProperty('.tunnel-track', 'z') || 0;
           
           cards.forEach((card, i) => {
-            const cardZ = -4000 - (i * 2000);
+            const cardZ = -3000 - (i * 2000);
             const currentRelativeZ = trackZ + cardZ;
             
-            // Calculate effects based on how close it is to camera (z=0)
-            if (currentRelativeZ < -2000) {
+            if (currentRelativeZ < -1500) {
               gsap.set(card, { opacity: 0, filter: 'blur(20px)' });
-            } else if (currentRelativeZ >= -2000 && currentRelativeZ < -500) {
-              // Fading in from distance
-              const progress = gsap.utils.normalize(-2000, -500, currentRelativeZ);
+            } else if (currentRelativeZ >= -1500 && currentRelativeZ < -200) {
+              const progress = gsap.utils.normalize(-1500, -200, currentRelativeZ);
               gsap.set(card, { opacity: progress, filter: `blur(${(1-progress)*20}px)` });
-            } else if (currentRelativeZ >= -500 && currentRelativeZ < 200) {
-              // In perfect focus zone
+            } else if (currentRelativeZ >= -200 && currentRelativeZ < 200) {
               gsap.set(card, { opacity: 1, filter: 'blur(0px)' });
             } else if (currentRelativeZ >= 200) {
-              // Blasting past the camera - fade out and blur heavily
-              const progress = gsap.utils.normalize(200, 800, currentRelativeZ);
+              const progress = gsap.utils.normalize(200, 1000, currentRelativeZ);
               gsap.set(card, { opacity: 1 - progress, filter: `blur(${progress*40}px)` });
             }
           });
@@ -91,22 +87,24 @@ export default function GamificationLoop() {
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
   return (
-    <section ref={sectionRef} id="loop-pin" className="tunnel-pin-wrapper">
-      
-      <div className="tunnel-title">The Loop.</div>
+    <section ref={sectionRef} id="how-it-works" style={{ width: '100%', position: 'relative' }}>
+      <div ref={pinWrapperRef} className="tunnel-pin-wrapper" style={{ width: '100%', height: '100vh', overflow: 'hidden', perspective: '2000px', background: 'var(--bg-base)', position: 'relative' }}>
+        
+        <div className="tunnel-title">The Loop.</div>
 
-      <div className="tunnel-track">
-        {STEPS.map((step, i) => (
-          <div key={i} className="tunnel-card">
-            <div className="tunnel-icon">
-              <step.icon size={64} />
+        <div className="tunnel-track">
+          {STEPS.map((step, i) => (
+            <div key={i} className="tunnel-card">
+              <div className="tunnel-icon">
+                <step.icon size={64} />
+              </div>
+              <h3>{step.title}</h3>
+              <p>{step.desc}</p>
             </div>
-            <h3>{step.title}</h3>
-            <p>{step.desc}</p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
+      </div>
     </section>
   );
 }

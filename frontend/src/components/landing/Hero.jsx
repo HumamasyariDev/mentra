@@ -40,14 +40,14 @@ export default function Hero() {
     );
 
     // --- "WARP DRIVE" SCROLL TRIGGER ---
-    // When the user scrolls down, the entire hero explodes into the camera (Z-space)
     const scrollTl = gsap.timeline({
       scrollTrigger: {
-        trigger: '#hero-pin',
+        trigger: containerRef.current, // Pin the outer container
         start: 'top top',
-        end: '+=1500',
+        end: '+=1500', // Scroll duration
         scrub: 1.5,
         pin: true,
+        // pinSpacing is true by default, keeping it
       }
     });
 
@@ -79,7 +79,7 @@ export default function Hero() {
   }, { scope: containerRef, dependencies: [prefersReducedMotion] });
 
   return (
-    <section ref={containerRef} id="hero-pin" className="hero-pin-wrapper">
+    <section ref={containerRef} className="hero-pin-wrapper">
       <div className="hero-glow"></div>
       
       <div className="hero-content">
@@ -107,10 +107,7 @@ export default function Hero() {
       <div className="hero-3d-scene">
         <div className="glass-layer layer-base"></div>
         <div className="glass-layer layer-grid"></div>
-        <div className="glass-layer layer-ui">
-           <div className="mock-ui-element" style={{ width: '50%', height: '15%', top: '25%' }}></div>
-           <div className="mock-ui-element" style={{ width: '30%', height: '30%', bottom: '25%', left: '25%' }}></div>
-        </div>
+        {/* Removed the weird layer-ui boxes that looked broken */}
       </div>
     </section>
   );
