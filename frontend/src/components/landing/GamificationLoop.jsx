@@ -28,7 +28,9 @@ export default function GamificationLoop() {
       const panels = gsap.utils.toArray('.loop-panel');
       const totalWidth = (panels.length - 1) * window.innerWidth;
       
-      // Master timeline that scrubs the container horizontally
+      // Massive scroll distance to make the interaction very deliberate and long
+      const scrollDistance = window.innerWidth * panels.length * 1.5; 
+
       const scrollTween = gsap.to(containerRef.current, {
         x: () => -totalWidth,
         ease: "none",
@@ -37,29 +39,27 @@ export default function GamificationLoop() {
           pin: true,
           scrub: 1,
           snap: 1 / (panels.length - 1),
-          end: () => "+=" + totalWidth,
+          end: () => `+=${scrollDistance}`,
+          pinSpacing: true,
         }
       });
 
-      // Tie the progress bar to the exact same trigger
       gsap.to('.loop-progress-fill', {
         width: '100%',
         ease: "none",
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: () => "+=" + totalWidth,
+          end: () => `+=${scrollDistance}`,
           scrub: 1,
         }
       });
 
-      // Animate elements INSIDE the panels based on containerAnimation
       panels.forEach((panel, i) => {
-        if (i === 0) return; // First one is already visible
+        if (i === 0) return; 
         
         const content = panel.querySelector('.loop-panel-content');
         
-        // Simple clean fade/scale that doesn't mess with X coords
         gsap.fromTo(content, 
           { opacity: 0, scale: 0.8, filter: 'blur(10px)' },
           {
@@ -83,26 +83,28 @@ export default function GamificationLoop() {
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
   return (
-    <section ref={sectionRef} id="how-it-works" className="loop-horizontal-wrapper">
-      
-      <div ref={containerRef} className="loop-horizontal-container">
-        {STEPS.map((step, i) => (
-          <div key={i} className="loop-panel">
-            <div className="loop-panel-content">
-              <div className="loop-panel-icon">
-                <step.icon size={64} />
+    <div ref={sectionRef}> {/* Bare wrapper for bulletproof GSAP pinning */}
+      <section id="how-it-works" className="loop-horizontal-wrapper" style={{ height: '100vh', width: '100%', overflow: 'hidden', position: 'relative', background: '#020617', display: 'flex', alignItems: 'center' }}>
+        
+        <div ref={containerRef} className="loop-horizontal-container">
+          {STEPS.map((step, i) => (
+            <div key={i} className="loop-panel">
+              <div className="loop-panel-content">
+                <div className="loop-panel-icon">
+                  <step.icon size={64} />
+                </div>
+                <h3>{step.title}</h3>
+                <p>{step.desc}</p>
               </div>
-              <h3>{step.title}</h3>
-              <p>{step.desc}</p>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <div className="loop-progress-bar">
-        <div className="loop-progress-fill"></div>
-      </div>
+        <div className="loop-progress-bar">
+          <div className="loop-progress-fill"></div>
+        </div>
 
-    </section>
+      </section>
+    </div>
   );
 }

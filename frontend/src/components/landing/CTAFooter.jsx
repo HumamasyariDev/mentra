@@ -10,58 +10,72 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function CTAFooter() {
   const sectionRef = useRef(null);
+  const textRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
   const ctaBtnRef = useMagneticHover(0.4);
 
   useGSAP(() => {
-    if (!prefersReducedMotion) {
-      // Entrance
-      gsap.from('.landing-cta-content > *', {
-        y: 40,
-        opacity: 0,
-        scale: 0.95,
-        duration: 1,
-        stagger: 0.15,
-        ease: 'expo.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 80%',
-        },
-      });
-
-      // Cosmic Pulse on the button
-      gsap.to('.landing-cta-button', {
-        scale: 1.03,
-        boxShadow: "0 10px 30px rgba(255, 255, 255, 0.4)",
-        duration: 1.5,
-        yoyo: true,
-        repeat: -1,
-        ease: 'sine.inOut'
-      });
-
-      // Breathing background gradient
-      gsap.to(sectionRef.current, {
-        backgroundPosition: "100% 100%",
-        duration: 12,
-        yoyo: true,
-        repeat: -1,
-        ease: "sine.inOut"
-      });
+    if (prefersReducedMotion) {
+      gsap.to('.huge-cta-text', { backgroundSize: '100% 100%' });
+      gsap.to('.cta-button-wrapper', { opacity: 1 });
+      return;
     }
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top top',
+        end: '+=2000', // Much longer text fill
+        scrub: 1,
+        pin: true,
+        pinSpacing: true
+      }
+    });
+
+    tl.to('.huge-cta-text', {
+      backgroundSize: '100% 100%',
+      ease: 'none',
+      duration: 1
+    });
+
+    tl.to('.cta-button-wrapper', {
+      opacity: 1,
+      y: -30,
+      ease: 'power2.out',
+      duration: 0.3
+    }, "-=0.2");
+
+    gsap.to('.landing-cta-button', {
+      scale: 1.05,
+      boxShadow: "0 10px 40px rgba(255, 255, 255, 0.2)",
+      duration: 1.5,
+      yoyo: true,
+      repeat: -1,
+      ease: 'sine.inOut'
+    });
+
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
   return (
-    <section ref={sectionRef} className="landing-cta" style={{ backgroundSize: '200% 200%' }}>
-      <div className="landing-cta-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <h2 className="landing-cta-heading">Ready to grow?</h2>
-        <p className="landing-cta-subtitle">Start building productive habits today.</p>
-        <Link to="/register" ref={ctaBtnRef} className="landing-cta-button">
-          Get Started &mdash; It's Free
-        </Link>
-        <Link to="/login" className="landing-cta-login">
-          Already have an account? Log in
-        </Link>
-      </div>
-    </section>
+    <div ref={sectionRef}>
+      <section style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', background: 'radial-gradient(circle at center, rgba(99, 102, 241, 0) 0%, var(--bg-base) 100%)' }}>
+        
+        <h2 ref={textRef} className="huge-cta-text">
+          START<br/>GROWING
+        </h2>
+        
+        <div className="cta-button-wrapper">
+          <Link to="/register" ref={ctaBtnRef} className="hero-btn-primary" style={{ padding: '1.5rem 4rem', fontSize: '1.25rem' }}>
+            Create Free Account
+          </Link>
+          <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+            <Link to="/login" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontWeight: 500 }}>
+              Already have an account? Log in &rarr;
+            </Link>
+          </div>
+        </div>
+
+      </section>
+    </div>
   );
 }

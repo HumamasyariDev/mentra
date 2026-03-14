@@ -20,7 +20,6 @@ export default function ForestShowcase() {
   useGSAP(() => {
     if (prefersReducedMotion) return;
 
-    // Ambient Swaying
     gsap.to('.forest-tree-left, .forest-tree-right', {
       rotation: 3,
       skewX: 1,
@@ -40,22 +39,20 @@ export default function ForestShowcase() {
       ease: 'sine.inOut'
     });
 
-    // The Portal Dive (Pin and expand)
     let mm = gsap.matchMedia();
     
     mm.add("(min-width: 768px)", () => {
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: sectionRef.current, // Pin the outer container
+          trigger: sectionRef.current, 
           start: "top top",
-          end: "+=1500", // Shorter to avoid overlapping fatigue
+          end: "+=3000", // Much longer scroll
           scrub: 1,
           pin: true,
           pinSpacing: true
         }
       });
 
-      // Scale the portal to fill the screen
       tl.to(portalRef.current, {
         width: '100vw',
         height: '100vh',
@@ -65,7 +62,6 @@ export default function ForestShowcase() {
         ease: 'power2.inOut',
       }, 0);
 
-      // Fade out the text
       tl.to(textRef.current, {
         opacity: 0,
         scale: 1.2,
@@ -73,7 +69,6 @@ export default function ForestShowcase() {
         ease: 'power2.in'
       }, 0);
 
-      // Deep 3D Parallax of the forest elements
       tl.to('.forest-scene-inner', { scale: 1.1, y: '10%', ease: 'none' }, 0);
       tl.to('.forest-tree-left, .forest-tree-right', { scale: 1.3, y: '15%', ease: 'none' }, 0);
       tl.to('.forest-fire, .forest-log', { scale: 1.6, y: '25%', ease: 'none' }, 0);
@@ -83,8 +78,8 @@ export default function ForestShowcase() {
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
   return (
-    <section ref={sectionRef} id="forest" style={{ width: '100%', position: 'relative' }}>
-      <div className="forest-pin-wrapper" style={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative', background: 'var(--bg-base)' }}>
+    <div ref={sectionRef}>
+      <section id="forest" style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative', background: 'var(--bg-base)' }}>
         
         <div ref={textRef} className="forest-text-overlay">
           <h2 className="landing-section-heading" style={{ margin: 0, filter: 'drop-shadow(0 0 20px rgba(0,0,0,0.8))' }}>
@@ -109,7 +104,7 @@ export default function ForestShowcase() {
           </div>
         </div>
 
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }
