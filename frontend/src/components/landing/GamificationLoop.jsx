@@ -8,15 +8,15 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
 gsap.registerPlugin(ScrollTrigger);
 
 const STEPS = [
-  { icon: CheckSquare, title: 'Check it off', desc: 'Manage your daily tasks with beautiful list, calendar, or board views.' },
-  { icon: Sparkles, title: 'Earn XP', desc: 'Every completed task earns experience points. Your productivity directly fuels your progress.' },
-  { icon: Trophy, title: 'Level Up', desc: 'Hit milestones, maintain daily streaks, and climb levels as you build better habits.' },
-  { icon: TreePine, title: 'Watch it Grow', desc: 'Your progress manifests as a living, breathing virtual forest that grows with you.' },
+  { icon: CheckSquare, title: 'Check it off', desc: 'Manage your daily tasks with beautiful list, calendar, or board views. Simple on the surface, smart underneath.' },
+  { icon: Sparkles, title: 'Earn XP', desc: 'Every completed task earns experience points. Your real-world productivity directly fuels your digital progress.' },
+  { icon: Trophy, title: 'Level Up', desc: 'Hit milestones, maintain daily streaks, and climb levels as you build better, more consistent habits.' },
+  { icon: TreePine, title: 'Watch it Grow', desc: 'Your progress manifests as a living, breathing virtual forest that grows with you over time.' },
 ];
 
 export default function GamificationLoop() {
   const sectionRef = useRef(null);
-  const pinWrapperRef = useRef(null);
+  const containerRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
 
   useGSAP(() => {
@@ -24,62 +24,52 @@ export default function GamificationLoop() {
 
     let mm = gsap.matchMedia();
 
+    // The Horizontal Scroll / Pin
     mm.add("(min-width: 1024px)", () => {
-      const cards = gsap.utils.toArray('.tunnel-card');
+      const panels = gsap.utils.toArray('.loop-panel');
+      const totalPanels = panels.length;
       
-      // Set cards up in deep Z-space
-      cards.forEach((card, i) => {
-        gsap.set(card, { 
-          z: -3000 - (i * 2000), 
-          opacity: 0,
-          scale: 0.5
-        });
-      });
-
-      // Pin the section wrapper, animate the track inside it
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: sectionRef.current, // Pin the outer section
-          start: "top top",
-          end: `+=${cards.length * 1500}`, 
+          trigger: sectionRef.current,
           pin: true,
           scrub: 1,
-          pinSpacing: true // Ensure it pushes content down correctly
+          snap: 1 / (totalPanels - 1),
+          // Scroll length depends on the width of the horizontal container
+          end: () => "+=" + containerRef.current.offsetWidth,
         }
       });
 
-      const totalTravel = 3000 + (cards.length * 2000) + 1000;
-      
-      tl.to('.tunnel-track', {
-        z: totalTravel,
+      // Move the container horizontally
+      tl.to(containerRef.current, {
+        xPercent: -100 * (totalPanels - 1) / totalPanels,
         ease: "none"
-      });
+      }, 0);
 
-      // Update card focus based on absolute track Z
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top top",
-        end: `+=${cards.length * 1500}`,
-        onUpdate: () => {
-          const trackZ = gsap.getProperty('.tunnel-track', 'z') || 0;
-          
-          cards.forEach((card, i) => {
-            const cardZ = -3000 - (i * 2000);
-            const currentRelativeZ = trackZ + cardZ;
-            
-            if (currentRelativeZ < -1500) {
-              gsap.set(card, { opacity: 0, filter: 'blur(20px)' });
-            } else if (currentRelativeZ >= -1500 && currentRelativeZ < -200) {
-              const progress = gsap.utils.normalize(-1500, -200, currentRelativeZ);
-              gsap.set(card, { opacity: progress, filter: `blur(${(1-progress)*20}px)` });
-            } else if (currentRelativeZ >= -200 && currentRelativeZ < 200) {
-              gsap.set(card, { opacity: 1, filter: 'blur(0px)' });
-            } else if (currentRelativeZ >= 200) {
-              const progress = gsap.utils.normalize(200, 1000, currentRelativeZ);
-              gsap.set(card, { opacity: 1 - progress, filter: `blur(${progress*40}px)` });
-            }
-          });
-        }
+      // Animate the progress bar width
+      tl.to('.loop-progress-fill', {
+        width: '100%',
+        ease: "none"
+      }, 0);
+
+      // Parallax effect on the content inside each panel as it moves
+      panels.forEach((panel, i) => {
+        if (i === 0) return; // Skip the first one since it's already there
+        
+        const content = panel.querySelector('.loop-panel-content');
+        
+        // As the panel slides in from the right, the content moves slightly faster
+        gsap.from(content, {
+          x: 200,
+          opacity: 0,
+          scale: 0.8,
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: () => `top top-=${(i - 0.5) * window.innerWidth}`,
+            end: () => `top top-=${i * window.innerWidth}`,
+            scrub: true,
+          }
+        });
       });
     });
 
@@ -87,24 +77,26 @@ export default function GamificationLoop() {
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
   return (
-    <section ref={sectionRef} id="how-it-works" style={{ width: '100%', position: 'relative' }}>
-      <div ref={pinWrapperRef} className="tunnel-pin-wrapper" style={{ width: '100%', height: '100vh', overflow: 'hidden', perspective: '2000px', background: 'var(--bg-base)', position: 'relative' }}>
-        
-        <div className="tunnel-title">The Loop.</div>
-
-        <div className="tunnel-track">
-          {STEPS.map((step, i) => (
-            <div key={i} className="tunnel-card">
-              <div className="tunnel-icon">
+    <section ref={sectionRef} id="how-it-works" className="loop-horizontal-wrapper">
+      
+      <div ref={containerRef} className="loop-horizontal-container">
+        {STEPS.map((step, i) => (
+          <div key={i} className="loop-panel">
+            <div className="loop-panel-content">
+              <div className="loop-panel-icon">
                 <step.icon size={64} />
               </div>
               <h3>{step.title}</h3>
               <p>{step.desc}</p>
             </div>
-          ))}
-        </div>
-
+          </div>
+        ))}
       </div>
+
+      <div className="loop-progress-bar">
+        <div className="loop-progress-fill"></div>
+      </div>
+
     </section>
   );
 }

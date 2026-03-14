@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { Link } from 'react-router-dom';
@@ -10,6 +10,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function Hero() {
   const containerRef = useRef(null);
+  const sceneRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
   const btn1Ref = useMagneticHover(0.5);
 
@@ -22,64 +23,81 @@ export default function Hero() {
     if (prefersReducedMotion) return;
 
     // --- ENTRANCE ANIMATION ---
-    const introTl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+    const introTl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
     introTl.fromTo('.hero-title-word', 
-      { y: 200, opacity: 0, rotateZ: 15, scale: 0.5 },
-      { y: 0, opacity: 1, rotateZ: 0, scale: 1, duration: 2, stagger: 0.05 }
+      { y: 150, opacity: 0, rotateZ: 10, scale: 0.9 },
+      { y: 0, opacity: 1, rotateZ: 0, scale: 1, duration: 1.5, stagger: 0.05 }
     )
     .fromTo(['.hero-subtitle', '.hero-actions'], 
-      { y: 50, opacity: 0, filter: 'blur(10px)' },
-      { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.5, stagger: 0.2 }, 
-      "-=1.5"
+      { y: 30, opacity: 0, filter: 'blur(5px)' },
+      { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.2, stagger: 0.2 }, 
+      "-=1"
     )
     .fromTo('.glass-layer',
-      { z: -2000, opacity: 0, rotationX: 60, rotationY: -60 },
-      { z: (i) => i * 60, opacity: 1, rotationX: 10, rotationY: -10, duration: 2.5, stagger: 0.2, ease: 'power4.out' },
-      "-=2"
+      { y: 200, opacity: 0, rotationX: 45, rotationY: -20 },
+      { y: 0, opacity: 1, rotationX: 10, rotationY: -10, duration: 2, stagger: 0.15, ease: 'expo.out' },
+      "-=1.5"
     );
 
-    // --- "WARP DRIVE" SCROLL TRIGGER ---
-    const scrollTl = gsap.timeline({
+    // --- CONTINUOUS FLOATING ---
+    gsap.to(sceneRef.current, {
+      y: -20,
+      duration: 4,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1
+    });
+
+    // --- PARALLAX SCROLL TRIGGER ---
+    // Smoothly push the hero up and blur it slightly as you scroll away
+    gsap.to('.hero-content', {
+      y: -150,
+      opacity: 0,
+      filter: 'blur(10px)',
       scrollTrigger: {
-        trigger: containerRef.current, // Pin the outer container
+        trigger: containerRef.current,
         start: 'top top',
-        end: '+=1500', // Scroll duration
-        scrub: 1.5,
-        pin: true,
-        // pinSpacing is true by default, keeping it
+        end: 'bottom top',
+        scrub: 1,
       }
     });
 
-    // Text gets sucked backwards into a void
-    scrollTl.to('.hero-title-word', { 
-      z: -2000, 
-      rotationZ: 'random(-45, 45)', 
-      opacity: 0, 
-      filter: 'blur(20px)', 
-      stagger: 0.02,
-      ease: 'power2.in'
-    }, 0);
-    
-    scrollTl.to('.hero-subtitle, .hero-actions', { 
-      z: -1000, opacity: 0, filter: 'blur(10px)', ease: 'power2.in'
-    }, 0);
-
-    // The 3D Glass layers fly forwards past the camera
-    scrollTl.to('.glass-layer', { 
-      z: 2000, // Blow past the camera
-      rotationX: 'random(-45, 45)',
-      rotationY: 'random(-45, 45)',
-      opacity: 0, 
-      filter: 'blur(30px)',
-      stagger: 0.1,
-      ease: 'power3.in'
-    }, 0);
+    gsap.to('.hero-3d-scene', {
+      y: -300,
+      opacity: 0,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 1.5,
+      }
+    });
 
   }, { scope: containerRef, dependencies: [prefersReducedMotion] });
 
+  // 3D Parallax tracking on the assembled card
+  useEffect(() => {
+    if (prefersReducedMotion || !sceneRef.current) return;
+    
+    const el = sceneRef.current;
+    const xTo = gsap.quickTo(el, "rotationY", { duration: 1, ease: "power3.out" });
+    const yTo = gsap.quickTo(el, "rotationX", { duration: 1, ease: "power3.out" });
+
+    const handleMouseMove = (e) => {
+      const { innerWidth, innerHeight } = window;
+      const xPos = (e.clientX / innerWidth - 0.5) * 30; // Max 15 deg
+      const yPos = (e.clientY / innerHeight - 0.5) * -30; // Invert Y
+      xTo(xPos);
+      yTo(yPos);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [prefersReducedMotion]);
+
   return (
-    <section ref={containerRef} className="hero-pin-wrapper">
+    <section ref={containerRef} className="hero-wrapper">
       <div className="hero-glow"></div>
       
       <div className="hero-content">
@@ -104,10 +122,9 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="hero-3d-scene">
+      <div ref={sceneRef} className="hero-3d-scene">
         <div className="glass-layer layer-base"></div>
         <div className="glass-layer layer-grid"></div>
-        {/* Removed the weird layer-ui boxes that looked broken */}
       </div>
     </section>
   );
