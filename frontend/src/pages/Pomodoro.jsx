@@ -176,7 +176,8 @@ export default function Pomodoro() {
     <div
       className={`min-h-screen -m-4 lg:-m-8 p-4 lg:p-8 bg-gradient-to-br ${theme.gradient} transition-colors duration-300`}
     >
-      <div className="space-y-6">
+      {/* Centered container with max-width */}
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="pomodoro-header">
           <div>
@@ -201,9 +202,9 @@ export default function Pomodoro() {
                   : "bg-white/50 backdrop-blur-sm border border-white/50 text-slate-700 hover:bg-white/70"
               }`}
             >
-              <Palette style={{ width: '1rem', height: '1rem' }} />
+              <Palette style={{ width: "1rem", height: "1rem" }} />
               <span className="pomodoro-theme-label">{theme.label}</span>
-              <ChevronDown style={{ width: '0.75rem', height: '0.75rem' }} />
+              <ChevronDown style={{ width: "0.75rem", height: "0.75rem" }} />
             </button>
             {showBgPicker && (
               <div className="pomodoro-theme-dropdown">
@@ -228,12 +229,12 @@ export default function Pomodoro() {
           </div>
         </div>
 
-        {/* 2-Column Layout */}
-        <div className="pomodoro-grid">
-          {/* Main Timer Card (2x width) */}
-          <div className="lg:col-span-2">
+        {/* Bento Grid Layout - 3 Cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Card 1: Main Timer Card - Prominent Centerpiece (spans 2 rows on large screens) */}
+          <div className="lg:col-span-2 lg:row-span-2">
             <div
-              className={`rounded-2xl ${isDark ? "bg-white/5 backdrop-blur-md shadow-2xl" : "bg-white/50 backdrop-blur-md shadow-xl"} p-6 md:p-8 relative overflow-hidden border ${isDark ? "border-white/10" : "border-white/60"} transition-all duration-500 hover:shadow-2xl ${isDark ? "hover:bg-white/[0.07]" : "hover:bg-white/60"}`}
+              className={`rounded-2xl ${isDark ? "bg-white/5 backdrop-blur-md shadow-2xl" : "bg-white/50 backdrop-blur-md shadow-xl"} p-6 md:p-8 relative overflow-hidden border ${isDark ? "border-white/10" : "border-white/60"} transition-all duration-500 hover:shadow-2xl ${isDark ? "hover:bg-white/[0.07]" : "hover:bg-white/60"} h-full`}
             >
               {/* Watering Scene */}
               <div className="text-center mb-6">
@@ -476,9 +477,12 @@ export default function Pomodoro() {
                     disabled={startMutation.isPending}
                   >
                     {startMutation.isPending ? (
-                      <Loader2 className="page-loading-spinner" style={{ width: '1.25rem', height: '1.25rem' }} />
+                      <Loader2
+                        className="page-loading-spinner"
+                        style={{ width: "1.25rem", height: "1.25rem" }}
+                      />
                     ) : (
-                      <Play style={{ width: '1.25rem', height: '1.25rem' }} />
+                      <Play style={{ width: "1.25rem", height: "1.25rem" }} />
                     )}
                     Water Plants
                   </button>
@@ -506,7 +510,7 @@ export default function Pomodoro() {
                       onClick={handleStop}
                       className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500/10 text-red-500 font-semibold hover:bg-red-500/20 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
                     >
-                      <Square style={{ width: '1.25rem', height: '1.25rem' }} />
+                      <Square style={{ width: "1.25rem", height: "1.25rem" }} />
                       Stop
                     </button>
                   </>
@@ -515,12 +519,11 @@ export default function Pomodoro() {
             </div>
           </div>
 
-          {/* Stats & Recent Sessions Card (1x width) */}
-          <div className="pomodoro-sidebar">
-            {/* Stats Card */}
-            {stats && (
+          {/* Card 2: Stats Card - Top Right */}
+          {stats && (
+            <div className="lg:col-span-1">
               <div
-                className={`rounded-xl p-5 space-y-4 transition-all duration-300 hover:shadow-lg ${isDark ? "bg-white/5 backdrop-blur-md border border-white/10 shadow-md" : "bg-white/50 backdrop-blur-md border border-white/60 shadow-md"}`}
+                className={`rounded-2xl p-6 space-y-4 transition-all duration-300 hover:shadow-lg ${isDark ? "bg-white/5 backdrop-blur-md border border-white/10 shadow-md" : "bg-white/50 backdrop-blur-md border border-white/60 shadow-md"} h-full`}
               >
                 <h3
                   className={`font-semibold text-sm ${isDark ? "text-white" : "text-slate-900"}`}
@@ -568,12 +571,14 @@ export default function Pomodoro() {
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Recent Sessions */}
-            {history?.data?.length > 0 && (
+          {/* Card 3: Recent Sessions - Bottom Right */}
+          {history?.data?.length > 0 && (
+            <div className="lg:col-span-1">
               <div
-                className={`rounded-xl p-5 transition-all duration-300 hover:shadow-lg ${isDark ? "bg-white/5 backdrop-blur-md border border-white/10 shadow-md" : "bg-white/50 backdrop-blur-md border border-white/60 shadow-md"}`}
+                className={`rounded-2xl p-6 transition-all duration-300 hover:shadow-lg ${isDark ? "bg-white/5 backdrop-blur-md border border-white/10 shadow-md" : "bg-white/50 backdrop-blur-md border border-white/60 shadow-md"} h-full`}
               >
                 <h3
                   className={`font-semibold mb-3 text-sm ${isDark ? "text-white" : "text-slate-900"}`}
@@ -627,8 +632,8 @@ export default function Pomodoro() {
                   ))}
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
