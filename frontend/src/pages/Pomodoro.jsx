@@ -1,16 +1,29 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Play, Pause, RotateCcw, Coffee, Brain, Square, Loader2, Palette, ChevronDown, Fish, Clock, CheckCircle } from 'lucide-react';
-import '../styles/pages/CommonPages.css';
-import '../styles/pages/Pomodoro.css';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { pomodoroApi, taskApi } from '../services/api';
-import { usePomodoroTheme } from '../contexts/PomodoroThemeContext';
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { pomodoroApi, taskApi } from "../services/api";
+import {
+  Play,
+  Pause,
+  Square,
+  Loader2,
+  Palette,
+  ChevronDown,
+  Droplets,
+  Clock,
+  CheckCircle,
+} from "lucide-react";
+import { usePomodoroTheme } from "../contexts/PomodoroThemeContext";
 
-const catMoods = {
-  idle: { emoji: '😺', label: 'Waiting...', animation: '' },
-  focusing: { emoji: '😸', label: 'Eating happily!', animation: 'animate-bounce' },
-  paused: { emoji: '😿', label: 'Why did you stop?', animation: '' },
-  completed: { emoji: '😻', label: 'So full & happy!', animation: 'animate-pulse' },
+import kranAirImg from "../assets/gameworld/kran_air-2.png";
+import wateringCanImg from "../assets/gameworld/watering_can.png";
+import waterDropImg from "../assets/gameworld/water_drop.png";
+import "./Pomodoro.css";
+
+const plantMoods = {
+  idle: { label: "Waiting for water...", scale: "scale-100" },
+  focusing: { label: "Watering in progress...", scale: "scale-105" },
+  paused: { label: "Tap is closed...", scale: "scale-100" },
+  completed: { label: "Plant is happy & fully watered!", scale: "scale-110" },
 };
 
 export default function Pomodoro() {
@@ -20,25 +33,26 @@ export default function Pomodoro() {
   const [isRunning, setIsRunning] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [duration, setDuration] = useState(25);
-  const [selectedTask, setSelectedTask] = useState('');
+  const [selectedTask, setSelectedTask] = useState("");
   const [showBgPicker, setShowBgPicker] = useState(false);
-  const [catState, setCatState] = useState('idle');
+  const [waterState, setWaterState] = useState("idle");
   const intervalRef = useRef(null);
 
   const isDark = theme.dark;
 
   const { data: stats } = useQuery({
-    queryKey: ['pomodoro-stats'],
+    queryKey: ["pomodoro-stats"],
     queryFn: () => pomodoroApi.stats().then((r) => r.data),
   });
 
   const { data: tasks } = useQuery({
-    queryKey: ['tasks', 'pending'],
-    queryFn: () => taskApi.list({ status: 'pending', per_page: 50 }).then((r) => r.data),
+    queryKey: ["tasks", "pending"],
+    queryFn: () =>
+      taskApi.list({ status: "pending", per_page: 50 }).then((r) => r.data),
   });
 
   const { data: history } = useQuery({
-    queryKey: ['pomodoro-history'],
+    queryKey: ["pomodoro-history"],
     queryFn: () => pomodoroApi.list({ per_page: 5 }).then((r) => r.data),
   });
 
@@ -47,20 +61,20 @@ export default function Pomodoro() {
     onSuccess: (res) => {
       setSessionId(res.data.id);
       setIsRunning(true);
-      setCatState('focusing');
+      setWaterState("focusing");
     },
   });
 
   const completeMutation = useMutation({
     mutationFn: (id) => pomodoroApi.complete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pomodoro-stats'] });
-      queryClient.invalidateQueries({ queryKey: ['pomodoro-history'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      setCatState('completed');
+      queryClient.invalidateQueries({ queryKey: ["pomodoro-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["pomodoro-history"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      setWaterState("completed");
       setTimeout(() => {
         resetTimer();
-        setCatState('idle');
+        setWaterState("idle");
       }, 3000);
     },
   });
@@ -69,7 +83,7 @@ export default function Pomodoro() {
     mutationFn: (id) => pomodoroApi.cancel(id),
     onSuccess: () => {
       resetTimer();
-      setCatState('idle');
+      setWaterState("idle");
     },
   });
 
@@ -80,7 +94,35 @@ export default function Pomodoro() {
     if (intervalRef.current) clearInterval(intervalRef.current);
   }, [duration]);
 
-  // Fixed useEffect with proper dependencies
+  // On mount: detect & recover any active session from the server
+  // This prevents the "Please complete or cancel" 422 error
+  useEffect(() => {
+    pomodoroApi
+      .list({ status: "running", per_page: 1 })
+      .then((res) => {
+        const active = res.data?.data?.[0];
+        if (active && ["running", "paused"].includes(active.status)) {
+          const dur = active.duration_minutes ?? 25;
+          // Compute how many seconds have elapsed since the session started
+          const elapsedSec = Math.floor(
+            (Date.now() - new Date(active.started_at).getTime()) / 1000,
+          );
+          const remaining = Math.max(0, dur * 60 - elapsedSec);
+          setSessionId(active.id);
+          setDuration(dur);
+          setTimeLeft(remaining);
+          const running = active.status === "running";
+          setIsRunning(running);
+          setWaterState(running ? "focusing" : "paused");
+        }
+      })
+      .catch(() => {
+        /* no active session or network error — stay in idle */
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Timer countdown
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
@@ -120,35 +162,44 @@ export default function Pomodoro() {
   const handlePauseResume = () => {
     const next = !isRunning;
     setIsRunning(next);
-    setCatState(next ? 'focusing' : 'paused');
+    setWaterState(next ? "focusing" : "paused");
   };
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   const progress = ((duration * 60 - timeLeft) / (duration * 60)) * 100;
-  const mood = catMoods[catState];
-  const foodProgress = Math.min(100, progress);
+  const mood = plantMoods[waterState];
+  const waterProgress = Math.min(100, progress);
 
   return (
     // Full page theme wrapper - negates parent padding to extend to edges
-    <div className="pomodoro-wrapper" style={{ background: `linear-gradient(to bottom right, ${theme.gradient})` }}>
-      <div className="pomodoro-container">
+    <div
+      className={`min-h-screen -m-4 lg:-m-8 p-4 lg:p-8 bg-gradient-to-br ${theme.gradient} transition-colors duration-300`}
+    >
+      <div className="space-y-6">
         {/* Header */}
         <div className="pomodoro-header">
           <div>
-            <h1 className="pomodoro-title" style={{ color: isDark ? '#ffffff' : theme.accent }}>Pomodoro</h1>
-            <p className="pomodoro-subtitle" style={{ color: isDark ? 'rgba(255,255,255,0.6)' : '#475569' }}>Feed your cat by staying focused</p>
+            <h1
+              className={`text-2xl font-bold ${isDark ? "text-white" : theme.accent}`}
+            >
+              Pomodoro
+            </h1>
+            <p
+              className={`text-sm mt-1 ${isDark ? "text-white/60" : "text-slate-600"}`}
+            >
+              Water your plants by staying focused
+            </p>
           </div>
           {/* Theme picker */}
           <div className="pomodoro-theme-picker">
             <button
               onClick={() => setShowBgPicker(!showBgPicker)}
-              className="pomodoro-theme-btn"
-              style={{
-                backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)',
-                color: isDark ? '#ffffff' : '#334155',
-                border: isDark ? 'none' : '1px solid rgba(255,255,255,0.5)'
-              }}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                isDark
+                  ? "bg-white/10 text-white hover:bg-white/20"
+                  : "bg-white/50 backdrop-blur-sm border border-white/50 text-slate-700 hover:bg-white/70"
+              }`}
             >
               <Palette style={{ width: '1rem', height: '1rem' }} />
               <span className="pomodoro-theme-label">{theme.label}</span>
@@ -160,13 +211,15 @@ export default function Pomodoro() {
                   <button
                     key={b.key}
                     onClick={() => handleBgChange(b.key)}
-                    className="pomodoro-theme-option"
-                    style={{
-                      backgroundColor: theme.key === b.key ? '#eef2ff' : 'transparent',
-                      color: theme.key === b.key ? '#4338ca' : '#475569'
-                    }}
+                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                      theme.key === b.key
+                        ? "bg-indigo-50 text-indigo-700"
+                        : "text-slate-600 hover:bg-slate-50"
+                    }`}
                   >
-                    <span className="pomodoro-theme-preview" style={{ background: `linear-gradient(to bottom right, ${b.gradient})` }} />
+                    <span
+                      className={`w-5 h-5 rounded-full bg-gradient-to-br ${b.gradient} border border-slate-200`}
+                    />
                     {b.label}
                   </button>
                 ))}
@@ -178,46 +231,161 @@ export default function Pomodoro() {
         {/* 2-Column Layout */}
         <div className="pomodoro-grid">
           {/* Main Timer Card (2x width) */}
-          <div className="pomodoro-timer-col">
-            <div className="pomodoro-timer-card" style={{
-              backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.4)',
-              border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)'}`,
-              backdropFilter: 'blur(10px)'
-            }}>
-              {/* Cat Scene */}
-              <div className="pomodoro-cat-scene">
-                {/* Food bowl progress */}
-                <div className="pomodoro-food-progress">
-                  <Fish style={{ width: '1rem', height: '1rem', color: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }} />
-                  <div className="pomodoro-food-bar" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }}>
+          <div className="lg:col-span-2">
+            <div
+              className={`rounded-2xl ${isDark ? "bg-white/5 backdrop-blur-md shadow-2xl" : "bg-white/50 backdrop-blur-md shadow-xl"} p-6 md:p-8 relative overflow-hidden border ${isDark ? "border-white/10" : "border-white/60"} transition-all duration-500 hover:shadow-2xl ${isDark ? "hover:bg-white/[0.07]" : "hover:bg-white/60"}`}
+            >
+              {/* Watering Scene */}
+              <div className="text-center mb-6">
+                {/* Water progress */}
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <Droplets
+                    className={`w-4 h-4 ${isDark ? "text-cyan-400/80" : "text-cyan-500"}`}
+                  />
+                  <div
+                    className={`flex-1 max-w-[200px] h-2 rounded-full ${isDark ? "bg-white/10" : "bg-black/5"} overflow-hidden`}
+                  >
                     <div
-                      className="pomodoro-food-fill"
-                      style={{ width: `${foodProgress}%` }}
+                      className="h-full bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full transition-all duration-1000"
+                      style={{ width: `${waterProgress}%` }}
                     />
                   </div>
-                  <span className="pomodoro-food-percent" style={{ color: isDark ? 'rgba(255,255,255,0.5)' : '#94a3b8' }}>
-                    {Math.round(foodProgress)}%
+                  <span
+                    className={`text-xs font-medium ${isDark ? "text-white/50" : "text-slate-400"}`}
+                  >
+                    {Math.round(waterProgress)}%
                   </span>
                 </div>
 
-                {/* Cat */}
-                <div className="pomodoro-cat" style={{ animation: mood.animation }}>
-                  <span className="pomodoro-cat-emoji" role="img" aria-label="cat">
-                    {mood.emoji}
-                  </span>
-                  <span className="pomodoro-cat-label" style={{ color: isDark ? 'rgba(255,255,255,0.6)' : theme.accent }}>
+                {/* Watering Animation Scene */}
+                <div
+                  className={`relative flex flex-col items-center bg-gradient-to-b from-white/5 to-white/10 backdrop-blur-md overflow-hidden border mx-auto transition-all duration-700 ease-in-out ${
+                    isRunning
+                      ? "h-[30rem] w-80 rounded-2xl border-slate-300/30 shadow-2xl"
+                      : "h-48 w-48 rounded-full border-slate-300/30 shadow-lg"
+                  }`}
+                  style={{
+                    boxShadow: isRunning
+                      ? "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), inset 0 -2px 4px 0 rgba(0, 0, 0, 0.06)"
+                      : "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                  }}
+                >
+                  {/* Kran Air — centered in idle, positioned for drops when running */}
+                  <div
+                    className="flex-shrink-0 z-10 drop-shadow-md transition-all duration-700"
+                    style={{
+                      alignSelf: "center",
+                      marginLeft: isRunning ? "8rem" : "0",
+                      marginTop: isRunning ? "-60px" : "0",
+                      paddingTop: isRunning ? "1rem" : "0",
+                    }}
+                  >
+                    <img
+                      src={kranAirImg}
+                      alt="Kran Air"
+                      className={`object-contain transition-all duration-700 ${isRunning ? "w-50 h-50" : "w-32 h-32"}`}
+                    />
+                  </div>
+
+                  {/* ── WATER DROPS ──────────────────────────────────────────
+                   * Absolutely positioned relative to the scene container.
+                   * top: 18%  → sits just below the kran spout mouth
+                   * left: calc(50% + 8px) → spout mouth of kran_air is
+                   *   slightly right of the kran image center
+                   * Each img starts at the same point and animates downward
+                   * via @keyframes pom-fall defined in Pomodoro.css
+                   * ─────────────────────────────────────────────────────── */}
+                  {isRunning && (
+                    <>
+                      <img
+                        src={waterDropImg}
+                        alt=""
+                        className="pom-drop-1"
+                        style={{
+                          position: "absolute",
+                          width: "2rem",
+                          height: "2rem",
+                          objectFit: "contain",
+                          top: "18%",
+                          left: "calc(50%)",
+
+                          zIndex: 30,
+                          pointerEvents: "none",
+                        }}
+                      />
+                      <img
+                        src={waterDropImg}
+                        alt=""
+                        className="pom-drop-2"
+                        style={{
+                          position: "absolute",
+                          width: "2rem",
+                          height: "2rem",
+                          objectFit: "contain",
+                          top: "18%",
+                          left: "calc(50%)",
+                          zIndex: 30,
+                          pointerEvents: "none",
+                        }}
+                      />
+                      <img
+                        src={waterDropImg}
+                        alt=""
+                        className="pom-drop-3"
+                        style={{
+                          position: "absolute",
+                          width: "2rem",
+                          height: "2rem",
+                          objectFit: "contain",
+                          top: "18%",
+                          left: "calc(50%)",
+                          zIndex: 30,
+                          pointerEvents: "none",
+                        }}
+                      />
+                    </>
+                  )}
+
+                  {/* Spacer pushes watering can to bottom */}
+                  {isRunning && <div className="flex-1" />}
+
+                  {/* Watering Can — bounces when drop lands */}
+                  <div
+                    className={`flex-shrink-0 z-10 transition-all duration-700 pb-4 ${isRunning ? "pom-can-bounce" : "absolute bottom-0"}`}
+                  >
+                    <img
+                      src={wateringCanImg}
+                      alt="Watering Can"
+                      className={`object-contain drop-shadow-xl transition-all duration-700 ${isRunning ? "w-36 h-36" : "w-24 h-24"}`}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <span
+                    className={`text-sm font-medium ${isDark ? "text-white/80" : theme.accent}`}
+                  >
                     {mood.label}
                   </span>
                 </div>
               </div>
 
               {/* Timer */}
-              <div className="pomodoro-timer-display">
-                <p className="pomodoro-timer-time" style={{ color: isDark ? '#ffffff' : '#1e293b' }}>
-                  {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+              <div className="text-center mb-6">
+                <p
+                  className={`text-6xl md:text-7xl font-mono font-bold tracking-wider transition-all duration-300 ${isDark ? "text-white drop-shadow-lg" : "text-slate-800"} ${isRunning ? "scale-105" : "scale-100"}`}
+                >
+                  {String(minutes).padStart(2, "0")}:
+                  {String(seconds).padStart(2, "0")}
                 </p>
-                <p className="pomodoro-timer-status" style={{ color: isDark ? 'rgba(255,255,255,0.4)' : '#64748b' }}>
-                  {sessionId ? (isRunning ? 'Feeding in progress...' : 'Paused — cat is waiting') : 'Start to feed your cat'}
+                <p
+                  className={`text-sm mt-3 font-medium transition-all duration-300 ${isDark ? "text-white/50" : "text-slate-600"}`}
+                >
+                  {sessionId
+                    ? isRunning
+                      ? "Watering in progress..."
+                      : "Paused — tap is closed"
+                    : "Start to water your plants"}
                 </p>
               </div>
 
@@ -229,16 +397,15 @@ export default function Pomodoro() {
                       <button
                         key={d}
                         onClick={() => setDuration(d)}
-                        className="pomodoro-duration-btn"
-                        style={{
-                          backgroundColor: duration === d 
-                            ? (isDark ? 'rgba(255,255,255,0.2)' : '#ffffff')
-                            : (isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.3)'),
-                          color: duration === d
-                            ? (isDark ? '#ffffff' : '#1e293b')
-                            : (isDark ? 'rgba(255,255,255,0.5)' : '#475569'),
-                          boxShadow: duration === d ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'
-                        }}
+                        className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95 ${
+                          duration === d
+                            ? isDark
+                              ? "bg-white/20 text-white shadow-md ring-2 ring-white/30"
+                              : "bg-white text-slate-800 shadow-md ring-2 ring-indigo-200"
+                            : isDark
+                              ? "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/70"
+                              : "bg-white/30 text-slate-600 hover:bg-white/50 hover:text-slate-800"
+                        }`}
                       >
                         {d}m
                       </button>
@@ -246,8 +413,12 @@ export default function Pomodoro() {
                   </div>
 
                   {/* Custom duration input */}
-                  <div className="pomodoro-custom-duration">
-                    <span style={{ color: isDark ? 'rgba(255,255,255,0.6)' : '#64748b' }}>or custom:</span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-xs ${isDark ? "text-white/60" : "text-slate-500"}`}
+                    >
+                      or custom:
+                    </span>
                     <input
                       type="number"
                       min="1"
@@ -259,13 +430,17 @@ export default function Pomodoro() {
                           setDuration(val);
                         }
                       }}
-                      className="pomodoro-custom-input"
-                      style={{
-                        backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.6)',
-                        color: isDark ? 'rgba(255,255,255,0.8)' : '#334155'
-                      }}
+                      className={`w-16 px-2 py-1 rounded-lg text-sm text-center border-0 focus:ring-2 focus:ring-indigo-400 ${
+                        isDark
+                          ? "bg-white/10 text-white/80"
+                          : "bg-white/60 text-slate-700"
+                      }`}
                     />
-                    <span style={{ color: isDark ? 'rgba(255,255,255,0.6)' : '#64748b' }}>min</span>
+                    <span
+                      className={`text-xs ${isDark ? "text-white/60" : "text-slate-500"}`}
+                    >
+                      min
+                    </span>
                   </div>
                 </div>
               )}
@@ -274,11 +449,11 @@ export default function Pomodoro() {
               {!sessionId && (
                 <div className="pomodoro-task-section">
                   <select
-                    className="pomodoro-task-select"
-                    style={{
-                      backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.6)',
-                      color: isDark ? 'rgba(255,255,255,0.8)' : '#334155'
-                    }}
+                    className={`w-full rounded-xl px-4 py-2.5 text-sm border-0 focus:ring-2 focus:ring-indigo-400 ${
+                      isDark
+                        ? "bg-white/10 text-white/80"
+                        : "bg-white/60 text-slate-700"
+                    }`}
                     value={selectedTask}
                     onChange={(e) => setSelectedTask(e.target.value)}
                   >
@@ -297,7 +472,7 @@ export default function Pomodoro() {
                 {!sessionId ? (
                   <button
                     onClick={handleStart}
-                    className="pomodoro-start-btn"
+                    className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-semibold hover:from-indigo-600 hover:to-indigo-700 transition-all duration-300 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 hover:scale-105 active:scale-95"
                     disabled={startMutation.isPending}
                   >
                     {startMutation.isPending ? (
@@ -305,32 +480,31 @@ export default function Pomodoro() {
                     ) : (
                       <Play style={{ width: '1.25rem', height: '1.25rem' }} />
                     )}
-                    Feed Cat
+                    Water Plants
                   </button>
-                ) : catState === 'completed' ? (
-                  <div className="pomodoro-completed-msg" style={{
-                    backgroundColor: isDark ? 'rgba(16, 185, 129, 0.2)' : '#d1fae5',
-                    color: isDark ? '#6ee7b7' : '#047857'
-                  }}>
-                    Cat is happy! +EXP earned
+                ) : waterState === "completed" ? (
+                  <div
+                    className={`px-6 py-3 rounded-xl font-semibold animate-pulse ${isDark ? "bg-emerald-500/20 text-emerald-300 shadow-lg shadow-emerald-500/20" : "bg-emerald-100 text-emerald-700 shadow-lg shadow-emerald-500/10"}`}
+                  >
+                    Plant is happy! +EXP earned
                   </div>
                 ) : (
                   <>
                     <button
                       onClick={handlePauseResume}
-                      className="pomodoro-pause-btn"
-                      style={{
-                        backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : '#ffffff',
-                        color: isDark ? '#ffffff' : '#334155',
-                        boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.05)'
-                      }}
+                      className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95 ${isDark ? "bg-white/10 text-white hover:bg-white/20 shadow-md hover:shadow-lg" : "bg-white text-slate-700 hover:bg-slate-50 shadow-md hover:shadow-xl"}
+                        }`}
                     >
-                      {isRunning ? <Pause style={{ width: '1.25rem', height: '1.25rem' }} /> : <Play style={{ width: '1.25rem', height: '1.25rem' }} />}
-                      {isRunning ? 'Pause' : 'Resume'}
+                      {isRunning ? (
+                        <Pause className="w-5 h-5" />
+                      ) : (
+                        <Play className="w-5 h-5" />
+                      )}
+                      {isRunning ? "Pause" : "Resume"}
                     </button>
                     <button
                       onClick={handleStop}
-                      className="pomodoro-stop-btn"
+                      className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500/10 text-red-500 font-semibold hover:bg-red-500/20 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
                     >
                       <Square style={{ width: '1.25rem', height: '1.25rem' }} />
                       Stop
@@ -345,26 +519,52 @@ export default function Pomodoro() {
           <div className="pomodoro-sidebar">
             {/* Stats Card */}
             {stats && (
-              <div className="pomodoro-stats-card" style={{
-                backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.4)',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)'}`,
-                backdropFilter: 'blur(10px)'
-              }}>
-                <h3 className="pomodoro-stats-title" style={{ color: isDark ? '#ffffff' : '#0f172a' }}>Today's Progress</h3>
-                <div className="pomodoro-stats-list">
-                  <div className="pomodoro-stat-item" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)' }}>
-                    <div className="pomodoro-stat-label">
-                      <Clock style={{ width: '1rem', height: '1rem', color: isDark ? '#818cf8' : '#4f46e5' }} />
-                      <span style={{ color: isDark ? 'rgba(255,255,255,0.7)' : '#475569' }}>Today Sessions</span>
+              <div
+                className={`rounded-xl p-5 space-y-4 transition-all duration-300 hover:shadow-lg ${isDark ? "bg-white/5 backdrop-blur-md border border-white/10 shadow-md" : "bg-white/50 backdrop-blur-md border border-white/60 shadow-md"}`}
+              >
+                <h3
+                  className={`font-semibold text-sm ${isDark ? "text-white" : "text-slate-900"}`}
+                >
+                  Today's Progress
+                </h3>
+                <div className="space-y-3">
+                  <div
+                    className={`flex items-center justify-between p-3 rounded-lg ${isDark ? "bg-white/5" : "bg-white/50"}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Clock
+                        className={`w-4 h-4 ${isDark ? "text-indigo-400" : "text-indigo-600"}`}
+                      />
+                      <span
+                        className={`text-xs ${isDark ? "text-white/70" : "text-slate-600"}`}
+                      >
+                        Today Sessions
+                      </span>
                     </div>
-                    <span className="pomodoro-stat-value" style={{ color: isDark ? '#818cf8' : '#4f46e5' }}>{stats.today_sessions}</span>
+                    <span
+                      className={`text-lg font-bold ${isDark ? "text-indigo-400" : "text-indigo-600"}`}
+                    >
+                      {stats.today_sessions}
+                    </span>
                   </div>
-                  <div className="pomodoro-stat-item" style={{ backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)' }}>
-                    <div className="pomodoro-stat-label">
-                      <CheckCircle style={{ width: '1rem', height: '1rem', color: isDark ? '#6ee7b7' : '#059669' }} />
-                      <span style={{ color: isDark ? 'rgba(255,255,255,0.7)' : '#475569' }}>Total Focus</span>
+                  <div
+                    className={`flex items-center justify-between p-3 rounded-lg ${isDark ? "bg-white/5" : "bg-white/50"}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <CheckCircle
+                        className={`w-4 h-4 ${isDark ? "text-emerald-400" : "text-emerald-600"}`}
+                      />
+                      <span
+                        className={`text-xs ${isDark ? "text-white/70" : "text-slate-600"}`}
+                      >
+                        Total Focus
+                      </span>
                     </div>
-                    <span className="pomodoro-stat-value" style={{ color: isDark ? '#6ee7b7' : '#059669' }}>{stats.total_focus_minutes}m</span>
+                    <span
+                      className={`text-lg font-bold ${isDark ? "text-emerald-400" : "text-emerald-600"}`}
+                    >
+                      {stats.total_focus_minutes}m
+                    </span>
                   </div>
                 </div>
               </div>
@@ -372,41 +572,56 @@ export default function Pomodoro() {
 
             {/* Recent Sessions */}
             {history?.data?.length > 0 && (
-              <div className="pomodoro-history-card" style={{
-                backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.4)',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)'}`,
-                backdropFilter: 'blur(10px)'
-              }}>
-                <h3 className="pomodoro-history-title" style={{ color: isDark ? '#ffffff' : '#0f172a' }}>Recent Sessions</h3>
-                <div className="pomodoro-history-list">
+              <div
+                className={`rounded-xl p-5 transition-all duration-300 hover:shadow-lg ${isDark ? "bg-white/5 backdrop-blur-md border border-white/10 shadow-md" : "bg-white/50 backdrop-blur-md border border-white/60 shadow-md"}`}
+              >
+                <h3
+                  className={`font-semibold mb-3 text-sm ${isDark ? "text-white" : "text-slate-900"}`}
+                >
+                  Recent Sessions
+                </h3>
+                <div className="space-y-2">
                   {history.data.map((session) => (
-                    <div key={session.id} className="pomodoro-history-item" style={{
-                      borderBottom: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid #f1f5f9'
-                    }}>
-                      <div className="pomodoro-history-info">
-                        <p className="pomodoro-history-task" style={{ color: isDark ? 'rgba(255,255,255,0.8)' : '#334155' }}>
-                          {session.task?.title || 'No task'}
+                    <div
+                      key={session.id}
+                      className={`flex items-center justify-between py-2 border-b last:border-0 ${isDark ? "border-white/10" : "border-slate-100"}`}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p
+                          className={`text-xs font-medium truncate ${isDark ? "text-white/80" : "text-slate-700"}`}
+                        >
+                          {session.task?.title || "No task"}
                         </p>
-                        <p className="pomodoro-history-meta" style={{ color: isDark ? 'rgba(255,255,255,0.4)' : '#94a3b8' }}>
-                          {session.duration_minutes}min · {new Date(session.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        <p
+                          className={`text-[10px] ${isDark ? "text-white/40" : "text-slate-400"}`}
+                        >
+                          {session.duration_minutes}min ·{" "}
+                          {new Date(session.created_at).toLocaleDateString(
+                            undefined,
+                            { month: "short", day: "numeric" },
+                          )}
                         </p>
                       </div>
                       <span
-                        className="pomodoro-history-badge"
-                        style={{
-                          backgroundColor: session.status === 'completed'
-                            ? (isDark ? 'rgba(16, 185, 129, 0.2)' : '#d1fae5')
-                            : session.status === 'cancelled'
-                              ? (isDark ? 'rgba(239, 68, 68, 0.2)' : '#fee2e2')
-                              : (isDark ? 'rgba(234, 179, 8, 0.2)' : '#fef3c7'),
-                          color: session.status === 'completed'
-                            ? (isDark ? '#6ee7b7' : '#047857')
-                            : session.status === 'cancelled'
-                              ? (isDark ? '#fca5a5' : '#991b1b')
-                              : (isDark ? '#fde047' : '#a16207')
-                        }}
+                        className={`text-[10px] px-2 py-0.5 rounded-full font-medium flex-shrink-0 ml-2 ${
+                          session.status === "completed"
+                            ? isDark
+                              ? "bg-emerald-500/20 text-emerald-400"
+                              : "bg-emerald-100 text-emerald-700"
+                            : session.status === "cancelled"
+                              ? isDark
+                                ? "bg-red-500/20 text-red-400"
+                                : "bg-red-100 text-red-700"
+                              : isDark
+                                ? "bg-yellow-500/20 text-yellow-400"
+                                : "bg-yellow-100 text-yellow-700"
+                        }`}
                       >
-                        {session.status === 'completed' ? '✓' : session.status === 'cancelled' ? '×' : '...'}
+                        {session.status === "completed"
+                          ? "✓"
+                          : session.status === "cancelled"
+                            ? "×"
+                            : "..."}
                       </span>
                     </div>
                   ))}
