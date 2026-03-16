@@ -4,74 +4,114 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
-import treeFull from '../../assets/gameworld/tree.png';
-import treeYoung from '../../assets/gameworld/new_tree.png';
-import campfire from '../../assets/gameworld/roar_fire.png';
-import log from '../../assets/gameworld/log.png';
+// Only use the final stage of the pine purple tree
+import pineFinal from '../../assets/pine_purple/pine_purple_stage_final.png';
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Generate intentional forest data
+const FOREST_TREES = [
+  // Left side coverage (Large trees to cover screen edges)
+  ...Array.from({ length: 6 }).map((_, i) => ({
+    id: `left-${i}`,
+    left: `${-15 + Math.random() * 20}%`,
+    bottom: `${-20 + Math.random() * 10}%`,
+    scale: 1.8 + Math.random() * 0.8,
+    rotation: (Math.random() - 0.5) * 10,
+    zIndex: 25,
+  })),
+  // Right side coverage (Large trees to cover screen edges)
+  ...Array.from({ length: 6 }).map((_, i) => ({
+    id: `right-${i}`,
+    left: `${80 + Math.random() * 20}%`,
+    bottom: `${-20 + Math.random() * 10}%`,
+    scale: 1.8 + Math.random() * 0.8,
+    rotation: (Math.random() - 0.5) * 10,
+    zIndex: 25,
+  })),
+  // Middle variety (Varied scales, reaching up towards text)
+  ...Array.from({ length: 12 }).map((_, i) => ({
+    id: `mid-${i}`,
+    left: `${20 + Math.random() * 60}%`,
+    bottom: `${-15 + Math.random() * 15}%`,
+    scale: 1.0 + Math.random() * 1.4,
+    rotation: (Math.random() - 0.5) * 15,
+    zIndex: 5 + Math.floor(Math.random() * 15),
+  })),
+];
 
 export default function ForestShowcase() {
   const sectionRef = useRef(null);
   const portalRef = useRef(null);
   const textRef = useRef(null);
+  const forestRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
 
   useGSAP(() => {
     if (prefersReducedMotion) return;
 
-    gsap.to('.forest-tree-left, .forest-tree-right', {
-      rotation: 3,
-      skewX: 1,
-      duration: 4,
+    // Ambient Swaying for all trees
+    gsap.to('.forest-tree-instance', {
+      rotation: "+=2",
+      skewX: "+=1",
+      duration: () => 4 + Math.random() * 2,
       yoyo: true,
       repeat: -1,
       ease: 'sine.inOut',
-      stagger: 2
+      stagger: {
+        amount: 3,
+        from: "random"
+      }
     });
 
-    gsap.to('.forest-portal-glow, .forest-fire', {
-      scale: 1.1,
-      opacity: 0.9,
-      duration: 1,
-      yoyo: true,
-      repeat: -1,
-      ease: 'sine.inOut'
-    });
-
+    // The Portal Dive (Pin and expand)
     let mm = gsap.matchMedia();
     
     mm.add("(min-width: 768px)", () => {
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: sectionRef.current, 
+          trigger: sectionRef.current,
           start: "top top",
-          end: "+=3000", // Much longer scroll
+          end: "+=2500",
           scrub: 1,
           pin: true,
           pinSpacing: true
         }
       });
 
-      tl.to(portalRef.current, {
-        width: '100vw',
-        height: '100vh',
-        borderRadius: '0px',
-        border: '0px',
-        boxShadow: 'none',
-        ease: 'power2.inOut',
-      }, 0);
+      // NO Expansion animation needed as portal starts full width
 
+      // Persist text with blending effect
       tl.to(textRef.current, {
-        opacity: 0,
-        scale: 1.2,
-        y: -100,
-        ease: 'power2.in'
+        scale: 1.15,
+        y: -100, // Move up slowly to cross paths with growing trees
+        ease: 'none',
+        duration: 1
       }, 0);
 
-      tl.to('.forest-scene-inner', { scale: 1.1, y: '10%', ease: 'none' }, 0);
-      tl.to('.forest-tree-left, .forest-tree-right', { scale: 1.3, y: '15%', ease: 'none' }, 0);
-      tl.to('.forest-fire, .forest-log', { scale: 1.6, y: '25%', ease: 'none' }, 0);
+      // Immerse into the forest scene
+      tl.to('.forest-scene-inner', { scale: 1.1, y: '5%', ease: 'none' }, 0);
+      
+      // Trees grow from the ground up (Pop-up effect)
+      tl.from('.forest-tree-instance', {
+        scale: 0,
+        y: 150, // Grounded growth
+        opacity: 0,
+        stagger: {
+          amount: 1.5,
+          from: "center"
+        },
+        ease: 'power2.out'
+      }, 0.1);
+
+      // Extra parallax for deeper trees
+      tl.to('.forest-tree-instance', {
+        y: (i, target) => {
+          const zIndex = parseInt(target.style.zIndex);
+          return zIndex > 15 ? -50 : -20; // Forefront trees move more
+        },
+        ease: 'none'
+      }, 0.5);
     });
 
     return () => mm.revert();
@@ -79,9 +119,9 @@ export default function ForestShowcase() {
 
   return (
     <div ref={sectionRef}>
-      <section id="forest" style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative', background: 'var(--bg-base)' }}>
+      <section id="forest" className="forest-section" style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative', background: 'var(--bg-base)' }}>
         
-        <div ref={textRef} className="forest-text-overlay">
+        <div ref={textRef} className="forest-text-overlay" style={{ mixBlendMode: 'difference' }}>
           <h2 className="landing-section-heading" style={{ margin: 0, filter: 'drop-shadow(0 0 20px rgba(0,0,0,0.8))' }}>
             Watch Your Progress Grow
           </h2>
@@ -91,16 +131,24 @@ export default function ForestShowcase() {
         </div>
 
         <div ref={portalRef} className="forest-portal">
-          <div className="forest-scene-inner">
-            <div className="forest-portal-glow"></div>
-            
-            <img src={treeFull} alt="" className="forest-asset forest-tree-left" />
-            <img src={treeFull} alt="" className="forest-asset forest-tree-right" />
-            <img src={log} alt="" className="forest-asset forest-log" />
-            <img src={campfire} alt="" className="forest-asset forest-fire" />
-            
-            <img src={treeYoung} alt="" className="forest-asset forest-tree-left" style={{ left: '8%', width: '15%', bottom: '2%', zIndex: 11 }} />
-            <img src={treeYoung} alt="" className="forest-asset forest-tree-right" style={{ right: '8%', width: '15%', bottom: '2%', zIndex: 11 }} />
+          <div ref={forestRef} className="forest-scene-inner">
+            {/* Populated Forest using only final stage trees */}
+            {FOREST_TREES.map((tree) => (
+              <img 
+                key={tree.id}
+                src={pineFinal} 
+                alt="" 
+                className="forest-asset forest-tree-instance"
+                style={{ 
+                  left: tree.left, 
+                  bottom: tree.bottom, 
+                  transform: `scale(${tree.scale}) rotate(${tree.rotation}deg)`,
+                  zIndex: tree.zIndex,
+                  width: '28%', // Made trees inherently taller/wider
+                  pointerEvents: 'none'
+                }} 
+              />
+            ))}
           </div>
         </div>
 

@@ -21,19 +21,21 @@ export default function FeatureShowcase() {
   const gridRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
 
+  const titleWords = "Everything you need.".split(" ");
+
   useGSAP(() => {
     if (prefersReducedMotion) return;
 
     let mm = gsap.matchMedia();
 
-    // Elegant 3D Cascade Assembly (No messy explosions that break DOM)
+    // Simplified Fly-In and Snap Grid
     mm.add("(min-width: 1024px)", () => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: '+=1500', // Sane scroll duration
-          scrub: 1, 
+          end: '+=1500', 
+          scrub: 1.2, 
           pin: true,
           pinSpacing: true, 
         }
@@ -41,48 +43,44 @@ export default function FeatureShowcase() {
 
       const cards = gsap.utils.toArray('.bento-card');
 
-      // 1. Initial State: Folded down and away
+      // Set initial state: Fly in from below and slightly in front (Z)
       gsap.set(cards, { 
-        y: 400,
-        z: -500,
-        rotationX: -60,
+        y: 600,
+        z: 300,
+        rotationX: -45,
         opacity: 0,
-        scale: 0.8
+        scale: 0.9
       });
 
-      // 2. Cascade them into place cleanly
-      tl.to(cards, {
-        y: 0,
-        z: 0,
-        rotationX: 0,
-        opacity: 1,
+      // 1. Premium Word-Split Title reveal
+      tl.fromTo('.feature-title-word', 
+        { y: 60, opacity: 0, rotateX: -45 }, 
+        { y: 0, opacity: 1, rotateX: 0, duration: 1, stagger: 0.1, ease: 'power3.out' }, 
+        0
+      );
+
+      // 2. Simple Fly-In and Snap
+      tl.to(cards, { 
+        y: 0, 
+        z: 0, 
+        rotationX: 0, 
+        opacity: 1, 
         scale: 1,
-        stagger: 0.1,
-        ease: 'power3.out',
-        duration: 1
-      });
+        duration: 1.5, 
+        ease: 'power3.out', 
+        stagger: 0.15 
+      }, 0.3);
 
-      // 3. Highlight Shockwave Flash
-      tl.to('.big-bang-flash', {
-        opacity: 0.8,
-        scale: 2,
-        duration: 0.3,
-        ease: "power2.inOut"
-      });
-
-      tl.to('.big-bang-flash', {
-        opacity: 0,
-        duration: 0.5,
-        ease: "power2.out"
-      });
+      // 3. Subtle grid pop at the end
+      tl.to('.bento-grid', { scale: 1.02, duration: 0.5, ease: 'sine.inOut' }, ">-0.3");
+      tl.to('.bento-grid', { scale: 1, duration: 0.5, ease: 'sine.inOut' });
     });
 
-    // 3D Magnetic Hover Tilt (runs independently)
+    // 3D Magnetic Hover Tilt
     const cards = gsap.utils.toArray('.bento-card');
     cards.forEach(card => {
       const xTo = gsap.quickTo(card, "rotationY", { duration: 0.6, ease: "power3.out" });
       const yTo = gsap.quickTo(card, "rotationX", { duration: 0.6, ease: "power3.out" });
-      const zTo = gsap.quickTo(card, "z", { duration: 0.6, ease: "power3.out" });
       
       card.addEventListener("mousemove", (e) => {
         const { left, top, width, height } = card.getBoundingClientRect();
@@ -90,13 +88,11 @@ export default function FeatureShowcase() {
         const relY = -(e.clientY - top - height / 2) / (height / 2);
         xTo(relX * 10);
         yTo(relY * -10); 
-        zTo(20); 
       });
       
       card.addEventListener("mouseleave", () => {
         xTo(0);
         yTo(0);
-        zTo(0);
       });
     });
 
@@ -104,6 +100,7 @@ export default function FeatureShowcase() {
 
   // CSS Variable Mouse Tracking for Glow Effect
   const handleMouseMove = (e) => {
+    if (!gridRef.current) return;
     for (const card of gridRef.current.children) {
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -115,13 +112,16 @@ export default function FeatureShowcase() {
 
   return (
     <section ref={sectionRef} id="features" className="features-section" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
-      
-      {/* Shockwave flash element */}
-      <div className="big-bang-flash" style={{ zIndex: 0 }}></div>
-
       <div style={{ maxWidth: '1400px', margin: '0 auto', width: '100%', position: 'relative', zIndex: 10 }}>
-        <h2 className="landing-section-heading" style={{ marginBottom: '4rem' }}>
-          Everything you need.
+        <h2 className="landing-section-heading" style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          {titleWords.map((word, i) => (
+            <span key={i} className="feature-title-word" style={{ display: 'inline-block' }}>
+              <span className={i === 2 ? 'hero-title-highlight' : 'feature-title-default'}>
+                {word}
+              </span>
+              {i < titleWords.length - 1 ? '\u00A0' : ''}
+            </span>
+          ))}
         </h2>
         
         <div ref={gridRef} className="bento-grid" onMouseMove={handleMouseMove}>

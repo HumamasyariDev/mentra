@@ -10,13 +10,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function CTAFooter() {
   const sectionRef = useRef(null);
-  const textRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
   const ctaBtnRef = useMagneticHover(0.4);
 
   useGSAP(() => {
     if (prefersReducedMotion) {
-      gsap.to('.huge-cta-text', { backgroundSize: '100% 100%' });
+      gsap.to('.huge-cta-word', { backgroundSize: '100% 100%' });
       gsap.to('.cta-button-wrapper', { opacity: 1 });
       return;
     }
@@ -25,26 +24,35 @@ export default function CTAFooter() {
       scrollTrigger: {
         trigger: sectionRef.current,
         start: 'top top',
-        end: '+=2000', // Much longer text fill
+        end: '+=1500', // Sane scroll length
         scrub: 1,
         pin: true,
         pinSpacing: true
       }
     });
 
-    tl.to('.huge-cta-text', {
+    // Fill the words from bottom to top (Sequential)
+    // We target "growing" then "start" to simulate a rising tide from the bottom
+    tl.to('.huge-cta-word.growing', {
       backgroundSize: '100% 100%',
       ease: 'none',
       duration: 1
-    });
+    })
+    .to('.huge-cta-word.start', {
+      backgroundSize: '100% 100%',
+      ease: 'none',
+      duration: 1
+    }, "-=0.3") // Slight overlap for fluid feel
 
-    tl.to('.cta-button-wrapper', {
+    // Reveal the button below
+    .to('.cta-button-wrapper', {
       opacity: 1,
       y: -30,
       ease: 'power2.out',
-      duration: 0.3
+      duration: 0.5
     }, "-=0.2");
 
+    // Continuous pulse on the button
     gsap.to('.landing-cta-button', {
       scale: 1.05,
       boxShadow: "0 10px 40px rgba(255, 255, 255, 0.2)",
@@ -60,8 +68,9 @@ export default function CTAFooter() {
     <div ref={sectionRef}>
       <section style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', background: 'radial-gradient(circle at center, rgba(99, 102, 241, 0) 0%, var(--bg-base) 100%)' }}>
         
-        <h2 ref={textRef} className="huge-cta-text">
-          START<br/>GROWING
+        <h2 className="huge-cta-text">
+          <span className="huge-cta-word start">START</span><br/>
+          <span className="huge-cta-word growing">GROWING</span>
         </h2>
         
         <div className="cta-button-wrapper">
