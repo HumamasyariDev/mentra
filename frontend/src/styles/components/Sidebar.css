@@ -1,20 +1,18 @@
-/* Sidebar Styles */
+/* Sidebar Styles - Pure CSS Implementation */
 
 .sidebar {
   position: fixed;
   top: 0;
-  bottom: 0;
   left: 0;
   z-index: 50;
-  width: 16rem;
+  width: 240px;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
-}
-
-.sidebar-bg-default {
-  background-color: #ffffff;
-  border-right: 1px solid #e2e8f0;
+  background-color: #f5f5f7;
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar-hidden {
@@ -29,7 +27,7 @@
   .sidebar {
     position: static;
   }
-  
+
   .sidebar-hidden {
     transform: translateX(0);
   }
@@ -37,298 +35,175 @@
 
 /* Sidebar Header */
 .sidebar-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.sidebar-logo {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #4f46e5;
-}
-
-/* User Info Section */
-.sidebar-user-info {
-  padding: 1rem;
-  border-bottom: 1px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.sidebar-username {
-  font-weight: 500;
-  font-size: 0.875rem;
-  color: #0f172a;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Level Card */
-.sidebar-level-card {
-  background: linear-gradient(to right, #6366f1, #4f46e5);
-  border-radius: 0.75rem;
-  padding: 0.75rem;
-  color: #ffffff;
-}
-
-.sidebar-level-card.dark {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-level-header {
+  padding: 16px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.25rem;
 }
 
-.sidebar-level-badge {
+.sidebar-logo {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
 }
 
-.sidebar-level-icon {
-  width: 1rem;
-  height: 1rem;
-  color: #fcd34d;
-}
-
-.sidebar-level-icon.dark {
-  color: #fbbf24;
-}
-
-.sidebar-level-text {
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.sidebar-level-exp {
-  font-size: 0.625rem;
-  color: #c7d2fe;
-}
-
-.sidebar-level-exp.dark {
-  opacity: 0.6;
-}
-
-/* Progress Bar */
-.sidebar-progress-bar {
-  height: 0.375rem;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 9999px;
-  overflow: hidden;
-}
-
-.sidebar-progress-bar.dark {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-progress-fill {
-  height: 100%;
-  background-color: #ffffff;
-  border-radius: 9999px;
-  transition: width 0.5s ease;
-}
-
-.sidebar-progress-label {
-  font-size: 0.625rem;
-  color: #c7d2fe;
-  margin-top: 0.25rem;
-}
-
-.sidebar-progress-label.dark {
-  opacity: 0.6;
-}
-
-/* Stats Grid */
-.sidebar-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
-}
-
-.sidebar-stat-card {
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
+.sidebar-logo-icon {
+  width: 32px;
+  height: 32px;
+  background-color: #1a1a1a;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.sidebar-stat-card.streak {
-  background-color: #fff7ed;
+.sidebar-toggle {
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: none;
 }
 
-.sidebar-stat-card.streak.dark {
-  background-color: rgba(255, 255, 255, 0.1);
+.sidebar-toggle-icon {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background-color: #1a1a1a;
 }
 
-.sidebar-stat-card.exp {
-  background-color: #eef2ff;
+@media (max-width: 1023px) {
+  .sidebar-toggle {
+    display: block;
+  }
 }
 
-.sidebar-stat-card.exp.dark {
-  background-color: rgba(255, 255, 255, 0.1);
+/* Sidebar Sections */
+.sidebar-section {
+  padding: 0 12px;
+  margin-bottom: 24px;
 }
 
-.sidebar-stat-icon {
-  width: 1rem;
-  height: 1rem;
-}
-
-.sidebar-stat-icon.streak {
-  color: #f97316;
-}
-
-.sidebar-stat-icon.streak.dark {
-  color: #fb923c;
-}
-
-.sidebar-stat-icon.exp {
-  color: #6366f1;
-}
-
-.sidebar-stat-icon.exp.dark {
-  color: #818cf8;
-}
-
-.sidebar-stat-value {
-  font-size: 0.875rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.sidebar-stat-value.streak {
-  color: #ea580c;
-}
-
-.sidebar-stat-value.streak.dark {
-  color: #fb923c;
-}
-
-.sidebar-stat-value.exp {
-  color: #4f46e5;
-}
-
-.sidebar-stat-value.exp.dark {
-  color: #818cf8;
-}
-
-.sidebar-stat-label {
-  font-size: 0.625rem;
-  color: #fb923c;
-}
-
-.sidebar-stat-label.streak {
-  color: #fb923c;
-}
-
-.sidebar-stat-label.streak.dark {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.sidebar-stat-label.exp {
-  color: #818cf8;
-}
-
-.sidebar-stat-label.exp.dark {
-  color: rgba(255, 255, 255, 0.5);
+.sidebar-section-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: #86868b;
+  text-transform: capitalize;
+  padding: 0 12px;
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
 }
 
 /* Navigation */
 .sidebar-nav {
-  flex: 1;
-  padding: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 2px;
 }
 
 .sidebar-nav-link {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.625rem 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1a1a1a;
   text-decoration: none;
+  transition: background-color 0.15s ease;
+  position: relative;
+}
+
+.sidebar-nav-link:hover {
+  background-color: #e8e8ed;
 }
 
 .sidebar-nav-link.active {
-  background-color: #eef2ff;
-  color: #4338ca;
-}
-
-.sidebar-nav-link.active.dark {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-}
-
-.sidebar-nav-link.inactive {
-  color: #475569;
-}
-
-.sidebar-nav-link.inactive.dark {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.sidebar-nav-link.inactive:hover {
-  background-color: #f8fafc;
-  color: #0f172a;
-}
-
-.sidebar-nav-link.inactive.dark:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+  background-color: #ffffff;
+  font-weight: 500;
 }
 
 .sidebar-nav-icon {
-  width: 1.25rem;
-  height: 1.25rem;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
-/* Logout Section */
-.sidebar-logout {
-  padding: 0.75rem;
-  border-top: 1px solid #e2e8f0;
+.sidebar-nav-label {
+  flex: 1;
 }
 
-.sidebar-logout-btn {
+.sidebar-nav-badge {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.625rem 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  justify-content: center;
+}
+
+/* Footer / Account Section */
+.sidebar-footer {
+  margin-top: auto;
+  padding: 0 12px 20px;
+}
+
+.sidebar-account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: transparent;
+  transition: background-color 0.15s ease;
+}
+
+.sidebar-account:hover {
+  background-color: #e8e8ed;
+}
+
+.sidebar-account-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sidebar-account-avatar img {
   width: 100%;
-  transition: all 0.2s;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #475569;
+  height: 100%;
+  object-fit: cover;
 }
 
-.sidebar-logout-btn.dark {
-  color: rgba(255, 255, 255, 0.7);
+.sidebar-account-info {
+  flex: 1;
+  min-width: 0;
 }
 
-.sidebar-logout-btn:hover {
-  background-color: #fef2f2;
-  color: #dc2626;
+.sidebar-account-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.sidebar-logout-btn.dark:hover {
-  background-color: rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
-}
-
-.sidebar-logout-icon {
-  width: 1.25rem;
-  height: 1.25rem;
+.sidebar-account-role {
+  font-size: 12px;
+  color: #86868b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
