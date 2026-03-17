@@ -1,15 +1,15 @@
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: "/api",
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    "Content-Type": "application/json",
+    Accept: "application/json",
   },
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('mentra_token');
+  const token = localStorage.getItem("mentra_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -20,31 +20,31 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('mentra_token');
-      localStorage.removeItem('mentra_user');
-      window.location.href = '/login';
+      localStorage.removeItem("mentra_token");
+      localStorage.removeItem("mentra_user");
+      window.location.href = "/login";
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 // Auth
 export const authApi = {
-  register: (data) => api.post('/register', data),
-  login: (data) => api.post('/login', data),
-  logout: () => api.post('/logout'),
-  me: () => api.get('/me'),
+  register: (data) => api.post("/register", data),
+  login: (data) => api.post("/login", data),
+  logout: () => api.post("/logout"),
+  me: () => api.get("/me"),
 };
 
 // Dashboard
 export const dashboardApi = {
-  get: () => api.get('/dashboard'),
+  get: () => api.get("/dashboard"),
 };
 
 // Tasks
 export const taskApi = {
-  list: (params) => api.get('/tasks', { params }),
-  create: (data) => api.post('/tasks', data),
+  list: (params) => api.get("/tasks", { params }),
+  create: (data) => api.post("/tasks", data),
   show: (id) => api.get(`/tasks/${id}`),
   update: (id, data) => api.put(`/tasks/${id}`, data),
   delete: (id) => api.delete(`/tasks/${id}`),
@@ -54,9 +54,9 @@ export const taskApi = {
 
 // Pomodoro
 export const pomodoroApi = {
-  list: (params) => api.get('/pomodoro', { params }),
-  stats: () => api.get('/pomodoro/stats'),
-  start: (data) => api.post('/pomodoro/start', data),
+  list: (params) => api.get("/pomodoro", { params }),
+  stats: () => api.get("/pomodoro/stats"),
+  start: (data) => api.post("/pomodoro/start", data),
   pause: (id) => api.post(`/pomodoro/${id}/pause`),
   resume: (id) => api.post(`/pomodoro/${id}/resume`),
   complete: (id) => api.post(`/pomodoro/${id}/complete`),
@@ -65,8 +65,8 @@ export const pomodoroApi = {
 
 // Schedules
 export const scheduleApi = {
-  list: (params) => api.get('/schedules', { params }),
-  create: (data) => api.post('/schedules', data),
+  list: (params) => api.get("/schedules", { params }),
+  create: (data) => api.post("/schedules", data),
   show: (id) => api.get(`/schedules/${id}`),
   update: (id, data) => api.put(`/schedules/${id}`, data),
   delete: (id) => api.delete(`/schedules/${id}`),
@@ -76,50 +76,63 @@ export const scheduleApi = {
 
 // Moods
 export const moodApi = {
-  list: (params) => api.get('/moods', { params }),
-  create: (data) => api.post('/moods', data),
-  today: () => api.get('/moods/today'),
-  weekly: () => api.get('/moods/weekly'),
+  list: (params) => api.get("/moods", { params }),
+  create: (data) => api.post("/moods", data),
+  today: () => api.get("/moods/today"),
+  weekly: () => api.get("/moods/weekly"),
 };
 
 // AI Chat
 export const chatApi = {
-  send: (message) => api.post('/chat/send', { message }),
-  history: (params) => api.get('/chat/history', { params }),
-  clear: () => api.delete('/chat/clear'),
+  send: (message) => api.post("/chat/send", { message }),
+  history: (params) => api.get("/chat/history", { params }),
+  clear: () => api.delete("/chat/clear"),
 };
 
 // Sandboxes
 export const sandboxApi = {
-  list: (params) => api.get('/sandboxes', { params }),
-  create: (data) => api.post('/sandboxes', data),
+  list: (params) => api.get("/sandboxes", { params }),
+  create: (data) => api.post("/sandboxes", data),
   get: (id) => api.get(`/sandboxes/${id}`),
   update: (id, data) => api.put(`/sandboxes/${id}`, data),
   delete: (id) => api.delete(`/sandboxes/${id}`),
-  sendMessage: (id, content) => api.post(`/sandboxes/${id}/messages`, { content }),
+  sendMessage: (id, content) =>
+    api.post(`/sandboxes/${id}/messages`, { content }),
 };
 
 // Agent API (LangChain Tools)
 export const agentApi = {
-  vectorSearch: (query, limit = 3) => api.post('/agent/vector-search', { query, limit }),
-  createTask: (data) => api.post('/agent/tasks', data),
-  addKnowledge: (content, source = 'user_note', metadata = {}) =>
-    api.post('/agent/knowledge', { content, source, metadata }),
+  vectorSearch: (query, limit = 3) =>
+    api.post("/agent/vector-search", { query, limit }),
+  createTask: (data) => api.post("/agent/tasks", data),
+  addKnowledge: (content, source = "user_note", metadata = {}) =>
+    api.post("/agent/knowledge", { content, source, metadata }),
 };
 
 // Quiz API
 export const quizApi = {
-  get:  (taskId)            => api.get(`/tasks/${taskId}/quiz`),
+  get: (taskId) => api.get(`/tasks/${taskId}/quiz`),
   save: (taskId, questions) => api.post(`/tasks/${taskId}/quiz`, { questions }),
+};
+
+// Chat Sessions API
+export const chatSessionApi = {
+  list: () => api.get("/chat-sessions"),
+  create: (data) => api.post("/chat-sessions", data),
+  get: (id) => api.get(`/chat-sessions/${id}`),
+  update: (id, data) => api.put(`/chat-sessions/${id}`, data),
+  delete: (id) => api.delete(`/chat-sessions/${id}`),
+  storeMessage: (id, data) => api.post(`/chat-sessions/${id}/messages`, data),
+  getMessages: (id) => api.get(`/chat-sessions/${id}/messages`),
+  clearMessages: (id) => api.delete(`/chat-sessions/${id}/messages`),
 };
 
 // Forum Posts API
 export const forumPostApi = {
-  list: () => api.get('/posts'),
-  create: (data) => api.post('/posts', data),
+  list: () => api.get("/posts"),
+  create: (data) => api.post("/posts", data),
   update: (id, data) => api.put(`/posts/${id}`, data),
   delete: (id) => api.delete(`/posts/${id}`),
 };
 
 export default api;
-

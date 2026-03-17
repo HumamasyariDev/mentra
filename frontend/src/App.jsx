@@ -1,20 +1,20 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import AuthLayout from './layouts/AuthLayout';
-import AppLayout from './layouts/AppLayout';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Tasks from './pages/Tasks';
-import Pomodoro from './pages/Pomodoro';
-import Schedules from './pages/Schedules';
-import Mood from './pages/Mood';
-import Chat from './pages/Chat';
-import Sandbox from './pages/Sandbox';
-import SandboxChat from './pages/SandboxChat';
-import Forum from './pages/Forum';
-import ForestWorld from './components/gameworld/ForestWorld';
-import MentraAgent from './agents/MentraAgent';
-import LandingPage from './pages/LandingPage';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import AuthLayout from "./layouts/AuthLayout";
+import AppLayout from "./layouts/AppLayout";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import Tasks from "./pages/Tasks";
+import Pomodoro from "./pages/Pomodoro";
+import Schedules from "./pages/Schedules";
+import Mood from "./pages/Mood";
+import Chat from "./pages/Chat";
+import Sandbox from "./pages/Sandbox";
+import SandboxChat from "./pages/SandboxChat";
+import Forum from "./pages/Forum";
+import ForestWorld from "./components/gameworld/ForestWorld";
+import MentraAgentWithSessions from "./agents/MentraAgentWithSessions";
+import LandingPage from "./pages/LandingPage";
 
 export default function App() {
   return (
@@ -42,7 +42,7 @@ export default function App() {
           <Route path="/sandbox" element={<Sandbox />} />
           <Route path="/sandbox/:id" element={<SandboxChat />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/agent" element={<MentraAgent />} />
+          <Route path="/agent" element={<MentraAgentWithSessions />} />
           <Route path="/forum" element={<Forum />} />
         </Route>
 
