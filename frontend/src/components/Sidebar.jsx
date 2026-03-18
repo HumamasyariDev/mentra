@@ -14,6 +14,7 @@ import {
   Activity,
   Sparkles,
   LogOut,
+  TreePine,
 } from "lucide-react";
 import "../styles/components/Sidebar.css";
 
@@ -21,6 +22,7 @@ const mainMenuItems = [
   { to: "/dashboard", label: "Dashboard", icon: Home },
   { to: "/tasks", label: "Tasks", icon: BookOpen },
   { to: "/pomodoro", label: "Pomodoro", icon: FileText },
+  { to: "/forest", label: "Forest", icon: TreePine },
   { to: "/schedules", label: "Schedules", icon: Calendar },
   { to: "/mood", label: "Mood", icon: Folder },
   { to: "/sandbox", label: "Sandbox", icon: GraduationCap },

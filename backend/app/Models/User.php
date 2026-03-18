@@ -21,6 +21,7 @@ class User extends Authenticatable
         'total_exp',
         'current_exp',
         'avatar',
+        'watering_cans',
     ];
 
     protected $hidden = [
@@ -79,5 +80,20 @@ class User extends Authenticatable
     public function getExpToNextLevelAttribute(): int
     {
         return $this->level * 100;
+    }
+
+    public function trees(): HasMany
+    {
+        return $this->hasMany(Tree::class);
+    }
+
+    public function activeTree(): HasOne
+    {
+        return $this->hasOne(Tree::class)->where('is_active', true);
+    }
+
+    public function archivedTrees(): HasMany
+    {
+        return $this->hasMany(Tree::class)->where('is_active', false);
     }
 }

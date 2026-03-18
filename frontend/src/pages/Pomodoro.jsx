@@ -11,6 +11,7 @@ import {
   Droplets,
   Clock,
   CheckCircle,
+  Sprout,
 } from "lucide-react";
 import { usePomodoroTheme } from "../contexts/PomodoroThemeContext";
 
@@ -36,6 +37,7 @@ export default function Pomodoro() {
   const [selectedTask, setSelectedTask] = useState("");
   const [showBgPicker, setShowBgPicker] = useState(false);
   const [waterState, setWaterState] = useState("idle");
+  const [cansEarned, setCansEarned] = useState(null);
   const intervalRef = useRef(null);
 
   const isDark = theme.dark;
@@ -67,14 +69,20 @@ export default function Pomodoro() {
 
   const completeMutation = useMutation({
     mutationFn: (id) => pomodoroApi.complete(id),
-    onSuccess: () => {
+    onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["pomodoro-stats"] });
       queryClient.invalidateQueries({ queryKey: ["pomodoro-history"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["forest"] });
       setWaterState("completed");
+      // Store watering cans earned from response
+      if (res.data?.cans_awarded) {
+        setCansEarned(res.data.cans_awarded);
+      }
       setTimeout(() => {
         resetTimer();
         setWaterState("idle");
+        setCansEarned(null);
       }, 3000);
     },
   });
@@ -490,7 +498,15 @@ export default function Pomodoro() {
                   <div
                     className={`px-6 py-3 rounded-xl font-semibold animate-pulse ${isDark ? "bg-emerald-500/20 text-emerald-300 shadow-lg shadow-emerald-500/20" : "bg-emerald-100 text-emerald-700 shadow-lg shadow-emerald-500/10"}`}
                   >
-                    Plant is happy! +EXP earned
+                    <div className="flex items-center gap-2 justify-center">
+                      <span>Plant is happy! +EXP earned</span>
+                      {cansEarned > 0 && (
+                        <span className="flex items-center gap-1 ml-2 px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded-full text-sm">
+                          <Sprout className="w-4 h-4" />
+                          +{cansEarned} cans
+                        </span>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <>
@@ -514,6 +530,17 @@ export default function Pomodoro() {
                       Stop
                     </button>
                   </>
+                )}
+
+                {/* Debug button - dev only */}
+                {import.meta.env.DEV && sessionId && waterState !== "completed" && (
+                  <button
+                    onClick={() => completeMutation.mutate(sessionId)}
+                    className="ml-2 px-3 py-2 rounded-lg bg-orange-500/20 text-orange-500 text-xs font-mono hover:bg-orange-500/30 transition-colors"
+                    disabled={completeMutation.isPending}
+                  >
+                    [DEV] Complete
+                  </button>
                 )}
               </div>
             </div>

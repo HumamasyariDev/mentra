@@ -12,7 +12,7 @@ import Chat from "./pages/Chat";
 import Sandbox from "./pages/Sandbox";
 import SandboxChat from "./pages/SandboxChat";
 import Forum from "./pages/Forum";
-import ForestWorld from "./components/gameworld/ForestWorld";
+import Forest from "./pages/Forest";
 import MentraAgentWithSessions from "./agents/MentraAgentWithSessions";
 import LandingPage from "./pages/LandingPage";
 
@@ -29,8 +29,8 @@ export default function App() {
           <Route path="/register" element={<Register />} />
         </Route>
 
-        {/* Forest visualization — full viewport, outside AppLayout */}
-        <Route path="/forest" element={<ForestWorld />} />
+        {/* Forest Tree Care — full viewport, outside AppLayout */}
+        <Route path="/forest" element={<Forest />} />
 
         {/* Protected routes */}
         <Route element={<AppLayout />}>

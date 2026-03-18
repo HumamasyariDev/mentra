@@ -8,10 +8,14 @@ return new class extends Migration
     /**
      * Enable the pgvector extension in Supabase/PostgreSQL.
      * This must run BEFORE any migration that uses vector() column type.
+     * Skipped for MySQL databases.
      */
     public function up(): void
     {
-        DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
+        // Only run on PostgreSQL
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::statement('CREATE EXTENSION IF NOT EXISTS vector');
+        }
     }
 
     public function down(): void

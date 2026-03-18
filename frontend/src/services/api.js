@@ -135,4 +135,13 @@ export const forumPostApi = {
   delete: (id) => api.delete(`/posts/${id}`),
 };
 
+// Forest API (Tree Care)
+export const forestApi = {
+  getForest: () => api.get("/forest"),
+  plantTree: (treeTypeId) => api.post("/forest/plant", { tree_type_id: treeTypeId }),
+  waterTree: (treeId) => api.post(`/forest/water/${treeId}`),
+  getTreeTypes: () => api.get("/forest/tree-types"),
+  debugSkipStage: (treeId) => api.post(`/forest/debug/skip-stage/${treeId}`),
+};
+
 export default api;

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AgentController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\ForestController;
 use App\Http\Controllers\Api\ForumMessageController;
 use App\Http\Controllers\Api\MoodController;
 use App\Http\Controllers\Api\PomodoroController;
@@ -103,4 +104,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts', [ForumMessageController::class, 'store']);
     Route::put('/posts/{message}', [ForumMessageController::class, 'update']);
     Route::delete('/posts/{message}', [ForumMessageController::class, 'destroy']);
+
+    // Forest (Tree Care)
+    Route::prefix('forest')->group(function () {
+        Route::get('/', [ForestController::class, 'index']);
+        Route::post('/plant', [ForestController::class, 'plant']);
+        Route::post('/water/{tree}', [ForestController::class, 'water']);
+        Route::get('/tree-types', [ForestController::class, 'treeTypes']);
+        Route::post('/debug/skip-stage/{tree}', [ForestController::class, 'debugSkipStage']);
+    });
 });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Services\ExpService;
 use App\Services\StreakService;
+use App\Services\WateringCanService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,6 +14,7 @@ class PomodoroController extends Controller
     public function __construct(
         private ExpService $expService,
         private StreakService $streakService,
+        private WateringCanService $wateringCanService,
     ) {
     }
 
@@ -115,9 +117,17 @@ class PomodoroController extends Controller
 
         $this->streakService->recordActivity($request->user());
 
+        // Award watering cans for forest feature
+        $cansAwarded = $this->wateringCanService->awardFromPomodoro(
+            $request->user(),
+            $session->duration_minutes
+        );
+
         return response()->json([
             'session' => $session->fresh(),
             'message' => "Focus session completed! +{$session->exp_reward} EXP",
+            'cans_awarded' => $cansAwarded,
+            'watering_cans' => $request->user()->fresh()->watering_cans,
         ]);
     }
 

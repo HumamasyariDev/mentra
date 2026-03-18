@@ -210,6 +210,9 @@ class DatabaseSeeder extends Seeder
         // Run separately if HuggingFace API key is not yet configured:
         //   php artisan db:seed --class=KnowledgeBaseSeeder
         $this->call(KnowledgeBaseSeeder::class);
+
+        // ── Tree Types for Forest feature ────────────────────────────────────
+        $this->call(TreeTypeSeeder::class);
     }
 }
 
