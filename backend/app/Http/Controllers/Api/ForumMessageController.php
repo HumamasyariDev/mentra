@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Channel;
 use App\Models\ForumMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,15 +20,27 @@ class ForumMessageController extends Controller
         return response()->json($messages);
     }
 
+    public function channels(Request $request): JsonResponse
+    {
+        $channels = Channel::query()
+            ->with('forum')
+            ->orderBy('order')
+            ->get();
+
+        return response()->json($channels);
+    }
+
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
+            'channel_id' => 'required|exists:channels,id',
             'title' => 'nullable|string|max:255',
             'content' => 'required|string|max:2000',
             'reply_to_id' => 'nullable|exists:forum_messages,id',
         ]);
 
         $message = ForumMessage::create([
+            'channel_id' => $validated['channel_id'],
             'user_id' => $request->user()->id,
             'title' => $validated['title'] ?? null,
             'content' => $validated['content'],

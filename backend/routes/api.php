@@ -105,6 +105,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/posts/{message}', [ForumMessageController::class, 'update']);
     Route::delete('/posts/{message}', [ForumMessageController::class, 'destroy']);
 
+    // Forum channels
+    Route::get('/channels', [ForumMessageController::class, 'channels']);
+
     // Forest (Tree Care)
     Route::prefix('forest')->group(function () {
         Route::get('/', [ForestController::class, 'index']);

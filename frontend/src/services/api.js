@@ -148,6 +148,11 @@ export const forumPostApi = {
   delete: (id) => api.delete(`/posts/${id}`),
 };
 
+// Forum Channels API
+export const forumChannelApi = {
+  list: () => api.get("/channels"),
+};
+
 // Forest API (Tree Care)
 export const forestApi = {
   getForest: () => api.get("/forest"),

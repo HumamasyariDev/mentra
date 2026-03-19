@@ -1,0 +1,258 @@
+/* Top Bar — Minimal Navigation Component */
+
+.topbar-container {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  border-bottom: 1px solid #e5e5e7;
+  padding: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.topbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 2rem;
+  gap: 2rem;
+  max-width: 100%;
+}
+
+/* Brand/Logo */
+.topbar-brand {
+  flex-shrink: 0;
+}
+
+.topbar-logo {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, #1a1a1a 0%, #6366f1 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Spacer */
+.topbar-spacer {
+  flex: 1;
+}
+
+/* Actions */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-shrink: 0;
+}
+
+.topbar-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  background: transparent;
+  color: #86868b;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  font-family: inherit;
+}
+
+.topbar-action-btn:hover {
+  background: #f5f5f7;
+  color: #1a1a1a;
+}
+
+.topbar-action-btn:active {
+  background: #ebebf0;
+}
+
+.topbar-notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  background: #ef4444;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Profile Section */
+.topbar-profile-container {
+  position: relative;
+}
+
+.topbar-profile-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.topbar-profile-btn:hover .topbar-avatar {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.topbar-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border: 2px solid #e5e5e7;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+}
+
+/* Dropdown Menu */
+.topbar-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e5e5e7;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  min-width: 200px;
+  overflow: hidden;
+  animation: dropdownSlideIn 0.2s ease;
+  z-index: 1000;
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.topbar-dropdown-header {
+  padding: 1rem;
+  border-bottom: 1px solid #f5f5f7;
+  background: #f9f9fb;
+}
+
+.topbar-dropdown-name {
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.25rem 0;
+  font-size: 0.95rem;
+}
+
+.topbar-dropdown-email {
+  color: #86868b;
+  font-size: 0.8rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.topbar-dropdown-divider {
+  height: 1px;
+  background: #e5e5e7;
+  margin: 0;
+}
+
+.topbar-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #1a1a1a;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  text-align: left;
+}
+
+.topbar-dropdown-item:hover:not(.topbar-dropdown-item-danger) {
+  background: #f5f5f7;
+  color: #6366f1;
+}
+
+.topbar-dropdown-item svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.topbar-dropdown-item-danger {
+  color: #ef4444;
+}
+
+.topbar-dropdown-item-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* Mobile Responsive */
+@media (max-width: 640px) {
+  .topbar-content {
+    padding: 0 1rem;
+    height: 56px;
+  }
+
+  .topbar-logo {
+    font-size: 1rem;
+  }
+
+  .topbar-action-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .topbar-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.75rem;
+  }
+
+  .topbar-dropdown-menu {
+    right: -0.5rem;
+    min-width: 180px;
+  }
+
+  .topbar-dropdown-header {
+    padding: 0.75rem;
+  }
+
+  .topbar-dropdown-item {
+    padding: 0.65rem 0.75rem;
+    font-size: 0.85rem;
+  }
+}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import '../styles/pages/Forum.css';
-import { forumPostApi } from '../services/api';
+import { forumPostApi, forumChannelApi } from '../services/api';
 import CreatePostModal from '../components/forum/CreatePostModal';
 import { Search, ChevronDown, Plus, Loader2, MessageSquare, Trash2, Edit2, X, Send } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -24,6 +24,11 @@ export default function Forum() {
   const { user } = useAuth();
 
   // ─── Queries ───
+  const { data: channels } = useQuery({
+    queryKey: ['forum-channels'],
+    queryFn: () => forumChannelApi.list().then((r) => r.data),
+  });
+
   const { data: posts, isLoading: postsLoading } = useQuery({
     queryKey: ['forum-posts'],
     queryFn: () => forumPostApi.list().then((r) => r.data),
@@ -462,6 +467,7 @@ export default function Forum() {
         <CreatePostModal
           onClose={() => setShowCreatePost(false)}
           onSubmit={(data) => createPostMutation.mutateAsync(data)}
+          channels={channels || []}
         />
       )}
 

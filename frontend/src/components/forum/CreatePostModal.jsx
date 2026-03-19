@@ -2,18 +2,23 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import '../../styles/components/forum/ForumModals.css';
 
-export default function CreatePostModal({ onClose, onSubmit }) {
+export default function CreatePostModal({ onClose, onSubmit, channels = [] }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [channelId, setChannelId] = useState(channels.length > 0 ? channels[0].id : '');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) return;
+    if (!title.trim() || !content.trim() || !channelId) return;
     
     setLoading(true);
     try {
-      await onSubmit({ title: title.trim(), content: content.trim() });
+      await onSubmit({ 
+        channel_id: channelId,
+        title: title.trim(), 
+        content: content.trim() 
+      });
       onClose();
     } catch (err) {
       console.error('Failed to create post:', err);
@@ -34,6 +39,22 @@ export default function CreatePostModal({ onClose, onSubmit }) {
 
         <form onSubmit={handleSubmit} className="modal-body">
           <div className="modal-form">
+            <div className="form-group">
+              <label className="form-label">Channel</label>
+              <select
+                value={channelId}
+                onChange={(e) => setChannelId(e.target.value)}
+                className="form-input"
+              >
+                <option value="">Select a channel...</option>
+                {channels.map((channel) => (
+                  <option key={channel.id} value={channel.id}>
+                    {channel.name} {channel.forum && `(${channel.forum.name})`}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div className="form-group">
               <label className="form-label">Title</label>
               <input
@@ -68,7 +89,7 @@ export default function CreatePostModal({ onClose, onSubmit }) {
               </button>
               <button 
                 type="submit" 
-                disabled={!title.trim() || !content.trim() || loading} 
+                disabled={!title.trim() || !content.trim() || !channelId || loading} 
                 className="btn btn-primary"
               >
                 {loading ? 'Creating...' : 'Create Post'}

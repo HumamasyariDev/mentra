@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Instagram Ads Analytics</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- TOP HEADER -->
+        <header class="header">
+            <div class="header-top">
+                <div class="breadcrumb">Dashboard / Discover / Brand</div>
+                <div class="header-right">
+                    <button class="btn-competitor">+ Competitor</button>
+                    <button class="icon-btn notification-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                    </button>
+                    <button class="icon-btn search-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                    <button class="avatar-btn">
+                        <div class="avatar">AB</div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="header-title-section">
+                <div class="title-group">
+                    <div class="logo-instagram">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                            <rect x="2" y="2" width="20" height="20" rx="4" fill="#E4405F"></rect>
+                            <circle cx="12" cy="12" r="3.5" fill="white"></circle>
+                            <circle cx="17.5" cy="6.5" r="1.5" fill="white"></circle>
+                        </svg>
+                    </div>
+                    <h1 class="main-title">Instagram</h1>
+                </div>
+            </div>
+        </header>
+
+        <!-- SEARCH AND ACTION BAR -->
+        <div class="search-action-bar">
+            <div class="search-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" placeholder="Search something..." class="search-input">
+            </div>
+
+            <div class="action-tools">
+                <button class="tool-btn sort-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <span>Sort by</span>
+                </button>
+                <button class="tool-btn visible-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <span>Visible</span>
+                </button>
+                <button class="tool-btn filter-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+                    </svg>
+                    <span>Filters</span>
+                </button>
+                <button class="tool-btn grid-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- TOP SECTION: Stats Left + Chart Right -->
+            <div class="content-top">
+                <!-- Left Panel: Statistics -->
+                <div class="stats-panel">
+                    <div class="main-stat">
+                        <div class="stat-value">121</div>
+                        <div class="stat-label">Ads Running</div>
+                    </div>
+
+                    <div class="stat-cards">
+                        <div class="stat-card stat-carousel">
+                            <div class="stat-card-left">
+                                <div class="stat-card-badge">CAROUSEL</div>
+                            </div>
+                            <div class="stat-card-right">
+                                <div class="stat-card-value">21</div>
+                                <div class="stat-card-progress">
+                                    <div class="progress-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card stat-photo">
+                            <div class="stat-card-left">
+                                <div class="stat-card-badge">PHOTO</div>
+                            </div>
+                            <div class="stat-card-right">
+                                <div class="stat-card-value">35</div>
+                                <div class="stat-card-progress">
+                                    <div class="progress-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card stat-video">
+                            <div class="stat-card-left">
+                                <div class="stat-card-badge">VIDEO</div>
+                            </div>
+                            <div class="stat-card-right">
+                                <div class="stat-card-value">65</div>
+                                <div class="stat-card-progress">
+                                    <div class="progress-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Chart -->
+                <div class="chart-panel">
+                    <div class="chart-header">
+                        <div class="chart-title">
+                            <span>Ads Over time</span>
+                            <div class="chart-legend">
+                                <span class="legend-item">
+                                    <span class="legend-dot active"></span>
+                                    Active
+                                </span>
+                                <span class="legend-item">
+                                    <span class="legend-dot inactive"></span>
+                                    Inactive
+                                </span>
+                            </div>
+                        </div>
+                        <div class="chart-year">
+                            <button class="year-nav-btn prev-btn">‹</button>
+                            <span class="year-label">2023</span>
+                            <button class="year-nav-btn next-btn">›</button>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <svg class="chart-svg" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet">
+                            <!-- Y-axis labels -->
+                            <text x="30" y="25" class="axis-label">8</text>
+                            <text x="30" y="85" class="axis-label">6</text>
+                            <text x="30" y="145" class="axis-label">4</text>
+                            <text x="30" y="205" class="axis-label">2</text>
+                            <text x="30" y="265" class="axis-label">0</text>
+
+                            <!-- Grid lines -->
+                            <line x1="50" y1="250" x2="780" y2="250" class="grid-line"></line>
+                            <line x1="50" y1="190" x2="780" y2="190" class="grid-line"></line>
+                            <line x1="50" y1="130" x2="780" y2="130" class="grid-line"></line>
+                            <line x1="50" y1="70" x2="780" y2="70" class="grid-line"></line>
+
+                            <!-- Bars -->
+                            <rect x="60" y="220" width="18" height="30" class="bar" data-month="Jan"></rect>
+                            <rect x="90" y="180" width="18" height="70" class="bar"></rect>
+                            <rect x="120" y="200" width="18" height="50" class="bar"></rect>
+                            <rect x="150" y="210" width="18" height="40" class="bar"></rect>
+                            <rect x="180" y="190" width="18" height="60" class="bar"></rect>
+                            <rect x="210" y="215" width="18" height="35" class="bar"></rect>
+                            <rect x="240" y="170" width="18" height="80" class="bar"></rect>
+                            <rect x="270" y="140" width="18" height="110" class="bar"></rect>
+                            <rect x="300" y="160" width="18" height="90" class="bar"></rect>
+                            <rect x="330" y="100" width="18" height="150" class="bar"></rect>
+                            <rect x="360" y="110" width="18" height="140" class="bar"></rect>
+                            <rect x="390" y="160" width="18" height="90" class="bar"></rect>
+
+                            <!-- Line chart -->
+                            <polyline points="69,215 99,175 129,195 159,205 189,185 219,210 249,165 279,135 309,155 339,95 369,105 399,155" 
+                                      class="line-chart"></polyline>
+
+                            <!-- Month labels -->
+                            <text x="69" y="285" class="month-label">Jan</text>
+                            <text x="99" y="285" class="month-label">Feb</text>
+                            <text x="129" y="285" class="month-label">Mar</text>
+                            <text x="159" y="285" class="month-label">Apr</text>
+                            <text x="189" y="285" class="month-label">May</text>
+                            <text x="219" y="285" class="month-label">Jun</text>
+                            <text x="249" y="285" class="month-label">Jul</text>
+                            <text x="279" y="285" class="month-label">Aug</text>
+                            <text x="309" y="285" class="month-label">Sep</text>
+                            <text x="339" y="285" class="month-label">Oct</text>
+                            <text x="369" y="285" class="month-label">Nov</text>
+                            <text x="399" y="285" class="month-label">Dec</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MIDDLE SECTION: 3 Columns -->
+            <div class="content-middle">
+                <!-- Column 1: Top Video Hooks -->
+                <div class="column column-1">
+                    <h3 class="column-title">Top Video Hooks</h3>
+                    <div class="hooks-list">
+                        <div class="hook-item">I've got a secret</div>
+                        <div class="hook-item">5 reasons your wallet sucks</div>
+                        <div class="hook-item">Hear me out...</div>
+                    </div>
+                </div>
+
+                <!-- Column 2: Top CTA -->
+                <div class="column column-2">
+                    <h3 class="column-title">Top CTA</h3>
+                    <div class="cta-cards">
+                        <div class="cta-card cta-1">
+                            <div class="cta-text">Shop now</div>
+                        </div>
+                        <div class="cta-card cta-2">
+                            <div class="cta-text">Learn more</div>
+                        </div>
+                        <div class="cta-card cta-3">
+                            <div class="cta-text">Sign up</div>
+                        </div>
+                    </div>
+                    <div class="cta-badges">
+                        <span class="cta-badge">15%</span>
+                        <span class="cta-badge">35%</span>
+                        <span class="cta-badge">55%</span>
+                    </div>
+                </div>
+
+                <!-- Column 3: Copy Length -->
+                <div class="column column-3">
+                    <h3 class="column-title">Copy length</h3>
+                    <div class="segmented-control">
+                        <button class="segment-btn" data-segment="short">50 or less</button>
+                        <button class="segment-btn active" data-segment="medium">200 or less</button>
+                        <button class="segment-btn" data-segment="long">+200</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM SECTION: Current Active Ads -->
+            <div class="content-bottom">
+                <h3 class="section-title">Current active Ads</h3>
+                <div class="ads-grid">
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-user">
+                                <div class="ad-avatar">AB</div>
+                                <div class="ad-info">
+                                    <div class="ad-name">Amir Baghjani</div>
+                                    <div class="ad-username">@amir_bag</div>
+                                </div>
+                            </div>
+                            <button class="ad-menu-btn">⋯</button>
+                        </div>
+                        <div class="ad-image ad-image-1"></div>
+                    </div>
+
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-user">
+                                <div class="ad-avatar">TB</div>
+                                <div class="ad-info">
+                                    <div class="ad-name">Taylor Brown</div>
+                                    <div class="ad-username">@taylorb</div>
+                                </div>
+                            </div>
+                            <button class="ad-menu-btn">⋯</button>
+                        </div>
+                        <div class="ad-image ad-image-2"></div>
+                    </div>
+
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-user">
+                                <div class="ad-avatar">AK</div>
+                                <div class="ad-info">
+                                    <div class="ad-name">Alexa Karnash</div>
+                                    <div class="ad-username">@alexak</div>
+                                </div>
+                            </div>
+                            <button class="ad-menu-btn">⋯</button>
+                        </div>
+                        <div class="ad-image ad-image-3"></div>
+                    </div>
+
+                    <div class="ad-card">
+                        <div class="ad-card-header">
+                            <div class="ad-user">
+                                <div class="ad-avatar">AB</div>
+                                <div class="ad-info">
+                                    <div class="ad-name">Ali Bagheri</div>
+                                    <div class="ad-username">@alibagheri</div>
+                                </div>
+                            </div>
+                            <button class="ad-menu-btn">⋯</button>
+                        </div>
+                        <div class="ad-image ad-image-4"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
