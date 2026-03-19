@@ -116,7 +116,7 @@
 }
 
 @media (min-width: 1024px) {
-  .app-layout-content {
-    padding: 1.25rem 1.5rem;
-  }
+   .app-layout-content {
+      padding: 1.25rem 1.5rem;
+   }
 }

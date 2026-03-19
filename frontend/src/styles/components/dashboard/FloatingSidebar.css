@@ -1,0 +1,228 @@
+/* Floating Sidebar Component Styling */
+
+.floating-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 90;
+}
+
+.floating-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100vh;
+  max-width: 100vw;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  border-right: 1px solid rgba(59, 130, 246, 0.2);
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Sidebar header with close button */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(226, 232, 240, 0.95);
+}
+
+.sidebar-close-btn {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(226, 232, 240, 0.8);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sidebar-close-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+  color: rgba(226, 232, 240, 0.95);
+}
+
+.sidebar-close-btn:active {
+  background: rgba(59, 130, 246, 0.3);
+  transform: scale(0.95);
+}
+
+/* Navigation */
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 0;
+}
+
+.sidebar-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-menu li {
+  margin: 0;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: rgba(226, 232, 240, 0.8);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.sidebar-link:hover {
+  background: rgba(59, 130, 246, 0.15);
+  color: rgba(226, 232, 240, 0.95);
+  padding-left: 20px;
+}
+
+.sidebar-link:active {
+  background: rgba(59, 130, 246, 0.25);
+}
+
+.sidebar-link-icon {
+  display: inline-block;
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Settings footer */
+.sidebar-footer {
+  padding: 16px 0;
+  border-top: 1px solid rgba(59, 130, 246, 0.15);
+  flex-shrink: 0;
+}
+
+.sidebar-settings-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: rgba(226, 232, 240, 0.8);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.sidebar-settings-link:hover {
+  background: rgba(251, 146, 60, 0.15);
+  color: rgba(251, 146, 60, 0.95);
+  padding-left: 20px;
+}
+
+.sidebar-settings-link:active {
+  background: rgba(251, 146, 60, 0.25);
+}
+
+/* Scrollbar styling */
+.floating-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.floating-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.floating-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.3);
+  border-radius: 3px;
+}
+
+.floating-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(59, 130, 246, 0.5);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .floating-sidebar {
+    width: 240px;
+  }
+
+  .sidebar-link {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .sidebar-link:hover {
+    padding-left: 16px;
+  }
+
+  .sidebar-settings-link {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .sidebar-settings-link:hover {
+    padding-left: 16px;
+  }
+
+  .sidebar-header {
+    padding: 16px;
+  }
+
+  .sidebar-title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .floating-sidebar {
+    width: 200px;
+  }
+
+  .sidebar-link-icon {
+    font-size: 14px;
+  }
+
+  .sidebar-link {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .sidebar-link:hover {
+    padding-left: 14px;
+  }
+
+  .sidebar-settings-link {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .sidebar-settings-link:hover {
+    padding-left: 14px;
+  }
+}

@@ -1,0 +1,258 @@
+/* Floating HUD Component Styling */
+
+.floating-hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.95) 0%,
+    rgba(15, 23, 42, 0.7) 100%
+  );
+  border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.hud-section {
+  display: flex;
+  align-items: center;
+}
+
+/* Hamburger Menu */
+.hud-hamburger {
+  flex: 0 0 auto;
+}
+
+.hamburger-btn {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hamburger-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+}
+
+.hamburger-btn:active {
+  background: rgba(59, 130, 246, 0.3);
+  transform: scale(0.95);
+}
+
+.hamburger-line {
+  width: 18px;
+  height: 2px;
+  background: rgba(226, 232, 240, 0.8);
+  border-radius: 1px;
+  transition: all 0.3s ease;
+}
+
+/* Level & EXP Bar */
+.hud-level {
+  flex: 1;
+  margin-left: 40px;
+  gap: 12px;
+  min-width: 0;
+}
+
+.level-badge {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.level-number {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.exp-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.exp-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  font-size: 11px;
+  gap: 8px;
+}
+
+.exp-text {
+  color: rgba(226, 232, 240, 0.6);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.exp-value {
+  color: rgba(226, 232, 240, 0.8);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.exp-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.exp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+  transition: width 0.6s ease;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+/* Streak Counter */
+.hud-streak {
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, rgba(251, 146, 60, 0.2) 0%, rgba(234, 179, 8, 0.2) 100%);
+  border: 1px solid rgba(251, 146, 60, 0.4);
+  border-radius: 20px;
+  padding: 4px 10px;
+}
+
+.streak-flame {
+  font-size: 16px;
+}
+
+.streak-number {
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(251, 146, 60, 0.9);
+}
+
+.streak-label {
+  text-align: center;
+  font-size: 10px;
+  color: rgba(226, 232, 240, 0.5);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .floating-hud {
+    padding: 0 12px;
+    height: 56px;
+  }
+
+  .hud-level {
+    margin-left: 16px;
+    gap: 8px;
+  }
+
+  .level-badge {
+    width: 38px;
+    height: 38px;
+  }
+
+  .level-number {
+    font-size: 14px;
+  }
+
+  .exp-label {
+    font-size: 10px;
+  }
+
+  .exp-bar {
+    height: 4px;
+  }
+
+  .streak-badge {
+    padding: 3px 8px;
+  }
+
+  .streak-flame {
+    font-size: 14px;
+  }
+
+  .streak-number {
+    font-size: 14px;
+  }
+
+  .streak-label {
+    font-size: 9px;
+  }
+
+  .hamburger-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 640px) {
+  .floating-hud {
+    padding: 0 8px;
+    height: 52px;
+  }
+
+  .hud-level {
+    margin-left: 12px;
+    gap: 6px;
+  }
+
+  .level-badge {
+    width: 34px;
+    height: 34px;
+  }
+
+  .level-number {
+    font-size: 12px;
+  }
+
+  .exp-value {
+    display: none; /* Hide EXP numbers on very small screens */
+  }
+
+  .hamburger-btn {
+    width: 32px;
+    height: 32px;
+    gap: 3px;
+  }
+
+  .hamburger-line {
+    width: 14px;
+    height: 1.5px;
+  }
+}

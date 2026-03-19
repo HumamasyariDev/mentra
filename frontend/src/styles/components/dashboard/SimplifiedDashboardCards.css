@@ -1,0 +1,435 @@
+/* Simplified Dashboard Cards */
+
+.dashboard-card {
+  background: var(--color-surface, white);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: var(--color-text-primary, #1f2937);
+}
+
+.card-content {
+  margin-bottom: 1rem;
+}
+
+/* Stat Rows */
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.stat-label {
+  color: var(--color-text-secondary, #6b7280);
+  font-weight: 500;
+}
+
+.stat-value {
+  color: var(--color-text-primary, #1f2937);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.stat-value.success {
+  color: #10b981;
+}
+
+.stat-value.danger {
+  color: #ef4444;
+}
+
+.stat-value.warning {
+  color: #f59e0b;
+}
+
+/* Card Action Buttons */
+
+.card-action-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.tasks-card .card-action-btn {
+  background: #3b82f6;
+  color: white;
+}
+
+.tasks-card .card-action-btn:hover {
+  background: #2563eb;
+  transform: scale(1.02);
+}
+
+.pomodoro-card .card-action-btn {
+  background: #f97316;
+  color: white;
+}
+
+.pomodoro-card .card-action-btn:hover {
+  background: #ea580c;
+  transform: scale(1.02);
+}
+
+.schedule-card .card-action-btn {
+  background: #8b5cf6;
+  color: white;
+}
+
+.schedule-card .card-action-btn:hover {
+  background: #7c3aed;
+  transform: scale(1.02);
+}
+
+.forest-card .card-action-btn {
+  background: #10b981;
+  color: white;
+}
+
+.forest-card .card-action-btn:hover {
+  background: #059669;
+  transform: scale(1.02);
+}
+
+/* Events List */
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.event-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.event-time {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #8b5cf6;
+}
+
+.event-title {
+  font-size: 0.9rem;
+  color: var(--color-text-primary, #1f2937);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--color-text-secondary, #6b7280);
+  font-size: 0.9rem;
+  padding: 1rem 0;
+}
+
+/* Weekly Summary */
+
+.summary-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.summary-label {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.summary-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #14b8a6;
+}
+
+.daily-breakdown {
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-end;
+  height: 80px;
+}
+
+.day-bar {
+  flex: 1;
+  background: linear-gradient(to top, #14b8a6, #6ee7b7);
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: all 0.2s ease;
+}
+
+.day-bar:hover {
+  opacity: 0.8;
+  filter: brightness(0.9);
+}
+
+/* Forest Health */
+
+.forest-status {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.forest-status svg {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.tree-info {
+  flex: 1;
+}
+
+.tree-level {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1f2937);
+  margin-bottom: 0.5rem;
+}
+
+.tree-health {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.health-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.health-fill {
+  height: 100%;
+  background: linear-gradient(to right, #10b981, #6ee7b7);
+  transition: width 0.3s ease;
+}
+
+.health-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #10b981;
+  min-width: 30px;
+  text-align: right;
+}
+
+/* Quick Actions */
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.quick-action-btn {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.quick-action-btn:hover {
+  transform: translateY(-2px);
+}
+
+.pomodoro-btn {
+  background: rgba(249, 115, 22, 0.1);
+  color: #f97316;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.pomodoro-btn:hover {
+  background: rgba(249, 115, 22, 0.2);
+}
+
+.task-btn {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.task-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.schedule-btn {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.schedule-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+}
+
+.forest-btn {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.forest-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .dashboard-card {
+    padding: 1.25rem;
+  }
+}
+
+/* Experience Progress Card */
+
+.experience-card {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+.experience-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+}
+
+.experience-card .card-title {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.level-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.level-badge {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.exp-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.exp-progress-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.exp-bar {
+  flex: 1;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.exp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+.exp-percentage {
+  font-weight: 700;
+  font-size: 0.9rem;
+  min-width: 40px;
+  text-align: right;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.exp-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  backdrop-filter: blur(10px);
+}
+
+.exp-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+}
+
+.exp-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+.experience-card .card-action-btn {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-weight: 600;
+}
+
+.experience-card .card-action-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.exp-btn {
+  gap: 0.75rem;
+}

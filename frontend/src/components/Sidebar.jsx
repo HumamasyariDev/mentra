@@ -11,6 +11,7 @@ import {
   TreePine,
   MessageSquare,
   Sparkles,
+  Settings,
 } from "lucide-react";
 import "../styles/components/Sidebar.css";
 
@@ -102,6 +103,22 @@ export default function Sidebar({ user, sidebarOpen, onClose, onLogout }) {
                 <span className="sidebar-nav-label">{label}</span>
               </NavLink>
             ))}
+          </nav>
+        </div>
+
+        <div className="sidebar-section">
+          <div className="sidebar-section-title">Pengaturan</div>
+          <nav className="sidebar-nav">
+            <NavLink
+              to="/settings"
+              onClick={onClose}
+              className={({ isActive }) =>
+                `sidebar-nav-link ${isActive ? "active" : ""}`
+              }
+            >
+              <Settings className="sidebar-nav-icon" />
+              <span className="sidebar-nav-label">Settings</span>
+            </NavLink>
           </nav>
         </div>
       </div>

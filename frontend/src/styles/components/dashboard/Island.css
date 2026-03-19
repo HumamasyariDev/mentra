@@ -1,0 +1,115 @@
+/* Island SVG Component Styling - Planet Theme */
+
+.island {
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+.island:hover {
+  filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.5));
+}
+
+/* Clickable hitbox - circular and easy to target */
+.island-clickable {
+  cursor: pointer;
+}
+
+.island:hover .island-clickable {
+  /* Subtle hover effect on hitbox */
+}
+
+.island-circle {
+  fill-opacity: 0.9;
+  transition: fill-opacity 0.3s ease;
+}
+
+.island:hover .island-circle {
+  fill-opacity: 1;
+}
+
+.island-label {
+  pointer-events: none;
+  user-select: none;
+  font-size: 14px;
+  font-weight: 600;
+  text-anchor: middle;
+  fill: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.island-ring {
+  stroke-width: 2;
+  stroke-opacity: 0;
+  fill: none;
+  transition: stroke-opacity 0.3s ease;
+}
+
+.island:hover .island-ring {
+  stroke-opacity: 0.8;
+  animation: pulseRing 1s ease-in-out infinite;
+}
+
+@keyframes pulseRing {
+  0% {
+    r: 50px;
+    stroke-opacity: 0.8;
+  }
+  50% {
+    r: 65px;
+    stroke-opacity: 0.3;
+  }
+  100% {
+    r: 50px;
+    stroke-opacity: 0.8;
+  }
+}
+
+/* Planet-specific glow colors */
+.island.tasks-island:hover {
+  filter: drop-shadow(0 0 16px rgba(96, 165, 250, 0.8));
+}
+
+.island.pomodoro-island:hover {
+  filter: drop-shadow(0 0 16px rgba(248, 113, 113, 0.8));
+}
+
+.island.forest-island:hover {
+  filter: drop-shadow(0 0 16px rgba(74, 222, 128, 0.8));
+}
+
+.island.schedules-island:hover {
+  filter: drop-shadow(0 0 16px rgba(192, 132, 252, 0.8));
+}
+
+.island.chat-island:hover {
+  filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.8));
+}
+
+.island.forum-island:hover {
+  filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.8));
+}
+
+/* Active state (when navigating to an island) */
+.island.active {
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+}
+
+.island.active .island-circle {
+  fill-opacity: 1;
+}
+
+.island.active .island-ring {
+  stroke-opacity: 1;
+  animation: activeRing 0.6s ease-out;
+}
+
+@keyframes activeRing {
+  0% {
+    r: 50px;
+    stroke-opacity: 1;
+  }
+  100% {
+    r: 80px;
+    stroke-opacity: 0;
+  }
+}

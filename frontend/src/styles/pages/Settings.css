@@ -1,0 +1,329 @@
+/* Settings Page Styling */
+
+.settings-page {
+  background: linear-gradient(135deg, #f8fafc 0%, #f5f7fa 100%);
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+}
+
+.settings-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Header */
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 16px;
+}
+
+.settings-back-btn {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #1f2937;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.settings-back-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.settings-back-btn:active {
+  transform: scale(0.95);
+}
+
+.settings-title {
+  flex: 1;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+  text-align: center;
+}
+
+.settings-spacer {
+  width: 44px;
+  flex-shrink: 0;
+}
+
+/* Main Content */
+.settings-main {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Section */
+.settings-section {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.section-description {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0 0 16px 0;
+}
+
+/* Settings Options (Radio Buttons) */
+.settings-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: 2px solid rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.settings-option:hover {
+  background: rgba(99, 102, 241, 0.05);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.option-radio {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  flex-shrink: 0;
+  accent-color: #6366f1;
+}
+
+.option-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.option-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.option-icon {
+  color: #6366f1;
+  flex-shrink: 0;
+}
+
+.option-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.option-description {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.option-checkmark {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.2s ease;
+}
+
+.settings-option input[type='radio']:checked + .option-content ~ .option-checkmark {
+  background: #6366f1;
+  border-color: #6366f1;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+}
+
+.settings-option input[type='radio']:checked + .option-content ~ .option-checkmark::after {
+  content: '✓';
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* Mode Note */
+.mode-note {
+  background: rgba(59, 130, 246, 0.08);
+  border-left: 3px solid rgba(59, 130, 246, 0.3);
+  border-radius: 4px;
+  padding: 12px;
+  margin-top: 16px;
+}
+
+.mode-note p {
+  font-size: 12px;
+  color: #1e40af;
+  margin: 0;
+}
+
+/* Settings Toggle */
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.toggle-input {
+  display: none;
+}
+
+.toggle-track {
+  width: 48px;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 14px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.toggle-input:checked ~ .toggle-track {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.toggle-thumb {
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  left: 2px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-input:checked ~ .toggle-track .toggle-thumb {
+  left: 22px;
+}
+
+.toggle-icon {
+  position: absolute;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.toggle-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+/* About Section */
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.about-content p {
+  font-size: 13px;
+  color: #4b5563;
+  margin: 0;
+}
+
+.version-info {
+  font-size: 11px;
+  color: #9ca3af;
+  font-family: 'Courier New', monospace;
+}
+
+/* Footer */
+.settings-footer {
+  text-align: center;
+  padding-top: 32px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  margin-top: 32px;
+}
+
+.settings-footer p {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .settings-page {
+    padding: 1rem;
+  }
+
+  .settings-container {
+    padding: 0;
+  }
+
+  .settings-header {
+    margin-bottom: 24px;
+  }
+
+  .settings-title {
+    font-size: 20px;
+  }
+
+  .settings-main {
+    gap: 24px;
+  }
+
+  .settings-section {
+    padding: 16px;
+  }
+
+  .section-title {
+    font-size: 14px;
+  }
+
+  .settings-option {
+    padding: 10px;
+  }
+
+  .option-title {
+    font-size: 13px;
+  }
+
+  .option-description {
+    font-size: 11px;
+  }
+}
