@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { sandboxApi } from '../services/api';
-import { Plus, Trash2, MessageSquare, Edit2 } from 'lucide-react';
-import '../styles/pages/CommonPages.css';
+import { Plus, Trash2, MessageSquare, Pencil, Clock } from 'lucide-react';
+import '../styles/pages/Sandbox.css';
 
 export default function Sandbox() {
     const navigate = useNavigate();
@@ -21,8 +21,7 @@ export default function Sandbox() {
         mutationFn: sandboxApi.create,
         onSuccess: () => {
             queryClient.invalidateQueries(['sandboxes']);
-            setShowModal(false);
-            setFormData({ name: '', description: '' });
+            closeModal();
         },
     });
 
@@ -30,8 +29,7 @@ export default function Sandbox() {
         mutationFn: ({ id, data }) => sandboxApi.update(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries(['sandboxes']);
-            setEditingSandbox(null);
-            setFormData({ name: '', description: '' });
+            closeModal();
         },
     });
 
@@ -39,6 +37,12 @@ export default function Sandbox() {
         mutationFn: sandboxApi.delete,
         onSuccess: () => queryClient.invalidateQueries(['sandboxes']),
     });
+
+    const closeModal = () => {
+        setShowModal(false);
+        setEditingSandbox(null);
+        setFormData({ name: '', description: '' });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -49,126 +53,130 @@ export default function Sandbox() {
         }
     };
 
-    const handleEdit = (sandbox) => {
+    const handleEdit = (e, sandbox) => {
+        e.stopPropagation();
         setEditingSandbox(sandbox);
         setFormData({ name: sandbox.name, description: sandbox.description || '' });
     };
 
+    const handleDelete = (e, id) => {
+        e.stopPropagation();
+        if (confirm('Delete this sandbox?')) {
+            deleteMutation.mutate(id);
+        }
+    };
+
+    const formatDate = (dateStr) => {
+        if (!dateStr) return '';
+        return new Date(dateStr).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+        });
+    };
+
     return (
-        <div className="page-container">
-            <div className="page-header">
-                <div>
-                    <h1 className="page-title">Sandbox Projects</h1>
-                    <p className="page-subtitle">Create AI chat projects and experiments</p>
+        <div className="sandbox-page">
+            <div className="sandbox-header">
+                <div className="sandbox-header-text">
+                    <h1>Sandbox</h1>
+                    <p>Create and manage your AI chat experiments</p>
                 </div>
-                <button
-                    onClick={() => setShowModal(true)}
-                    className="page-action-btn"
-                >
-                    <Plus style={{ width: '1.25rem', height: '1.25rem' }} />
+                <button onClick={() => setShowModal(true)} className="sandbox-new-btn">
+                    <Plus />
                     New Sandbox
                 </button>
             </div>
 
             {isLoading ? (
-                <div className="page-loading">Loading...</div>
+                <div className="sandbox-loading">
+                    <div className="sandbox-spinner" />
+                </div>
+            ) : sandboxes?.data?.length === 0 ? (
+                <div className="sandbox-empty">
+                    <div className="sandbox-empty-icon">
+                        <MessageSquare />
+                    </div>
+                    <h3>No sandbox projects yet</h3>
+                    <p>Create your first sandbox to start experimenting</p>
+                </div>
             ) : (
-                <div className="card-grid">
-                    {sandboxes?.data?.length === 0 ? (
-                        <div className="page-empty-state" style={{ gridColumn: '1 / -1' }}>
-                            <div style={{ color: '#94a3b8', marginBottom: '1rem' }}>
-                                <MessageSquare style={{ width: '4rem', height: '4rem', margin: '0 auto 0.75rem' }} />
-                                <p style={{ fontSize: '1.125rem' }}>No sandbox projects yet</p>
-                                <p style={{ fontSize: '0.875rem' }}>Create your first sandbox to get started!</p>
-                            </div>
-                        </div>
-                    ) : (
-                        sandboxes?.data?.map((sandbox) => (
-                            <div
-                                key={sandbox.id}
-                                className="sandbox-card"
-                            >
-                                <div className="sandbox-card-header">
-                                    <h3 className="sandbox-card-title">{sandbox.name}</h3>
-                                    <div className="sandbox-card-actions">
-                                        <button
-                                            onClick={() => handleEdit(sandbox)}
-                                            className="sandbox-edit-btn"
-                                        >
-                                            <Edit2 style={{ width: '1rem', height: '1rem' }} />
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                if (confirm('Delete this sandbox?')) {
-                                                    deleteMutation.mutate(sandbox.id);
-                                                }
-                                            }}
-                                            className="sandbox-delete-btn"
-                                        >
-                                            <Trash2 style={{ width: '1rem', height: '1rem' }} />
-                                        </button>
-                                    </div>
+                <div className="sandbox-grid">
+                    {sandboxes?.data?.map((sandbox) => (
+                        <div
+                            key={sandbox.id}
+                            className="sandbox-card"
+                            onClick={() => navigate(`/sandbox/${sandbox.id}`)}
+                        >
+                            <div className="sandbox-card-top">
+                                <div className="sandbox-card-icon">
+                                    <MessageSquare />
                                 </div>
-                                {sandbox.description && (
-                                    <p className="sandbox-card-description">{sandbox.description}</p>
-                                )}
-                                <button
-                                    onClick={() => navigate(`/sandbox/${sandbox.id}`)}
-                                    className="sandbox-open-btn"
-                                >
-                                    <MessageSquare style={{ width: '1rem', height: '1rem' }} />
-                                    Open Chat
-                                </button>
+                                <div className="sandbox-card-actions">
+                                    <button
+                                        onClick={(e) => handleEdit(e, sandbox)}
+                                        className="sandbox-card-action-btn"
+                                    >
+                                        <Pencil />
+                                    </button>
+                                    <button
+                                        onClick={(e) => handleDelete(e, sandbox.id)}
+                                        className="sandbox-card-action-btn danger"
+                                    >
+                                        <Trash2 />
+                                    </button>
+                                </div>
                             </div>
-                        ))
-                    )}
+                            <div className="sandbox-card-body">
+                                <h3>{sandbox.name}</h3>
+                                {sandbox.description && <p>{sandbox.description}</p>}
+                            </div>
+                            {sandbox.created_at && (
+                                <div className="sandbox-card-footer">
+                                    <Clock />
+                                    {formatDate(sandbox.created_at)}
+                                </div>
+                            )}
+                        </div>
+                    ))}
                 </div>
             )}
 
-            {/* Create/Edit Modal */}
             {(showModal || editingSandbox) && (
-                <div className="modal-overlay">
-                    <div className="modal-container" style={{ maxWidth: '28rem' }}>
-                        <h2 className="modal-title">
-                            {editingSandbox ? 'Edit Sandbox' : 'New Sandbox'}
-                        </h2>
+                <div className="sandbox-modal-overlay" onClick={closeModal}>
+                    <div className="sandbox-modal" onClick={(e) => e.stopPropagation()}>
+                        <h2>{editingSandbox ? 'Edit Sandbox' : 'New Sandbox'}</h2>
                         <form onSubmit={handleSubmit}>
-                            <div className="form-group">
-                                <label className="form-label">Name</label>
+                            <div className="sandbox-form-group">
+                                <label>Name</label>
                                 <input
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="form-input"
+                                    className="sandbox-form-input"
+                                    placeholder="e.g. Code Assistant"
                                     required
+                                    autoFocus
                                 />
                             </div>
-                            <div className="form-group">
-                                <label className="form-label">
-                                    Description (optional)
+                            <div className="sandbox-form-group">
+                                <label>
+                                    Description <span>(optional)</span>
                                 </label>
                                 <textarea
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    className="form-textarea"
+                                    className="sandbox-form-textarea"
+                                    placeholder="What is this sandbox for?"
                                     rows="3"
                                 />
                             </div>
-                            <div className="modal-actions">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setShowModal(false);
-                                        setEditingSandbox(null);
-                                        setFormData({ name: '', description: '' });
-                                    }}
-                                    className="modal-cancel-btn"
-                                >
+                            <div className="sandbox-modal-actions">
+                                <button type="button" onClick={closeModal} className="sandbox-btn-cancel">
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="modal-submit-btn"
+                                    className="sandbox-btn-save"
                                     disabled={createMutation.isPending || updateMutation.isPending}
                                 >
                                     {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save'}

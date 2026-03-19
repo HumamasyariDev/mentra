@@ -2,31 +2,34 @@ import { NavLink } from "react-router-dom";
 import {
   Home,
   BookOpen,
-  Users,
   FileText,
   Folder,
   Calendar,
   GraduationCap,
   MessageCircle,
   BarChart3,
-  FileBarChart,
-  Newspaper,
-  Activity,
-  Sparkles,
-  LogOut,
   TreePine,
+  MessageSquare,
+  Sparkles,
 } from "lucide-react";
 import "../styles/components/Sidebar.css";
 
-const mainMenuItems = [
+const productivityItems = [
   { to: "/dashboard", label: "Dashboard", icon: Home },
   { to: "/tasks", label: "Tasks", icon: BookOpen },
   { to: "/pomodoro", label: "Pomodoro", icon: FileText },
   { to: "/forest", label: "Forest", icon: TreePine },
   { to: "/schedules", label: "Schedules", icon: Calendar },
   { to: "/mood", label: "Mood", icon: Folder },
+];
+
+const aiItems = [
+  { to: "/chat", label: "Chat", icon: MessageSquare },
+  { to: "/agent", label: "Agent", icon: Sparkles },
   { to: "/sandbox", label: "Sandbox", icon: GraduationCap },
-  { to: "/agent", label: "Agent", icon: BarChart3 },
+];
+
+const communityItems = [
   { to: "/forum", label: "Forum", icon: MessageCircle },
 ];
 
@@ -44,28 +47,67 @@ export default function Sidebar({ user, sidebarOpen, onClose, onLogout }) {
         </button>
       </div>
 
-      <div className="sidebar-section">
-        <div className="sidebar-section-title">Main menu</div>
-        <nav className="sidebar-nav">
-          {mainMenuItems.map(({ to, label, icon: Icon, badge }) => (
-            <NavLink
-              key={to}
-              to={to}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `sidebar-nav-link ${isActive ? "active" : ""}`
-              }
-            >
-              <Icon className="sidebar-nav-icon" />
-              <span className="sidebar-nav-label">{label}</span>
-              {badge && <span className="sidebar-nav-badge">{badge}</span>}
-            </NavLink>
-          ))}
-        </nav>
+      <div className="sidebar-sections">
+        <div className="sidebar-section">
+          <div className="sidebar-section-title">Produktivitas</div>
+          <nav className="sidebar-nav">
+            {productivityItems.map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `sidebar-nav-link ${isActive ? "active" : ""}`
+                }
+              >
+                <Icon className="sidebar-nav-icon" />
+                <span className="sidebar-nav-label">{label}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+
+        <div className="sidebar-section sidebar-section-chat">
+          <div className="sidebar-section-title">AI & Chat</div>
+          <nav className="sidebar-nav">
+            {aiItems.map(({ to, label, icon: Icon, highlight }) => (
+              <NavLink
+                key={to}
+                to={to}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `sidebar-nav-link ${highlight ? "sidebar-nav-link-highlight" : ""} ${isActive ? "active" : ""}`
+                }
+              >
+                <Icon className="sidebar-nav-icon" />
+                <span className="sidebar-nav-label">{label}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+
+        <div className="sidebar-section">
+          <div className="sidebar-section-title">Komunitas</div>
+          <nav className="sidebar-nav">
+            {communityItems.map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `sidebar-nav-link ${isActive ? "active" : ""}`
+                }
+              >
+                <Icon className="sidebar-nav-icon" />
+                <span className="sidebar-nav-label">{label}</span>
+              </NavLink>
+            ))}
+          </nav>
+        </div>
       </div>
 
       <div className="sidebar-footer">
-        <div className="sidebar-section-title">Account</div>
+        <div className="sidebar-section-title">Akun</div>
         <div className="sidebar-account">
           <div className="sidebar-account-avatar">
             <img src={user.avatar || "/default-avatar.png"} alt={user.name} />

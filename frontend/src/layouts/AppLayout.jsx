@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Loader2, Menu } from 'lucide-react';
 import { useState } from 'react';
@@ -10,6 +10,9 @@ function AppLayoutContent() {
   const { user, loading, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, isPomodoroPage } = usePomodoroTheme();
+  const location = useLocation();
+  const isAgentPage = location.pathname === "/agent";
+  const isChatPage = location.pathname === "/chat";
 
   if (loading) {
     return (
@@ -53,7 +56,7 @@ function AppLayoutContent() {
           <h1 className="app-layout-mobile-logo">Mentra</h1>
         </header>
 
-        <main className="app-layout-content">
+        <main className={`app-layout-content ${isAgentPage ? "app-layout-content-agent" : ""} ${isChatPage ? "app-layout-content-chat" : ""}`}>
           <Outlet />
         </main>
       </div>

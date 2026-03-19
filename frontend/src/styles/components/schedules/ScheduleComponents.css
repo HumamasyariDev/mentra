@@ -92,16 +92,34 @@
   gap: 1rem;
 }
 
-.schedule-form-group {
+.schedule-form-group,
+.form-group {
   display: flex;
   flex-direction: column;
 }
 
-.schedule-form-label {
+.schedule-form-label,
+.form-label {
   font-size: 0.875rem;
   font-weight: 500;
   color: #334155;
   margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.form-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .schedule-form-input {

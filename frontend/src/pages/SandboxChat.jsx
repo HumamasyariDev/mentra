@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { sandboxApi } from '../services/api';
-import { Send, ArrowLeft, Loader2 } from 'lucide-react';
-import '../styles/pages/CommonPages.css';
+import { Send, ArrowLeft, MessageSquare } from 'lucide-react';
+import '../styles/pages/Sandbox.css';
 
 export default function SandboxChat() {
     const { id } = useParams();
@@ -38,63 +38,47 @@ export default function SandboxChat() {
 
     if (isLoading) {
         return (
-            <div className="page-loading" style={{ height: 'calc(100vh - 12rem)' }}>
-                <Loader2 className="page-loading-spinner" style={{ width: '2rem', height: '2rem' }} />
+            <div className="sandbox-chat-page">
+                <div className="sandbox-loading">
+                    <div className="sandbox-spinner" />
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="page-container" style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 8rem)' }}>
-            {/* Header */}
-            <div className="sandbox-chat-header">
-                <button
-                    onClick={() => navigate('/sandbox')}
-                    className="sandbox-back-btn"
-                >
-                    <ArrowLeft style={{ width: '1.25rem', height: '1.25rem' }} />
+        <div className="sandbox-chat-page">
+            <div className="sandbox-chat-top">
+                <button onClick={() => navigate('/sandbox')} className="sandbox-back-button">
+                    <ArrowLeft />
                 </button>
-                <div>
-                    <h2 className="sandbox-chat-title">{sandbox?.name}</h2>
-                    {sandbox?.description && (
-                        <p className="sandbox-chat-subtitle">{sandbox.description}</p>
-                    )}
+                <div className="sandbox-chat-info">
+                    <h2>{sandbox?.name}</h2>
+                    {sandbox?.description && <p>{sandbox.description}</p>}
                 </div>
             </div>
 
-            {/* Messages */}
-            <div className="message-list" style={{ flex: 1, overflowY: 'auto', backgroundColor: '#f8fafc', padding: '1.5rem' }}>
-                <div style={{ maxWidth: '48rem', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="sandbox-messages">
+                <div className="sandbox-messages-inner">
                     {sandbox?.messages?.length === 0 ? (
-                        <div className="chat-empty-state" style={{ padding: '3rem 0' }}>
-                            <p>No messages yet. Start a conversation!</p>
+                        <div className="sandbox-chat-empty">
+                            <div className="sandbox-chat-empty-icon">
+                                <MessageSquare />
+                            </div>
+                            <h4>Start a conversation</h4>
+                            <p>Send a message to begin chatting</p>
                         </div>
                     ) : (
                         sandbox?.messages?.map((message) => (
                             <div
                                 key={message.id}
-                                className="message-item"
-                                style={{ justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start' }}
+                                className={`sandbox-msg-row ${message.role}`}
                             >
-                                <div
-                                    style={{
-                                        maxWidth: '70%',
-                                        borderRadius: '1rem',
-                                        padding: '0.75rem 1rem',
-                                        backgroundColor: message.role === 'user' ? '#6366f1' : '#ffffff',
-                                        color: message.role === 'user' ? '#ffffff' : '#1e293b',
-                                        boxShadow: message.role === 'user' ? 'none' : '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                                        border: message.role === 'user' ? 'none' : '1px solid #e2e8f0'
-                                    }}
-                                >
-                                    <div style={{ fontSize: '0.875rem', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{message.content}</div>
-                                    <div
-                                        style={{
-                                            fontSize: '0.75rem',
-                                            marginTop: '0.25rem',
-                                            color: message.role === 'user' ? 'rgba(255,255,255,0.7)' : '#94a3b8'
-                                        }}
-                                    >
+                                <div>
+                                    <div className="sandbox-msg-bubble">
+                                        {message.content}
+                                    </div>
+                                    <div className="sandbox-msg-time">
                                         {new Date(message.created_at).toLocaleTimeString([], {
                                             hour: '2-digit',
                                             minute: '2-digit',
@@ -108,33 +92,30 @@ export default function SandboxChat() {
                 </div>
             </div>
 
-            {/* Input */}
-            <div className="message-input-container" style={{ backgroundColor: '#ffffff', borderTop: '1px solid #e2e8f0', padding: '1rem' }}>
-                <form onSubmit={handleSend} className="message-input-form" style={{ maxWidth: '48rem', margin: '0 auto' }}>
+            <div className="sandbox-input-area">
+                <form onSubmit={handleSend} className="sandbox-input-form">
                     <input
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Type your message..."
-                        className="message-input"
+                        className="sandbox-chat-input"
                         disabled={sendMutation.isPending}
                     />
                     <button
                         type="submit"
-                        className="message-send-btn"
+                        className="sandbox-send-btn"
                         disabled={sendMutation.isPending || !input.trim()}
-                        style={{ padding: '0.5rem 1.5rem' }}
                     >
                         {sendMutation.isPending ? (
-                            <Loader2 className="page-loading-spinner" style={{ width: '1.25rem', height: '1.25rem' }} />
+                            <div className="sandbox-spinner" style={{ width: 16, height: 16, borderWidth: 2 }} />
                         ) : (
-                            <Send style={{ width: '1.25rem', height: '1.25rem' }} />
+                            <Send />
                         )}
-                        Send
                     </button>
                 </form>
-                <p style={{ fontSize: '0.75rem', color: '#94a3b8', textAlign: 'center', marginTop: '0.5rem' }}>
-                    Currently using mock AI responses. Puter.com integration coming soon!
+                <p className="sandbox-input-hint">
+                    AI-powered sandbox — responses are experimental
                 </p>
             </div>
         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { pomodoroApi, taskApi } from "../services/api";
 import {
@@ -17,8 +17,35 @@ import { usePomodoroTheme } from "../contexts/PomodoroThemeContext";
 
 import kranAirImg from "../assets/gameworld/kran_air-2.png";
 import wateringCanImg from "../assets/gameworld/watering_can.png";
-import waterDropImg from "../assets/gameworld/water_drop.png";
 import "./Pomodoro.css";
+import "../styles/pages/Pomodoro.css";
+
+/** Inline SVG tetes air — no image load, langsung render (fix bug tetes baru muncul di hitungan ke-3) */
+const WaterDropSvg = ({ className, style, idSuffix = "0" }) => (
+  <svg
+    className={className}
+    style={{ width: "100%", height: "100%", ...style }}
+    viewBox="0 0 32 40"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="xMidYMid meet"
+    aria-hidden
+  >
+    <path
+      d="M16 2c0 0-12 14-12 22a12 12 0 0 0 24 0C28 16 16 2 16 2z"
+      fill={`url(#pom-drop-grad-${idSuffix})`}
+      stroke="rgba(100,150,200,0.4)"
+      strokeWidth="0.5"
+    />
+    <defs>
+      <linearGradient id={`pom-drop-grad-${idSuffix}`} x1="8" y1="2" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+        <stop stopColor="#93c5fd" />
+        <stop offset="0.5" stopColor="#60a5fa" />
+        <stop offset="1" stopColor="#3b82f6" />
+      </linearGradient>
+    </defs>
+  </svg>
+);
 
 const plantMoods = {
   idle: { label: "Waiting for water...", scale: "scale-100" },
@@ -38,6 +65,8 @@ export default function Pomodoro() {
   const [showBgPicker, setShowBgPicker] = useState(false);
   const [waterState, setWaterState] = useState("idle");
   const [cansEarned, setCansEarned] = useState(null);
+  const [animState, setAnimState] = useState(null); // "paused" | "resumed" | "stopped"
+  const [skipSceneMorph, setSkipSceneMorph] = useState(false); // true saat recovery — scene langsung kotak, no morph
   const intervalRef = useRef(null);
 
   const isDark = theme.dark;
@@ -99,8 +128,17 @@ export default function Pomodoro() {
     setIsRunning(false);
     setSessionId(null);
     setTimeLeft(duration * 60);
+    setSkipSceneMorph(false); // reset agar next start dapat morph
     if (intervalRef.current) clearInterval(intervalRef.current);
   }, [duration]);
+
+  // Preload scene assets (kran, teko) — tetes pakai inline SVG, no preload needed
+  useEffect(() => {
+    [kranAirImg, wateringCanImg].forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   // On mount: detect & recover any active session from the server
   // This prevents the "Please complete or cancel" 422 error
@@ -122,12 +160,49 @@ export default function Pomodoro() {
           const running = active.status === "running";
           setIsRunning(running);
           setWaterState(running ? "focusing" : "paused");
+          setSkipSceneMorph(true); // sudah mulai — scene langsung kotak, jangan morph lagi
         }
       })
       .catch(() => {
         /* no active session or network error — stay in idle */
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Check for pending animation on mount (when user returns to page)
+  useEffect(() => {
+    console.log('[POMODORO] 🔄 Component mounted - checking for pending animation...');
+    const pendingAnimStr = localStorage.getItem('pom-pending-anim');
+    console.log('[POMODORO] 📦 localStorage value:', pendingAnimStr);
+    
+    if (pendingAnimStr) {
+      try {
+        const { type, timestamp } = JSON.parse(pendingAnimStr);
+        const elapsed = Date.now() - timestamp;
+        console.log(`[POMODORO] ⏱️ Animation data found: type="${type}", elapsed=${elapsed}ms`);
+        
+        // Only trigger if animation was set within last 30 seconds
+        if (elapsed < 30000) {
+          console.log(`[POMODORO] ✅ Triggering animation: ${type}`);
+          setAnimState(type);
+          const duration = type === 'stopped' ? 600 : 450;
+          setTimeout(() => {
+            console.log('[POMODORO] 🧹 Clearing animation state');
+            setAnimState(null);
+          }, duration);
+        } else {
+          console.log(`[POMODORO] ⏰ Animation expired (${elapsed}ms > 30000ms)`);
+        }
+        // Clear the pending animation
+        localStorage.removeItem('pom-pending-anim');
+        console.log('[POMODORO] 🗑️ Cleared localStorage');
+      } catch (e) {
+        console.error('[POMODORO] ❌ Error parsing animation data:', e);
+        localStorage.removeItem('pom-pending-anim');
+      }
+    } else {
+      console.log('[POMODORO] ℹ️ No pending animation found');
+    }
   }, []);
 
   // Timer countdown
@@ -164,38 +239,57 @@ export default function Pomodoro() {
   };
 
   const handleStop = () => {
-    if (sessionId) cancelMutation.mutate(sessionId);
+    if (sessionId) {
+      // Dispatch event untuk trigger animasi di component lain
+      window.dispatchEvent(new CustomEvent('pomodoro:stopped'));
+      setAnimState("stopped");
+      const animData = { type: 'stopped', timestamp: Date.now() };
+      localStorage.setItem('pom-pending-anim', JSON.stringify(animData));
+      console.log('[POMODORO] 🛑 Stop clicked - saved to localStorage:', animData);
+      setTimeout(() => setAnimState(null), 600);
+      cancelMutation.mutate(sessionId);
+    }
   };
 
   const handlePauseResume = () => {
     const next = !isRunning;
+    const animType = next ? "resumed" : "paused";
+    // Dispatch event untuk trigger animasi di component lain
+    window.dispatchEvent(new CustomEvent(`pomodoro:${animType}`));
+    setAnimState(animType);
+    const animData = { type: animType, timestamp: Date.now() };
+    localStorage.setItem('pom-pending-anim', JSON.stringify(animData));
+    console.log(`[POMODORO] ${next ? '▶️' : '⏸️'} ${next ? 'Resume' : 'Pause'} clicked - saved to localStorage:`, animData);
+    setTimeout(() => setAnimState(null), 450);
     setIsRunning(next);
     setWaterState(next ? "focusing" : "paused");
   };
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
-  const progress = ((duration * 60 - timeLeft) / (duration * 60)) * 100;
+  const totalSeconds = duration * 60;
+  const elapsedSeconds = isRunning ? Math.max(0, totalSeconds - timeLeft) : 0;
+  const progress = ((totalSeconds - timeLeft) / totalSeconds) * 100;
   const mood = plantMoods[waterState];
   const waterProgress = Math.min(100, progress);
 
   return (
-    // Full page theme wrapper - negates parent padding to extend to edges
+    // Full page theme wrapper - uses full width, minimal gap from sidebar
     <div
-      className={`min-h-screen -m-4 lg:-m-8 p-4 lg:p-8 bg-gradient-to-br ${theme.gradient} transition-colors duration-300`}
+      className={`min-h-screen -mx-4 -mt-4 -mb-4 lg:-mx-6 lg:-mt-6 lg:-mb-6 p-4 lg:p-6 bg-gradient-to-br ${theme.gradient} transition-colors duration-300`}
     >
-      {/* Centered container with max-width */}
-      <div className="max-w-6xl mx-auto space-y-6">
+      {/* Full-width container */}
+      <div className="w-full max-w-full space-y-6">
         {/* Header */}
         <div className="pomodoro-header">
           <div>
             <h1
-              className={`text-2xl font-bold ${isDark ? "text-white" : theme.accent}`}
+              className={`pom-header-title text-2xl font-bold tracking-tight ${isDark ? "text-white" : theme.accent}`}
             >
               Pomodoro
             </h1>
             <p
-              className={`text-sm mt-1 ${isDark ? "text-white/60" : "text-slate-600"}`}
+              className={`pom-header-sub text-sm mt-1 font-medium ${isDark ? "text-white/60" : "text-slate-600"}`}
             >
               Water your plants by staying focused
             </p>
@@ -247,41 +341,32 @@ export default function Pomodoro() {
               {/* Watering Scene */}
               <div className="text-center mb-6">
                 {/* Water progress */}
-                <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="pom-water-progress-row mb-4">
                   <Droplets
-                    className={`w-4 h-4 ${isDark ? "text-cyan-400/80" : "text-cyan-500"}`}
+                    className={`w-4 h-4 shrink-0 block ${isDark ? "text-cyan-400/80" : "text-cyan-500"}`}
                   />
                   <div
-                    className={`flex-1 max-w-[200px] h-2 rounded-full ${isDark ? "bg-white/10" : "bg-black/5"} overflow-hidden`}
+                    className={`flex-1 max-w-[200px] h-2 rounded-full ${isDark ? "bg-white/10" : "bg-black/5"} overflow-hidden flex items-center min-w-0`}
                   >
                     <div
-                      className="h-full bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full transition-all duration-1000"
+                      className="pom-progress-fill h-full min-w-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full"
                       style={{ width: `${waterProgress}%` }}
                     />
                   </div>
                   <span
-                    className={`text-xs font-medium ${isDark ? "text-white/50" : "text-slate-400"}`}
+                    className={`text-xs font-medium tabular-nums min-w-[2.25rem] text-right leading-none shrink-0 ${isDark ? "text-white/50" : "text-slate-400"}`}
                   >
                     {Math.round(waterProgress)}%
                   </span>
                 </div>
 
-                {/* Watering Animation Scene */}
+                {/* Watering Animation Scene — smooth morph circle ↔ rounded rect */}
                 <div
-                  className={`relative flex flex-col items-center bg-gradient-to-b from-white/5 to-white/10 backdrop-blur-md overflow-hidden border mx-auto transition-all duration-700 ease-in-out ${
-                    isRunning
-                      ? "h-[30rem] w-80 rounded-2xl border-slate-300/30 shadow-2xl"
-                      : "h-48 w-48 rounded-full border-slate-300/30 shadow-lg"
-                  }`}
-                  style={{
-                    boxShadow: isRunning
-                      ? "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), inset 0 -2px 4px 0 rgba(0, 0, 0, 0.06)"
-                      : "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-                  }}
+                  className={`pom-scene ${isRunning ? "pom-scene-running" : "pom-scene-idle"} ${skipSceneMorph ? "pom-scene-skip-morph" : ""}`}
                 >
                   {/* Kran Air — centered in idle, positioned for drops when running */}
                   <div
-                    className="flex-shrink-0 z-10 drop-shadow-md transition-all duration-700"
+                    className="pom-scene-kran flex-shrink-0 z-10 drop-shadow-md"
                     style={{
                       alignSelf: "center",
                       marginLeft: isRunning ? "8rem" : "0",
@@ -292,67 +377,74 @@ export default function Pomodoro() {
                     <img
                       src={kranAirImg}
                       alt="Kran Air"
-                      className={`object-contain transition-all duration-700 ${isRunning ? "w-50 h-50" : "w-32 h-32"}`}
+                      className={`object-contain ${!skipSceneMorph ? "transition-all duration-700" : ""} ${isRunning ? "w-50 h-50" : "w-32 h-32"}`}
                     />
                   </div>
 
                   {/* ── WATER DROPS ──────────────────────────────────────────
                    * Absolutely positioned relative to the scene container.
                    * top: 18%  → sits just below the kran spout mouth
-                   * left: calc(50% + 8px) → spout mouth of kran_air is
-                   *   slightly right of the kran image center
+                   * left: calc(50% - 1rem + 12px) → center tetes di bawah mulut kran
                    * Each img starts at the same point and animates downward
                    * via @keyframes pom-fall defined in Pomodoro.css
                    * ─────────────────────────────────────────────────────── */}
                   {isRunning && (
-                    <>
-                      <img
-                        src={waterDropImg}
-                        alt=""
-                        className="pom-drop-1"
+                    <div
+                      key={sessionId ?? "drops"}
+                      className="pom-drops-container"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        pointerEvents: "none",
+                      }}
+                    >
+                      {/* 3 tetes — staggered animation tanpa delay, langsung jatuh smooth */}
+                      <div
+                        key="drop-1"
+                        className="pom-drop-single"
                         style={{
                           position: "absolute",
                           width: "2rem",
-                          height: "2rem",
-                          objectFit: "contain",
+                          height: "2.5rem",
                           top: "18%",
-                          left: "calc(50%)",
-
-                          zIndex: 30,
-                          pointerEvents: "none",
+                          left: "calc(50% - 1rem + 12px)",
+                          zIndex: 32,
+                          animationDelay: `${-((elapsedSeconds % 3) * 1000)}ms`,
                         }}
-                      />
-                      <img
-                        src={waterDropImg}
-                        alt=""
-                        className="pom-drop-2"
+                      >
+                        <WaterDropSvg idSuffix="1" className="w-full h-full" style={{ display: "block" }} />
+                      </div>
+                      <div
+                        key="drop-2"
+                        className="pom-drop-single"
                         style={{
                           position: "absolute",
                           width: "2rem",
-                          height: "2rem",
-                          objectFit: "contain",
+                          height: "2.5rem",
                           top: "18%",
-                          left: "calc(50%)",
-                          zIndex: 30,
-                          pointerEvents: "none",
+                          left: "calc(50% - 1rem + 12px)",
+                          zIndex: 31,
+                          animationDelay: `${-(((elapsedSeconds - 1 + 3) % 3) * 1000)}ms`,
                         }}
-                      />
-                      <img
-                        src={waterDropImg}
-                        alt=""
-                        className="pom-drop-3"
+                      >
+                        <WaterDropSvg idSuffix="2" className="w-full h-full" style={{ display: "block" }} />
+                      </div>
+                      <div
+                        key="drop-3"
+                        className="pom-drop-single"
                         style={{
                           position: "absolute",
                           width: "2rem",
-                          height: "2rem",
-                          objectFit: "contain",
+                          height: "2.5rem",
                           top: "18%",
-                          left: "calc(50%)",
+                          left: "calc(50% - 1rem + 12px)",
                           zIndex: 30,
-                          pointerEvents: "none",
+                          animationDelay: `${-(((elapsedSeconds - 2 + 3) % 3) * 1000)}ms`,
                         }}
-                      />
-                    </>
+                      >
+                        <WaterDropSvg idSuffix="3" className="w-full h-full" style={{ display: "block" }} />
+                      </div>
+                    </div>
                   )}
 
                   {/* Spacer pushes watering can to bottom */}
@@ -360,19 +452,19 @@ export default function Pomodoro() {
 
                   {/* Watering Can — bounces when drop lands */}
                   <div
-                    className={`flex-shrink-0 z-10 transition-all duration-700 pb-4 ${isRunning ? "pom-can-bounce" : "absolute bottom-0"}`}
+                    className={`pom-scene-can flex-shrink-0 z-10 pb-4 ${isRunning ? "pom-can-bounce" : "absolute bottom-0"}`}
                   >
                     <img
                       src={wateringCanImg}
                       alt="Watering Can"
-                      className={`object-contain drop-shadow-xl transition-all duration-700 ${isRunning ? "w-36 h-36" : "w-24 h-24"}`}
+                      className={`object-contain drop-shadow-xl ${!skipSceneMorph ? "transition-all duration-700" : ""} ${isRunning ? "w-36 h-36" : "w-24 h-24"}`}
                     />
                   </div>
                 </div>
 
                 <div className="mt-4">
                   <span
-                    className={`text-sm font-medium ${isDark ? "text-white/80" : theme.accent}`}
+                    className={`pom-status-sub text-sm font-medium ${isDark ? "text-white/70" : "text-slate-500"}`}
                   >
                     {mood.label}
                   </span>
@@ -382,14 +474,12 @@ export default function Pomodoro() {
               {/* Timer */}
               <div className="text-center mb-6">
                 <p
-                  className={`text-6xl md:text-7xl font-mono font-bold tracking-wider transition-all duration-300 ${isDark ? "text-white drop-shadow-lg" : "text-slate-800"} ${isRunning ? "scale-105" : "scale-100"}`}
+                  className={`pom-timer-display text-6xl md:text-7xl font-mono font-bold tracking-wider transition-all duration-300 ${isDark ? "text-white drop-shadow-lg" : "text-slate-800"} ${isRunning ? "scale-105" : "scale-100"} ${animState === "paused" ? "pom-paused" : ""} ${animState === "stopped" ? "pom-stopped" : ""}`}
                 >
                   {String(minutes).padStart(2, "0")}:
                   {String(seconds).padStart(2, "0")}
                 </p>
-                <p
-                  className={`text-sm mt-3 font-medium transition-all duration-300 ${isDark ? "text-white/50" : "text-slate-600"}`}
-                >
+                <p className={`pom-status-label mt-3 ${isDark ? "text-white/90" : "text-slate-700"}`}>
                   {sessionId
                     ? isRunning
                       ? "Watering in progress..."
@@ -400,20 +490,20 @@ export default function Pomodoro() {
 
               {/* Duration selector */}
               {!sessionId && (
-                <div className="pomodoro-duration-section">
-                  <div className="pomodoro-duration-buttons">
+                <div className="pom-setup-block">
+                  <div className="pom-duration-row">
                     {[15, 25, 45, 60].map((d) => (
                       <button
                         key={d}
                         onClick={() => setDuration(d)}
-                        className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95 ${
+                        className={`pom-duration-btn ${duration === d ? "pom-duration-btn-active" : ""} ${
                           duration === d
                             ? isDark
-                              ? "bg-white/20 text-white shadow-md ring-2 ring-white/30"
-                              : "bg-white text-slate-800 shadow-md ring-2 ring-indigo-200"
+                              ? "bg-white/20 text-white ring-2 ring-white/30"
+                              : "bg-white text-slate-800 ring-2 ring-indigo-200/60"
                             : isDark
-                              ? "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/70"
-                              : "bg-white/30 text-slate-600 hover:bg-white/50 hover:text-slate-800"
+                              ? "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80"
+                              : "bg-white/40 text-slate-600 hover:bg-white/60 hover:text-slate-800"
                         }`}
                       >
                         {d}m
@@ -421,58 +511,47 @@ export default function Pomodoro() {
                     ))}
                   </div>
 
-                  {/* Custom duration input */}
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`text-xs ${isDark ? "text-white/60" : "text-slate-500"}`}
-                    >
-                      or custom:
+                  <div className="pom-custom-row">
+                    <span className={`pom-custom-label ${isDark ? "text-white/60" : "text-slate-500"}`}>
+                      or custom
                     </span>
                     <input
                       type="number"
                       min="1"
                       max="120"
                       placeholder="30"
+                      value={duration}
                       onChange={(e) => {
                         const val = parseInt(e.target.value);
-                        if (val >= 1 && val <= 120) {
+                        if (!isNaN(val) && val >= 1 && val <= 120) {
                           setDuration(val);
                         }
                       }}
-                      className={`w-16 px-2 py-1 rounded-lg text-sm text-center border-0 focus:ring-2 focus:ring-indigo-400 ${
-                        isDark
-                          ? "bg-white/10 text-white/80"
-                          : "bg-white/60 text-slate-700"
+                      className={`pom-custom-input ${
+                        isDark ? "bg-white/10 text-white" : "bg-white/60 text-slate-800"
                       }`}
                     />
-                    <span
-                      className={`text-xs ${isDark ? "text-white/60" : "text-slate-500"}`}
-                    >
+                    <span className={`pom-custom-unit ${isDark ? "text-white/60" : "text-slate-500"}`}>
                       min
                     </span>
                   </div>
-                </div>
-              )}
 
-              {/* Task selector */}
-              {!sessionId && (
-                <div className="pomodoro-task-section">
-                  <select
-                    className={`w-full rounded-xl px-4 py-2.5 text-sm border-0 focus:ring-2 focus:ring-indigo-400 ${
-                      isDark
-                        ? "bg-white/10 text-white/80"
-                        : "bg-white/60 text-slate-700"
-                    }`}
-                    value={selectedTask}
-                    onChange={(e) => setSelectedTask(e.target.value)}
-                  >
-                    <option value="">No task linked</option>
-                    {tasks?.data?.map((task) => (
-                      <option key={task.id} value={task.id}>
-                        {task.title}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="pom-task-row">
+                    <select
+                      className={`pom-task-select ${
+                        isDark ? "bg-white/10 text-white" : "bg-white/60 text-slate-700"
+                      }`}
+                      value={selectedTask}
+                      onChange={(e) => setSelectedTask(e.target.value)}
+                    >
+                      <option value="">No task linked</option>
+                      {tasks?.data?.map((task) => (
+                        <option key={task.id} value={task.id}>
+                          {task.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               )}
 
@@ -481,12 +560,14 @@ export default function Pomodoro() {
                 {!sessionId ? (
                   <button
                     onClick={handleStart}
-                    className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-semibold hover:from-indigo-600 hover:to-indigo-700 transition-all duration-300 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 hover:scale-105 active:scale-95"
+                    className={`pom-start-btn bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-lg shadow-indigo-500/25 ${
+                      isDark ? "hover:shadow-indigo-400/20" : ""
+                    }`}
                     disabled={startMutation.isPending}
                   >
                     {startMutation.isPending ? (
                       <Loader2
-                        className="page-loading-spinner"
+                        className="pomodoro-loading-spinner"
                         style={{ width: "1.25rem", height: "1.25rem" }}
                       />
                     ) : (
@@ -512,8 +593,7 @@ export default function Pomodoro() {
                   <>
                     <button
                       onClick={handlePauseResume}
-                      className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95 ${isDark ? "bg-white/10 text-white hover:bg-white/20 shadow-md hover:shadow-lg" : "bg-white text-slate-700 hover:bg-slate-50 shadow-md hover:shadow-xl"}
-                        }`}
+                      className={`pom-btn-pause ${animState === "paused" ? "pom-just-paused" : ""} ${animState === "resumed" ? "pom-just-resumed" : ""} ${isDark ? "bg-white/10 text-white hover:bg-white/20 shadow-md hover:shadow-lg" : "bg-white text-slate-700 hover:bg-slate-50 shadow-md hover:shadow-xl"}`}
                     >
                       {isRunning ? (
                         <Pause className="w-5 h-5" />
@@ -524,7 +604,7 @@ export default function Pomodoro() {
                     </button>
                     <button
                       onClick={handleStop}
-                      className="flex items-center gap-2 px-6 py-3 rounded-xl bg-red-500/10 text-red-500 font-semibold hover:bg-red-500/20 transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+                      className={`pom-btn-stop ${animState === "stopped" ? "pom-just-stopped" : ""} bg-red-500/10 text-red-500 hover:bg-red-500/20 shadow-md hover:shadow-lg`}
                     >
                       <Square style={{ width: "1.25rem", height: "1.25rem" }} />
                       Stop

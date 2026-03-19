@@ -1,0 +1,441 @@
+/* Mood Page — Elegant & Clean */
+
+/* ── Layout ── */
+.mood-page {
+  padding: 32px 40px;
+  max-width: 100%;
+  min-height: 100%;
+}
+
+/* ── Header ── */
+.mood-page-header {
+  margin-bottom: 32px;
+}
+
+.mood-page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+  margin: 0 0 6px 0;
+}
+
+.mood-page-header p {
+  font-size: 15px;
+  color: #86868b;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* ── Loading ── */
+.mood-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.mood-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid #e8e8ed;
+  border-top-color: #1a1a1a;
+  border-radius: 50%;
+  animation: mood-spin 0.7s linear infinite;
+}
+
+@keyframes mood-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Content wrapper for form area ── */
+.mood-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .mood-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Today Card ── */
+.mood-today {
+  background: #f5f5f7;
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.mood-today-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #86868b;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 14px;
+}
+
+.mood-today-emoji {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.mood-today-label {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 4px 0;
+  text-transform: capitalize;
+}
+
+.mood-today-energy {
+  font-size: 13px;
+  color: #86868b;
+  margin: 0 0 12px 0;
+}
+
+.mood-today-note {
+  font-size: 14px;
+  color: #48484a;
+  font-style: italic;
+  margin: 0 0 14px 0;
+  line-height: 1.5;
+}
+
+.mood-today-hint {
+  font-size: 12px;
+  color: #aeaeb2;
+  margin: 0;
+}
+
+/* ── Selector Card ── */
+.mood-selector-card {
+  background: #ffffff;
+  border: 1px solid #e8e8ed;
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.mood-selector-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.1px;
+}
+
+/* ── Mood Options ── */
+.mood-options {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.mood-opt-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 8px;
+  background: #f5f5f7;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mood-opt-btn:hover {
+  background: #ebebf0;
+}
+
+.mood-opt-btn.active {
+  border-color: #1a1a1a;
+  background: #ffffff;
+  transform: scale(1.04);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.mood-opt-emoji {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.mood-opt-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #48484a;
+}
+
+.mood-opt-btn.active .mood-opt-label {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+/* ── Energy Slider ── */
+.mood-energy {
+  margin-bottom: 24px;
+}
+
+.mood-energy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.mood-energy-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.mood-energy-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  background: #f5f5f7;
+  padding: 2px 10px;
+  border-radius: 8px;
+}
+
+.mood-energy-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #e8e8ed;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.mood-energy-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  background: #1a1a1a;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease;
+}
+
+.mood-energy-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.mood-energy-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  background: #1a1a1a;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mood-energy-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #aeaeb2;
+  font-weight: 400;
+}
+
+/* ── Note ── */
+.mood-note {
+  margin-bottom: 24px;
+}
+
+.mood-note-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.mood-note-label span {
+  color: #aeaeb2;
+  font-weight: 400;
+}
+
+.mood-note-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #f5f5f7;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1a1a1a;
+  outline: none;
+  resize: vertical;
+  min-height: 72px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.mood-note-input::placeholder {
+  color: #aeaeb2;
+}
+
+.mood-note-input:focus {
+  background: #ffffff;
+  border-color: #1a1a1a;
+}
+
+/* ── Save Button ── */
+.mood-save-btn {
+  width: 100%;
+  padding: 12px 20px;
+  background: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.mood-save-btn:hover:not(:disabled) {
+  background-color: #333333;
+}
+
+.mood-save-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.mood-save-btn:disabled {
+  background-color: #d1d1d6;
+  cursor: not-allowed;
+}
+
+/* ── Weekly Card ── */
+.mood-weekly {
+  background: #ffffff;
+  border: 1px solid #e8e8ed;
+  border-radius: 16px;
+  padding: 28px;
+}
+
+.mood-weekly-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.mood-weekly-header h3 {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: -0.1px;
+}
+
+.mood-weekly-header svg {
+  width: 18px;
+  height: 18px;
+  color: #1a1a1a;
+}
+
+.mood-weekly-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+@media (min-width: 861px) {
+  .mood-weekly-days {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.mood-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 4px;
+  background: #f5f5f7;
+  border-radius: 12px;
+  transition: background-color 0.15s ease;
+}
+
+.mood-day-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #86868b;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin: 0;
+}
+
+.mood-day-emoji {
+  font-size: 22px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mood-day-empty {
+  font-size: 18px;
+  color: #d1d1d6;
+  font-weight: 300;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .mood-page {
+    padding: 24px 20px;
+  }
+
+  .mood-options {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .mood-opt-btn {
+    padding: 12px 4px;
+  }
+
+  .mood-opt-emoji {
+    font-size: 26px;
+  }
+
+  .mood-opt-label {
+    font-size: 11px;
+  }
+
+  .mood-weekly-days {
+    gap: 4px;
+  }
+
+  .mood-day {
+    padding: 10px 2px;
+  }
+
+  .mood-day-emoji {
+    font-size: 18px;
+  }
+}

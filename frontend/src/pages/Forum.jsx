@@ -203,7 +203,7 @@ export default function Forum() {
                   </div>
 
                   {/* View As Section */}
-                  <div className="forum-dropdown-section" style={{ borderBottom: 'none' }}>
+                  <div className="forum-dropdown-section forum-dropdown-section-last">
                     <div className="forum-dropdown-section-title">View As</div>
                     <div className="forum-dropdown-options">
                       <label className="forum-dropdown-option">
@@ -258,7 +258,7 @@ export default function Forum() {
           </div>
         ) : sortedPosts.length === 0 ? (
           <div className="forum-empty">
-            <MessageSquare size={64} style={{ marginBottom: '1rem', opacity: '0.5' }} />
+            <MessageSquare size={48} className="forum-empty-icon" />
             <p className="forum-empty-title">
               {searchQuery ? 'No posts found' : 'No posts yet'}
             </p>
@@ -303,7 +303,7 @@ export default function Forum() {
                       <MessageSquare size={14} />
                       <span>{replyCount}</span>
                     </div>
-                    <span style={{ color: '#cbd5e1' }}>•</span>
+                    <span className="forum-post-meta-dot">•</span>
                     <span>{formatTimestamp(post.created_at)}</span>
                   </div>
                 </div>

@@ -41,7 +41,7 @@ export default function TaskCreateForm({ onSubmit, isPending }) {
             placeholder="Add details..."
           />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem' }}>
+        <div className="task-create-form-row">
           <div className="task-form-group">
             <label className="task-form-label">Priority</label>
             <select
@@ -68,11 +68,10 @@ export default function TaskCreateForm({ onSubmit, isPending }) {
       <div className="task-form-actions">
         <button
           type="submit"
-          className="task-form-btn task-form-btn-primary"
+          className="task-form-btn task-form-btn-primary task-form-submit-btn"
           disabled={isPending}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
         >
-          {isPending && <Loader2 style={{ width: '1rem', height: '1rem', animation: 'spin 1s linear infinite' }} />}
+          {isPending && <Loader2 className="task-form-spinner" />}
           Create Task
         </button>
       </div>

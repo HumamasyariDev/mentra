@@ -17,7 +17,20 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Detect Pomodoro animation triggers
+    const url = response.config.url;
+    if (url?.includes('/pomodoro/') && response.config.method === 'post') {
+      if (url.includes('/pause')) {
+        localStorage.setItem('pom-pending-anim', JSON.stringify({ type: 'paused', timestamp: Date.now() }));
+      } else if (url.includes('/resume')) {
+        localStorage.setItem('pom-pending-anim', JSON.stringify({ type: 'resumed', timestamp: Date.now() }));
+      } else if (url.includes('/cancel')) {
+        localStorage.setItem('pom-pending-anim', JSON.stringify({ type: 'stopped', timestamp: Date.now() }));
+      }
+    }
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("mentra_token");

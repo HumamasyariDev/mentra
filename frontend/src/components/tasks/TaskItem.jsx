@@ -197,7 +197,7 @@ answer adalah indeks (0-3) dari options yang benar.`;
                 {new Date(task.due_date).toLocaleDateString()}
               </span>
             )}
-            <span style={{ fontSize: '0.75rem', color: '#6366f1', fontWeight: '500' }}>+{task.exp_reward} EXP</span>
+            <span className="task-item-exp-badge">+{task.exp_reward} EXP</span>
 
             {/* Bonus earned flash */}
             {bonusMsg && (
@@ -216,7 +216,7 @@ answer adalah indeks (0-3) dari options yang benar.`;
               title="Challenge Quiz"
               className="task-item-quiz-btn"
             >
-              <Zap className="task-item-quiz-icon" style={{ fill: '#8b5cf6' }} />
+              <Zap className="task-item-quiz-icon" />
               Quiz
             </button>
           )}
