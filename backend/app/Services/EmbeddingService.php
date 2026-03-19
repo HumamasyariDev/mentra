@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Log;
  */
 class EmbeddingService
 {
-    private string $apiKey;
+    private ?string $apiKey;
     private string $model;
 
     // ✅ Correct HuggingFace Router API (replaces deprecated api-inference.huggingface.co)
@@ -31,7 +31,7 @@ class EmbeddingService
 
     public function __construct()
     {
-        $this->apiKey = config('services.huggingface.key', '');
+        $this->apiKey = config('services.huggingface.key');
         $this->model = config('services.huggingface.embedding_model', 'BAAI/bge-small-en-v1.5');
     }
 
