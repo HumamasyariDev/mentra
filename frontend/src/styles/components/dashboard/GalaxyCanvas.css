@@ -1,0 +1,354 @@
+/* Galaxy Canvas Component Styling */
+
+/* ============================================
+   Z-INDEX STACKING ORDER (from bottom to top):
+   z-index: 1  - GalaxyCanvas container + Canvas element (Milky Way background)
+   z-index: 2  - SVG overlay (debris/particles)
+   z-index: 5  - Main map SVG (MapViewport)
+   z-index: 10 - UI buttons (hamburger, exp bar, controls hint)
+   ============================================ */
+
+/* Cosmic color palette custom properties */
+:root {
+  --debris-stroke-purple: #a78bfa;
+  --debris-stroke-blue: #60a5fa;
+  --debris-stroke-teal: #22d3ee;
+  --debris-stroke-cyan: #06b6d4;
+  --particle-color-purple: #c084fc;
+  --particle-color-blue: #3b82f6;
+  --particle-color-teal: #14b8a6;
+  --particle-color-green: #10b981;
+  --particle-glow-color: #22d3ee;
+}
+
+/* GalaxyCanvas Container - holds canvas and SVG overlay */
+.galaxy-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+  /* Prevent layout shift and enable GPU acceleration */
+  contain: layout style paint;
+}
+
+/* Canvas Element - Milky Way background rendering */
+.galaxy-canvas canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+  /* Pixelated effect for retro cosmic look */
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  /* Prevent flickering */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Disable selection */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* SVG Overlay - debris and particle elements */
+.galaxy-canvas svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 2;
+  /* Allow interaction with SVG elements (debris pieces) */
+  pointer-events: auto;
+  /* Prevent flickering */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* ============================================
+   DEBRIS PIECE STYLING
+   ============================================ */
+
+.debris-piece {
+  fill: none;
+  stroke-width: 1.5px;
+  stroke: var(--debris-stroke-purple, #a78bfa);
+  opacity: 0.75;
+  cursor: pointer;
+  /* No transition for instant response, low latency */
+  transition: none;
+  pointer-events: auto;
+  /* Enable GPU acceleration */
+  will-change: auto;
+}
+
+/* Hover state for debris pieces */
+.debris-piece:hover {
+  opacity: 0.95;
+  stroke-width: 2px;
+}
+
+/* Purple debris variant */
+.debris-piece.debris-purple {
+  stroke: var(--debris-stroke-purple, #a78bfa);
+}
+
+/* Blue debris variant */
+.debris-piece.debris-blue {
+  stroke: var(--debris-stroke-blue, #60a5fa);
+}
+
+/* Teal debris variant */
+.debris-piece.debris-teal {
+  stroke: var(--debris-stroke-teal, #22d3ee);
+}
+
+/* Cyan debris variant */
+.debris-piece.debris-cyan {
+  stroke: var(--debris-stroke-cyan, #06b6d4);
+}
+
+/* Optional drop-shadow filter for depth */
+.debris-piece.debris-glow {
+  filter: drop-shadow(0 0 4px rgba(167, 139, 250, 0.6));
+}
+
+.debris-piece.debris-glow.debris-blue {
+  filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.6));
+}
+
+.debris-piece.debris-glow.debris-teal {
+  filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.6));
+}
+
+.debris-piece.debris-glow.debris-cyan {
+  filter: drop-shadow(0 0 4px rgba(6, 182, 212, 0.6));
+}
+
+/* ============================================
+   PARTICLE STYLING
+   ============================================ */
+
+.particle {
+  fill: var(--particle-color-purple, #c084fc);
+  opacity: var(--particle-opacity, 0.8);
+  /* Particles are not individually clickable */
+  pointer-events: none;
+  /* No stroke for cleaner look */
+  stroke: none;
+  /* Prevent flickering */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Purple particle variant */
+.particle.particle-purple {
+  fill: var(--particle-color-purple, #c084fc);
+}
+
+/* Blue particle variant */
+.particle.particle-blue {
+  fill: var(--particle-color-blue, #3b82f6);
+}
+
+/* Teal particle variant */
+.particle.particle-teal {
+  fill: var(--particle-color-teal, #14b8a6);
+}
+
+/* Green particle variant */
+.particle.particle-green {
+  fill: var(--particle-color-green, #10b981);
+}
+
+/* Particle with subtle glow effect */
+.particle.particle-glow {
+  filter: blur(0.5px) drop-shadow(0 0 2px var(--particle-glow-color, #22d3ee));
+}
+
+/* ============================================
+   PARTICLE FADE-OUT ANIMATIONS
+   ============================================ */
+
+/* Keyframe animation for particle fade-out */
+@keyframes particleFadeOut {
+  0% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Apply fade-out animation to fading particles */
+.particle.particle-fading {
+  animation: particleFadeOut linear forwards;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .debris-piece {
+    stroke-width: 1.25px;
+  }
+
+  .debris-piece:hover {
+    stroke-width: 1.75px;
+  }
+
+  .galaxy-canvas {
+    /* Slightly reduce complexity on mobile */
+    contain: layout style paint;
+  }
+}
+
+/* Tablet and small screens */
+@media (max-width: 1024px) {
+  .debris-piece {
+    opacity: 0.7;
+  }
+
+  .particle {
+    opacity: calc(var(--particle-opacity, 0.8) * 0.9);
+  }
+}
+
+/* Large screens and high-resolution displays */
+@media (min-width: 1440px) {
+  .debris-piece {
+    stroke-width: 2px;
+  }
+
+  .debris-piece:hover {
+    stroke-width: 2.5px;
+  }
+
+  .particle {
+    /* Slightly increase glow on larger screens */
+  }
+}
+
+/* High-DPI displays (e.g., Retina, 4K) */
+@media (min-resolution: 192dpi) {
+  .galaxy-canvas canvas {
+    /* Canvas element naturally scales via devicePixelRatio in JS */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
+  }
+}
+
+/* ============================================
+   DARK MODE / THEME SUPPORT
+   ============================================ */
+
+/* Dark theme (default) */
+:root,
+[data-theme="dark"] {
+  --debris-stroke-purple: #a78bfa;
+  --debris-stroke-blue: #60a5fa;
+  --debris-stroke-teal: #22d3ee;
+  --debris-stroke-cyan: #06b6d4;
+  --particle-color-purple: #c084fc;
+  --particle-color-blue: #3b82f6;
+  --particle-color-teal: #14b8a6;
+  --particle-color-green: #10b981;
+  --particle-glow-color: #22d3ee;
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --debris-stroke-purple: #9333ea;
+  --debris-stroke-blue: #2563eb;
+  --debris-stroke-teal: #0891b2;
+  --debris-stroke-cyan: #0369a1;
+  --particle-color-purple: #a855f7;
+  --particle-color-blue: #1d4ed8;
+  --particle-color-teal: #0d9488;
+  --particle-color-green: #059669;
+  --particle-glow-color: #06b6d4;
+}
+
+/* ============================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+
+/* Container optimization */
+.galaxy-canvas {
+  /* Reduce paint and layout recalculations */
+  contain: layout style paint;
+}
+
+/* Canvas optimization */
+.galaxy-canvas canvas {
+  /* Use GPU acceleration for rendering */
+  transform: translate3d(0, 0, 0);
+}
+
+/* SVG overlay optimization */
+.galaxy-canvas svg {
+  /* Optimize SVG rendering */
+  transform: translate3d(0, 0, 0);
+}
+
+/* Debris optimization */
+.debris-piece {
+  /* Let browser optimize automatically, no forced GPU acceleration */
+  will-change: auto;
+  /* Prevent flickering during transforms */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Particle optimization */
+.particle {
+  /* No will-change for static particles */
+  will-change: auto;
+  /* Prevent flickering */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* ============================================
+   ACCESSIBILITY CONSIDERATIONS
+   ============================================ */
+
+/* Ensure focus states are visible for keyboard navigation */
+.debris-piece:focus {
+  outline: 2px solid var(--debris-stroke-teal, #22d3ee);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+  .debris-piece {
+    opacity: 1;
+    stroke-width: 2px;
+  }
+
+  .particle {
+    opacity: var(--particle-opacity, 0.95);
+  }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .particle.particle-fading {
+    animation: none;
+    opacity: 0;
+  }
+
+  .debris-piece:hover {
+    opacity: 0.75;
+    stroke-width: 1.5px;
+  }
+}

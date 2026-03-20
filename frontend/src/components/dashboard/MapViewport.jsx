@@ -1,7 +1,9 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { Island, ISLANDS } from './Island';
+import GalaxyCanvas from './GalaxyCanvas';
+import useParticleTrail from '../../hooks/useParticleTrail';
 import '../../styles/components/dashboard/MapViewport.css';
 
 export const MapViewport = ({ onIslandClick }) => {
@@ -9,12 +11,26 @@ export const MapViewport = ({ onIslandClick }) => {
   const groupRef = useRef(null);
   const containerRef = useRef(null);
   const isZooming = useRef(false);
+  const animationFrameRef = useRef(null);
+  const rafThrottleRef = useRef(null);
+  const pendingMouseMoveRef = useRef(null);
 
   // Pan and zoom state
   const panZoomState = useRef({
     x: 0,
     y: 0,
     scale: 1,
+  });
+
+  // Initialize particle trail hook
+  const {
+    particles,
+    updateParticles,
+    handleMouseMove,
+  } = useParticleTrail({
+    enabled: true,
+    panZoomRef: panZoomState, // Pass ref for live updates during drag
+    containerRef: svgRef, // Pass SVG ref instead of container for better local coordinates
   });
 
   // Initialize GSAP context
@@ -93,38 +109,50 @@ export const MapViewport = ({ onIslandClick }) => {
       const handleMouseMove = (e) => {
         if (!isDragging || isZooming.current) return;
 
-        // Calculate delta in SVG viewBox units
-        const pointStart = svgRef.current.createSVGPoint();
-        pointStart.x = dragStartX;
-        pointStart.y = dragStartY;
-        const svgPStart = pointStart.matrixTransform(svgRef.current.getScreenCTM().inverse());
-        
-        const pointCurrent = svgRef.current.createSVGPoint();
-        pointCurrent.x = e.clientX;
-        pointCurrent.y = e.clientY;
-        const svgPCurrent = pointCurrent.matrixTransform(svgRef.current.getScreenCTM().inverse());
-        
-        const deltaX = (svgPCurrent.x - svgPStart.x);
-        const deltaY = (svgPCurrent.y - svgPStart.y);
+        // Store event for RAF processing instead of immediate processing
+        pendingMouseMoveRef.current = e;
 
-        let newPanX = dragStartPanX + deltaX;
-        let newPanY = dragStartPanY + deltaY;
+        // Only schedule RAF callback if not already scheduled
+        if (!rafThrottleRef.current) {
+          rafThrottleRef.current = requestAnimationFrame(() => {
+            const event = pendingMouseMoveRef.current;
+            if (event && isDragging) {
+              // Calculate delta in SVG viewBox units
+              const pointStart = svgRef.current.createSVGPoint();
+              pointStart.x = dragStartX;
+              pointStart.y = dragStartY;
+              const svgPStart = pointStart.matrixTransform(svgRef.current.getScreenCTM().inverse());
+              
+              const pointCurrent = svgRef.current.createSVGPoint();
+              pointCurrent.x = event.clientX;
+              pointCurrent.y = event.clientY;
+              const svgPCurrent = pointCurrent.matrixTransform(svgRef.current.getScreenCTM().inverse());
+              
+              const deltaX = (svgPCurrent.x - svgPStart.x);
+              const deltaY = (svgPCurrent.y - svgPStart.y);
 
-        // Apply boundary limits during drag
-        const currentScale = panZoomState.current.scale;
-        const tolerance = 300;
-        const minX = -tolerance * currentScale;
-        const maxX = tolerance * currentScale;
-        const minY = -tolerance * currentScale;
-        const maxY = tolerance * currentScale;
-        
-        newPanX = gsap.utils.clamp(minX, maxX, newPanX);
-        newPanY = gsap.utils.clamp(minY, maxY, newPanY);
+              let newPanX = dragStartPanX + deltaX;
+              let newPanY = dragStartPanY + deltaY;
 
-        panZoomState.current.x = newPanX;
-        panZoomState.current.y = newPanY;
+              // Apply boundary limits during drag
+              const currentScale = panZoomState.current.scale;
+              const tolerance = 300;
+              const minX = -tolerance * currentScale;
+              const maxX = tolerance * currentScale;
+              const minY = -tolerance * currentScale;
+              const maxY = tolerance * currentScale;
+              
+              newPanX = gsap.utils.clamp(minX, maxX, newPanX);
+              newPanY = gsap.utils.clamp(minY, maxY, newPanY);
 
-        updateTransform();
+              panZoomState.current.x = newPanX;
+              panZoomState.current.y = newPanY;
+
+              updateTransform();
+            }
+            rafThrottleRef.current = null;
+          });
+        }
       };
 
       const handleMouseUp = () => {
@@ -166,10 +194,31 @@ export const MapViewport = ({ onIslandClick }) => {
         svgRef.current?.removeEventListener('mousedown', handleMouseDown);
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
+        if (rafThrottleRef.current) {
+          cancelAnimationFrame(rafThrottleRef.current);
+        }
       };
     },
     { scope: containerRef }
   );
+
+  // Animation loop for debris and particles physics
+  useEffect(() => {
+    const animate = () => {
+      // Update particles: fade and cleanup
+      updateParticles(Date.now());
+      
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [updateParticles]);
 
   const handleIslandClick = (island) => {
     if (isZooming.current) return;
@@ -235,43 +284,53 @@ export const MapViewport = ({ onIslandClick }) => {
 
   return (
     <div ref={containerRef} className="map-viewport">
+      {/* GalaxyCanvas - renders behind the main SVG viewport */}
+      <GalaxyCanvas
+        viewportState={{
+          pan: { x: panZoomState.current.x, y: panZoomState.current.y },
+          zoom: panZoomState.current.scale,
+        }}
+        viewBoxWidth={2000}
+        viewBoxHeight={1400}
+      />
+
       <svg
         ref={svgRef}
         viewBox="0 0 2000 1400"
         className="map-svg"
         preserveAspectRatio="xMidYMid meet"
+        onMouseMove={handleMouseMove}
       >
         <defs>
           <filter id="nebula-blur" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="150" />
           </filter>
+          <filter id="stardust-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="1.5" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
         </defs>
 
-        {/* Spacey Galaxy Nebula Effects */}
-        <g className="nebulas">
-          <ellipse cx="400" cy="300" rx="400" ry="250" fill="#4c1d95" opacity="0.25" filter="url(#nebula-blur)" />
-          <ellipse cx="1500" cy="900" rx="500" ry="300" fill="#1e3a8a" opacity="0.2" filter="url(#nebula-blur)" />
-          <ellipse cx="1000" cy="500" rx="350" ry="200" fill="#0f766e" opacity="0.15" filter="url(#nebula-blur)" />
-          <ellipse cx="1800" cy="200" rx="300" ry="400" fill="#831843" opacity="0.15" filter="url(#nebula-blur)" />
-          <ellipse cx="200" cy="1100" rx="350" ry="250" fill="#064e3b" opacity="0.2" filter="url(#nebula-blur)" />
-        </g>
-
-        {/* Stars background */}
-        <g className="stars">
-          {Array.from({ length: 50 }).map((_, i) => (
-            <circle
-              key={i}
-              cx={Math.random() * 1200}
-              cy={Math.random() * 800}
-              r={Math.random() * 1.5}
-              fill="white"
-              opacity={Math.random() * 0.6}
-            />
-          ))}
-        </g>
+        {/* Background is now the GalaxyCanvas - this SVG is transparent for islands/particles */}
+        <rect width="2000" height="1400" fill="none" />
 
         {/* Transform group for pan/zoom */}
         <g ref={groupRef}>
+          {/* Particles group - moved inside transform group so it stays on map when panning */}
+          <g id="particles-layer" style={{ pointerEvents: 'none' }}>
+            {particles.map((particle) => (
+              <circle
+                key={`particle-${particle.id}`}
+                cx={particle.x}
+                cy={particle.y}
+                r={particle.size || 1.5}
+                fill={particle.color || '#a78bfa'}
+                opacity={particle.opacity}
+                filter="url(#stardust-glow)"
+              />
+            ))}
+          </g>
+
           {/* Islands */}
           {ISLANDS.map((island) => (
             <g

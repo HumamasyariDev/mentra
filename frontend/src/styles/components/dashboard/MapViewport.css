@@ -6,17 +6,28 @@
   height: 100%;
   background: transparent;
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+}
+
+/* Galaxy Canvas Background */
+.map-viewport > div:first-child {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
 .map-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: block;
   cursor: grab;
   user-select: none;
+  z-index: 5;
 }
 
 .map-svg:active {
