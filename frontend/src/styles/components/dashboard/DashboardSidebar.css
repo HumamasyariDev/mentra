@@ -47,6 +47,14 @@
   pointer-events: auto;
 }
 
+/* Immediately hide sidebar without animation when fading out */
+.dashboard-sidebar.fade-out-immediate {
+  transform: translateX(-120%);
+  opacity: 0;
+  pointer-events: none;
+  transition: none !important;
+}
+
 /* ── Header ───────────────────────────────────────────────────── */
 
 .dashboard-sidebar-header {

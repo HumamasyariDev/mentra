@@ -185,6 +185,7 @@ export default function Forest() {
   const waterDropRef = useRef(null);
   const previousSnapshotRef = useRef({ activeTreeId: null, stage: null, archivedCount: 0 });
   const lastActionRef = useRef(null);
+  const isFirstVisitRef = useRef(true);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setTimeTick(Date.now()), 60000);
@@ -394,8 +395,8 @@ export default function Forest() {
     onError: () => setInteractionLocked(false),
   });
 
-  useGSAP(() => {
-    if (isLoading || prefersReducedMotion) {
+   useGSAP(() => {
+    if (isLoading || prefersReducedMotion || isFirstVisitRef.current) {
       return;
     }
 
@@ -427,6 +428,9 @@ export default function Forest() {
           stagger: 0.03,
         }, '-=0.5');
     }, containerRef);
+
+    // Mark that we've done the first visit animation
+    isFirstVisitRef.current = false;
 
     return () => ctx.revert();
   }, { scope: containerRef, dependencies: [isLoading, prefersReducedMotion] });

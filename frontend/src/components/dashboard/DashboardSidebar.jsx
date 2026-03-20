@@ -36,7 +36,7 @@ const communityItems = [
   { to: "/forum", label: "Forum", icon: MessageCircle },
 ];
 
-export const DashboardSidebar = ({ isOpen, onClose }) => {
+export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => {
   const { user, logout } = useAuth();
 
   const handleLogout = () => {
@@ -52,7 +52,7 @@ export const DashboardSidebar = ({ isOpen, onClose }) => {
       )}
 
       {/* Floating Sidebar */}
-      <aside className={`dashboard-sidebar ${isOpen ? "open" : ""}`}>
+      <aside className={`dashboard-sidebar ${isOpen ? "open" : ""} ${shouldFadeOut ? "fade-out-immediate" : ""}`}>
         {/* Header with close button */}
         <div className="dashboard-sidebar-header">
           <div className="dashboard-sidebar-logo">

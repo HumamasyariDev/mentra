@@ -278,6 +278,9 @@ export const MapViewport = ({ onIslandClick }) => {
               key={island.id}
               onClick={() => handleIslandClick(island)}
               className={`island ${island.id}-island`}
+              style={{
+                transformOrigin: `${island.x}px ${island.y}px`,
+              }}
             >
               <Island island={island} />
             </g>

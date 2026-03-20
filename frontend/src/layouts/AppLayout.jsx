@@ -1,4 +1,4 @@
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useDashboardUI } from '../contexts/DashboardUIContext';
 import { Loader2, Menu } from 'lucide-react';
@@ -12,10 +12,9 @@ function AppLayoutContent() {
   const { sidebarOpen, setSidebarOpen, dashboardMode } = useDashboardUI();
   const [localSidebarOpen, setLocalSidebarOpen] = useState(false);
   const { theme, isPomodoroPage } = usePomodoroTheme();
-  const location = useLocation();
-  const isAgentPage = location.pathname === "/agent";
-  const isChatPage = location.pathname === "/chat";
-  const isDashboardPage = location.pathname === "/dashboard";
+  const isAgentPage = window.location.pathname === "/agent";
+  const isChatPage = window.location.pathname === "/chat";
+  const isDashboardPage = window.location.pathname === "/dashboard";
   
   // Hide sidebar on dashboard map mode (map mode manages its own sidebar)
   const isMapMode = isDashboardPage && dashboardMode === 'map';

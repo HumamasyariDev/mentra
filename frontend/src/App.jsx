@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AuthLayout from "./layouts/AuthLayout";
 import AppLayout from "./layouts/AppLayout";
+import ForestLayout from "./layouts/ForestLayout";
+import { TransitionWrapper } from "./components/TransitionWrapper";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
@@ -17,42 +19,49 @@ import Forest from "./pages/Forest";
 import MentraAgentWithSessions from "./agents/MentraAgentWithSessions";
 import LandingPage from "./pages/LandingPage";
 import { DashboardUIProvider } from "./contexts/DashboardUIContext";
+import { PageTransitionProvider } from "./contexts/PageTransitionContext";
 
 export default function App() {
   return (
     <BrowserRouter>
       <DashboardUIProvider>
-      <Routes>
-        {/* Landing Page */}
-        <Route path="/" element={<LandingPage />} />
+        <PageTransitionProvider>
+          <TransitionWrapper>
+            <Routes>
+              {/* Landing Page */}
+              <Route path="/" element={<LandingPage />} />
 
-        {/* Auth routes */}
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Route>
+              {/* Auth routes */}
+              <Route element={<AuthLayout />}>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+              </Route>
 
-        {/* Forest Tree Care — full viewport, outside AppLayout */}
-        <Route path="/forest" element={<Forest />} />
+              {/* Forest Tree Care — separate layout with transition overlay but no sidebar */}
+              <Route element={<ForestLayout />}>
+                <Route path="/forest" element={<Forest />} />
+              </Route>
 
-        {/* Protected routes */}
-        <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/tasks" element={<Tasks />} />
-          <Route path="/pomodoro" element={<Pomodoro />} />
-          <Route path="/schedules" element={<Schedules />} />
-          <Route path="/mood" element={<Mood />} />
-          <Route path="/sandbox" element={<Sandbox />} />
-          <Route path="/sandbox/:id" element={<SandboxChat />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/agent" element={<MentraAgentWithSessions />} />
-          <Route path="/forum" element={<Forum />} />
-        </Route>
+              {/* Protected routes */}
+              <Route element={<AppLayout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/tasks" element={<Tasks />} />
+                <Route path="/pomodoro" element={<Pomodoro />} />
+                <Route path="/schedules" element={<Schedules />} />
+                <Route path="/mood" element={<Mood />} />
+                <Route path="/sandbox" element={<Sandbox />} />
+                <Route path="/sandbox/:id" element={<SandboxChat />} />
+                <Route path="/chat" element={<Chat />} />
+                <Route path="/agent" element={<MentraAgentWithSessions />} />
+                <Route path="/forum" element={<Forum />} />
+              </Route>
 
-        {/* Default redirect */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
+              {/* Default redirect */}
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </TransitionWrapper>
+        </PageTransitionProvider>
       </DashboardUIProvider>
     </BrowserRouter>
   );

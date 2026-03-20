@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useDashboardUI } from '../contexts/DashboardUIContext';
+import { usePageTransition } from '../contexts/PageTransitionContext';
 import { MapViewport } from '../components/dashboard/MapViewport';
 import { DashboardFloatingUI } from '../components/dashboard/DashboardFloatingUI';
 import { SimplifiedDashboard } from '../components/dashboard/SimplifiedDashboard';
@@ -13,6 +14,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { dashboardMode } = useDashboardUI();
   const { sidebarOpen, setSidebarOpen } = useDashboardUI();
+  const { triggerFadeOut } = usePageTransition();
   const contentRef = React.useRef(null);
   const [islandClicked, setIslandClicked] = React.useState(false);
   const isMobile = window.innerWidth < 768;
@@ -42,15 +44,19 @@ export default function Dashboard() {
     // Trigger fade-out of floating UI
     setIslandClicked(true);
     
+    // Start fade to black overlay immediately (make it obvious)
+    triggerFadeOut();
+    
     // The MapViewport handles the zoom-in animation first.
     // When this callback fires, we are already zoomed in.
-    // Wait a bit for the fade-out to complete, then fade out the entire page.
+    // Fade out the content
     gsap.to(contentRef.current, {
       opacity: 0,
       duration: 0.5,
       ease: 'power2.in',
       delay: 0.4, // Wait for floating UI fade-out
       onComplete: () => {
+        // Navigate once content is hidden
         navigate(island.route);
       },
     });
@@ -60,7 +66,7 @@ export default function Dashboard() {
   if (displayMode === 'map') {
     return (
       <div className="dashboard-page dashboard-map-mode">
-        <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <DashboardSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} shouldFadeOut={islandClicked} />
         <DashboardFloatingUI 
           stats={{
             level: 12,
