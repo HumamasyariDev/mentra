@@ -663,7 +663,7 @@ export default function Forest() {
                  treeWidth={isPlanting ? (cutsceneImageMode === 'seed' ? HERO_WIDTHS[0] : HERO_WIDTHS[1]) : treeWidth}
                  isPlanting={isPlanting}
                  plantingTitle={plantingTreeType ? `Planting ${plantingTreeType.display_name}...` : 'Planting...'}
-                 cardRefOverride={isPlanting ? cutsceneCardRef : null}
+                 cardRefOverride={cutsceneCardRef}
               />
           ) : (
             <section className="forest-empty-panel">

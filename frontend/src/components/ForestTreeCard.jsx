@@ -52,8 +52,17 @@ export default function ForestTreeCard({
   const internalCardRef = useRef(null);
   const cardRef = cardRefOverride || internalCardRef;
   const localTreeImageRef = useRef(null);
-  const infoRef = useRef(null);
+  
+  const fullUiRef = useRef(null);
+  const plantingUiRef = useRef(null);
+  const wasPlantingRef = useRef(isPlanting);
+  
   const [timerText, setTimerText] = useState('');
+
+  // Track previous planting state to prevent double-animations
+  useEffect(() => {
+    wasPlantingRef.current = isPlanting;
+  }, [isPlanting]);
 
   // Use provided ref if available, otherwise use local ref
   const treeRef = treeImageRef || localTreeImageRef;
@@ -89,37 +98,52 @@ export default function ForestTreeCard({
     return () => window.clearInterval(interval);
   }, [cooldownSeconds, canWater, tree]);
 
-  // GSAP entrance animation for the card
+  // Main Card Entrance Animation
   useGSAP(() => {
-    if (!cardRef.current || prefersReducedMotion || !tree || isPlanting) {
-      return;
-    }
+    if (!cardRef.current || prefersReducedMotion || !tree) return;
 
+    // If currently planting, the usePlantAnimation hook handles the card sliding in from the bottom
+    if (isPlanting) return;
+
+    // If we just finished planting, DO NOT run the normal card entrance animation,
+    // because the card is already on screen!
+    if (wasPlantingRef.current) return;
+
+    // Normal page-load entrance animation
     gsap.fromTo(
       cardRef.current,
-      {
-        opacity: 0,
-        y: 12,
-        scale: 0.98,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.55,
-        ease: 'power2.out',
-      }
+      { opacity: 0, y: 12, scale: 0.98 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: 'power2.out' }
     );
-  }, { scope: cardRef, dependencies: [tree?.id, prefersReducedMotion, isPlanting] });
+  }, { scope: cardRef, dependencies: [tree?.id, prefersReducedMotion] }); 
+  // Notice `isPlanting` is NOT in the dependencies array. This guarantees it won't fire 
+  // when `isPlanting` changes to false!
 
-  // Fade in the info panel nicely when planting finishes
+  // Smooth UI Crossfade when Planting completes
   useGSAP(() => {
-    if (!isPlanting && infoRef.current && !prefersReducedMotion) {
-      gsap.fromTo(
-        infoRef.current,
-        { opacity: 0, y: 15 },
-        { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.1 }
+    if (prefersReducedMotion) return;
+
+    if (isPlanting) {
+      // Immediately prepare planting state
+      gsap.set(fullUiRef.current, { autoAlpha: 0 });
+      gsap.set(plantingUiRef.current, { autoAlpha: 1, y: 0 });
+    } else if (wasPlantingRef.current) {
+      // Transition out of planting state smoothly
+      gsap.to(plantingUiRef.current, {
+        autoAlpha: 0,
+        y: -10,
+        duration: 0.3,
+        ease: 'power2.inOut',
+      });
+      
+      gsap.fromTo(fullUiRef.current,
+        { autoAlpha: 0, y: 15 },
+        { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.15 }
       );
+    } else {
+      // Normal stable state
+      gsap.set(fullUiRef.current, { autoAlpha: 1, y: 0 });
+      gsap.set(plantingUiRef.current, { autoAlpha: 0 });
     }
   }, { dependencies: [isPlanting, prefersReducedMotion] });
 
@@ -148,15 +172,36 @@ export default function ForestTreeCard({
            />
          </div>
 
-        {/* Info section conditionally rendered based on planting state */}
-        {isPlanting ? (
-          <div className="forest-tree-card-info" style={{ alignItems: 'center', justifyContent: 'center', minHeight: '160px' }}>
+        {/* UI Container - Set relative so absolute layers stack correctly */}
+        <div style={{ position: 'relative' }}>
+        
+          {/* Planting text layer */}
+          <div 
+            ref={plantingUiRef}
+            style={{ 
+              position: 'absolute', 
+              inset: 0, 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              zIndex: 2,
+              pointerEvents: 'none',
+              visibility: 'hidden' // Overridden by GSAP autoAlpha
+            }}
+          >
             <h3 className="forest-tree-card-title" style={{ fontSize: '1.4rem' }}>
               {plantingTitle}
             </h3>
           </div>
-        ) : (
-          <div className="forest-tree-card-info" ref={infoRef}>
+
+          {/* Full interactive UI layer */}
+          <div 
+            className="forest-tree-card-info" 
+            ref={fullUiRef}
+            style={{
+              visibility: 'hidden' // Overridden by GSAP autoAlpha
+            }}
+          >
             <div className="forest-tree-card-header">
               <div>
                 <span className="forest-tree-card-overline">Active growth</span>
@@ -197,7 +242,8 @@ export default function ForestTreeCard({
                   : `Next in ${timerText}`}
             </p>
           </div>
-        )}
+          
+        </div>
       </div>
     </div>
   );
