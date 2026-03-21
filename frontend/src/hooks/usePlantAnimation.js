@@ -47,19 +47,18 @@ export function usePlantAnimation() {
       // Hide tree initially so it doesn't show before card slides in
       gsap.set(treeNode, { opacity: 0, scale: 0 });
 
-      // Phase 0: Card slides in from below
+      // Phase 0: Subtle card bump (since the card is now already on screen)
       if (cardNode) {
         timeline.fromTo(
           cardNode,
-          { y: 150, opacity: 0, scale: 0.95 },
-          { y: 0, opacity: 1, scale: 1, duration: 0.6, ease: 'back.out(1.1)' },
+          { scale: 0.98 },
+          { scale: 1, duration: 0.4, ease: 'back.out(1.5)' },
           0
         );
       }
 
       // Label: seed planting phase
-      // Start slightly before card finishes sliding in
-      timeline.addLabel('seedPhase', cardNode ? 0.35 : 0);
+      timeline.addLabel('seedPhase', cardNode ? 0.2 : 0);
 
       // Phase 1: Seed drops down onto the container
       timeline.fromTo(
@@ -120,7 +119,7 @@ export function usePlantAnimation() {
       );
 
       // Label: tree growth phase
-      timeline.addLabel('treeGrowth');
+      timeline.addLabel('treeGrowth', '+=0.05');
 
       // Phase 4: Baby tree emerges from ground - grows in with bounce
       timeline.fromTo(

@@ -61,7 +61,7 @@ const HERO_WIDTHS = {
   5: 440,   // Adult Tree (Final)
 };
 
-const MAX_BACKGROUND_TREES = 50;
+const MAX_BACKGROUND_TREES = 100;
 
 function getTreeAsset(typeName, stage) {
   const stageName = stage === 5 ? 'stage_final' : `stage_${stage}`;
@@ -111,61 +111,70 @@ function isTreeReadyNow(tree, nowMs) {
 
 function getGrowthProgress(tree) {
   if (!tree) {
-    return { railPercent: 0, stagePercent: 0, stageCost: 0, isAtFinal: false };
+    return { railPercent: 0, stagePercent: 0, stageCost: 0, waterProgress: 0, isAtFinal: false };
   }
 
   if (tree.stage >= 5) {
     // At final stage, show progress toward archiving (10 waterings)
     const archivePercent = Math.min(100, ((tree.archive_waterings ?? 0) / 10) * 100);
-    return { railPercent: 100, stagePercent: archivePercent, stageCost: 10, isAtFinal: true };
+    return { railPercent: 100, stagePercent: archivePercent, stageCost: 10, waterProgress: tree.archive_waterings ?? 0, isAtFinal: true };
   }
 
   // Stages start at 1, so stage_costs is indexed [0-4] for stages [1-5]
   const stageCostIndex = tree.stage - 1;
   const stageCost = tree.tree_type.stage_costs?.[stageCostIndex] ?? 1;
-  const stagePercent = Math.min(100, (tree.water_progress / stageCost) * 100);
+  const waterProgress = tree.water_progress ?? 0;
+  const stagePercent = Math.min(100, (waterProgress / stageCost) * 100);
   // Progress from stage 1-5: (stage - 1 + stagePercent / 100) / 4 * 100
   const railPercent = Math.min(100, (((tree.stage - 1) + stagePercent / 100) / 4) * 100);
 
-  return { railPercent, stagePercent, stageCost, isAtFinal: false };
+  return { railPercent, stagePercent, stageCost, waterProgress, isAtFinal: false };
 }
 
 function getBackgroundTreeLayout(index) {
-  // Perspective-based layout: further trees are higher up and smaller
-  // Create deterministic pseudo-random values
-  const seed = index * 73856093 ^ 19349663; // Mix hash
-  const pseudoRandom = (Math.sin(seed) + 1) / 2; // Normalize to 0-1
-  const leftRandom = (Math.sin(seed * 2) + 1) / 2;
+  const total = 100; // Match MAX_BACKGROUND_TREES
   
-  // Depth layer: determines vertical position, size, and z-index
-  // Trees arranged in rows: back (distant) to front (close)
-  const depth = (index % 12) + 1; // 12 depth layers (1 = far, 12 = close)
+  // Power function pushes more trees towards the front/closer to screen
+  // Instead of an even 0-1 distribution, this curves it so 70% of trees 
+  // populate the front half of the space.
+  const rawProgress = index / Math.max(1, total - 1);
+  const depthProgress = Math.pow(rawProgress, 0.7); 
   
-  // Vertical position: further back = higher on screen
-  // Maps depth 1-12 to bottom position 65% (far) to 5% (close)
-  const bottomPercent = 65 - ((depth - 1) / 11) * 60;
+  const seed = index * 73856093 ^ 19349663;
   
-  // Scale: smaller when further, larger when closer
-  // Maps depth 1-12 to scale 0.25 (tiny distant) to 1.0 (large close)
-  const scale = 0.25 + ((depth - 1) / 11) * 0.75;
+  // Golden ratio for beautifully even horizontal distribution
+  let nx = ((index * 0.618033988749895) % 1) * 2 - 1; // -1.0 to 1.0
   
-  // Horizontal spread: wider at distant layers, narrower at close
-  // Distant trees spread across full width, close trees toward center
-  const horizontalSpread = 1 - (depth - 1) / 11 * 0.5; // 1.0 to 0.5
-  const leftPercent = 50 + (pseudoRandom - 0.5) * 130 * horizontalSpread;
+  // Add organic jitter so it doesn't look like a mathematical grid
+  nx += (Math.sin(seed) * 0.15);
   
-  // Opacity: distant trees more transparent, close trees opaque
-  const opacity = 0.35 + ((depth - 1) / 11) * 0.65;
+  // Spread: Start at 40% width at horizon, expand to 110% width in foreground
+  const maxSpread = 40 + (Math.pow(depthProgress, 1.2) * 60); 
+  let leftPercent = 50 + (nx * maxSpread);
   
-  // Randomize left position within this depth layer
-  const leftVariation = (pseudoRandom - 0.5) * 20 * horizontalSpread;
+  // Planetary curve: horizon starts a bit lower (55%), drops aggressively to -10% (off screen bottom)
+  // This brings the foreground trees MUCH closer to the camera.
+  const baseBottom = 55 - (depthProgress * 65); 
+  const domeDrop = (nx * nx) * 18; // Edges drop off
+  
+  let bottomPercent = baseBottom - domeDrop;
+  bottomPercent += (Math.sin(seed * 2) * 2.5); // uneven ground
+  
+  // Scaling based perfectly on Y coordinate
+  // Base scale starts larger (0.35 instead of 0.25)
+  // Max scale gets huge (up to 1.8 instead of 1.35) for trees near the bottom
+  let scale = 0.35 + ((55 - bottomPercent) / 65) * 1.45;
+  scale *= 0.85 + (Math.abs(Math.sin(seed * 3)) * 0.35); // 0.85x to 1.2x variance
+  
+  const opacity = Math.min(1, 0.5 + (depthProgress * 0.5));
   
   return {
-    left: `calc(${leftPercent + leftVariation}%)`,
+    left: `calc(${leftPercent}%)`,
     bottom: `${bottomPercent}%`,
-    scale: scale,
-    depth: depth,
+    scale: Math.max(0.25, scale), // Minimum scale is larger
+    depth: depthProgress,
     opacity: opacity,
+    zIndex: Math.round(1000 - bottomPercent * 10), 
   };
 }
 
@@ -247,7 +256,15 @@ export default function Forest() {
 
     gsap.killTweensOf([treeNode, canNode, dropNode, heroPanelRef.current]);
 
-    const timeline = gsap.timeline({ onComplete });
+    const timeline = gsap.timeline({ 
+      onComplete: () => {
+        if (variant === 'archive') {
+          // Clear styles so the next "empty state" seed image isn't hidden or flown away
+          gsap.set(treeNode, { clearProps: 'all' });
+        }
+        onComplete?.();
+      }
+    });
 
     if (canNode && dropNode) {
       timeline
@@ -342,15 +359,11 @@ export default function Forest() {
           setCutsceneImageMode('seed');
           setIsPlanting(true);
 
-          // Optimistically update the cache so the activeTree exists immediately!
-          // This ensures the <Cutscene> renders rather than the <EmptyPanel>
-          queryClient.setQueryData(['forest'], (oldData) => {
-            if (!oldData) return oldData;
-            return { ...oldData, active_tree: data.tree };
-          });
+          // Note: We DO NOT optimistically update the cache here!
+          // We want the UI to remain in "Empty" mode so it can crossfade out cleanly.
+          // The optimistic update will happen exactly when the plant animation finishes.
 
           // Need a tiny delay to allow React to render the Cutscene DOM element
-          // so heroTreeRef becomes correctly attached to the animated image
           // Using 50ms ensures React completes the DOM update before GSAP runs
           setTimeout(() => {
             runPlantAnimation(
@@ -362,7 +375,14 @@ export default function Forest() {
                   setCutsceneImageMode('baby');
                 },
                 onComplete: () => {
-                  // After animation completes (2.5s), swap UI back to normal tree card
+                  // After animation completes (2.5s), optimistically apply tree to cache
+                  // so that when isPlanting becomes false, the UI crossfades into the ACTIVE tree, not the EMPTY tree.
+                  queryClient.setQueryData(['forest'], (oldData) => {
+                    if (!oldData) return oldData;
+                    return { ...oldData, active_tree: data.tree };
+                  });
+
+                  // Swap UI back to normal tree card
                   setIsPlanting(false);
                   setPlantingTreeType(null);
                   
@@ -404,7 +424,12 @@ export default function Forest() {
         return;
       }
 
-      gsap.timeline({ onComplete: refreshForest })
+      gsap.timeline({ 
+        onComplete: () => {
+          if (data.archived) gsap.set(heroTreeRef.current, { clearProps: 'all' });
+          refreshForest();
+        } 
+      })
         .to(heroTreeRef.current, {
           y: -16,
           scale: 1.06,
@@ -478,7 +503,9 @@ export default function Forest() {
     const previous = previousSnapshotRef.current;
 
     if (activeTree && heroTreeRef.current) {
-      if (lastActionRef.current === 'plant' || (!previous.activeTreeId && activeTree.id)) {
+      if (lastActionRef.current === 'plant') {
+        // Skip entrance animation: usePlantAnimation already handled bringing the baby tree into position
+      } else if (!previous.activeTreeId && activeTree.id) {
         gsap.fromTo(heroTreeRef.current, {
           autoAlpha: 0,
           y: 20,
@@ -491,6 +518,17 @@ export default function Forest() {
           filter: 'drop-shadow(0 24px 40px rgba(15, 23, 42, 0.1))',
           duration: 0.72,
           ease: 'back.out(1.5)',
+        });
+      } else if (!activeTree && previous.activeTreeId) {
+        // Tree was archived, fade in the seed for the empty state
+        gsap.fromTo(heroTreeRef.current, {
+          autoAlpha: 0,
+          scale: 0.8,
+        }, {
+          autoAlpha: 1,
+          scale: 1,
+          duration: 0.6,
+          ease: 'power2.out',
         });
       } else if (previous.activeTreeId === activeTree.id && previous.stage !== null && previous.stage !== activeTree.stage) {
         gsap.fromTo(heroTreeRef.current, {
@@ -631,6 +669,7 @@ export default function Forest() {
               '--tree-scale': tree.layout.scale,
               '--tree-depth': tree.layout.depth,
               '--tree-opacity': tree.layout.opacity,
+              zIndex: tree.layout.zIndex,
             }}
             aria-label={`Archived ${tree.tree_type.display_name}`}
           >
@@ -646,43 +685,28 @@ export default function Forest() {
       ></div>
 
         <main className={`forest-hero-shell ${isUiHidden ? 'is-ui-hidden' : ''}`}>
-         {activeTree ? (
-               <ForestTreeCard
-                 tree={activeTree}
-                 treeAsset={isPlanting ? (cutsceneImageMode === 'seed' ? getSeedAsset(plantingTreeType?.name) : getTreeAsset(plantingTreeType?.name, 1)) : getTreeAsset(activeTree.tree_type.name, activeTree.stage)}
-                 stageName={getDisplayStageName(activeTree.stage)}
-                 waterProgressPercent={growth.stagePercent}
-                 overallProgressPercent={growth.railPercent}
-                 canWater={canWaterActive}
-                 cooldownSeconds={cooldownSeconds}
-                 onWater={handleWaterActive}
-                 isPending={waterMutation.isPending}
-                 disabled={interactionLocked}
-                 wateringCanCount={forest?.watering_cans ?? 0}
-                 isAtFinal={activeTree.stage >= 5}
-                 archiveProgress={activeTree.archive_waterings ?? 0}
-                 treeImageRef={heroTreeRef}
-                 treeWidth={isPlanting ? (cutsceneImageMode === 'seed' ? HERO_WIDTHS[0] : HERO_WIDTHS[1]) : treeWidth}
-                 isPlanting={isPlanting}
-                 plantingTitle={plantingTreeType ? `Planting ${plantingTreeType.display_name}...` : 'Planting...'}
-                 cardRefOverride={cutsceneCardRef}
-              />
-          ) : (
-            <section className="forest-empty-panel">
-              <div className="forest-empty-preview">
-                <img src={pinePurpleSeed} alt="Seed" />
-              </div>
-              <div className="forest-empty-copy">
-                <span className="forest-overline">No active tree</span>
-                <h2>Start a new growth cycle.</h2>
-                <p>Plant a seed, earn watering cans in Pomodoro, and grow your forest.</p>
-              </div>
-              <button className="forest-primary-button" onClick={handlePlant}>
-                <img src={wateringCanAsset} alt="" />
-                <span>Plant a seed</span>
-              </button>
-            </section>
-         )}
+           <ForestTreeCard
+             tree={activeTree}
+             treeAsset={isPlanting ? (cutsceneImageMode === 'seed' ? getSeedAsset(plantingTreeType?.name) : getTreeAsset(plantingTreeType?.name, 1)) : activeTree ? getTreeAsset(activeTree.tree_type.name, activeTree.stage) : pinePurpleSeed}
+             stageName={activeTree ? getDisplayStageName(activeTree.stage) : ''}
+             waterProgressPercent={growth.stagePercent}
+             stageCost={growth.stageCost}
+             waterProgress={growth.waterProgress}
+             canWater={canWaterActive}
+             cooldownSeconds={cooldownSeconds}
+             onWater={handleWaterActive}
+             onPlant={handlePlant}
+             isPending={waterMutation.isPending || plantMutation.isPending}
+             disabled={interactionLocked}
+             wateringCanCount={forest?.watering_cans ?? 0}
+             isAtFinal={activeTree ? activeTree.stage >= 5 : false}
+             archiveProgress={activeTree?.archive_waterings ?? 0}
+             treeImageRef={heroTreeRef}
+             treeWidth={isPlanting ? (cutsceneImageMode === 'seed' ? HERO_WIDTHS[0] : HERO_WIDTHS[1]) : activeTree ? treeWidth : HERO_WIDTHS[0]}
+             isPlanting={isPlanting}
+             plantingTitle={plantingTreeType ? `Planting ${plantingTreeType.display_name}...` : 'Planting...'}
+             cardRefOverride={cutsceneCardRef}
+          />
        </main>
 
       {import.meta.env.DEV && activeTree && (
