@@ -61,10 +61,52 @@
   justify-content: space-between;
   gap: 1rem;
   pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.forest-topbar.is-ui-hidden {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none !important;
+}
+
+.forest-topbar.is-ui-hidden * {
+  pointer-events: none !important;
 }
 
 .forest-topbar > * {
   pointer-events: auto;
+}
+
+.forest-toggle-ui-btn {
+  position: absolute;
+  bottom: 28px;
+  right: 28px;
+  z-index: 20;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: #0f172a;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  pointer-events: auto;
+}
+
+.forest-toggle-ui-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.15);
+  background: #ffffff;
+}
+
+.forest-toggle-ui-btn:active {
+  transform: translateY(1px);
 }
 
 .forest-overline {
@@ -212,6 +254,31 @@
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.forest-hero-shell.is-ui-hidden {
+  opacity: 0;
+  transform: translateY(40px);
+  pointer-events: none !important;
+}
+
+.forest-hero-shell.is-ui-hidden * {
+  pointer-events: none !important;
+}
+
+.forest-planting-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 4;
+  animation: fade-in-overlay 0.4s ease forwards;
+}
+
+@keyframes fade-in-overlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .forest-planting-cutscene {

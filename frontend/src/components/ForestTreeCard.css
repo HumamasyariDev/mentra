@@ -1,21 +1,43 @@
 .forest-tree-card {
   position: relative;
   width: min(520px, 100%);
-  padding: 2rem;
-  border-radius: 28px;
+  padding: 2.2rem;
+  border-radius: 32px;
   overflow: hidden;
   z-index: 6;
   pointer-events: auto;
+  box-shadow: 0 40px 100px -10px rgba(15, 23, 42, 0.15),
+              0 20px 40px -10px rgba(15, 23, 42, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.forest-tree-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 50px 110px -10px rgba(15, 23, 42, 0.18),
+              0 25px 45px -10px rgba(15, 23, 42, 0.1);
 }
 
 .forest-tree-card-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  border-radius: 28px;
-  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.12);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.65) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 32px;
+}
+
+.forest-tree-card-backdrop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 32px;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.2) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
 .forest-tree-card-content {
@@ -23,7 +45,7 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.8rem;
+  gap: 2rem;
 }
 
 .forest-tree-card-visual {
@@ -31,7 +53,9 @@
   align-items: center;
   justify-content: center;
   min-height: 320px;
-  padding: 1rem;
+  padding: 1.5rem;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 70%);
+  border-radius: 24px;
 }
 
 .forest-tree-card-image {
@@ -39,7 +63,7 @@
   min-width: 92px;
   max-width: 460px;
   height: auto;
-  filter: drop-shadow(0 20px 45px rgba(15, 23, 42, 0.1));
+  filter: drop-shadow(0 25px 45px rgba(15, 23, 42, 0.12));
   will-change: transform;
 }
 
@@ -50,7 +74,7 @@
 .forest-tree-card-info {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1.4rem;
 }
 
 .forest-tree-card-header {
@@ -63,16 +87,16 @@
 .forest-tree-card-overline {
   display: block;
   font-size: 0.72rem;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 800;
   color: #64748b;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.5rem;
 }
 
 .forest-tree-card-title {
   margin: 0;
-  font-size: 1.6rem;
+  font-size: 1.7rem;
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1.1;
@@ -84,42 +108,46 @@
   align-items: center;
   justify-content: center;
   min-height: 40px;
-  padding: 0.5rem 1.05rem;
-  background: rgba(15, 23, 42, 0.08);
+  padding: 0.5rem 1.1rem;
+  background: rgba(15, 23, 42, 0.06);
   border-radius: 999px;
   font-size: 0.92rem;
   font-weight: 700;
   color: #334155;
   white-space: nowrap;
   transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
 }
 
 .forest-tree-card-stage.is-final {
-  background: rgba(249, 115, 22, 0.12);
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(249, 115, 22, 0.05) 100%);
   color: #9a3412;
+  border-color: rgba(249, 115, 22, 0.2);
 }
 
 .forest-tree-card-progress {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
+  gap: 0.95rem;
 }
 
 .forest-tree-card-progress-track {
   position: relative;
   width: 100%;
-  height: 6px;
+  height: 8px;
   border-radius: 999px;
   background: rgba(226, 232, 240, 0.8);
+  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.06);
   overflow: hidden;
 }
 
 .forest-tree-card-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #0f172a 0%, #334155 100%);
+  background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
   border-radius: 999px;
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
-  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
   will-change: width;
 }
 
@@ -127,8 +155,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.88rem;
-  font-weight: 600;
+  font-size: 0.92rem;
+  font-weight: 700;
 }
 
 .forest-tree-card-progress-label span {
@@ -136,79 +164,118 @@
 }
 
 .forest-tree-card-timer {
-  font-weight: 700;
-  color: #0f172a;
+  color: #0f172a !important;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
 }
 
 .forest-tree-card-button {
   appearance: none;
-  padding: 0.95rem 1.4rem;
+  padding: 1.1rem 1.6rem;
   border: none;
   border-radius: 999px;
-  background: #0f172a;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   color: #ffffff;
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  will-change: transform;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
+  position: relative;
+  overflow: hidden;
+}
+
+.forest-tree-card-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
 }
 
 .forest-tree-card-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 24px 54px rgba(15, 23, 42, 0.28);
+}
+
+.forest-tree-card-button:hover:not(:disabled)::after {
+  transform: translateX(100%);
 }
 
 .forest-tree-card-button:disabled {
   cursor: not-allowed;
-  opacity: 0.48;
+  opacity: 0.5;
+  background: #64748b;
+  box-shadow: none;
+}
+
+.forest-tree-card-button:not(:disabled) {
+  animation: pulse-ready 2.5s infinite;
+}
+
+@keyframes pulse-ready {
+  0% { box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2); }
+  50% { box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2), 0 0 24px rgba(99, 102, 241, 0.4); }
+  100% { box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2); }
 }
 
 .forest-tree-card-status {
   margin: 0;
-  font-size: 0.88rem;
-  color: #64748b;
-  line-height: 1.4;
+  font-size: 0.95rem;
+  color: #475569;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
 }
 
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .forest-tree-card {
-    width: min(100%, calc(100% - 1rem));
-    padding: 1.5rem;
+    width: min(100%, calc(100% - 1.5rem));
+    padding: 1.8rem 1.4rem;
+    border-radius: 28px;
+  }
+
+  .forest-tree-card-backdrop {
+    border-radius: 28px;
   }
 
   .forest-tree-card-visual {
     min-height: 240px;
+    padding: 1rem;
   }
 
   .forest-tree-card-image {
-    width: clamp(80px, 50%, 280px);
+    width: clamp(100px, 55%, 280px);
   }
 
   .forest-tree-card-header {
     flex-direction: column;
-    gap: 0.65rem;
+    gap: 0.8rem;
   }
 
   .forest-tree-card-stage {
     align-self: flex-start;
-    font-size: 0.8rem;
-    padding: 0.45rem 0.85rem;
+    font-size: 0.85rem;
+    padding: 0.45rem 0.9rem;
     min-height: 36px;
   }
 
   .forest-tree-card-title {
-    font-size: 1.35rem;
+    font-size: 1.45rem;
   }
 
   .forest-tree-card-progress-label {
-    font-size: 0.82rem;
+    font-size: 0.85rem;
   }
 
   .forest-tree-card-button {
     width: 100%;
-    padding: 1rem 1.2rem;
+    padding: 1.05rem 1.2rem;
   }
 }

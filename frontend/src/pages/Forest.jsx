@@ -179,6 +179,7 @@ export default function Forest() {
   const [isPlanting, setIsPlanting] = useState(false);
   const [plantingTreeType, setPlantingTreeType] = useState(null);
   const [cutsceneImageMode, setCutsceneImageMode] = useState('seed'); // 'seed' or 'baby'
+  const [isUiHidden, setIsUiHidden] = useState(false);
 
   const containerRef = useRef(null);
   const previousSnapshotRef = useRef({ activeTreeId: null, stage: null, archivedCount: 0 });
@@ -349,6 +350,7 @@ export default function Forest() {
 
           // Need a tiny delay to allow React to render the Cutscene DOM element
           // so heroTreeRef becomes correctly attached to the animated image
+          // Using 50ms ensures React completes the DOM update before GSAP runs
           setTimeout(() => {
             runPlantAnimation(
               heroTreeRef,
@@ -369,7 +371,7 @@ export default function Forest() {
                 }
               }
             );
-          }, 10);
+          }, 50);
         },
         onError: () => setInteractionLocked(false),
       });
@@ -575,7 +577,7 @@ export default function Forest() {
 
    return (
      <div className="forest-page" ref={containerRef}>
-       <header className="forest-topbar">
+       <header className={`forest-topbar ${isUiHidden ? 'is-ui-hidden' : ''}`}>
         <button className="forest-nav-button" onClick={() => navigate(-1)}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M15 18l-6-6 6-6" />
@@ -596,6 +598,25 @@ export default function Forest() {
           <strong>{Math.min(archivedTrees.length, MAX_BACKGROUND_TREES)}+ / {archivedTrees.length}</strong>
         </div>
       </header>
+
+      <button 
+        className="forest-toggle-ui-btn" 
+        onClick={() => setIsUiHidden(!isUiHidden)}
+        aria-label={isUiHidden ? "Show UI" : "Hide UI"}
+        title={isUiHidden ? "Show UI" : "Hide UI"}
+      >
+        {isUiHidden ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+          </svg>
+        )}
+      </button>
 
       <div className="forest-background-layer">
         {archivedForest.map((tree) => (
@@ -618,7 +639,9 @@ export default function Forest() {
         ))}
       </div>
 
-        <main className="forest-hero-shell">
+      {isPlanting && <div className="forest-planting-overlay"></div>}
+
+        <main className={`forest-hero-shell ${isUiHidden ? 'is-ui-hidden' : ''}`}>
          {activeTree ? (
              isPlanting ? (
                // Planting cutscene - just the animated tree, no UI
