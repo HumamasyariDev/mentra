@@ -146,6 +146,31 @@
   line-height: 1;
 }
 
+.forest-archive-count {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+}
+
+.forest-archive-count-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.forest-archive-count strong {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
 .forest-background-layer {
   position: absolute;
   inset: 0;
@@ -159,92 +184,12 @@
   left: var(--tree-left);
   bottom: var(--tree-bottom);
   z-index: var(--tree-depth);
-  pointer-events: auto;
-  border: none;
-  background: transparent;
-  padding: 0;
-  overflow: visible;
-  cursor: pointer;
   display: block;
   line-height: 0;
   opacity: var(--tree-opacity);
   transform: scale(var(--tree-scale));
   transform-origin: bottom center;
-  transition: transform 0.28s ease, opacity 0.28s ease, filter 0.28s ease, z-index 0.2s ease;
-}
-
-.forest-background-tree-visual {
-  display: block;
-  position: relative;
-}
-
-.forest-background-tree-visual::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 8px;
-  width: 72%;
-  height: 20px;
-  transform: translateX(-50%) scaleX(0.82);
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(15, 23, 42, 0.18) 0%, rgba(15, 23, 42, 0) 70%);
-  opacity: 0;
-  transition: opacity 0.24s ease, transform 0.24s ease;
-  pointer-events: none;
-}
-
-.forest-background-tree::after {
-  content: 'Open';
-  position: absolute;
-  left: 50%;
-  bottom: -16px;
-  transform: translate(-50%, 8px);
-  padding: 0.38rem 0.6rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.96);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
-  font-size: 0.66rem;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #0f172a;
-  opacity: 0;
-  transition: opacity 0.22s ease, transform 0.22s ease;
-  pointer-events: none;
-}
-
-.forest-background-tree:hover {
-  transform: scale(calc(var(--tree-scale) + 0.06));
-  opacity: 1;
-  z-index: 30;
-}
-
-.forest-background-tree:hover .forest-background-tree-visual::before,
-.forest-background-tree.is-selected .forest-background-tree-visual::before {
-  opacity: 1;
-  transform: translateX(-50%) scaleX(1);
-}
-
-.forest-background-tree:hover::after {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
-
-.forest-background-tree.is-selected {
-  opacity: 1;
-  z-index: 32;
-  transform: scale(calc(var(--tree-scale) + 0.08));
-}
-
-.forest-background-tree.is-selected::after {
-  content: 'Selected';
-  opacity: 1;
-  transform: translate(-50%, 0);
-  background: #0f172a;
-  border-color: #0f172a;
-  color: #ffffff;
+  transition: opacity 0.28s ease;
 }
 
 .forest-background-tree img {
@@ -252,32 +197,10 @@
   width: clamp(180px, 18vw, 300px);
   height: auto;
   filter: drop-shadow(0 18px 24px rgba(15, 23, 42, 0.07));
-  transition: filter 0.24s ease;
-}
-
-.forest-background-tree:hover img,
-.forest-background-tree.is-selected img {
-  filter: drop-shadow(0 22px 30px rgba(15, 23, 42, 0.12));
 }
 
 .forest-background-tree.is-withered img {
   filter: sepia(0.7) saturate(0.35) brightness(0.82) drop-shadow(0 18px 24px rgba(15, 23, 42, 0.06));
-}
-
-.forest-background-tree.is-permanent img {
-  filter: drop-shadow(0 18px 24px rgba(15, 23, 42, 0.07)) drop-shadow(0 0 30px rgba(250, 204, 21, 0.18));
-}
-
-.forest-background-tree-marker {
-  position: absolute;
-  left: 50%;
-  bottom: 6px;
-  width: 10px;
-  height: 10px;
-  margin-left: -5px;
-  border-radius: 50%;
-  background: #0f172a;
-  opacity: 0.14;
 }
 
 .forest-hero-shell {
@@ -291,6 +214,17 @@
   pointer-events: none;
 }
 
+.forest-planting-cutscene {
+  width: min(880px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2.4rem;
+  pointer-events: auto;
+  min-height: 500px;
+}
+
 .forest-hero-panel,
 .forest-empty-panel {
   width: min(880px, 100%);
@@ -299,251 +233,6 @@
   align-items: center;
   gap: 2.4rem;
   pointer-events: auto;
-}
-
-.forest-hero-visual {
-  position: relative;
-  width: 100%;
-  min-height: 380px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.forest-hero-halo {
-  position: absolute;
-  inset: auto 50% 2.5rem auto;
-  width: min(52vw, 520px);
-  height: min(52vw, 520px);
-  transform: translateX(50%);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(15, 23, 42, 0.06) 0%, rgba(15, 23, 42, 0) 72%);
-}
-
-.forest-hero-tree-wrap {
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  min-height: 360px;
-  width: 100%;
-}
-
-.forest-hero-tree {
-  width: min(var(--hero-tree-width), 56vw);
-  min-width: 92px;
-  max-width: 460px;
-  height: auto;
-  filter: drop-shadow(0 24px 40px rgba(15, 23, 42, 0.1));
-  will-change: transform, opacity, filter;
-}
-
-.forest-hero-tree.is-withered,
-.forest-modal-tree.is-withered {
-  filter: sepia(0.72) saturate(0.32) brightness(0.84) drop-shadow(0 22px 36px rgba(15, 23, 42, 0.09));
-}
-
-.forest-water-prop {
-  position: absolute;
-  right: clamp(0px, 9vw, 96px);
-  bottom: 0.8rem;
-  width: 170px;
-  height: 150px;
-  pointer-events: none;
-}
-
-.forest-water-can {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 106px;
-  transform-origin: 78% 38%;
-  filter: drop-shadow(0 18px 30px rgba(15, 23, 42, 0.12));
-}
-
-.forest-water-drop {
-  position: absolute;
-  right: 30px;
-  top: 28px;
-  width: 24px;
-  opacity: 0;
-}
-
-.forest-hero-copy {
-  width: min(680px, 100%);
-  display: flex;
-  flex-direction: column;
-  gap: 1.35rem;
-}
-
-.forest-status-row {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.4rem;
-}
-
-.forest-status-row p,
-.forest-empty-copy p,
-.forest-modal-header p {
-  margin: 0;
-  color: #475569;
-  line-height: 1.55;
-}
-
-.forest-status-detail {
-  max-width: 520px;
-}
-
-.forest-title-row {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  flex-wrap: wrap;
-}
-
-.forest-title-row h2,
-.forest-empty-copy h2,
-.forest-modal-header h3 {
-  margin: 0;
-  font-size: clamp(1.4rem, 3vw, 2.7rem);
-  letter-spacing: -0.05em;
-  line-height: 1.02;
-  font-weight: 800;
-}
-
-.forest-status-pill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 38px;
-  padding: 0.55rem 0.9rem;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.forest-status-pill.tone-ready {
-  background: rgba(34, 197, 94, 0.12);
-  color: #166534;
-}
-
-.forest-status-pill.tone-warn {
-  background: rgba(249, 115, 22, 0.12);
-  color: #9a3412;
-}
-
-.forest-status-pill.tone-muted {
-  background: rgba(15, 23, 42, 0.08);
-  color: #334155;
-}
-
-.forest-status-pill.tone-empty {
-  background: rgba(148, 163, 184, 0.16);
-  color: #475569;
-}
-
-.forest-growth-card {
-  padding: 1rem 0 1.35rem;
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.forest-growth-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  font-size: 0.88rem;
-}
-
-.forest-growth-card-header span {
-  font-weight: 700;
-}
-
-.forest-growth-card-header strong {
-  color: #475569;
-  font-size: 0.92rem;
-}
-
-.forest-growth-rail {
-  position: relative;
-  height: 62px;
-}
-
-.forest-growth-track,
-.forest-growth-fill {
-  position: absolute;
-  top: 16px;
-  left: 0;
-  height: 6px;
-  border-radius: 999px;
-}
-
-.forest-growth-track {
-  width: 100%;
-  background: linear-gradient(90deg, rgba(226, 232, 240, 0.95), rgba(226, 232, 240, 0.55));
-}
-
-.forest-growth-fill {
-  width: var(--growth-rail);
-  background: linear-gradient(90deg, #0f172a 0%, #334155 100%);
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.16);
-}
-
-.forest-growth-stop {
-  position: absolute;
-  left: var(--growth-stop-position);
-  top: 0;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.7rem;
-}
-
-.forest-growth-stop-dot {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 2px solid rgba(148, 163, 184, 0.5);
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
-}
-
-.forest-growth-stop.is-complete .forest-growth-stop-dot,
-.forest-growth-stop.is-current .forest-growth-stop-dot {
-  border-color: #0f172a;
-  background: #0f172a;
-}
-
-.forest-growth-stop.is-current .forest-growth-stop-dot {
-  box-shadow: 0 0 0 6px rgba(15, 23, 42, 0.08);
-}
-
-.forest-growth-stop-label {
-  font-size: 0.74rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: #64748b;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.forest-growth-stop.is-complete .forest-growth-stop-label,
-.forest-growth-stop.is-current .forest-growth-stop-label {
-  color: #0f172a;
-}
-
-.forest-action-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  align-items: flex-start;
 }
 
 .forest-primary-button {
@@ -625,6 +314,24 @@
 .forest-empty-panel {
   text-align: center;
   gap: 1.3rem;
+  position: relative;
+  width: min(520px, 100%);
+  padding: 2rem;
+  border-radius: 28px;
+  overflow: hidden;
+  z-index: 6;
+}
+
+.forest-empty-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 28px;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.12);
+  z-index: -1;
 }
 
 .forest-empty-preview {
@@ -635,6 +342,7 @@
   align-items: center;
   justify-content: center;
   background: radial-gradient(circle, rgba(15, 23, 42, 0.05) 0%, rgba(15, 23, 42, 0) 72%);
+  margin: 0 auto;
 }
 
 .forest-empty-preview img {
@@ -648,6 +356,33 @@
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  margin: 0 auto;
+}
+
+.forest-empty-copy .forest-overline {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 0.35rem;
+}
+
+.forest-empty-copy h2 {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.forest-empty-copy p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.55;
+  font-size: 0.95rem;
 }
 
 .forest-debug-strip {
@@ -850,6 +585,24 @@
 
   .forest-hero-tree {
     width: min(var(--hero-tree-width), 72vw);
+  }
+
+  .forest-empty-panel {
+    width: min(100%, calc(100% - 1rem));
+    padding: 1.5rem;
+  }
+
+  .forest-empty-preview {
+    width: min(180px, 50vw);
+    height: min(180px, 50vw);
+  }
+
+  .forest-empty-copy h2 {
+    font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  }
+
+  .forest-empty-copy p {
+    font-size: 0.9rem;
   }
 
   .forest-growth-card {

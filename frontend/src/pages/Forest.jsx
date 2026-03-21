@@ -5,6 +5,8 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { forestApi } from '../services/api';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { usePlantAnimation } from '../hooks/usePlantAnimation';
+import ForestTreeCard from '../components/ForestTreeCard';
 import './Forest.css';
 
 import pinePurpleSeed from '../assets/pine_purple/pine_purple_seed.png';
@@ -28,45 +30,46 @@ const TREE_ASSETS = {
 };
 
 const STAGES = [
-  { value: 0, label: 'Seed' },
-  { value: 1, label: 'Stage 1' },
-  { value: 2, label: 'Stage 2' },
-  { value: 3, label: 'Stage 3' },
-  { value: 4, label: 'Stage 4' },
-  { value: 5, label: 'Final' },
+  { value: 1, label: 'Baby' },
+  { value: 2, label: 'Sapling' },
+  { value: 3, label: 'Young Tree' },
+  { value: 4, label: 'Teen Tree' },
+  { value: 5, label: 'Adult Tree' },
 ];
 
-const HERO_WIDTHS = {
-  0: 112,
-  1: 164,
-  2: 224,
-  3: 292,
-  4: 366,
-  5: 440,
+const STAGE_NAMES = {
+  1: 'Baby',
+  2: 'Sapling',
+  3: 'Young Tree',
+  4: 'Teen Tree',
+  5: 'Adult Tree',
 };
 
-const BACKGROUND_SLOTS = [
-  { left: '-12%', bottom: '-8%', scale: 1.28, depth: 8 },
-  { left: '-1%', bottom: '-10%', scale: 1.08, depth: 7 },
-  { left: '10%', bottom: '-6%', scale: 0.84, depth: 5 },
-  { left: '-4%', bottom: '10%', scale: 0.62, depth: 3 },
-  { left: '7%', bottom: '16%', scale: 0.48, depth: 2 },
-  { left: '15%', bottom: '2%', scale: 0.66, depth: 3 },
-  { left: '84%', bottom: '2%', scale: 0.66, depth: 3 },
-  { left: '92%', bottom: '16%', scale: 0.48, depth: 2 },
-  { left: '101%', bottom: '10%', scale: 0.62, depth: 3 },
-  { left: '79%', bottom: '-6%', scale: 0.84, depth: 5 },
-  { left: '90%', bottom: '-10%', scale: 1.08, depth: 7 },
-  { left: '100%', bottom: '-8%', scale: 1.28, depth: 8 },
-];
+function getDisplayStageName(stage) {
+  return STAGE_NAMES[stage] ?? 'Unknown';
+}
+
+// Tree sizes grow with each stage - reflects actual growth
+// Stage 0 (seed) width is only used during planting animation
+// Actual playable stages are 1-5
+const HERO_WIDTHS = {
+  0: 112,   // Seed (planting animation only)
+  1: 164,   // Baby (first playable stage)
+  2: 224,   // Sapling
+  3: 292,   // Young Tree
+  4: 366,   // Teen Tree
+  5: 440,   // Adult Tree (Final)
+};
+
+const MAX_BACKGROUND_TREES = 50;
 
 function getTreeAsset(typeName, stage) {
-  const stageName = stage === 0 ? 'seed' : stage === 5 ? 'stage_final' : `stage_${stage}`;
+  const stageName = stage === 5 ? 'stage_final' : `stage_${stage}`;
   return TREE_ASSETS[typeName]?.[stageName] ?? pinePurpleFinal;
 }
 
-function getStageName(stage) {
-  return STAGES.find((entry) => entry.value === stage)?.label ?? 'Unknown';
+function getSeedAsset(typeName) {
+  return TREE_ASSETS[typeName]?.['seed'] ?? TREE_ASSETS['pine_purple']?.['seed'];
 }
 
 function formatDuration(seconds) {
@@ -104,66 +107,61 @@ function isTreeReadyNow(tree, nowMs) {
 
 function getGrowthProgress(tree) {
   if (!tree) {
-    return { railPercent: 0, stagePercent: 0, stageCost: 0 };
+    return { railPercent: 0, stagePercent: 0, stageCost: 0, isAtFinal: false };
   }
 
   if (tree.stage >= 5) {
-    return { railPercent: 100, stagePercent: 100, stageCost: 0 };
+    // At final stage, show progress toward archiving (10 waterings)
+    const archivePercent = Math.min(100, ((tree.archive_waterings ?? 0) / 10) * 100);
+    return { railPercent: 100, stagePercent: archivePercent, stageCost: 10, isAtFinal: true };
   }
 
-  const stageCost = tree.tree_type.stage_costs?.[tree.stage] ?? 1;
+  // Stages start at 1, so stage_costs is indexed [0-4] for stages [1-5]
+  const stageCostIndex = tree.stage - 1;
+  const stageCost = tree.tree_type.stage_costs?.[stageCostIndex] ?? 1;
   const stagePercent = Math.min(100, (tree.water_progress / stageCost) * 100);
-  const railPercent = Math.min(100, ((tree.stage + stagePercent / 100) / 5) * 100);
+  // Progress from stage 1-5: (stage - 1 + stagePercent / 100) / 4 * 100
+  const railPercent = Math.min(100, (((tree.stage - 1) + stagePercent / 100) / 4) * 100);
 
-  return { railPercent, stagePercent, stageCost };
-}
-
-function getActiveStatus(activeTree, canWaterNow, cooldownSeconds) {
-  if (!activeTree) {
-    return {
-      tone: 'empty',
-      label: 'Empty plot',
-      detail: 'Plant a seed to begin the next tree.',
-    };
-  }
-
-  if (activeTree.is_withered) {
-    return {
-      tone: 'warn',
-      label: 'Needs rescue',
-      detail: activeTree.rescue_hours_remaining
-        ? `Rescue window: ${activeTree.rescue_hours_remaining}h remaining`
-        : 'Water it now to save it.',
-    };
-  }
-
-  if (!canWaterNow) {
-    return {
-      tone: 'muted',
-      label: 'Resting',
-      detail: `Next water in ${formatDuration(cooldownSeconds)}`,
-    };
-  }
-
-  return {
-    tone: 'ready',
-    label: 'Ready',
-    detail: activeTree.hours_until_wither
-      ? `Withers in ${activeTree.hours_until_wither}h if ignored`
-      : 'Ready for the next watering.',
-  };
+  return { railPercent, stagePercent, stageCost, isAtFinal: false };
 }
 
 function getBackgroundTreeLayout(index) {
-  const slot = BACKGROUND_SLOTS[index % BACKGROUND_SLOTS.length];
-  const cycle = Math.floor(index / BACKGROUND_SLOTS.length);
-
+  // Perspective-based layout: further trees are higher up and smaller
+  // Create deterministic pseudo-random values
+  const seed = index * 73856093 ^ 19349663; // Mix hash
+  const pseudoRandom = (Math.sin(seed) + 1) / 2; // Normalize to 0-1
+  const leftRandom = (Math.sin(seed * 2) + 1) / 2;
+  
+  // Depth layer: determines vertical position, size, and z-index
+  // Trees arranged in rows: back (distant) to front (close)
+  const depth = (index % 12) + 1; // 12 depth layers (1 = far, 12 = close)
+  
+  // Vertical position: further back = higher on screen
+  // Maps depth 1-12 to bottom position 65% (far) to 5% (close)
+  const bottomPercent = 65 - ((depth - 1) / 11) * 60;
+  
+  // Scale: smaller when further, larger when closer
+  // Maps depth 1-12 to scale 0.25 (tiny distant) to 1.0 (large close)
+  const scale = 0.25 + ((depth - 1) / 11) * 0.75;
+  
+  // Horizontal spread: wider at distant layers, narrower at close
+  // Distant trees spread across full width, close trees toward center
+  const horizontalSpread = 1 - (depth - 1) / 11 * 0.5; // 1.0 to 0.5
+  const leftPercent = 50 + (pseudoRandom - 0.5) * 130 * horizontalSpread;
+  
+  // Opacity: distant trees more transparent, close trees opaque
+  const opacity = 0.35 + ((depth - 1) / 11) * 0.65;
+  
+  // Randomize left position within this depth layer
+  const leftVariation = (pseudoRandom - 0.5) * 20 * horizontalSpread;
+  
   return {
-    left: `calc(${slot.left} + ${cycle * 1.25}%)`,
-    bottom: `calc(${slot.bottom} + ${cycle * 1.1}%)`,
-    scale: Math.max(0.28, slot.scale - cycle * 0.04),
-    depth: slot.depth - cycle,
-    opacity: Math.max(0.28, 0.96 - cycle * 0.06),
+    left: `calc(${leftPercent + leftVariation}%)`,
+    bottom: `${bottomPercent}%`,
+    scale: scale,
+    depth: depth,
+    opacity: opacity,
   };
 }
 
@@ -172,25 +170,23 @@ export default function Forest() {
   const queryClient = useQueryClient();
   const prefersReducedMotion = useReducedMotion();
 
-  const [selectedArchivedTree, setSelectedArchivedTree] = useState(null);
-  const [showPlantModal, setShowPlantModal] = useState(false);
-  const [timeTick, setTimeTick] = useState(Date.now());
   const [interactionLocked, setInteractionLocked] = useState(false);
+  const [isPlanting, setIsPlanting] = useState(false);
+  const [plantingTreeType, setPlantingTreeType] = useState(null);
 
   const containerRef = useRef(null);
-  const heroTreeRef = useRef(null);
-  const heroPanelRef = useRef(null);
-  const headerRef = useRef(null);
-  const wateringCanRef = useRef(null);
-  const waterDropRef = useRef(null);
   const previousSnapshotRef = useRef({ activeTreeId: null, stage: null, archivedCount: 0 });
   const lastActionRef = useRef(null);
   const isFirstVisitRef = useRef(true);
 
-  useEffect(() => {
-    const intervalId = window.setInterval(() => setTimeTick(Date.now()), 60000);
-    return () => window.clearInterval(intervalId);
-  }, []);
+  // Refs for animation sequences
+  const heroTreeRef = useRef(null);
+  const wateringCanRef = useRef(null);
+  const waterDropRef = useRef(null);
+  const heroPanelRef = useRef(null);
+
+  // Hook for plant animation sequence
+  const runPlantAnimation = usePlantAnimation();
 
   const { data: forest, isLoading, error } = useQuery({
     queryKey: ['forest'],
@@ -198,45 +194,42 @@ export default function Forest() {
     refetchInterval: 60000,
   });
 
-  const activeTree = forest?.active_tree ?? null;
-  const archivedTrees = forest?.archived_trees ?? [];
-  const treeTypes = forest?.tree_types ?? [];
+   const activeTree = forest?.active_tree ?? null;
+   const archivedTrees = forest?.archived_trees ?? [];
+   const treeTypes = forest?.tree_types ?? [];
+
+    // Clear planting state and interaction lock when activeTree data updates
+    useEffect(() => {
+      if (isPlanting && activeTree) {
+        // Clear planting state after a slight delay to ensure animation and DOM updates are done
+        const timer = setTimeout(() => {
+          setIsPlanting(false);
+          setPlantingTreeType(null);
+          setInteractionLocked(false);
+        }, 300);
+        return () => clearTimeout(timer);
+      }
+    }, [activeTree?.id, isPlanting]);
 
   const archivedForest = useMemo(
     () => [...archivedTrees]
       .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+      .slice(0, MAX_BACKGROUND_TREES)
       .map((tree, index) => ({
         ...tree,
         layout: getBackgroundTreeLayout(index),
       })),
     [archivedTrees],
-  );
+   );
 
-  const heroTreeWidth = activeTree ? HERO_WIDTHS[activeTree.stage] ?? HERO_WIDTHS[5] : HERO_WIDTHS[0];
-  const cooldownSeconds = getCooldownSeconds(activeTree, timeTick);
-  const canWaterActive = activeTree ? isTreeReadyNow(activeTree, timeTick) : false;
-  const growth = getGrowthProgress(activeTree);
-  const activeStatus = getActiveStatus(activeTree, canWaterActive, cooldownSeconds);
+    const treeWidth = activeTree ? HERO_WIDTHS[activeTree.stage] ?? HERO_WIDTHS[5] : HERO_WIDTHS[0];
+    const cooldownSeconds = getCooldownSeconds(activeTree, Date.now());
+    const canWaterActive = activeTree ? isTreeReadyNow(activeTree, Date.now()) : false;
+    const growth = getGrowthProgress(activeTree);
 
-  useEffect(() => {
-    if (!selectedArchivedTree) {
-      return;
-    }
 
-    const refreshedTree = archivedTrees.find((tree) => tree.id === selectedArchivedTree.id);
-
-    if (!refreshedTree) {
-      setSelectedArchivedTree(null);
-      return;
-    }
-
-    if (refreshedTree !== selectedArchivedTree) {
-      setSelectedArchivedTree(refreshedTree);
-    }
-  }, [archivedTrees, selectedArchivedTree]);
-
-  const refreshForest = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['forest'] })
+   const refreshForest = useCallback(() => {
+    return queryClient.invalidateQueries({ queryKey: ['forest'] })
       .finally(() => setInteractionLocked(false));
   }, [queryClient]);
 
@@ -338,15 +331,27 @@ export default function Forest() {
     }
   }, [prefersReducedMotion]);
 
-  const plantMutation = useMutation({
-    mutationFn: (treeTypeId) => forestApi.plantTree(treeTypeId).then((res) => res.data),
-    onSuccess: () => {
-      lastActionRef.current = 'plant';
-      setShowPlantModal(false);
-      refreshForest();
-    },
-    onError: () => setInteractionLocked(false),
-  });
+     const plantMutation = useMutation({
+       mutationFn: (treeTypeId) => forestApi.plantTree(treeTypeId).then((res) => res.data),
+        onSuccess: (data) => {
+          lastActionRef.current = 'plant';
+          // Set planting state to show seed image during animation
+          setPlantingTreeType(data.tree.tree_type);
+          setIsPlanting(true);
+          // Run the plant animation sequence
+          runPlantAnimation(
+            heroTreeRef,
+            () => {
+              // After animation completes (2.0s), delay a bit then refresh forest
+              // This gives React time to swap the image source from seed to stage1
+              setTimeout(() => {
+                refreshForest();
+              }, 200);
+            }
+          );
+        },
+        onError: () => setInteractionLocked(false),
+      });
 
   const waterMutation = useMutation({
     mutationFn: (treeId) => forestApi.waterTree(treeId).then((res) => res.data),
@@ -499,10 +504,15 @@ export default function Forest() {
     lastActionRef.current = null;
   }, [activeTree, archivedTrees.length, prefersReducedMotion]);
 
-  const handlePlant = useCallback((treeTypeId) => {
-    setInteractionLocked(true);
-    plantMutation.mutate(treeTypeId);
-  }, [plantMutation]);
+   const handlePlant = useCallback(() => {
+     if (!treeTypes || treeTypes.length === 0) {
+       return;
+     }
+
+     setInteractionLocked(true);
+     // Plant the first (and only) tree type
+     plantMutation.mutate(treeTypes[0].id);
+   }, [treeTypes, plantMutation]);
 
   const handleWaterActive = useCallback(() => {
     if (!activeTree || !canWaterActive || forest?.watering_cans < 1 || waterMutation.isPending || interactionLocked) {
@@ -512,15 +522,6 @@ export default function Forest() {
     setInteractionLocked(true);
     waterMutation.mutate(activeTree.id);
   }, [activeTree, canWaterActive, forest?.watering_cans, interactionLocked, waterMutation]);
-
-  const handleWaterArchived = useCallback((treeId) => {
-    if (forest?.watering_cans < 1 || waterMutation.isPending || interactionLocked) {
-      return;
-    }
-
-    setInteractionLocked(true);
-    waterMutation.mutate(treeId);
-  }, [forest?.watering_cans, interactionLocked, waterMutation]);
 
   const handleSkipStage = useCallback(() => {
     if (!activeTree || skipStageMutation.isPending || interactionLocked) {
@@ -551,9 +552,9 @@ export default function Forest() {
     );
   }
 
-  return (
-    <div className="forest-page" ref={containerRef}>
-      <header className="forest-topbar" ref={headerRef}>
+   return (
+     <div className="forest-page" ref={containerRef}>
+       <header className="forest-topbar">
         <button className="forest-nav-button" onClick={() => navigate(-1)}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M15 18l-6-6 6-6" />
@@ -568,13 +569,18 @@ export default function Forest() {
             <strong>{forest?.watering_cans ?? 0}</strong>
           </div>
         </div>
+
+        <div className="forest-archive-count" aria-label={`Archived trees: ${archivedTrees.length}`}>
+          <span className="forest-archive-count-label">Forest</span>
+          <strong>{Math.min(archivedTrees.length, MAX_BACKGROUND_TREES)}+ / {archivedTrees.length}</strong>
+        </div>
       </header>
 
       <div className="forest-background-layer">
         {archivedForest.map((tree) => (
-          <button
+          <div
             key={tree.id}
-            className={`forest-background-tree ${tree.is_withered ? 'is-withered' : ''} ${tree.is_permanent ? 'is-permanent' : ''} ${selectedArchivedTree?.id === tree.id ? 'is-selected' : ''}`}
+            className={`forest-background-tree ${tree.is_withered ? 'is-withered' : ''}`}
             style={{
               '--tree-left': tree.layout.left,
               '--tree-bottom': tree.layout.bottom,
@@ -582,118 +588,66 @@ export default function Forest() {
               '--tree-depth': tree.layout.depth,
               '--tree-opacity': tree.layout.opacity,
             }}
-            onClick={() => setSelectedArchivedTree(tree)}
             aria-label={`Archived ${tree.tree_type.display_name}`}
-            aria-pressed={selectedArchivedTree?.id === tree.id}
-            type="button"
           >
             <span className="forest-background-tree-visual">
               <img src={getTreeAsset(tree.tree_type.name, 5)} alt="" />
             </span>
-            {!tree.is_permanent && <span className="forest-background-tree-marker"></span>}
-          </button>
+          </div>
         ))}
       </div>
 
-      <main className="forest-hero-shell">
-        {activeTree ? (
-          <section className="forest-hero-panel" ref={heroPanelRef}>
-            <div className="forest-hero-visual">
-              <div className="forest-hero-halo"></div>
-              <div className="forest-hero-tree-wrap">
-                <img
-                  ref={heroTreeRef}
-                  className={`forest-hero-tree ${activeTree.is_withered ? 'is-withered' : ''}`}
-                  src={getTreeAsset(activeTree.tree_type.name, activeTree.stage)}
-                  alt={activeTree.tree_type.display_name}
-                  style={{ '--hero-tree-width': `${heroTreeWidth}px` }}
-                />
+        <main className="forest-hero-shell">
+         {activeTree ? (
+             isPlanting ? (
+               // Planting cutscene - just the animated tree, no UI
+               <div className="forest-planting-cutscene">
+                 <div className="forest-tree-card-visual">
+                   <img
+                     ref={heroTreeRef}
+                     src={getSeedAsset(plantingTreeType?.name)}
+                     alt="Planting animation"
+                     className="forest-tree-card-image"
+                     style={{ '--tree-width': `${treeWidth}px` }}
+                   />
+                 </div>
+               </div>
+             ) : (
+               <ForestTreeCard
+                 tree={activeTree}
+                 treeAsset={getTreeAsset(activeTree.tree_type.name, activeTree.stage)}
+                 stageName={getDisplayStageName(activeTree.stage)}
+                 waterProgressPercent={growth.stagePercent}
+                 overallProgressPercent={growth.railPercent}
+                 canWater={canWaterActive}
+                 cooldownSeconds={cooldownSeconds}
+                 onWater={handleWaterActive}
+                 isPending={waterMutation.isPending}
+                 disabled={interactionLocked}
+                 wateringCanCount={forest?.watering_cans ?? 0}
+                 isAtFinal={activeTree.stage >= 5}
+                archiveProgress={activeTree.archive_waterings ?? 0}
+                treeImageRef={heroTreeRef}
+                treeWidth={treeWidth}
+              />
+             )
+          ) : (
+            <section className="forest-empty-panel">
+              <div className="forest-empty-preview">
+                <img src={pinePurpleSeed} alt="Seed" />
               </div>
-              <div className="forest-water-prop" aria-hidden="true">
-                <img ref={wateringCanRef} className="forest-water-can" src={wateringCanAsset} alt="" />
-                <img ref={waterDropRef} className="forest-water-drop" src={waterDropAsset} alt="" />
+              <div className="forest-empty-copy">
+                <span className="forest-overline">No active tree</span>
+                <h2>Start a new growth cycle.</h2>
+                <p>Plant a seed, earn watering cans in Pomodoro, and grow your forest.</p>
               </div>
-            </div>
-
-            <div className="forest-hero-copy">
-              <div className="forest-status-row">
-                <span className="forest-overline">Active tree</span>
-                <div className="forest-title-row">
-                  <h2>{activeTree.tree_type.display_name}</h2>
-                  <span className={`forest-status-pill tone-${activeStatus.tone}`}>{activeStatus.label}</span>
-                </div>
-                <p className="forest-status-detail">{activeStatus.detail}</p>
-              </div>
-
-              <div className="forest-growth-card">
-                <div className="forest-growth-card-header">
-                  <span>Growth</span>
-                  {activeTree.stage < 5 && (
-                    <strong>{getStageName(activeTree.stage)} - {activeTree.water_progress} / {growth.stageCost}</strong>
-                  )}
-                </div>
-
-                <div className="forest-growth-rail" aria-label="Growth progress">
-                  <div className="forest-growth-track"></div>
-                  <div className="forest-growth-fill" style={{ '--growth-rail': `${growth.railPercent}%` }}></div>
-
-                  {STAGES.map((stage, index) => {
-                    const completed = activeTree.stage > stage.value || activeTree.stage === 5;
-                    const current = activeTree.stage === stage.value;
-
-                    return (
-                      <div
-                        key={stage.value}
-                        className={`forest-growth-stop ${completed ? 'is-complete' : ''} ${current ? 'is-current' : ''}`}
-                        style={{ '--growth-stop-position': `${index * 20}%` }}
-                      >
-                        <span className="forest-growth-stop-dot"></span>
-                        <span className="forest-growth-stop-label">{stage.label}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="forest-action-panel">
-                <button
-                  className="forest-primary-button"
-                  onClick={handleWaterActive}
-                  disabled={!canWaterActive || forest?.watering_cans < 1 || waterMutation.isPending || interactionLocked}
-                >
-                  <img src={wateringCanAsset} alt="" />
-                  <span>
-                    {activeTree.is_withered ? 'Rescue tree' : canWaterActive ? 'Water tree' : 'Waiting to water'}
-                  </span>
-                </button>
-
-                <p className="forest-action-note">
-                  {activeTree.is_withered
-                    ? `Rescue within ${activeTree.rescue_hours_remaining ?? 0}h.`
-                    : canWaterActive
-                      ? 'Ready for the next watering.'
-                      : `Available again in ${formatDuration(cooldownSeconds)}.`}
-                </p>
-              </div>
-            </div>
-          </section>
-        ) : (
-          <section className="forest-empty-panel">
-            <div className="forest-empty-preview">
-              <img src={pinePurpleSeed} alt="Seed" />
-            </div>
-            <div className="forest-empty-copy">
-              <span className="forest-overline">No active tree</span>
-              <h2>Start a new growth cycle.</h2>
-              <p>Plant a seed, earn watering cans in Pomodoro, and move each finished tree into the background forest.</p>
-            </div>
-            <button className="forest-primary-button" onClick={() => setShowPlantModal(true)}>
-              <img src={wateringCanAsset} alt="" />
-              <span>Plant a seed</span>
-            </button>
-          </section>
-        )}
-      </main>
+              <button className="forest-primary-button" onClick={handlePlant}>
+                <img src={wateringCanAsset} alt="" />
+                <span>Plant a seed</span>
+              </button>
+            </section>
+         )}
+       </main>
 
       {import.meta.env.DEV && activeTree && (
         <div className="forest-debug-strip">
@@ -701,107 +655,6 @@ export default function Forest() {
           <button type="button" onClick={handleSkipStage} disabled={skipStageMutation.isPending}>
             Skip stage
           </button>
-        </div>
-      )}
-
-      {showPlantModal && (
-        <div className="forest-modal-overlay" onClick={() => setShowPlantModal(false)}>
-          <div className="forest-modal" onClick={(event) => event.stopPropagation()}>
-            <div className="forest-modal-header">
-              <span className="forest-overline">Plant</span>
-              <h3>Choose your next tree.</h3>
-            </div>
-
-            <div className="forest-tree-type-grid">
-              {treeTypes.map((type) => (
-                <button
-                  key={type.id}
-                  type="button"
-                  className="forest-tree-type-card"
-                  onClick={() => handlePlant(type.id)}
-                  disabled={plantMutation.isPending || interactionLocked}
-                >
-                  <img src={getTreeAsset(type.name, 5)} alt={type.display_name} />
-                  <div>
-                    <strong>{type.display_name}</strong>
-                    <span>{type.stage_costs.join(' / ')} waters</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            <button className="forest-secondary-button" type="button" onClick={() => setShowPlantModal(false)}>
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
-      {selectedArchivedTree && (
-        <div className="forest-modal-overlay" onClick={() => setSelectedArchivedTree(null)}>
-          <div className="forest-modal forest-modal--archived" onClick={(event) => event.stopPropagation()}>
-            <div className="forest-modal-header">
-              <span className="forest-overline">Archived tree</span>
-              <h3>{selectedArchivedTree.tree_type.display_name}</h3>
-              <p>Background trees stay final-stage only. Water them over time to secure them permanently.</p>
-            </div>
-
-            <img
-              className={`forest-modal-tree ${selectedArchivedTree.is_withered ? 'is-withered' : ''}`}
-              src={getTreeAsset(selectedArchivedTree.tree_type.name, 5)}
-              alt={selectedArchivedTree.tree_type.display_name}
-            />
-
-            {selectedArchivedTree.is_permanent ? (
-              <div className="forest-permanent-block">
-                <span className="forest-status-pill tone-ready">Permanent</span>
-                <p>This tree is fully secured and no longer needs upkeep.</p>
-              </div>
-            ) : (
-              <>
-                <div className="forest-archive-progress">
-                  <div className="forest-archive-progress-row">
-                    {Array.from({ length: 10 }).map((_, index) => (
-                      <span
-                        key={index}
-                        className={`forest-archive-dot ${index < selectedArchivedTree.archive_waterings ? 'is-filled' : ''}`}
-                      ></span>
-                    ))}
-                  </div>
-                  <p>{selectedArchivedTree.archive_waterings}/10 maintenance waters</p>
-                </div>
-
-                <div className="forest-archive-facts">
-                  <div className="forest-fact-card">
-                    <span>Status</span>
-                    <strong>{selectedArchivedTree.is_withered ? 'Needs rescue' : 'Stable'}</strong>
-                  </div>
-                  <div className="forest-fact-card">
-                    <span>Withers in</span>
-                    <strong>
-                      {selectedArchivedTree.is_withered
-                        ? `${selectedArchivedTree.rescue_hours_remaining ?? 0}h rescue`
-                        : `${selectedArchivedTree.hours_until_wither ?? 0}h`}
-                    </strong>
-                  </div>
-                </div>
-
-                <button
-                  className="forest-primary-button"
-                  type="button"
-                  onClick={() => handleWaterArchived(selectedArchivedTree.id)}
-                  disabled={forest?.watering_cans < 1 || waterMutation.isPending || interactionLocked}
-                >
-                  <img src={wateringCanAsset} alt="" />
-                  <span>{selectedArchivedTree.is_withered ? 'Rescue archived tree' : 'Water archived tree'}</span>
-                </button>
-              </>
-            )}
-
-            <button className="forest-secondary-button" type="button" onClick={() => setSelectedArchivedTree(null)}>
-              Close
-            </button>
-          </div>
         </div>
       )}
     </div>

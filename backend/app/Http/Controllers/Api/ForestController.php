@@ -77,7 +77,7 @@ class ForestController extends Controller
         $tree = Tree::create([
             'user_id' => $user->id,
             'tree_type_id' => $request->tree_type_id,
-            'stage' => 0,
+            'stage' => 1,
             'water_progress' => 0,
             'is_active' => true,
             'last_watered_at' => now(),
@@ -151,9 +151,9 @@ class ForestController extends Controller
         if ($tree->stage >= $totalStages) {
             // Already at final stage, archive it
             $tree->update([
-                'stage' => $totalStages,
-                'water_progress' => 0,
                 'is_active' => false,
+                'is_permanent' => true,
+                'archive_waterings' => 10,
                 'last_watered_at' => now(),
                 'next_water_at' => null,
             ]);
@@ -167,20 +167,27 @@ class ForestController extends Controller
 
         // Advance to next stage
         $newStage = $tree->stage + 1;
-        $archived = $newStage >= $totalStages;
-
-        $tree->update([
+        
+        $updateData = [
             'stage' => $newStage,
             'water_progress' => 0,
-            'is_active' => !$archived,
             'last_watered_at' => now(),
-            'next_water_at' => $archived ? null : now(),
-        ]);
+        ];
+
+        // If advancing to final stage, reset archive_waterings counter
+        if ($newStage === $totalStages) {
+            $updateData['archive_waterings'] = 0;
+            $updateData['next_water_at'] = now()->addHours(random_int(6, 12));
+        } else {
+            $updateData['next_water_at'] = now()->addHours(random_int(6, 12));
+        }
+
+        $tree->update($updateData);
 
         return response()->json([
             'success' => true,
             'new_stage' => $newStage,
-            'archived' => $archived,
+            'archived' => false,
             'tree' => $this->serializeTree($tree->fresh()->load('treeType')),
         ]);
     }

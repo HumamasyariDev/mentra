@@ -43,12 +43,12 @@ class Tree extends Model
 
     /**
      * Get the asset name for this tree's current stage.
-     * e.g., "pine_purple_seed", "pine_purple_stage_1", "pine_purple_stage_final"
+     * e.g., "pine_purple_stage_1", "pine_purple_stage_final"
+     * Note: seed image is only shown during planting animation, not stored as a stage
      */
     public function getAssetName(): string
     {
         $stageName = match ($this->stage) {
-            0 => 'seed',
             5 => 'stage_final',
             default => "stage_{$this->stage}",
         };
@@ -61,11 +61,11 @@ class Tree extends Model
     public function canBeWatered(): bool
     {
         if ($this->is_active) {
-            // Active trees can be watered until they reach final stage
-            return $this->stage < 5;
+            // Active trees can be watered at any stage, including final (stage 5)
+            return !$this->is_withered;
         }
-        // Archived trees can be watered if not yet permanent
-        return !$this->is_permanent;
+        // Archived trees cannot be watered (they are permanent decoration)
+        return false;
     }
 
     /**

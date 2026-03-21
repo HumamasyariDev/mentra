@@ -27,7 +27,7 @@ class ForestTest extends TestCase
         $this->treeType = TreeType::create([
             'name' => 'pine_purple',
             'display_name' => 'Purple Pine',
-            'stage_costs' => [5, 10, 15, 20, 25],
+            'stage_costs' => [5, 10, 10, 10, 10],
         ]);
     }
 
@@ -88,27 +88,27 @@ class ForestTest extends TestCase
             ]);
 
         $response->assertCreated()
-            ->assertJsonPath('tree.stage', 0)
+            ->assertJsonPath('tree.stage', 1)
             ->assertJsonPath('tree.is_active', true)
             ->assertJsonPath('tree.can_water_now', true);
 
         $this->assertDatabaseHas('trees', [
             'user_id' => $this->user->id,
             'tree_type_id' => $this->treeType->id,
-            'stage' => 0,
+            'stage' => 1,
             'is_active' => true,
         ]);
     }
 
-    public function test_cannot_plant_when_active_tree_exists(): void
-    {
-        Tree::create([
-            'user_id' => $this->user->id,
-            'tree_type_id' => $this->treeType->id,
-            'stage' => 0,
-            'is_active' => true,
-            'last_watered_at' => now(),
-        ]);
+     public function test_cannot_plant_when_active_tree_exists(): void
+     {
+         Tree::create([
+             'user_id' => $this->user->id,
+             'tree_type_id' => $this->treeType->id,
+             'stage' => 1,
+             'is_active' => true,
+             'last_watered_at' => now(),
+         ]);
 
         $response = $this->actingAs($this->user)
             ->postJson('/api/forest/plant', [
@@ -119,20 +119,20 @@ class ForestTest extends TestCase
             ->assertJsonPath('error', 'Already have an active tree');
     }
 
-    public function test_can_water_active_tree(): void
-    {
-        $now = Carbon::parse('2026-03-18 10:00:00');
-        $this->travelTo($now);
+     public function test_can_water_active_tree(): void
+     {
+         $now = Carbon::parse('2026-03-18 10:00:00');
+         $this->travelTo($now);
 
-        $tree = Tree::create([
-            'user_id' => $this->user->id,
-            'tree_type_id' => $this->treeType->id,
-            'stage' => 0,
-            'water_progress' => 0,
-            'is_active' => true,
-            'last_watered_at' => now()->subMinutes(1),
-            'next_water_at' => now()->subMinute(),
-        ]);
+         $tree = Tree::create([
+             'user_id' => $this->user->id,
+             'tree_type_id' => $this->treeType->id,
+             'stage' => 1,
+             'water_progress' => 0,
+             'is_active' => true,
+             'last_watered_at' => now()->subMinutes(1),
+             'next_water_at' => now()->subMinute(),
+         ]);
 
         $response = $this->actingAs($this->user)
             ->postJson("/api/forest/water/{$tree->id}");
@@ -150,17 +150,17 @@ class ForestTest extends TestCase
 
     }
 
-    public function test_watering_respects_cooldown(): void
-    {
-        $tree = Tree::create([
-            'user_id' => $this->user->id,
-            'tree_type_id' => $this->treeType->id,
-            'stage' => 0,
-            'water_progress' => 0,
-            'is_active' => true,
-            'last_watered_at' => now()->subHour(),
-            'next_water_at' => now()->addHours(7),
-        ]);
+     public function test_watering_respects_cooldown(): void
+     {
+         $tree = Tree::create([
+             'user_id' => $this->user->id,
+             'tree_type_id' => $this->treeType->id,
+             'stage' => 1,
+             'water_progress' => 0,
+             'is_active' => true,
+             'last_watered_at' => now()->subHour(),
+             'next_water_at' => now()->addHours(7),
+         ]);
 
         $response = $this->actingAs($this->user)
             ->postJson("/api/forest/water/{$tree->id}");
@@ -172,13 +172,37 @@ class ForestTest extends TestCase
         $this->assertNotNull($response->json('next_water_at'));
     }
 
-    public function test_stage_advances_at_threshold(): void
+     public function test_stage_advances_at_threshold(): void
+     {
+         $tree = Tree::create([
+             'user_id' => $this->user->id,
+             'tree_type_id' => $this->treeType->id,
+             'stage' => 1,
+             'water_progress' => 4,  // One more to advance (cost is 5)
+             'is_active' => true,
+             'last_watered_at' => now()->subMinutes(1),
+             'next_water_at' => now()->subMinute(),
+         ]);
+
+        $response = $this->actingAs($this->user)
+            ->postJson("/api/forest/water/{$tree->id}");
+
+         $response->assertOk()
+             ->assertJsonPath('success', true)
+             ->assertJsonPath('advanced', true)
+             ->assertJsonPath('new_stage', 2);
+
+         $this->assertEquals(2, $tree->fresh()->stage);
+        $this->assertEquals(0, $tree->fresh()->water_progress);
+    }
+
+    public function test_tree_reaches_final_stage_but_stays_active(): void
     {
         $tree = Tree::create([
             'user_id' => $this->user->id,
             'tree_type_id' => $this->treeType->id,
-            'stage' => 0,
-            'water_progress' => 4,  // One more to advance (cost is 5)
+            'stage' => 4,
+            'water_progress' => 9,  // One more to reach final (cost is 10)
             'is_active' => true,
             'last_watered_at' => now()->subMinutes(1),
             'next_water_at' => now()->subMinute(),
@@ -190,20 +214,23 @@ class ForestTest extends TestCase
         $response->assertOk()
             ->assertJsonPath('success', true)
             ->assertJsonPath('advanced', true)
-            ->assertJsonPath('new_stage', 1);
+            ->assertJsonPath('archived', false);
 
-        $this->assertEquals(1, $tree->fresh()->stage);
-        $this->assertEquals(0, $tree->fresh()->water_progress);
+        $freshTree = $tree->fresh();
+        $this->assertEquals(5, $freshTree->stage);
+        $this->assertTrue($freshTree->is_active);
+        $this->assertNotNull($freshTree->next_water_at);
+        $this->assertEquals(0, $freshTree->archive_waterings);
     }
 
-    public function test_tree_archives_at_final_stage(): void
+    public function test_final_stage_watering_counts_toward_archive_confirmation(): void
     {
         $tree = Tree::create([
             'user_id' => $this->user->id,
             'tree_type_id' => $this->treeType->id,
-            'stage' => 4,
-            'water_progress' => 24,  // One more to reach final (cost is 25)
+            'stage' => 5,
             'is_active' => true,
+            'archive_waterings' => 9,
             'last_watered_at' => now()->subMinutes(1),
             'next_water_at' => now()->subMinute(),
         ]);
@@ -218,7 +245,8 @@ class ForestTest extends TestCase
         $freshTree = $tree->fresh();
         $this->assertEquals(5, $freshTree->stage);
         $this->assertFalse($freshTree->is_active);
-        $this->assertNull($freshTree->next_water_at);
+        $this->assertTrue($freshTree->is_permanent);
+        $this->assertEquals(10, $freshTree->archive_waterings);
     }
 
     public function test_archived_tree_watering_counts_toward_permanence(): void
@@ -261,18 +289,18 @@ class ForestTest extends TestCase
             ->assertJsonPath('error', 'Tree is already permanent');
     }
 
-    public function test_cannot_water_without_cans(): void
-    {
-        $this->user->update(['watering_cans' => 0]);
+     public function test_cannot_water_without_cans(): void
+     {
+         $this->user->update(['watering_cans' => 0]);
 
-        $tree = Tree::create([
-            'user_id' => $this->user->id,
-            'tree_type_id' => $this->treeType->id,
-            'stage' => 0,
-            'is_active' => true,
-            'last_watered_at' => now()->subMinutes(1),
-            'next_water_at' => now()->subMinute(),
-        ]);
+         $tree = Tree::create([
+             'user_id' => $this->user->id,
+             'tree_type_id' => $this->treeType->id,
+             'stage' => 1,
+             'is_active' => true,
+             'last_watered_at' => now()->subMinutes(1),
+             'next_water_at' => now()->subMinute(),
+         ]);
 
         $response = $this->actingAs($this->user)
             ->postJson("/api/forest/water/{$tree->id}");
@@ -281,17 +309,17 @@ class ForestTest extends TestCase
             ->assertJsonPath('error', 'No watering cans available');
     }
 
-    public function test_cannot_water_another_users_tree(): void
-    {
-        $otherUser = User::factory()->create();
-        $tree = Tree::create([
-            'user_id' => $otherUser->id,
-            'tree_type_id' => $this->treeType->id,
-            'stage' => 0,
-            'is_active' => true,
-            'last_watered_at' => now()->subMinutes(1),
-            'next_water_at' => now()->subMinute(),
-        ]);
+     public function test_cannot_water_another_users_tree(): void
+     {
+         $otherUser = User::factory()->create();
+         $tree = Tree::create([
+             'user_id' => $otherUser->id,
+             'tree_type_id' => $this->treeType->id,
+             'stage' => 1,
+             'is_active' => true,
+             'last_watered_at' => now()->subMinutes(1),
+             'next_water_at' => now()->subMinute(),
+         ]);
 
         $response = $this->actingAs($this->user)
             ->postJson("/api/forest/water/{$tree->id}");

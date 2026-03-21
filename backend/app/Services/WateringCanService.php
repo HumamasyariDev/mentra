@@ -75,13 +75,39 @@ class WateringCanService
             ];
         }
 
-        // Cannot water a final stage active tree (should auto-archive)
-        if ($tree->stage >= 5) {
-            return ['success' => false, 'error' => 'Tree is already at final stage'];
-        }
-
         // Normal watering
         $user->decrement('watering_cans');
+        
+        // Check if we're at final stage first, before updating water_progress
+        if ($tree->stage === 5) {
+            // At final stage, count watering toward archive confirmation
+            $tree->update(['last_watered_at' => now()]);
+            $tree->increment('archive_waterings');
+
+            // Check if we've reached 10 waterings at final stage -> archive it
+            $archived = false;
+            if ($tree->fresh()->archive_waterings >= 10) {
+                $tree->update([
+                    'is_active' => false,
+                    'next_water_at' => null,
+                    'is_permanent' => true,
+                ]);
+                $archived = true;
+            } else {
+                // Still finalizing, set next water time
+                $tree->update(['next_water_at' => $this->generateNextWaterAt()]);
+            }
+
+            return [
+                'success' => true,
+                'advanced' => false,
+                'new_stage' => null,
+                'archived' => $archived,
+                'tree' => $tree->fresh()->load('treeType'),
+            ];
+        }
+
+        // For non-final stages, increment water progress normally
         $tree->increment('water_progress');
         $tree->update([
             'last_watered_at' => now(),
@@ -90,7 +116,6 @@ class WateringCanService
 
         // Check for stage advancement
         $advanced = false;
-        $archived = false;
         $currentStageCost = $tree->treeType->getCostForStage($tree->stage);
 
         if ($tree->water_progress >= $currentStageCost) {
@@ -100,13 +125,11 @@ class WateringCanService
             ]);
             $advanced = true;
 
-            // If reached final stage (5), archive the tree
+            // If reached final stage (5), don't auto-archive; instead reset archive_waterings counter
             if ($tree->fresh()->stage === 5) {
                 $tree->update([
-                    'is_active' => false,
-                    'next_water_at' => null,
+                    'archive_waterings' => 0,
                 ]);
-                $archived = true;
             }
         }
 
@@ -114,7 +137,7 @@ class WateringCanService
             'success' => true,
             'advanced' => $advanced,
             'new_stage' => $advanced ? $tree->fresh()->stage : null,
-            'archived' => $archived,
+            'archived' => false,
             'tree' => $tree->fresh()->load('treeType'),
         ];
     }
