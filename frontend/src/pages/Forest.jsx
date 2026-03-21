@@ -178,6 +178,7 @@ export default function Forest() {
   const [interactionLocked, setInteractionLocked] = useState(false);
   const [isPlanting, setIsPlanting] = useState(false);
   const [plantingTreeType, setPlantingTreeType] = useState(null);
+  const [cutsceneImageMode, setCutsceneImageMode] = useState('seed'); // 'seed' or 'baby'
 
   const containerRef = useRef(null);
   const previousSnapshotRef = useRef({ activeTreeId: null, stage: null, archivedCount: 0 });
@@ -336,6 +337,7 @@ export default function Forest() {
           
           // Set planting state to show seed image during animation
           setPlantingTreeType(data.tree.tree_type);
+          setCutsceneImageMode('seed');
           setIsPlanting(true);
 
           // Optimistically update the cache so the activeTree exists immediately!
@@ -350,15 +352,21 @@ export default function Forest() {
           setTimeout(() => {
             runPlantAnimation(
               heroTreeRef,
-              () => {
-                // After animation completes (2.0s), swap UI back to normal tree card
-                setIsPlanting(false);
-                setPlantingTreeType(null);
-                
-                // Allow a tiny delay for React to re-render before refreshing data
-                setTimeout(() => {
-                  refreshForest();
-                }, 50);
+              {
+                onSwapImage: () => {
+                  // Switch image source from seed to stage1 halfway through
+                  setCutsceneImageMode('baby');
+                },
+                onComplete: () => {
+                  // After animation completes (2.0s), swap UI back to normal tree card
+                  setIsPlanting(false);
+                  setPlantingTreeType(null);
+                  
+                  // Allow a tiny delay for React to re-render before refreshing data
+                  setTimeout(() => {
+                    refreshForest();
+                  }, 50);
+                }
               }
             );
           }, 10);
@@ -618,10 +626,13 @@ export default function Forest() {
                  <div className="forest-tree-card-visual">
                    <img
                      ref={heroTreeRef}
-                     src={getSeedAsset(plantingTreeType?.name)}
+                     src={cutsceneImageMode === 'seed' 
+                       ? getSeedAsset(plantingTreeType?.name) 
+                       : getTreeAsset(plantingTreeType?.name, 1)
+                     }
                      alt="Planting animation"
                      className="forest-tree-card-image"
-                     style={{ '--tree-width': `${treeWidth}px` }}
+                     style={{ '--tree-width': cutsceneImageMode === 'seed' ? `${HERO_WIDTHS[0]}px` : `${HERO_WIDTHS[1]}px` }}
                    />
                  </div>
                </div>

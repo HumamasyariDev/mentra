@@ -5,6 +5,7 @@
   border-radius: 28px;
   overflow: hidden;
   z-index: 6;
+  pointer-events: auto;
 }
 
 .forest-tree-card-backdrop {

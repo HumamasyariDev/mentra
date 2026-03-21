@@ -19,8 +19,11 @@ export function usePlantAnimation() {
   const prefersReducedMotion = useReducedMotion();
 
   const runPlantAnimation = useCallback(
-    (treeImageRef, onComplete) => {
+    (treeImageRef, options = {}) => {
+      const { onComplete, onSwapImage } = options;
+      
       if (prefersReducedMotion || !treeImageRef?.current) {
+        onSwapImage?.();
         onComplete?.();
         return;
       }
@@ -94,6 +97,7 @@ export function usePlantAnimation() {
           filter: 'drop-shadow(0 4px 8px rgba(15, 23, 42, 0))',
           duration: 0.6,
           ease: 'power2.in',
+          onComplete: onSwapImage,
         },
         'seedExit'
       );
