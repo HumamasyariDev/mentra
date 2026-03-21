@@ -25,11 +25,12 @@
 }
 
 .app-layout-container {
-  min-height: 100vh;
+  height: 100vh;
   background-color: #f8fafc;
   display: flex;
   transform: none;
   perspective: none;
+  overflow: hidden;
 }
 
 .app-layout-overlay {

@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Quiz (nested under task)
     Route::get('/tasks/{taskId}/quiz',  [QuizController::class, 'show']);
     Route::post('/tasks/{taskId}/quiz', [QuizController::class, 'store']);
+    Route::post('/tasks/{taskId}/quiz/attempt', [QuizController::class, 'attempt']);
 
     // Pomodoro
     Route::get('/pomodoro', [PomodoroController::class, 'index']);

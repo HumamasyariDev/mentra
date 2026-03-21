@@ -1,30 +1,28 @@
 import { useState } from 'react';
-import { X, CheckCircle2, XCircle, Loader2, Zap, ChevronLeft, ChevronRight, SkipForward, RefreshCw } from 'lucide-react';
+import { X, CheckCircle2, XCircle, Loader2, Zap, ChevronLeft, ChevronRight, SkipForward, Trophy, Target, RotateCcw, BookOpen } from 'lucide-react';
 import '../../styles/components/tasks/QuizModal.css';
 
 /**
- * QuizModal — multi-question quiz with back/skip navigation.
+ * QuizModal — multi-question quiz with back/skip navigation + flashcard mode.
  *
  * Props:
  *   quizList: array of { question, options, correct_index, explanation } | null
  *   isLoading: boolean
  *   onClose: () => void
- *   onCorrect: (count: number) => void
- *   onRegenerate: () => Promise<void>  — force regenerate quiz from Puter
+ *   onDone: (correctCount, totalCount, answersMap) => void
+ *   flashcardMode: boolean — if true, shows flashcards instead of quiz
  */
-export default function QuizModal({ quizList, isLoading, onClose, onCorrect, onRegenerate }) {
+export default function QuizModal({ quizList, isLoading, onClose, onDone, flashcardMode = false }) {
     const [currentIndex, setCurrentIndex] = useState(0);
-    // answers[i] = selected option index, or null if skipped/unanswered
     const [answers, setAnswers] = useState({});
-    // submitted[i] = true when user hits Submit on question i
     const [submitted, setSubmitted] = useState({});
+    const [flipped, setFlipped] = useState(false);
 
     const total = quizList?.length ?? 0;
     const quiz = quizList?.[currentIndex];
     const selectedOption = answers[currentIndex] ?? null;
     const isSubmitted = submitted[currentIndex] ?? false;
     const isCorrect = isSubmitted && selectedOption === quiz?.correct_index;
-    const isWrong = isSubmitted && selectedOption !== quiz?.correct_index;
 
     const correctCount = Object.keys(submitted).filter(
         (i) => answers[i] === quizList?.[i]?.correct_index
@@ -41,15 +39,20 @@ export default function QuizModal({ quizList, isLoading, onClose, onCorrect, onR
     };
 
     const handleNext = () => {
-        if (currentIndex < total - 1) setCurrentIndex((i) => i + 1);
+        if (currentIndex < total - 1) {
+            setCurrentIndex((i) => i + 1);
+            setFlipped(false);
+        }
     };
 
     const handlePrev = () => {
-        if (currentIndex > 0) setCurrentIndex((i) => i - 1);
+        if (currentIndex > 0) {
+            setCurrentIndex((i) => i - 1);
+            setFlipped(false);
+        }
     };
 
     const handleSkip = () => {
-        // Mark as submitted with no answer (skip)
         setSubmitted((prev) => ({ ...prev, [currentIndex]: true }));
         if (currentIndex < total - 1) {
             setCurrentIndex((i) => i + 1);
@@ -59,9 +62,24 @@ export default function QuizModal({ quizList, isLoading, onClose, onCorrect, onR
     const isDone = Object.keys(submitted).length === total;
 
     const handleClose = () => {
-        onCorrect?.(correctCount);
+        if (!flashcardMode && isDone && onDone) {
+            const answersMap = {};
+            Object.keys(submitted).forEach((i) => {
+                answersMap[i] = answers[i] ?? null;
+            });
+            onDone(correctCount, total, answersMap);
+        }
         onClose();
     };
+
+    // Score ring calculations
+    const scorePercent = total > 0 ? correctCount / total : 0;
+    const circumference = 2 * Math.PI * 38; // radius = 38
+    const scoreLevel = scorePercent >= 0.7 ? 'great' : scorePercent >= 0.4 ? 'okay' : 'poor';
+
+    const feedbackClass = isSubmitted
+        ? (selectedOption === null ? 'skipped' : isCorrect ? 'correct' : 'wrong')
+        : '';
 
     return (
         <div
@@ -74,42 +92,30 @@ export default function QuizModal({ quizList, isLoading, onClose, onCorrect, onR
                 <div className="quiz-modal-header">
                     <div className="quiz-modal-header-top">
                         <div className="quiz-modal-title">
-                            <Zap className="quiz-modal-title-icon" />
-                            <span className="quiz-modal-title-text">Challenge Quiz</span>
-                        </div>
-                        <div className="quiz-modal-header-actions">
-                            {/* Regenerate button — always visible when not loading */}
-                            {!isLoading && onRegenerate && (
-                                <button
-                                    onClick={onRegenerate}
-                                    title="Regenerate quiz"
-                                    className="quiz-modal-regenerate-btn"
-                                >
-                                    <RefreshCw style={{ width: '1rem', height: '1rem' }} />
-                                </button>
+                            {flashcardMode ? (
+                                <BookOpen className="quiz-modal-title-icon" />
+                            ) : (
+                                <Zap className="quiz-modal-title-icon" />
                             )}
-                            <button onClick={handleClose} className="quiz-modal-close-btn">
-                                <X style={{ width: '1.25rem', height: '1.25rem' }} />
-                            </button>
+                            <span className="quiz-modal-title-text">
+                                {flashcardMode ? 'Flashcards' : 'Challenge Quiz'}
+                            </span>
                         </div>
+                        <button onClick={handleClose} className="quiz-modal-close-btn">
+                            <X style={{ width: '1.125rem', height: '1.125rem' }} />
+                        </button>
                     </div>
 
-                    {/* Progress bar + counter */}
                     {!isLoading && quizList && (
                         <div className="quiz-modal-progress">
-                            <div style={{ flex: 1, height: '0.375rem', backgroundColor: 'rgba(255,255,255,0.3)', borderRadius: '9999px', overflow: 'hidden' }}>
+                            <div className="quiz-modal-progress-bar">
                                 <div
-                                    style={{ 
-                                      height: '100%', 
-                                      backgroundColor: '#ffffff', 
-                                      borderRadius: '9999px', 
-                                      transition: 'all 0.3s',
-                                      width: `${((currentIndex + 1) / total) * 100}%` 
-                                    }}
+                                    className="quiz-modal-progress-fill"
+                                    style={{ width: `${((flashcardMode ? currentIndex + 1 : Object.keys(submitted).length) / total) * 100}%` }}
                                 />
                             </div>
-                            <span style={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.75rem', fontWeight: '500', whiteSpace: 'nowrap' }}>
-                                {currentIndex + 1} / {total}
+                            <span className="quiz-modal-progress-text">
+                                {currentIndex + 1} of {total}
                             </span>
                         </div>
                     )}
@@ -120,90 +126,163 @@ export default function QuizModal({ quizList, isLoading, onClose, onCorrect, onR
                     {isLoading && (
                         <div className="quiz-modal-loading">
                             <Loader2 className="quiz-modal-loading-spinner" />
-                            <p style={{ fontSize: '0.875rem' }}>{quizList === null ? 'Mengambil atau membuat kuis…' : 'Generating quiz questions...'}</p>
+                            <p className="quiz-modal-loading-text">
+                                {flashcardMode ? 'Loading flashcards...' : 'Loading quiz questions...'}
+                            </p>
                         </div>
                     )}
 
                     {/* Error */}
                     {!isLoading && !quizList && (
-                        <div style={{ textAlign: 'center', padding: '3rem 0', color: '#64748b' }}>
-                            <XCircle style={{ width: '2.5rem', height: '2.5rem', margin: '0 auto 0.75rem', color: '#f87171' }} />
-                            <p style={{ fontWeight: '500', color: '#334155' }}>Failed to generate quiz</p>
-                            <p style={{ fontSize: '0.875rem', marginTop: '0.25rem' }}>Please try again later.</p>
-                            <button onClick={onClose} className="quiz-modal-done-btn" style={{ marginTop: '1rem' }}>
+                        <div className="quiz-modal-error">
+                            <XCircle className="quiz-modal-error-icon" />
+                            <p className="quiz-modal-error-title">Failed to load {flashcardMode ? 'flashcards' : 'quiz'}</p>
+                            <p className="quiz-modal-error-text">Something went wrong. Please try again later.</p>
+                            <button onClick={onClose} className="quiz-modal-done-btn">
                                 Close
                             </button>
                         </div>
                     )}
 
-                    {/* Done summary */}
-                    {!isLoading && quizList && isDone && (
-                        <div className="quiz-modal-done-summary">
-                            <div style={{ 
-                                width: '4rem', 
-                                height: '4rem', 
-                                margin: '0 auto 1rem', 
-                                borderRadius: '50%', 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                justifyContent: 'center',
-                                backgroundColor: correctCount >= total / 2 ? '#d1fae5' : '#fef3c7'
-                            }}>
-                                <span style={{ fontSize: '1.875rem' }}>{correctCount >= total / 2 ? '🏆' : '💪'}</span>
-                            </div>
-                            <h3 className="quiz-modal-done-title">Quiz Complete!</h3>
-                            <p className="quiz-modal-done-score">
-                                You got <span style={{ fontWeight: '700', color: '#6366f1' }}>{correctCount}</span> out of{' '}
-                                <span style={{ fontWeight: '700' }}>{total}</span> correct.
+                    {/* ═══════ FLASHCARD MODE ═══════ */}
+                    {flashcardMode && !isLoading && quizList && (
+                        <>
+                            <p className="quiz-modal-question-number">
+                                Card {currentIndex + 1}
                             </p>
+
+                            <div
+                                className={`flashcard ${flipped ? 'flipped' : ''}`}
+                                onClick={() => setFlipped((f) => !f)}
+                            >
+                                <div className="flashcard-inner">
+                                    <div className="flashcard-front">
+                                        <p className="flashcard-label">Question</p>
+                                        <p className="flashcard-text">{quiz?.question}</p>
+                                        <p className="flashcard-hint">Tap to flip</p>
+                                    </div>
+                                    <div className="flashcard-back">
+                                        <p className="flashcard-label">Answer</p>
+                                        <p className="flashcard-answer">{quiz?.options?.[quiz?.correct_index]}</p>
+                                        {quiz?.explanation && (
+                                            <p className="flashcard-explanation">{quiz.explanation}</p>
+                                        )}
+                                        <p className="flashcard-hint">Tap to flip back</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="quiz-modal-footer">
+                                <div className="quiz-modal-nav">
+                                    <button
+                                        onClick={handlePrev}
+                                        disabled={currentIndex === 0}
+                                        className="quiz-modal-nav-btn"
+                                    >
+                                        <ChevronLeft style={{ width: '1rem', height: '1rem' }} />
+                                        Back
+                                    </button>
+                                </div>
+
+                                <button
+                                    onClick={() => setFlipped((f) => !f)}
+                                    className="quiz-modal-action-btn quiz-modal-skip-btn"
+                                >
+                                    <RotateCcw style={{ width: '0.875rem', height: '0.875rem' }} />
+                                    Flip
+                                </button>
+
+                                <button
+                                    onClick={currentIndex < total - 1 ? handleNext : handleClose}
+                                    className="quiz-modal-action-btn quiz-modal-submit-btn"
+                                    style={{ flex: 1 }}
+                                >
+                                    {currentIndex < total - 1 ? (
+                                        <>Next <ChevronRight style={{ width: '1rem', height: '1rem' }} /></>
+                                    ) : (
+                                        'Done'
+                                    )}
+                                </button>
+                            </div>
+                        </>
+                    )}
+
+                    {/* ═══════ QUIZ MODE ═══════ */}
+                    {/* Done summary */}
+                    {!flashcardMode && !isLoading && quizList && isDone && (
+                        <div className="quiz-modal-done-summary">
+                            {/* Score Ring */}
+                            <div className="quiz-modal-score-ring">
+                                <svg viewBox="0 0 88 88">
+                                    <circle className="quiz-modal-score-ring-bg" cx="44" cy="44" r="38" />
+                                    <circle
+                                        className={`quiz-modal-score-ring-fill ${scoreLevel}`}
+                                        cx="44" cy="44" r="38"
+                                        strokeDasharray={circumference}
+                                        strokeDashoffset={circumference * (1 - scorePercent)}
+                                    />
+                                </svg>
+                                <div className="quiz-modal-score-label">
+                                    <span className="quiz-modal-score-number">{correctCount}</span>
+                                    <span className="quiz-modal-score-of">of {total}</span>
+                                </div>
+                            </div>
+
+                            <h3 className="quiz-modal-done-title">
+                                {scorePercent >= 0.7 ? 'Excellent Work!' : scorePercent >= 0.4 ? 'Good Effort!' : 'Keep Practicing!'}
+                            </h3>
+                            <p className="quiz-modal-done-subtitle">
+                                You answered {correctCount} out of {total} questions correctly.
+                            </p>
+
                             {correctCount > 0 && (
-                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 1rem', backgroundColor: '#fef3c7', border: '1px solid #fde68a', borderRadius: '0.75rem', color: '#92400e', fontSize: '0.875rem', fontWeight: '600', marginBottom: '1.5rem' }}>
-                                    +{correctCount} Log Earned 🎉
+                                <div className={`quiz-modal-done-badge ${scoreLevel}`}>
+                                    <Trophy style={{ width: '0.875rem', height: '0.875rem' }} />
+                                    +{correctCount} Log Earned
                                 </div>
                             )}
 
-                            {/* Mini answer review */}
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', textAlign: 'left', marginBottom: '1.5rem' }}>
+                            {/* Answer Review */}
+                            <div className="quiz-modal-review">
                                 {quizList.map((q, i) => {
                                     const wasSkipped = submitted[i] && answers[i] == null;
                                     const wasCorrect = answers[i] === q.correct_index;
+                                    const iconClass = wasSkipped ? 'skipped' : wasCorrect ? 'correct' : 'wrong';
                                     return (
-                                        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem' }}>
+                                        <div key={i} className="quiz-modal-review-item">
                                             {wasSkipped ? (
-                                                <SkipForward style={{ width: '1rem', height: '1rem', color: '#94a3b8', flexShrink: 0 }} />
+                                                <SkipForward className={`quiz-modal-review-icon ${iconClass}`} />
                                             ) : wasCorrect ? (
-                                                <CheckCircle2 style={{ width: '1rem', height: '1rem', color: '#10b981', flexShrink: 0 }} />
+                                                <CheckCircle2 className={`quiz-modal-review-icon ${iconClass}`} />
                                             ) : (
-                                                <XCircle style={{ width: '1rem', height: '1rem', color: '#f87171', flexShrink: 0 }} />
+                                                <XCircle className={`quiz-modal-review-icon ${iconClass}`} />
                                             )}
-                                            <span style={{ color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{q.question}</span>
+                                            <span className="quiz-modal-review-text">{q.question}</span>
                                         </div>
                                     );
                                 })}
                             </div>
 
-                            <button
-                                onClick={handleClose}
-                                className="quiz-modal-done-btn"
-                                style={{ width: '100%' }}
-                            >
+                            <button onClick={handleClose} className="quiz-modal-done-btn">
                                 Done
                             </button>
                         </div>
                     )}
 
                     {/* Active quiz question */}
-                    {!isLoading && quiz && !isDone && (
+                    {!flashcardMode && !isLoading && quiz && !isDone && (
                         <>
+                            <p className="quiz-modal-question-number">
+                                Question {currentIndex + 1}
+                            </p>
                             <p className="quiz-modal-question">
                                 {quiz.question}
                             </p>
 
                             {/* Options */}
-                            <div className="quiz-modal-options">
+                            <div className="quiz-modal-options" key={currentIndex}>
                                 {quiz.options.map((option, idx) => {
                                     let className = 'quiz-modal-option';
-                                    
                                     if (selectedOption === idx && !isSubmitted) {
                                         className += ' selected';
                                     }
@@ -224,7 +303,9 @@ export default function QuizModal({ quizList, isLoading, onClose, onCorrect, onR
                                             className={className}
                                         >
                                             <div className="quiz-modal-option-content">
-                                                <span style={{ fontWeight: '700', marginRight: '0.5rem' }}>{['A', 'B', 'C', 'D'][idx]}.</span>
+                                                <span className="quiz-modal-option-letter">
+                                                    {['A', 'B', 'C', 'D'][idx]}
+                                                </span>
                                                 <span className="quiz-modal-option-text">{option}</span>
                                             </div>
                                         </button>
@@ -234,68 +315,62 @@ export default function QuizModal({ quizList, isLoading, onClose, onCorrect, onR
 
                             {/* Feedback */}
                             {isSubmitted && (
-                                <div className="quiz-modal-explanation" style={{ 
-                                    backgroundColor: isCorrect ? '#d1fae5' : '#fee2e2',
-                                    borderColor: isCorrect ? '#10b981' : '#ef4444'
-                                }}>
-                                    <div className="quiz-modal-explanation-title" style={{ color: isCorrect ? '#065f46' : '#991b1b' }}>
+                                <div className={`quiz-modal-explanation ${feedbackClass}`}>
+                                    <div className="quiz-modal-explanation-title">
                                         {isCorrect ? (
-                                            <><CheckCircle2 className="quiz-modal-option-icon" />Correct! +1 Log 🎉</>
+                                            <><CheckCircle2 className="quiz-modal-option-icon" />Correct!</>
                                         ) : selectedOption === null ? (
                                             <><SkipForward className="quiz-modal-option-icon" />Skipped</>
                                         ) : (
-                                            <><XCircle className="quiz-modal-option-icon" />Wrong answer</>
+                                            <><XCircle className="quiz-modal-option-icon" />Incorrect</>
                                         )}
                                     </div>
-                                    <p className="quiz-modal-explanation-text" style={{ color: isCorrect ? '#065f46' : '#991b1b' }}>{quiz.explanation}</p>
+                                    <p className="quiz-modal-explanation-text">{quiz.explanation}</p>
                                 </div>
                             )}
 
                             {/* Action buttons */}
-                            <div className="quiz-modal-footer" style={{ padding: 0, border: 'none', background: 'transparent' }}>
+                            <div className="quiz-modal-footer">
                                 <div className="quiz-modal-nav">
-                                    {/* Back */}
                                     <button
                                         onClick={handlePrev}
                                         disabled={currentIndex === 0}
                                         className="quiz-modal-nav-btn"
-                                        style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
                                     >
                                         <ChevronLeft style={{ width: '1rem', height: '1rem' }} />
                                         Back
                                     </button>
                                 </div>
 
-                                {/* Submit or Skip */}
                                 {!isSubmitted ? (
-                                    <div style={{ display: 'flex', gap: '0.5rem', flex: 1 }}>
+                                    <div className="quiz-modal-actions-row">
                                         <button
                                             onClick={handleSubmit}
                                             disabled={selectedOption === null}
                                             className="quiz-modal-action-btn quiz-modal-submit-btn"
                                             style={{ flex: 1 }}
                                         >
-                                            Submit Answer
+                                            <Target style={{ width: '1rem', height: '1rem' }} />
+                                            Submit
                                         </button>
                                         <button
                                             onClick={handleSkip}
                                             className="quiz-modal-action-btn quiz-modal-skip-btn"
-                                            style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
                                         >
                                             Skip
-                                            <SkipForward style={{ width: '1rem', height: '1rem' }} />
+                                            <SkipForward style={{ width: '0.875rem', height: '0.875rem' }} />
                                         </button>
                                     </div>
                                 ) : (
                                     <button
                                         onClick={handleNext}
                                         className="quiz-modal-action-btn quiz-modal-submit-btn"
-                                        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem' }}
+                                        style={{ flex: 1 }}
                                     >
                                         {currentIndex < total - 1 ? (
                                             <>Next <ChevronRight style={{ width: '1rem', height: '1rem' }} /></>
                                         ) : (
-                                            'See Results'
+                                            <>See Results <ChevronRight style={{ width: '1rem', height: '1rem' }} /></>
                                         )}
                                     </button>
                                 )}

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Quiz;
+use App\Models\QuizAttempt;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -33,10 +34,17 @@ class QuizController extends Controller
             return response()->json(['message' => 'No quiz found for this task.'], 404);
         }
 
+        $latestAttempt = $quiz->attempts()
+            ->where('user_id', $request->user()->id)
+            ->latest()
+            ->first();
+
         return response()->json([
             'id' => $quiz->id,
             'task_id' => $quiz->task_id,
             'questions' => $quiz->questions, // auto-decoded from JSONB
+            'has_attempt' => $latestAttempt !== null,
+            'latest_attempt' => $latestAttempt,
             'created_at' => $quiz->created_at,
             'updated_at' => $quiz->updated_at,
         ]);
@@ -63,6 +71,7 @@ class QuizController extends Controller
             'questions.*.correct_index' => ['nullable', 'integer'],
             'questions.*.answer' => ['nullable'],
             'questions.*.explanation' => ['nullable', 'string'],
+            'material' => ['nullable', 'string', 'max:50000'],
         ]);
 
         // Normalise: resolve answer → correct_index integer
@@ -85,7 +94,10 @@ class QuizController extends Controller
         // updateOrCreate: save or overwrite
         $quiz = Quiz::updateOrCreate(
         ['task_id' => $task->id],
-        ['questions' => $normalized]
+        [
+            'questions' => $normalized,
+            'material' => $validated['material'] ?? null,
+        ]
         );
 
         return response()->json([
@@ -94,5 +106,38 @@ class QuizController extends Controller
             'questions' => $quiz->questions,
             'message' => $quiz->wasRecentlyCreated ? 'Quiz saved.' : 'Quiz updated.',
         ], $quiz->wasRecentlyCreated ? 201 : 200);
+    }
+
+    /**
+     * POST /api/tasks/{taskId}/quiz/attempt
+     *
+     * Records a quiz attempt. Frontend sends score, total, and answers map.
+     */
+    public function attempt(Request $request, int $taskId): JsonResponse
+    {
+        $task = $request->user()->tasks()->findOrFail($taskId);
+        $quiz = $task->quiz;
+
+        if (!$quiz) {
+            return response()->json(['message' => 'No quiz found for this task.'], 404);
+        }
+
+        $validated = $request->validate([
+            'score' => ['required', 'integer', 'min:0'],
+            'total' => ['required', 'integer', 'min:1'],
+            'answers' => ['nullable', 'array'],
+        ]);
+
+        $attempt = $quiz->attempts()->create([
+            'user_id' => $request->user()->id,
+            'score' => $validated['score'],
+            'total' => $validated['total'],
+            'answers' => $validated['answers'] ?? null,
+        ]);
+
+        return response()->json([
+            'attempt' => $attempt,
+            'message' => "Quiz attempt recorded: {$attempt->score}/{$attempt->total}",
+        ], 201);
     }
 }

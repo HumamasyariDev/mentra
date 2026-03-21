@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 import TaskItem from './TaskItem';
 import '../../styles/components/tasks/TaskComponents.css';
 
 const columns = [
-  { key: 'pending', label: 'Pending', color: '#cbd5e1', bg: '#f8fafc' },
-  { key: 'in_progress', label: 'In Progress', color: '#60a5fa', bg: '#eff6ff' },
-  { key: 'completed', label: 'Completed', color: '#34d399', bg: '#ecfdf5' },
+  { key: 'pending', label: 'Pending', color: '#94a3b8', accent: '#475569' },
+  { key: 'in_progress', label: 'In Progress', color: '#60a5fa', accent: '#2563eb' },
+  { key: 'completed', label: 'Completed', color: '#34d399', accent: '#059669' },
 ];
 
 export default function TaskBoardView({ tasks, isLoading, onComplete, onUncomplete, onDelete, onUpdateStatus }) {
   const [dragOverCol, setDragOverCol] = useState(null);
+  const cardRefs = useRef({});
 
   if (isLoading) {
     return (
@@ -43,7 +44,8 @@ export default function TaskBoardView({ tasks, isLoading, onComplete, onUncomple
     if (!task || task.status === targetStatus) return;
 
     if (targetStatus === 'completed') {
-      onComplete?.(taskId);
+      const cardEl = cardRefs.current[taskId];
+      onComplete?.(taskId, cardEl || null);
     } else {
       onUpdateStatus?.(taskId, { status: targetStatus });
     }
@@ -58,35 +60,29 @@ export default function TaskBoardView({ tasks, isLoading, onComplete, onUncomple
         return (
           <div
             key={col.key}
-            className="task-board-column"
+            className={`task-board-column ${isDragOver ? 'drag-over' : ''}`}
             onDragOver={(e) => handleDragOver(e, col.key)}
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, col.key)}
           >
             {/* Column header */}
-            <div className="task-board-header" style={{ backgroundColor: col.bg, borderLeftColor: col.color }}>
-              <h3 className="task-board-title">{col.label}</h3>
-              <span className="task-board-count">
-                {colTasks.length}
-              </span>
+            <div className="task-board-col-header">
+              <span className="task-board-col-indicator" style={{ background: col.color }} />
+              <h3 className="task-board-col-title">{col.label}</h3>
+              <span className="task-board-col-count">{colTasks.length}</span>
             </div>
 
             {/* Column tasks */}
-            <div
-              className={`task-board-content ${isDragOver ? 'drag-over' : ''}`}
-            >
-              {colTasks.length === 0 && !isDragOver ? (
-                <div className="task-board-empty">
-                  No tasks
-                </div>
-              ) : colTasks.length === 0 && isDragOver ? (
-                <div className="task-board-drop-zone">
-                  Drop here
+            <div className="task-board-col-body">
+              {colTasks.length === 0 ? (
+                <div className={`task-board-empty ${isDragOver ? 'drop-active' : ''}`}>
+                  {isDragOver ? 'Drop here' : 'No tasks'}
                 </div>
               ) : (
                 colTasks.map((task) => (
                   <div
                     key={task.id}
+                    ref={(el) => { if (el) cardRefs.current[task.id] = el; }}
                     draggable
                     onDragStart={(e) => handleDragStart(e, task.id)}
                     className="task-board-item"

@@ -59,8 +59,6 @@
 /* ============================================================
    FLOATING CARD — Clones the original task card exactly
    ============================================================ */
-/* The floating card copies className from the original card,
-   so it inherits the exact same visual. We only add positioning. */
 .floating-card {
   position: fixed;
   top: 0;
@@ -72,118 +70,58 @@
 }
 
 /* ============================================================
-   TREE ZONE — White bg, tree centered, Duolingo-style
+   FIRE ZONE — Centered streak fire, single scene
    ============================================================ */
-.zone--tree {
-  flex-direction: column;
-  gap: 0;
-}
-
-.tree-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.tree-image {
-  width: min(700px, 80vw, 65vh);
-  height: auto;
-  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.08));
-  z-index: 2;
-  will-change: transform;
-}
-
-/* ---------- Flying Log (fixed overlay — not inside any zone) ---------- */
-.flying-log {
-  position: fixed;
-  width: min(160px, 30vw);
-  height: auto;
-  z-index: 10001;
-  pointer-events: none;
-  opacity: 0;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
-  will-change: transform, opacity;
-}
-
-/* ---------- Ambient particles (subtle indigo dots) ---------- */
-.tree-particles {
+.fire-zone {
   position: absolute;
   inset: 0;
-  overflow: hidden;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.tree-particle {
-  position: absolute;
-  background: rgba(99, 102, 241, 0.15);
-  border-radius: 50%;
-  animation: floatParticle 8s ease-in-out infinite;
-}
-
-@keyframes floatParticle {
-
-  0%,
-  100% {
-    transform: translateY(0) translateX(0);
-    opacity: 0;
-  }
-
-  50% {
-    transform: translateY(-50px) translateX(12px);
-    opacity: 1;
-  }
-}
-
-/* ============================================================
-   CAMPFIRE ZONE — White bg, fire centered
-   ============================================================ */
-.zone--campfire {
-  flex-direction: column;
-  gap: 0;
-}
-
-.campfire-wrapper {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 100%;
 }
 
-.campfire-image {
-  width: min(600px, 75vw, 55vh);
+.fire-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Fire Sprite ---------- */
+.fire-sprite {
+  width: min(280px, 55vw, 40vh);
   height: auto;
   z-index: 2;
-  will-change: transform, filter;
-  transition: filter 0.5s ease;
+  will-change: transform, opacity;
+  transition: filter 0.3s ease;
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.06));
 }
 
-/* Dying — dim, grayscale */
-.campfire-image--dying {
-  filter: brightness(0.5) saturate(0.3) grayscale(0.5) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.06));
+/* Sad — dim, slightly desaturated */
+.fire-sprite--sad {
+  filter: brightness(0.85) saturate(0.8) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
 }
 
-/* Roaring — vibrant with warm glow */
-.campfire-image--roaring {
-  filter: brightness(1.05) saturate(1.2) drop-shadow(0 0 20px rgba(245, 158, 11, 0.3)) drop-shadow(0 0 50px rgba(239, 68, 68, 0.12));
+/* Happy — vibrant, warm glow (big fire!) */
+.fire-sprite--happy {
+  filter: brightness(1.1) saturate(1.3) drop-shadow(0 0 30px rgba(245, 158, 11, 0.35)) drop-shadow(0 0 60px rgba(239, 68, 68, 0.15));
 }
 
-/* Glow ring removed — kept clean */
+/* Normal — settled, content */
+.fire-sprite--normal {
+  filter: brightness(1.0) saturate(1.1) drop-shadow(0 0 16px rgba(245, 158, 11, 0.2));
+}
 
 /* ---------- Status text (+EXP) ---------- */
-.campfire-status {
+.fire-status {
   position: absolute;
-  top: 18%;
+  top: -10%;
   left: 50%;
   transform: translateX(-50%);
-  font-size: clamp(1rem, 4vw, 1.4rem);
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
   font-weight: 800;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.01em;
   z-index: 5;
   opacity: 0;
   will-change: opacity, transform;
@@ -192,37 +130,40 @@
   color: #1e293b;
 }
 
-.campfire-status--roaring {
+.fire-status--happy {
   color: #d97706;
 }
 
+.fire-status--normal {
+  color: #92400e;
+}
+
 /* ---------- Embers ---------- */
-.campfire-embers {
+.fire-embers {
   position: absolute;
-  inset: 0;
+  inset: -40px;
   overflow: hidden;
   z-index: 4;
   pointer-events: none;
 }
 
-.ember {
+.fire-ember {
   position: absolute;
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   background: #f59e0b;
   border-radius: 50%;
   opacity: 0;
-  animation: riseEmber 2.5s ease-out infinite;
+  animation: fireEmberRise 2.5s ease-out infinite;
 }
 
-@keyframes riseEmber {
+@keyframes fireEmberRise {
   0% {
     transform: translateY(0) scale(1);
-    opacity: 0.6;
+    opacity: 0.7;
   }
-
   100% {
-    transform: translateY(-140px) scale(0);
+    transform: translateY(-120px) scale(0);
     opacity: 0;
   }
 }

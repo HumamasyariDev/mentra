@@ -18,6 +18,10 @@ class TaskController extends Controller
     public function index(Request $request): JsonResponse
     {
         $tasks = $request->user()->tasks()
+            ->with(['quiz:id,task_id', 'quiz.attempts' => function ($q) use ($request) {
+                $q->where('user_id', $request->user()->id)->latest()->limit(1);
+            }])
+            ->withCount('expLogs')
             ->when($request->status, fn($q, $status) => $q->where('status', $status))
             ->when($request->priority, fn($q, $priority) => $q->where('priority', $priority))
             ->orderBy('created_at', 'desc')
@@ -31,6 +35,7 @@ class TaskController extends Controller
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'type' => ['sometimes', 'in:normal,quiz'],
             'priority' => ['in:low,medium,high'],
             'due_date' => ['nullable', 'date'],
             'exp_reward' => ['nullable', 'integer', 'min:1', 'max:100'],
@@ -81,24 +86,46 @@ class TaskController extends Controller
             return response()->json(['message' => 'Task already completed.'], 422);
         }
 
+        // Quiz gate: quiz tasks require at least one quiz attempt
+        if ($task->type === 'quiz') {
+            $quiz = $task->quiz;
+            if (!$quiz) {
+                return response()->json(['message' => 'Quiz task has no quiz. Cannot complete.'], 422);
+            }
+            $hasAttempt = $quiz->attempts()->where('user_id', $request->user()->id)->exists();
+            if (!$hasAttempt) {
+                return response()->json(['message' => 'You must complete the quiz before marking this task as done.'], 422);
+            }
+        }
+
         $task->update([
             'status' => 'completed',
             'completed_at' => now(),
         ]);
 
-        $this->expService->awardExp(
-            $request->user(),
-            $task->exp_reward,
-            'task',
-            $task,
-            "Completed task: {$task->title}"
-        );
+        // Only award EXP on first completion (prevent double reward after uncomplete→re-complete)
+        $alreadyBurned = $task->expLogs()->where('amount', '>', 0)->exists();
+        $expAwarded = false;
+
+        if (!$alreadyBurned) {
+            $this->expService->awardExp(
+                $request->user(),
+                $task->exp_reward,
+                'task',
+                $task,
+                "Completed task: {$task->title}"
+            );
+            $expAwarded = true;
+        }
 
         $this->streakService->recordActivity($request->user());
 
         return response()->json([
             'task' => $task->fresh(),
-            'message' => "Task completed! +{$task->exp_reward} EXP",
+            'exp_awarded' => $expAwarded,
+            'message' => $expAwarded
+                ? "Task completed! +{$task->exp_reward} EXP"
+                : "Task completed!",
         ]);
     }
 
@@ -115,17 +142,11 @@ class TaskController extends Controller
             'completed_at' => null,
         ]);
 
-        $this->expService->deductExp(
-            $request->user(),
-            $task->exp_reward,
-            'task_uncomplete',
-            $task,
-            "Uncompleted task: {$task->title}"
-        );
+        // EXP from burning is permanent — no deduction on uncomplete
 
         return response()->json([
             'task' => $task->fresh(),
-            'message' => "Task uncompleted. -{$task->exp_reward} EXP",
+            'message' => 'Task uncompleted.',
         ]);
     }
 }

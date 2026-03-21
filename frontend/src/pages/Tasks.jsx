@@ -45,23 +45,38 @@ export default function Tasks() {
   /* ===== Cutscene overlay state ===== */
   const [cutscene, setCutscene] = useState(null); // { task, element }
 
+  const [page, setPage] = useState(1);
+  const perPage = 10;
+
   const { data, isLoading } = useQuery({
-    queryKey: ['tasks', 'all'],
-    queryFn: () => taskApi.list({ per_page: 100 }).then((r) => r.data),
+    queryKey: ['tasks', 'all', page],
+    queryFn: () => taskApi.list({ page, per_page: perPage }).then((r) => r.data),
   });
 
   const createMutation = useMutation({
     mutationFn: (data) => taskApi.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-      queryClient.invalidateQueries({ queryKey: ['dashboard'] });
-      setShowForm(false);
-    },
   });
 
   const completeMutation = useMutation({
     mutationFn: (id) => taskApi.complete(id),
-    onSuccess: () => {
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks', 'all', page] });
+      const previous = queryClient.getQueryData(['tasks', 'all', page]);
+      queryClient.setQueryData(['tasks', 'all', page], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: old.data.map((t) =>
+            t.id === id ? { ...t, status: 'completed', completed_at: new Date().toISOString() } : t
+          ),
+        };
+      });
+      return { previous };
+    },
+    onError: (_err, _id, context) => {
+      if (context?.previous) queryClient.setQueryData(['tasks', 'all', page], context.previous);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
@@ -83,13 +98,44 @@ export default function Tasks() {
     },
   });
 
-  const handleCreate = (formData, resetForm) => {
-    createMutation.mutate(formData, { onSuccess: resetForm });
+  const handleCreate = (formData, resetForm, afterCreate) => {
+    createMutation.mutate(formData, {
+      onSuccess: async (response) => {
+        if (afterCreate) {
+          try {
+            await afterCreate(response.data);
+          } catch (err) {
+            console.error('[Tasks] Post-create callback error:', err);
+          }
+        }
+        resetForm();
+        queryClient.invalidateQueries({ queryKey: ['tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+        setShowForm(false);
+      },
+    });
   };
 
   const uncompleteMutation = useMutation({
     mutationFn: (id) => taskApi.uncomplete(id),
-    onSuccess: () => {
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks', 'all', page] });
+      const previous = queryClient.getQueryData(['tasks', 'all', page]);
+      queryClient.setQueryData(['tasks', 'all', page], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: old.data.map((t) =>
+            t.id === id ? { ...t, status: 'pending', completed_at: null } : t
+          ),
+        };
+      });
+      return { previous };
+    },
+    onError: (_err, _id, context) => {
+      if (context?.previous) queryClient.setQueryData(['tasks', 'all', page], context.previous);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
     },
@@ -106,8 +152,9 @@ export default function Tasks() {
     // Fire the API mutation
     completeMutation.mutate(id);
 
-    // Trigger the cutscene overlay (only if we have a card element)
-    if (cardElement && task) {
+    // Only show fire cutscene for first-time completions (not already burned)
+    const alreadyBurned = task?.exp_logs_count > 0;
+    if (cardElement && task && !alreadyBurned) {
       setCutscene({ task, element: cardElement });
     }
   };
@@ -127,6 +174,12 @@ export default function Tasks() {
   const handleUpdateStatus = (id, data) => updateStatusMutation.mutate({ id, data });
 
   const tasks = data?.data || [];
+  const pagination = {
+    current_page: data?.current_page || 1,
+    last_page: data?.last_page || 1,
+    total: data?.total || 0,
+    per_page: data?.per_page || perPage,
+  };
 
   return (
     <>
@@ -183,6 +236,8 @@ export default function Tasks() {
             onComplete={handleComplete}
             onUncomplete={handleUncomplete}
             onDelete={handleDelete}
+            pagination={pagination}
+            onPageChange={setPage}
           />
         )}
         {activeView === 'calendar' && (

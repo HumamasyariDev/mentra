@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { CheckCircle2, Circle, Trash2, Clock, Zap } from 'lucide-react';
-import { checkQuizzability } from '../../utils/quizHelpers';
+import { useState, useRef } from 'react';
+import { CheckCircle2, Circle, Trash2, Clock, Zap, Lock, BookOpen } from 'lucide-react';
 import { quizApi } from '../../services/api';
 import QuizModal from './QuizModal';
 import '../../styles/components/tasks/TaskComponents.css';
@@ -13,87 +12,36 @@ const priorityColors = {
 
 export default function TaskItem({ task, onComplete, onUncomplete, onDelete, compact = false }) {
   const isCompleted = task.status === 'completed';
+  const isQuizTask = task.type === 'quiz';
+  const isBurned = (task.exp_logs_count ?? 0) > 0;
   const cardRef = useRef(null);
 
+  // Quiz attempt status from eager-loaded data
+  const hasQuizAttempt = task.quiz?.attempts?.length > 0;
+  const quizLocked = isQuizTask && !hasQuizAttempt && !isCompleted;
+
   // --- Quiz state ---
-  const [isQuizzable, setIsQuizzable] = useState(false);
   const [showModal, setShowModal]     = useState(false);
   const [quizList, setQuizList]       = useState(null);
   const [quizLoading, setQuizLoading] = useState(false);
   const [bonusMsg, setBonusMsg]       = useState('');
-
-  useEffect(() => {
-    if (compact) return;
-    let cancelled = false;
-    checkQuizzability(task.title).then((result) => {
-      if (!cancelled) setIsQuizzable(result);
-    });
-    return () => { cancelled = true; };
-  }, [task.title, compact]);
+  // Track if user just completed a quiz attempt (to unlock complete btn)
+  const [justAttempted, setJustAttempted] = useState(false);
+  const [flashcardMode, setFlashcardMode] = useState(false);
 
   const handleToggle = () => {
     if (isCompleted) {
       onUncomplete?.(task.id);
+    } else if (quizLocked && !justAttempted) {
+      // Can't complete — quiz not attempted
+      return;
     } else {
       onComplete?.(task.id, cardRef.current);
     }
   };
 
   /**
-   * generateAndSave — call Puter.js, parse JSON output, save to DB.
-   */
-  const generateAndSave = async () => {
-    if (!window.puter?.ai?.chat) {
-      throw new Error('Puter.js tidak tersedia. Pastikan kamu sudah login.');
-    }
-
-    const prompt = `Buatkan 3 soal pilihan ganda (bahasa Indonesia) tentang task: "${task.title}".
-Output WAJIB JSON murni tanpa teks pengantar, format array:
-[
-  {
-    "question": "Pertanyaan?",
-    "options": ["Pilihan A", "Pilihan B", "Pilihan C", "Pilihan D"],
-    "answer": 0,
-    "explanation": "Penjelasan singkat mengapa jawaban ini benar."
-  }
-]
-answer adalah indeks (0-3) dari options yang benar.`;
-
-    const raw = await window.puter.ai.chat([
-      { role: 'system', content: 'Kamu adalah pembuat soal kuis. Output HANYA JSON murni, tanpa teks lain.' },
-      { role: 'user',   content: prompt },
-    ], { model: 'claude-sonnet-4-5' });
-
-    const text = typeof raw === 'string' ? raw
-        : raw?.message?.content?.[0]?.text ?? raw?.text ?? String(raw);
-
-    // Extract JSON array from response (safe parse)
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) throw new Error('AI tidak mengembalikan format JSON yang valid.');
-
-    const parsed = JSON.parse(jsonMatch[0]);
-    if (!Array.isArray(parsed) || parsed.length === 0) {
-      throw new Error('Format pertanyaan kuis tidak valid.');
-    }
-
-    // Normalize: map "answer" field to correct_index for QuizModal
-    const normalized = parsed.map((q) => ({
-      question:      q.question,
-      options:       q.options,
-      correct_index: typeof q.answer === 'string'
-          ? (isNaN(Number(q.answer)) ? q.options.findIndex((o) => o === q.answer) : Number(q.answer))
-          : Number(q.answer ?? q.correct_index ?? 0),
-      explanation: q.explanation ?? '',
-    }));
-
-    // Save to Supabase
-    await quizApi.save(task.id, normalized);
-
-    return normalized;
-  };
-
-  /**
-   * handleOpenQuiz — fetch from DB first, generate if not found.
+   * handleOpenQuiz — fetch quiz from DB.
    */
   const handleOpenQuiz = async () => {
     setQuizList(null);
@@ -101,49 +49,30 @@ answer adalah indeks (0-3) dari options yang benar.`;
     setQuizLoading(true);
 
     try {
-      // 1. Try to get cached quiz from DB
       const response = await quizApi.get(task.id);
       setQuizList(response.data.questions);
     } catch (err) {
-      if (err.response?.status === 404) {
-        // 2. Not found → generate with Puter, then save
-        try {
-          const questions = await generateAndSave();
-          setQuizList(questions);
-        } catch (genErr) {
-          console.error('[Quiz] Generation error:', genErr);
-          setQuizList(null);
-        }
-      } else {
-        console.error('[Quiz] Fetch error:', err);
-        setQuizList(null);
-      }
-    } finally {
-      setQuizLoading(false);
-    }
-  };
-
-  /**
-   * handleRegenerate — force a new quiz from Puter (ignore DB cache).
-   */
-  const handleRegenerate = async () => {
-    setQuizList(null);
-    setQuizLoading(true);
-    try {
-      const questions = await generateAndSave();
-      setQuizList(questions);
-    } catch (err) {
-      console.error('[Quiz] Regenerate error:', err);
+      console.error('[Quiz] Fetch error:', err);
       setQuizList(null);
     } finally {
       setQuizLoading(false);
     }
   };
 
-  const handleCorrect = (count) => {
-    if (count > 0) {
-      setBonusMsg(`+${count} Log`);
-      setTimeout(() => setBonusMsg(''), 3000);
+  /**
+   * handleQuizDone — called when quiz modal finishes (user clicks Done).
+   * Records the attempt to backend.
+   */
+  const handleQuizDone = async (correctCount, totalCount, answersMap) => {
+    try {
+      await quizApi.attempt(task.id, correctCount, totalCount, answersMap);
+      setJustAttempted(true);
+      if (correctCount > 0) {
+        setBonusMsg(`+${correctCount} Log`);
+        setTimeout(() => setBonusMsg(''), 3000);
+      }
+    } catch (err) {
+      console.error('[Quiz] Attempt save error:', err);
     }
   };
 
@@ -161,6 +90,11 @@ answer adalah indeks (0-3) dari options yang benar.`;
         <span className={`task-item-title-compact ${isCompleted ? 'completed' : 'incomplete'}`}>
           {task.title}
         </span>
+        {isQuizTask && (
+          <span className="task-item-quiz-badge-compact">
+            <Zap style={{ width: '0.625rem', height: '0.625rem' }} /> Quiz
+          </span>
+        )}
         <span className={`task-item-priority-badge ${priorityColors[task.priority]}`}>
           {task.priority[0].toUpperCase()}
         </span>
@@ -171,10 +105,17 @@ answer adalah indeks (0-3) dari options yang benar.`;
   // ── Full card view ───────────────────────────────────────────────
   return (
     <>
-      <div ref={cardRef} className={`task-item-card ${isCompleted ? 'completed' : ''}`}>
-        <button onClick={handleToggle} className="task-item-toggle-btn-full">
+      <div ref={cardRef} className={`task-item-card ${isCompleted ? 'completed' : ''} ${isQuizTask ? 'quiz-task' : ''} ${isBurned && !isCompleted ? 'burned' : ''}`}>
+        <button
+          onClick={handleToggle}
+          className="task-item-toggle-btn-full"
+          disabled={quizLocked && !justAttempted}
+          title={quizLocked && !justAttempted ? 'Complete the quiz first' : undefined}
+        >
           {isCompleted ? (
             <CheckCircle2 className="task-item-icon-full completed" />
+          ) : quizLocked && !justAttempted ? (
+            <Lock className="task-item-icon-full locked" />
           ) : (
             <Circle className="task-item-icon-full incomplete" />
           )}
@@ -191,6 +132,11 @@ answer adalah indeks (0-3) dari options yang benar.`;
             <span className={`task-item-priority-badge ${priorityColors[task.priority]}`}>
               {task.priority}
             </span>
+            {isQuizTask && (
+              <span className="task-item-type-badge quiz">
+                <Zap style={{ width: '0.75rem', height: '0.75rem' }} /> Quiz Task
+              </span>
+            )}
             {task.due_date && (
               <span className="task-item-meta-item">
                 <Clock className="task-item-meta-icon" />
@@ -199,26 +145,43 @@ answer adalah indeks (0-3) dari options yang benar.`;
             )}
             <span className="task-item-exp-badge">+{task.exp_reward} EXP</span>
 
-            {/* Bonus earned flash */}
             {bonusMsg && (
               <span className="task-item-bonus-msg">
-                {bonusMsg} 🎉
+                {bonusMsg}
               </span>
             )}
           </div>
+
+          {/* Quiz gate hint */}
+          {quizLocked && !justAttempted && (
+            <p className="task-item-quiz-hint">Complete the quiz to unlock this task</p>
+          )}
         </div>
 
         <div className="task-item-actions">
-          {/* Quiz button — only shown for quizzable tasks */}
-          {isQuizzable && !isCompleted && (
-            <button
-              onClick={handleOpenQuiz}
-              title="Challenge Quiz"
-              className="task-item-quiz-btn"
-            >
-              <Zap className="task-item-quiz-icon" />
-              Quiz
-            </button>
+          {/* Quiz button — shown for all quiz tasks (take or retake) */}
+          {isQuizTask && (
+            <>
+              {(hasQuizAttempt || justAttempted) && (
+                <label className="task-item-flashcard-toggle" title="Enable flashcard review mode">
+                  <input
+                    type="checkbox"
+                    checked={flashcardMode}
+                    onChange={(e) => setFlashcardMode(e.target.checked)}
+                  />
+                  <BookOpen style={{ width: '0.75rem', height: '0.75rem' }} />
+                  Cards
+                </label>
+              )}
+              <button
+                onClick={handleOpenQuiz}
+                title={hasQuizAttempt || justAttempted ? 'Retake Quiz' : 'Take Quiz'}
+                className="task-item-quiz-btn"
+              >
+                <Zap className="task-item-quiz-icon" />
+                {hasQuizAttempt || justAttempted ? 'Retake' : 'Quiz'}
+              </button>
+            </>
           )}
 
           <button
@@ -236,8 +199,8 @@ answer adalah indeks (0-3) dari options yang benar.`;
           quizList={quizList}
           isLoading={quizLoading}
           onClose={() => setShowModal(false)}
-          onCorrect={handleCorrect}
-          onRegenerate={handleRegenerate}
+          onDone={handleQuizDone}
+          flashcardMode={flashcardMode}
         />
       )}
     </>

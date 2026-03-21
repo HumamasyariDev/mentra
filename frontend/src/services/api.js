@@ -125,7 +125,10 @@ export const agentApi = {
 // Quiz API
 export const quizApi = {
   get: (taskId) => api.get(`/tasks/${taskId}/quiz`),
-  save: (taskId, questions) => api.post(`/tasks/${taskId}/quiz`, { questions }),
+  save: (taskId, questions, material = null) =>
+    api.post(`/tasks/${taskId}/quiz`, { questions, material }),
+  attempt: (taskId, score, total, answers = null) =>
+    api.post(`/tasks/${taskId}/quiz/attempt`, { score, total, answers }),
 };
 
 // Chat Sessions API

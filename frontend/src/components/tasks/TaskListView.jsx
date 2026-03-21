@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { CheckCircle2, Loader2 } from 'lucide-react';
+import { CheckCircle2, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import TaskItem from './TaskItem';
 import '../../styles/components/tasks/TaskComponents.css';
 
 const statusFilters = ['all', 'pending', 'in_progress', 'completed'];
 
-export default function TaskListView({ tasks, isLoading, onComplete, onUncomplete, onDelete }) {
+export default function TaskListView({ tasks, isLoading, onComplete, onUncomplete, onDelete, pagination, onPageChange }) {
   const [filter, setFilter] = useState('all');
 
   const filtered = filter === 'all'
@@ -48,6 +48,31 @@ export default function TaskListView({ tasks, isLoading, onComplete, onUncomplet
               onDelete={onDelete}
             />
           ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {!isLoading && pagination?.last_page > 1 && (
+        <div className="task-pagination">
+          <button 
+            className="task-pagination-btn" 
+            disabled={pagination.current_page === 1}
+            onClick={() => onPageChange(pagination.current_page - 1)}
+          >
+            <ChevronLeft size={16} />
+            Prev
+          </button>
+          <div className="task-pagination-info">
+            Page {pagination.current_page} of {pagination.last_page}
+          </div>
+          <button 
+            className="task-pagination-btn" 
+            disabled={pagination.current_page === pagination.last_page}
+            onClick={() => onPageChange(pagination.current_page + 1)}
+          >
+            Next
+            <ChevronRight size={16} />
+          </button>
         </div>
       )}
     </div>
