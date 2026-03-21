@@ -641,7 +641,9 @@ export default function Forest() {
         ))}
       </div>
 
-      {isPlanting && <div className="forest-planting-overlay"></div>}
+      <div 
+        className={`forest-planting-overlay ${isPlanting ? 'is-active' : ''}`}
+      ></div>
 
         <main className={`forest-hero-shell ${isUiHidden ? 'is-ui-hidden' : ''}`}>
          {activeTree ? (

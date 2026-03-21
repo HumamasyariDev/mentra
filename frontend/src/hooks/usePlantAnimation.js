@@ -141,6 +141,12 @@ export function usePlantAnimation() {
         },
         'treeGrowth'
       );
+
+      // Final cleanup: clear GSAP inline styles so CSS (like hover states) can take over smoothly
+      if (cardNode) {
+        timeline.set(cardNode, { clearProps: 'transform,opacity,scale' });
+      }
+      timeline.set(treeNode, { clearProps: 'transform,opacity,scale,filter' });
     },
     [prefersReducedMotion]
   );
