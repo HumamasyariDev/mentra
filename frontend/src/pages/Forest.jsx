@@ -97,6 +97,10 @@ function getCooldownSeconds(tree, nowMs) {
     return 0;
   }
 
+  if (tree.can_water_now) {
+    return 0;
+  }
+
   const diffMs = new Date(tree.next_water_at).getTime() - nowMs;
   return diffMs > 0 ? Math.ceil(diffMs / 1000) : 0;
 }
@@ -170,6 +174,7 @@ export default function Forest() {
   const queryClient = useQueryClient();
   const prefersReducedMotion = useReducedMotion();
 
+  const [timeTick, setTimeTick] = useState(Date.now());
   const [interactionLocked, setInteractionLocked] = useState(false);
   const [isPlanting, setIsPlanting] = useState(false);
   const [plantingTreeType, setPlantingTreeType] = useState(null);
@@ -188,6 +193,12 @@ export default function Forest() {
   // Hook for plant animation sequence
   const runPlantAnimation = usePlantAnimation();
 
+  useEffect(() => {
+    // Tick every second to accurately update timer displays
+    const intervalId = window.setInterval(() => setTimeTick(Date.now()), 1000);
+    return () => window.clearInterval(intervalId);
+  }, []);
+
   const { data: forest, isLoading, error } = useQuery({
     queryKey: ['forest'],
     queryFn: () => forestApi.getForest().then((res) => res.data),
@@ -197,19 +208,6 @@ export default function Forest() {
    const activeTree = forest?.active_tree ?? null;
    const archivedTrees = forest?.archived_trees ?? [];
    const treeTypes = forest?.tree_types ?? [];
-
-    // Clear planting state and interaction lock when activeTree data updates
-    useEffect(() => {
-      if (isPlanting && activeTree) {
-        // Clear planting state after a slight delay to ensure animation and DOM updates are done
-        const timer = setTimeout(() => {
-          setIsPlanting(false);
-          setPlantingTreeType(null);
-          setInteractionLocked(false);
-        }, 300);
-        return () => clearTimeout(timer);
-      }
-    }, [activeTree?.id, isPlanting]);
 
   const archivedForest = useMemo(
     () => [...archivedTrees]
@@ -223,8 +221,8 @@ export default function Forest() {
    );
 
     const treeWidth = activeTree ? HERO_WIDTHS[activeTree.stage] ?? HERO_WIDTHS[5] : HERO_WIDTHS[0];
-    const cooldownSeconds = getCooldownSeconds(activeTree, Date.now());
-    const canWaterActive = activeTree ? isTreeReadyNow(activeTree, Date.now()) : false;
+    const cooldownSeconds = getCooldownSeconds(activeTree, timeTick);
+    const canWaterActive = activeTree ? isTreeReadyNow(activeTree, timeTick) : false;
     const growth = getGrowthProgress(activeTree);
 
 
@@ -335,20 +333,35 @@ export default function Forest() {
        mutationFn: (treeTypeId) => forestApi.plantTree(treeTypeId).then((res) => res.data),
         onSuccess: (data) => {
           lastActionRef.current = 'plant';
+          
           // Set planting state to show seed image during animation
           setPlantingTreeType(data.tree.tree_type);
           setIsPlanting(true);
-          // Run the plant animation sequence
-          runPlantAnimation(
-            heroTreeRef,
-            () => {
-              // After animation completes (2.0s), delay a bit then refresh forest
-              // This gives React time to swap the image source from seed to stage1
-              setTimeout(() => {
-                refreshForest();
-              }, 200);
-            }
-          );
+
+          // Optimistically update the cache so the activeTree exists immediately!
+          // This ensures the <Cutscene> renders rather than the <EmptyPanel>
+          queryClient.setQueryData(['forest'], (oldData) => {
+            if (!oldData) return oldData;
+            return { ...oldData, active_tree: data.tree };
+          });
+
+          // Need a tiny delay to allow React to render the Cutscene DOM element
+          // so heroTreeRef becomes correctly attached to the animated image
+          setTimeout(() => {
+            runPlantAnimation(
+              heroTreeRef,
+              () => {
+                // After animation completes (2.0s), swap UI back to normal tree card
+                setIsPlanting(false);
+                setPlantingTreeType(null);
+                
+                // Allow a tiny delay for React to re-render before refreshing data
+                setTimeout(() => {
+                  refreshForest();
+                }, 50);
+              }
+            );
+          }, 10);
         },
         onError: () => setInteractionLocked(false),
       });
