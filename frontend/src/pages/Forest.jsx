@@ -191,6 +191,7 @@ export default function Forest() {
   const wateringCanRef = useRef(null);
   const waterDropRef = useRef(null);
   const heroPanelRef = useRef(null);
+  const cutsceneCardRef = useRef(null);
 
   // Hook for plant animation sequence
   const runPlantAnimation = usePlantAnimation();
@@ -354,13 +355,14 @@ export default function Forest() {
           setTimeout(() => {
             runPlantAnimation(
               heroTreeRef,
+              cutsceneCardRef,
               {
                 onSwapImage: () => {
                   // Switch image source from seed to stage1 halfway through
                   setCutsceneImageMode('baby');
                 },
                 onComplete: () => {
-                  // After animation completes (2.0s), swap UI back to normal tree card
+                  // After animation completes (2.5s), swap UI back to normal tree card
                   setIsPlanting(false);
                   setPlantingTreeType(null);
                   
@@ -643,26 +645,9 @@ export default function Forest() {
 
         <main className={`forest-hero-shell ${isUiHidden ? 'is-ui-hidden' : ''}`}>
          {activeTree ? (
-             isPlanting ? (
-               // Planting cutscene - just the animated tree, no UI
-               <div className="forest-planting-cutscene">
-                 <div className="forest-tree-card-visual">
-                   <img
-                     ref={heroTreeRef}
-                     src={cutsceneImageMode === 'seed' 
-                       ? getSeedAsset(plantingTreeType?.name) 
-                       : getTreeAsset(plantingTreeType?.name, 1)
-                     }
-                     alt="Planting animation"
-                     className="forest-tree-card-image"
-                     style={{ '--tree-width': cutsceneImageMode === 'seed' ? `${HERO_WIDTHS[0]}px` : `${HERO_WIDTHS[1]}px` }}
-                   />
-                 </div>
-               </div>
-             ) : (
                <ForestTreeCard
                  tree={activeTree}
-                 treeAsset={getTreeAsset(activeTree.tree_type.name, activeTree.stage)}
+                 treeAsset={isPlanting ? (cutsceneImageMode === 'seed' ? getSeedAsset(plantingTreeType?.name) : getTreeAsset(plantingTreeType?.name, 1)) : getTreeAsset(activeTree.tree_type.name, activeTree.stage)}
                  stageName={getDisplayStageName(activeTree.stage)}
                  waterProgressPercent={growth.stagePercent}
                  overallProgressPercent={growth.railPercent}
@@ -673,11 +658,13 @@ export default function Forest() {
                  disabled={interactionLocked}
                  wateringCanCount={forest?.watering_cans ?? 0}
                  isAtFinal={activeTree.stage >= 5}
-                archiveProgress={activeTree.archive_waterings ?? 0}
-                treeImageRef={heroTreeRef}
-                treeWidth={treeWidth}
+                 archiveProgress={activeTree.archive_waterings ?? 0}
+                 treeImageRef={heroTreeRef}
+                 treeWidth={isPlanting ? (cutsceneImageMode === 'seed' ? HERO_WIDTHS[0] : HERO_WIDTHS[1]) : treeWidth}
+                 isPlanting={isPlanting}
+                 plantingTitle={plantingTreeType ? `Planting ${plantingTreeType.display_name}...` : 'Planting...'}
+                 cardRefOverride={isPlanting ? cutsceneCardRef : null}
               />
-             )
           ) : (
             <section className="forest-empty-panel">
               <div className="forest-empty-preview">

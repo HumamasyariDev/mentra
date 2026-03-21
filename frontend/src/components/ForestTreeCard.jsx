@@ -24,6 +24,9 @@ import './ForestTreeCard.css';
  * - archiveProgress: number 0-10 for final stage progress
  * - treeImageRef: ref object for the tree image (used for animations)
  * - treeWidth: width in pixels for the tree image based on growth stage
+ * - isPlanting: boolean - if true, shows planting state UI
+ * - plantingTitle: string - text to display while planting
+ * - cardRefOverride: optional ref for the container card
  */
 export default function ForestTreeCard({
   tree,
@@ -41,10 +44,15 @@ export default function ForestTreeCard({
   archiveProgress,
   treeImageRef,
   treeWidth,
+  isPlanting,
+  plantingTitle,
+  cardRefOverride,
 }) {
   const prefersReducedMotion = useReducedMotion();
-  const cardRef = useRef(null);
+  const internalCardRef = useRef(null);
+  const cardRef = cardRefOverride || internalCardRef;
   const localTreeImageRef = useRef(null);
+  const infoRef = useRef(null);
   const [timerText, setTimerText] = useState('');
 
   // Use provided ref if available, otherwise use local ref
@@ -83,7 +91,7 @@ export default function ForestTreeCard({
 
   // GSAP entrance animation for the card
   useGSAP(() => {
-    if (!cardRef.current || prefersReducedMotion || !tree) {
+    if (!cardRef.current || prefersReducedMotion || !tree || isPlanting) {
       return;
     }
 
@@ -102,7 +110,18 @@ export default function ForestTreeCard({
         ease: 'power2.out',
       }
     );
-  }, { scope: cardRef, dependencies: [tree?.id, prefersReducedMotion] });
+  }, { scope: cardRef, dependencies: [tree?.id, prefersReducedMotion, isPlanting] });
+
+  // Fade in the info panel nicely when planting finishes
+  useGSAP(() => {
+    if (!isPlanting && infoRef.current && !prefersReducedMotion) {
+      gsap.fromTo(
+        infoRef.current,
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out', delay: 0.1 }
+      );
+    }
+  }, { dependencies: [isPlanting, prefersReducedMotion] });
 
   if (!tree) {
     return null;
@@ -123,54 +142,62 @@ export default function ForestTreeCard({
            <img
              ref={treeRef}
              src={treeAsset}
-             alt={tree.tree_type.display_name}
+             alt={isPlanting ? 'Planting' : tree.tree_type.display_name}
              className={`forest-tree-card-image ${tree.is_withered ? 'is-withered' : ''}`}
              style={{ '--tree-width': `${treeWidth}px` }}
            />
          </div>
 
-        {/* Info section */}
-        <div className="forest-tree-card-info">
-          <div className="forest-tree-card-header">
-            <div>
-              <span className="forest-tree-card-overline">Active growth</span>
-              <h3 className="forest-tree-card-title">{tree.tree_type.display_name}</h3>
-            </div>
-            <div className={`forest-tree-card-stage ${isAtFinal ? 'is-final' : ''}`}>
-              {isAtFinal ? 'Finalizing' : stageName}
-            </div>
+        {/* Info section conditionally rendered based on planting state */}
+        {isPlanting ? (
+          <div className="forest-tree-card-info" style={{ alignItems: 'center', justifyContent: 'center', minHeight: '160px' }}>
+            <h3 className="forest-tree-card-title" style={{ fontSize: '1.4rem' }}>
+              {plantingTitle}
+            </h3>
           </div>
+        ) : (
+          <div className="forest-tree-card-info" ref={infoRef}>
+            <div className="forest-tree-card-header">
+              <div>
+                <span className="forest-tree-card-overline">Active growth</span>
+                <h3 className="forest-tree-card-title">{tree.tree_type.display_name}</h3>
+              </div>
+              <div className={`forest-tree-card-stage ${isAtFinal ? 'is-final' : ''}`}>
+                {isAtFinal ? 'Finalizing' : stageName}
+              </div>
+            </div>
 
-          {/* Progress bar */}
-          <div className="forest-tree-card-progress">
-            <div className="forest-tree-card-progress-track">
-              <div className="forest-tree-card-progress-fill" style={{ width: `${overallProgressPercent}%` }}></div>
+            {/* Progress bar */}
+            <div className="forest-tree-card-progress">
+              <div className="forest-tree-card-progress-track">
+                <div className="forest-tree-card-progress-fill" style={{ width: `${overallProgressPercent}%` }}></div>
+              </div>
+              <div className="forest-tree-card-progress-label">
+                <span>{isAtFinal ? `Archive: ${archiveProgress}/10` : `${Math.round(waterProgressPercent)}%`}</span>
+                <span className="forest-tree-card-timer">{timerText}</span>
+              </div>
             </div>
-            <div className="forest-tree-card-progress-label">
-              <span>{isAtFinal ? `Archive: ${archiveProgress}/10` : `${Math.round(waterProgressPercent)}%`}</span>
-              <span className="forest-tree-card-timer">{timerText}</span>
-            </div>
+
+            {/* Action button */}
+            <button
+              className="forest-tree-card-button"
+              onClick={onWater}
+              disabled={buttonDisabled}
+              aria-label={buttonLabel}
+            >
+              {buttonLabel}
+            </button>
+
+            {/* Status text */}
+            <p className="forest-tree-card-status">
+              {tree.is_withered
+                ? `Rescue within ${tree.rescue_hours_remaining ?? 0}h`
+                : canWater
+                  ? 'Ready to water'
+                  : `Next in ${timerText}`}
+            </p>
           </div>
-
-          {/* Action button */}
-          <button
-            className="forest-tree-card-button"
-            onClick={onWater}
-            disabled={buttonDisabled}
-            aria-label={buttonLabel}
-          >
-            {buttonLabel}
-          </button>
-
-          {/* Status text */}
-          <p className="forest-tree-card-status">
-            {tree.is_withered
-              ? `Rescue within ${tree.rescue_hours_remaining ?? 0}h`
-              : canWater
-                ? 'Ready to water'
-                : `Next in ${timerText}`}
-          </p>
-        </div>
+        )}
       </div>
     </div>
   );
