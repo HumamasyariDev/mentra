@@ -1,0 +1,278 @@
+/* ============================================
+   MENTRA THEME SYSTEM
+   Dark mode = default (:root)
+   Light mode = [data-theme="light"]
+   ============================================ */
+
+:root {
+  /* ── Backgrounds ─────────────────────────── */
+  --bg-base: #0f1117;
+  --bg-surface: #1a1d27;
+  --bg-elevated: #222633;
+  --bg-hover: #282d3a;
+  --bg-active: #2f3545;
+  --bg-inset: #141720;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+  --bg-subtle: rgba(255, 255, 255, 0.03);
+
+  /* ── Text ────────────────────────────────── */
+  --text-primary: #f0f0f5;
+  --text-secondary: #a0a4b8;
+  --text-tertiary: #6b7084;
+  --text-muted: #505466;
+  --text-inverse: #0f1117;
+  --text-on-accent: #ffffff;
+
+  /* ── Borders ─────────────────────────────── */
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-hover: rgba(255, 255, 255, 0.18);
+
+  /* ── Accent / Primary ────────────────────── */
+  --accent: #6366f1;
+  --accent-light: #818cf8;
+  --accent-dark: #4f46e5;
+  --accent-bg: rgba(99, 102, 241, 0.12);
+  --accent-bg-hover: rgba(99, 102, 241, 0.2);
+  --accent-border: rgba(99, 102, 241, 0.3);
+
+  /* ── Semantic Colors ─────────────────────── */
+  --success: #10b981;
+  --success-bg: rgba(16, 185, 129, 0.12);
+  --success-border: rgba(16, 185, 129, 0.25);
+
+  --danger: #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.12);
+  --danger-border: rgba(239, 68, 68, 0.25);
+
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  --warning-border: rgba(245, 158, 11, 0.25);
+
+  --info: #3b82f6;
+  --info-bg: rgba(59, 130, 246, 0.12);
+
+  /* ── Purple / Quiz ───────────────────────── */
+  --purple: #8b5cf6;
+  --purple-bg: rgba(139, 92, 246, 0.12);
+  --purple-border: rgba(139, 92, 246, 0.25);
+
+  /* ── Orange / Pomodoro ───────────────────── */
+  --orange: #f97316;
+  --orange-bg: rgba(249, 115, 22, 0.12);
+  --orange-border: rgba(249, 115, 22, 0.25);
+
+  /* ── Shadows ─────────────────────────────── */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.25);
+
+  /* ── Priority Colors ─────────────────────── */
+  --priority-low-bg: rgba(148, 163, 184, 0.12);
+  --priority-low-text: #94a3b8;
+  --priority-med-bg: rgba(245, 158, 11, 0.12);
+  --priority-med-text: #fbbf24;
+  --priority-high-bg: rgba(239, 68, 68, 0.12);
+  --priority-high-text: #f87171;
+
+  /* ── Scrollbar ───────────────────────────── */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.12);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.25);
+  --scrollbar-track: transparent;
+
+  /* ── Sidebar ─────────────────────────────── */
+  --sidebar-bg: #141720;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-nav-hover: rgba(255, 255, 255, 0.06);
+  --sidebar-nav-active-bg: rgba(255, 255, 255, 0.08);
+  --sidebar-nav-active-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --sidebar-section-title: #6b7084;
+
+  /* ── TopBar ──────────────────────────────── */
+  --topbar-bg: rgba(15, 17, 23, 0.85);
+  --topbar-border: rgba(255, 255, 255, 0.06);
+
+  /* ── Cards ───────────────────────────────── */
+  --card-bg: #1a1d27;
+  --card-border: rgba(255, 255, 255, 0.06);
+  --card-hover-border: rgba(255, 255, 255, 0.12);
+  --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  /* ── Inputs / Forms ──────────────────────── */
+  --input-bg: #141720;
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-focus-border: var(--accent);
+  --input-focus-ring: rgba(99, 102, 241, 0.2);
+  --input-placeholder: #505466;
+  --input-text: var(--text-primary);
+
+  /* ── Dropdown / Menu ─────────────────────── */
+  --dropdown-bg: #1e2130;
+  --dropdown-border: rgba(255, 255, 255, 0.1);
+  --dropdown-hover: rgba(255, 255, 255, 0.06);
+  --dropdown-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+
+  /* ── Badges ──────────────────────────────── */
+  --badge-bg: rgba(255, 255, 255, 0.08);
+  --badge-text: var(--text-secondary);
+
+  /* ── Calendar ────────────────────────────── */
+  --cal-cell-bg: var(--bg-surface);
+  --cal-cell-border: var(--border-subtle);
+  --cal-cell-hover: var(--bg-hover);
+  --cal-selected-bg: var(--accent-bg);
+  --cal-selected-border: var(--accent);
+
+  /* ── Board ───────────────────────────────── */
+  --board-col-bg: var(--bg-inset);
+  --board-col-header-bg: var(--bg-surface);
+
+  /* ── Burned task ─────────────────────────── */
+  --burned-bg: rgba(255, 255, 255, 0.03);
+  --burned-border: rgba(255, 255, 255, 0.06);
+  --burned-text: #505466;
+
+  /* ── EXP ─────────────────────────────────── */
+  --exp-text: #818cf8;
+  --exp-bg: rgba(99, 102, 241, 0.12);
+}
+
+/* ============================================
+   LIGHT THEME OVERRIDES
+   ============================================ */
+[data-theme="light"] {
+  /* ── Backgrounds ─────────────────────────── */
+  --bg-base: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-hover: #f5f5f7;
+  --bg-active: #ebebf0;
+  --bg-inset: #f0f0f3;
+  --bg-overlay: rgba(0, 0, 0, 0.3);
+  --bg-subtle: rgba(0, 0, 0, 0.02);
+
+  /* ── Text ────────────────────────────────── */
+  --text-primary: #1a1a1a;
+  --text-secondary: #86868b;
+  --text-tertiary: #aeaeb2;
+  --text-muted: #d2d2d7;
+  --text-inverse: #ffffff;
+  --text-on-accent: #ffffff;
+
+  /* ── Borders ─────────────────────────────── */
+  --border-default: rgba(0, 0, 0, 0.08);
+  --border-subtle: rgba(0, 0, 0, 0.04);
+  --border-strong: rgba(0, 0, 0, 0.12);
+  --border-hover: rgba(0, 0, 0, 0.16);
+
+  /* ── Accent / Primary ────────────────────── */
+  --accent: #6366f1;
+  --accent-light: #818cf8;
+  --accent-dark: #4f46e5;
+  --accent-bg: rgba(99, 102, 241, 0.08);
+  --accent-bg-hover: rgba(99, 102, 241, 0.14);
+  --accent-border: rgba(99, 102, 241, 0.2);
+
+  /* ── Semantic Colors ─────────────────────── */
+  --success: #10b981;
+  --success-bg: #ecfdf5;
+  --success-border: rgba(16, 185, 129, 0.2);
+
+  --danger: #ef4444;
+  --danger-bg: #fef2f2;
+  --danger-border: rgba(239, 68, 68, 0.2);
+
+  --warning: #f59e0b;
+  --warning-bg: #fff8e6;
+  --warning-border: rgba(245, 158, 11, 0.2);
+
+  --info: #3b82f6;
+  --info-bg: rgba(59, 130, 246, 0.08);
+
+  /* ── Purple / Quiz ───────────────────────── */
+  --purple: #6d28d9;
+  --purple-bg: #f5f3ff;
+  --purple-border: rgba(109, 40, 217, 0.15);
+
+  /* ── Orange / Pomodoro ───────────────────── */
+  --orange: #ea580c;
+  --orange-bg: #fff7ed;
+  --orange-border: rgba(234, 88, 12, 0.15);
+
+  /* ── Shadows ─────────────────────────────── */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.04);
+
+  /* ── Priority Colors ─────────────────────── */
+  --priority-low-bg: #f5f5f7;
+  --priority-low-text: #6e7781;
+  --priority-med-bg: #fff8e6;
+  --priority-med-text: #d97706;
+  --priority-high-bg: #ffebee;
+  --priority-high-text: #dc2626;
+
+  /* ── Scrollbar ───────────────────────────── */
+  --scrollbar-thumb: rgba(0, 0, 0, 0.12);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
+  --scrollbar-track: transparent;
+
+  /* ── Sidebar ─────────────────────────────── */
+  --sidebar-bg: linear-gradient(180deg, #fafafa 0%, #f5f5f7 100%);
+  --sidebar-border: rgba(0, 0, 0, 0.06);
+  --sidebar-nav-hover: rgba(0, 0, 0, 0.05);
+  --sidebar-nav-active-bg: #ffffff;
+  --sidebar-nav-active-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --sidebar-section-title: #86868b;
+
+  /* ── TopBar ──────────────────────────────── */
+  --topbar-bg: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+  --topbar-border: #e5e5e7;
+
+  /* ── Cards ───────────────────────────────── */
+  --card-bg: #ffffff;
+  --card-border: rgba(0, 0, 0, 0.06);
+  --card-hover-border: #d1d1d6;
+  --card-hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  /* ── Inputs / Forms ──────────────────────── */
+  --input-bg: #f5f5f7;
+  --input-border: #e8e8ed;
+  --input-focus-border: #1a1a1a;
+  --input-focus-ring: rgba(26, 26, 26, 0.06);
+  --input-placeholder: #a1a1a6;
+  --input-text: #1a1a1a;
+
+  /* ── Dropdown / Menu ─────────────────────── */
+  --dropdown-bg: #ffffff;
+  --dropdown-border: #e5e5e7;
+  --dropdown-hover: #f5f5f7;
+  --dropdown-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+
+  /* ── Badges ──────────────────────────────── */
+  --badge-bg: rgba(0, 0, 0, 0.05);
+  --badge-text: var(--text-secondary);
+
+  /* ── Calendar ────────────────────────────── */
+  --cal-cell-bg: #ffffff;
+  --cal-cell-border: #f5f5f7;
+  --cal-cell-hover: #fafafa;
+  --cal-selected-bg: #f0f1ff;
+  --cal-selected-border: #6366f1;
+
+  /* ── Board ───────────────────────────────── */
+  --board-col-bg: #f8f8fa;
+  --board-col-header-bg: #ffffff;
+
+  /* ── Burned task ─────────────────────────── */
+  --burned-bg: #f5f5f5;
+  --burned-border: #d4d4d4;
+  --burned-text: #9ca3af;
+
+  /* ── EXP ─────────────────────────────────── */
+  --exp-text: #6366f1;
+  --exp-bg: #f0f1ff;
+}

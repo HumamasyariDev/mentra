@@ -1,8 +1,8 @@
 /* Forum Components Shared Styles */
 
 .forum-component {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-default);
   border-radius: 0.75rem;
   padding: 1rem;
 }
@@ -21,12 +21,12 @@
 }
 
 .forum-list-item:hover {
-  background-color: #f8fafc;
+  background-color: var(--bg-surface);
 }
 
 .forum-list-item.active {
-  background-color: #eef2ff;
-  color: #4f46e5;
+  background-color: var(--accent-bg);
+  color: var(--accent-dark);
 }
 
 .forum-loading {
@@ -40,7 +40,7 @@
   width: 1.5rem;
   height: 1.5rem;
   animation: spin 1s linear infinite;
-  color: #6366f1;
+  color: var(--accent);
 }
 
 @keyframes spin {
@@ -51,7 +51,7 @@
 .forum-empty {
   text-align: center;
   padding: 2rem 1rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-size: 0.875rem;
 }
 
@@ -60,18 +60,18 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .forum-title {
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .forum-action-btn {
   padding: 0.5rem 1rem;
-  background-color: #6366f1;
-  color: #ffffff;
+  background-color: var(--accent);
+  color: var(--text-on-accent);
   border: none;
   border-radius: 0.5rem;
   font-size: 0.875rem;
@@ -81,14 +81,14 @@
 }
 
 .forum-action-btn:hover {
-  background-color: #4f46e5;
+  background-color: var(--accent-dark);
 }
 
 .forum-input {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 0.5rem;
   font-size: 0.875rem;
   outline: none;
@@ -96,8 +96,8 @@
 }
 
 .forum-input:focus {
-  background-color: #ffffff;
-  border-color: #6366f1;
+  background-color: var(--bg-elevated);
+  border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
@@ -111,8 +111,8 @@
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background-color: #6366f1;
-  color: #ffffff;
+  background-color: var(--accent);
+  color: var(--text-on-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -135,17 +135,17 @@
 
 .forum-message-author {
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 0.875rem;
 }
 
 .forum-message-timestamp {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .forum-message-text {
-  color: #334155;
+  color: var(--text-primary);
   font-size: 0.9375rem;
   line-height: 1.5;
 }

@@ -15,14 +15,14 @@
 .mood-page-header h1 {
   font-size: 28px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   letter-spacing: -0.5px;
   margin: 0 0 6px 0;
 }
 
 .mood-page-header p {
   font-size: 15px;
-  color: #86868b;
+  color: var(--text-secondary);
   margin: 0;
   font-weight: 400;
 }
@@ -38,8 +38,8 @@
 .mood-spinner {
   width: 24px;
   height: 24px;
-  border: 2.5px solid #e8e8ed;
-  border-top-color: #1a1a1a;
+  border: 2.5px solid var(--border-default);
+  border-top-color: var(--text-primary);
   border-radius: 50%;
   animation: mood-spin 0.7s linear infinite;
 }
@@ -64,7 +64,7 @@
 
 /* ── Today Card ── */
 .mood-today {
-  background: #f5f5f7;
+  background: var(--bg-inset);
   border-radius: 16px;
   padding: 28px;
   margin-bottom: 24px;
@@ -75,7 +75,7 @@
   display: inline-block;
   font-size: 11px;
   font-weight: 600;
-  color: #86868b;
+  color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.8px;
   margin-bottom: 14px;
@@ -90,20 +90,20 @@
 .mood-today-label {
   font-size: 18px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0 0 4px 0;
   text-transform: capitalize;
 }
 
 .mood-today-energy {
   font-size: 13px;
-  color: #86868b;
+  color: var(--text-secondary);
   margin: 0 0 12px 0;
 }
 
 .mood-today-note {
   font-size: 14px;
-  color: #48484a;
+  color: var(--text-secondary);
   font-style: italic;
   margin: 0 0 14px 0;
   line-height: 1.5;
@@ -111,14 +111,14 @@
 
 .mood-today-hint {
   font-size: 12px;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   margin: 0;
 }
 
 /* ── Selector Card ── */
 .mood-selector-card {
-  background: #ffffff;
-  border: 1px solid #e8e8ed;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 16px;
   padding: 28px;
   margin-bottom: 24px;
@@ -127,7 +127,7 @@
 .mood-selector-title {
   font-size: 17px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0 0 20px 0;
   letter-spacing: -0.1px;
 }
@@ -146,7 +146,7 @@
   align-items: center;
   gap: 8px;
   padding: 16px 8px;
-  background: #f5f5f7;
+  background: var(--bg-inset);
   border: 2px solid transparent;
   border-radius: 14px;
   cursor: pointer;
@@ -154,14 +154,14 @@
 }
 
 .mood-opt-btn:hover {
-  background: #ebebf0;
+  background: var(--bg-hover);
 }
 
 .mood-opt-btn.active {
-  border-color: #1a1a1a;
-  background: #ffffff;
+  border-color: var(--accent);
+  background: var(--bg-surface);
   transform: scale(1.04);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
 }
 
 .mood-opt-emoji {
@@ -172,11 +172,11 @@
 .mood-opt-label {
   font-size: 12px;
   font-weight: 500;
-  color: #48484a;
+  color: var(--text-secondary);
 }
 
 .mood-opt-btn.active .mood-opt-label {
-  color: #1a1a1a;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
@@ -195,14 +195,14 @@
 .mood-energy-title {
   font-size: 14px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .mood-energy-value {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1a1a;
-  background: #f5f5f7;
+  color: var(--text-primary);
+  background: var(--bg-inset);
   padding: 2px 10px;
   border-radius: 8px;
 }
@@ -212,7 +212,7 @@
   appearance: none;
   width: 100%;
   height: 6px;
-  background: #e8e8ed;
+  background: var(--border-default);
   border-radius: 3px;
   outline: none;
   cursor: pointer;
@@ -223,11 +223,11 @@
   appearance: none;
   width: 22px;
   height: 22px;
-  background: #1a1a1a;
+  background: var(--accent);
   border-radius: 50%;
   cursor: pointer;
-  border: 3px solid #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  border: 3px solid var(--bg-surface);
+  box-shadow: var(--shadow-sm);
   transition: transform 0.15s ease;
 }
 
@@ -238,11 +238,11 @@
 .mood-energy-slider::-moz-range-thumb {
   width: 22px;
   height: 22px;
-  background: #1a1a1a;
+  background: var(--accent);
   border-radius: 50%;
   cursor: pointer;
-  border: 3px solid #ffffff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  border: 3px solid var(--bg-surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .mood-energy-labels {
@@ -250,7 +250,7 @@
   justify-content: space-between;
   margin-top: 8px;
   font-size: 11px;
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   font-weight: 400;
 }
 
@@ -263,24 +263,24 @@
   display: block;
   font-size: 14px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
 .mood-note-label span {
-  color: #aeaeb2;
+  color: var(--text-tertiary);
   font-weight: 400;
 }
 
 .mood-note-input {
   width: 100%;
   padding: 12px 14px;
-  background: #f5f5f7;
+  background: var(--input-bg);
   border: 1.5px solid transparent;
   border-radius: 12px;
   font-size: 14px;
   font-family: inherit;
-  color: #1a1a1a;
+  color: var(--input-text);
   outline: none;
   resize: vertical;
   min-height: 72px;
@@ -289,20 +289,20 @@
 }
 
 .mood-note-input::placeholder {
-  color: #aeaeb2;
+  color: var(--input-placeholder);
 }
 
 .mood-note-input:focus {
-  background: #ffffff;
-  border-color: #1a1a1a;
+  background: var(--bg-surface);
+  border-color: var(--input-focus-border);
 }
 
 /* ── Save Button ── */
 .mood-save-btn {
   width: 100%;
   padding: 12px 20px;
-  background: #1a1a1a;
-  color: #ffffff;
+  background: var(--accent);
+  color: var(--text-on-accent);
   border: none;
   border-radius: 12px;
   font-size: 15px;
@@ -317,7 +317,7 @@
 }
 
 .mood-save-btn:hover:not(:disabled) {
-  background-color: #333333;
+  background-color: var(--accent-dark);
 }
 
 .mood-save-btn:active:not(:disabled) {
@@ -325,14 +325,14 @@
 }
 
 .mood-save-btn:disabled {
-  background-color: #d1d1d6;
+  background-color: var(--text-muted);
   cursor: not-allowed;
 }
 
 /* ── Weekly Card ── */
 .mood-weekly {
-  background: #ffffff;
-  border: 1px solid #e8e8ed;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 16px;
   padding: 28px;
 }
@@ -347,7 +347,7 @@
 .mood-weekly-header h3 {
   font-size: 17px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
   letter-spacing: -0.1px;
 }
@@ -355,7 +355,7 @@
 .mood-weekly-header svg {
   width: 18px;
   height: 18px;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .mood-weekly-days {
@@ -376,7 +376,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 4px;
-  background: #f5f5f7;
+  background: var(--bg-inset);
   border-radius: 12px;
   transition: background-color 0.15s ease;
 }
@@ -384,7 +384,7 @@
 .mood-day-label {
   font-size: 11px;
   font-weight: 500;
-  color: #86868b;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
   margin: 0;
@@ -400,7 +400,7 @@
 
 .mood-day-empty {
   font-size: 18px;
-  color: #d1d1d6;
+  color: var(--text-muted);
   font-weight: 300;
 }
 

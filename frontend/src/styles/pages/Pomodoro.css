@@ -90,7 +90,7 @@
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
-  background: white;
+  background: var(--bg-elevated);
   border-radius: 0.75rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   padding: 0.5rem;
@@ -113,7 +113,7 @@
 }
 
 .pomodoro-theme-option:hover {
-  background-color: #f1f5f9;
+  background-color: var(--bg-hover);
 }
 
 .pomodoro-theme-preview {
@@ -176,7 +176,7 @@
 
 .pomodoro-food-fill {
   height: 100%;
-  background: linear-gradient(to right, #f59e0b, #10b981);
+  background: linear-gradient(to right, var(--warning), var(--success));
   border-radius: 9999px;
   transition: width 0.3s ease;
 }
@@ -547,8 +547,8 @@
 }
 
 .pomodoro-start-btn {
-  background: linear-gradient(to right, #6366f1, #8b5cf6);
-  color: white;
+  background: linear-gradient(to right, var(--accent), var(--purple));
+  color: var(--text-on-accent);
   flex: 1;
   max-width: 300px;
 }
@@ -572,7 +572,7 @@
 
 .pomodoro-stop-btn {
   background-color: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
+  color: var(--danger);
 }
 
 .pomodoro-stop-btn:hover {

@@ -9,8 +9,8 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #fafafa 0%, #f5f5f7 100%);
-  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
   overflow-x: hidden;
@@ -53,16 +53,16 @@
 .sidebar-logo-icon {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--text-on-accent);
   font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.04em;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-sm);
 }
 
 .sidebar-toggle {
@@ -80,14 +80,14 @@
 }
 
 .sidebar-toggle:hover {
-  background-color: rgba(0, 0, 0, 0.06);
+  background-color: var(--sidebar-nav-hover);
 }
 
 .sidebar-toggle-icon {
   display: block;
   width: 18px;
   height: 2px;
-  background-color: #1a1a1a;
+  background-color: var(--text-primary);
 }
 
 @media (max-width: 1023px) {
@@ -115,7 +115,7 @@
 .sidebar-section-title {
   font-size: 11px;
   font-weight: 600;
-  color: #86868b;
+  color: var(--sidebar-section-title);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 0 12px 10px;
@@ -123,7 +123,7 @@
 
 /* Chat section — subtle emphasis */
 .sidebar-section-chat .sidebar-section-title {
-  color: #1a1a1a;
+  color: var(--text-primary);
   font-weight: 600;
 }
 
@@ -143,7 +143,7 @@
   border-radius: 10px;
   font-size: 14px;
   font-weight: 450;
-  color: #1a1a1a;
+  color: var(--text-primary);
   text-decoration: none;
   transition: background-color 0.2s ease, color 0.2s ease;
   position: relative;
@@ -151,31 +151,31 @@
 }
 
 .sidebar-nav-link:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--sidebar-nav-hover);
 }
 
 .sidebar-nav-link.active {
-  background-color: #fff;
+  background-color: var(--sidebar-nav-active-bg);
   font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--sidebar-nav-active-shadow);
 }
 
 .sidebar-nav-link-highlight {
-  background: linear-gradient(135deg, rgba(26, 26, 26, 0.06) 0%, rgba(26, 26, 26, 0.03) 100%);
+  background: var(--accent-bg);
 }
 
 .sidebar-nav-link-highlight:hover {
-  background: linear-gradient(135deg, rgba(26, 26, 26, 0.1) 0%, rgba(26, 26, 26, 0.05) 100%);
+  background: var(--accent-bg-hover);
 }
 
 .sidebar-nav-link-highlight.active {
-  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  color: var(--text-on-accent);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
 
 .sidebar-nav-link-highlight.active .sidebar-nav-icon {
-  color: #fff;
+  color: var(--text-on-accent);
 }
 
 .sidebar-nav-icon {
@@ -190,8 +190,8 @@
 }
 
 .sidebar-nav-badge {
-  background-color: #1a1a1a;
-  color: #fff;
+  background-color: var(--accent);
+  color: var(--text-on-accent);
   font-size: 11px;
   font-weight: 600;
   padding: 2px 6px;
@@ -209,7 +209,7 @@
   margin-top: auto;
   padding: 16px 12px 20px;
   flex-shrink: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid var(--sidebar-border);
 }
 
 .sidebar-footer .sidebar-section-title {
@@ -227,7 +227,7 @@
 }
 
 .sidebar-account:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: var(--sidebar-nav-hover);
 }
 
 .sidebar-account-avatar {
@@ -236,8 +236,8 @@
   border-radius: 10px;
   overflow: hidden;
   flex-shrink: 0;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border: 2px solid var(--border-default);
+  box-shadow: var(--shadow-sm);
 }
 
 .sidebar-account-avatar img {
@@ -254,7 +254,7 @@
 .sidebar-account-name {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   letter-spacing: -0.02em;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -263,7 +263,7 @@
 
 .sidebar-account-role {
   font-size: 12px;
-  color: #86868b;
+  color: var(--text-secondary);
   letter-spacing: -0.01em;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -1,24 +1,24 @@
 /* Simplified Dashboard Cards */
 
 .dashboard-card {
-  background: var(--color-surface, white);
+  background: var(--bg-surface);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-default);
   transition: all 0.2s ease;
 }
 
 .dashboard-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-md);
 }
 
 .card-title {
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0 0 1rem 0;
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-primary);
 }
 
 .card-content {
@@ -36,26 +36,26 @@
 }
 
 .stat-label {
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .stat-value {
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-primary);
   font-weight: 600;
   font-size: 1.1rem;
 }
 
 .stat-value.success {
-  color: #10b981;
+  color: var(--success);
 }
 
 .stat-value.danger {
-  color: #ef4444;
+  color: var(--danger);
 }
 
 .stat-value.warning {
-  color: #f59e0b;
+  color: var(--warning);
 }
 
 /* Card Action Buttons */
@@ -76,42 +76,42 @@
 }
 
 .tasks-card .card-action-btn {
-  background: #3b82f6;
-  color: white;
+  background: var(--info);
+  color: var(--text-on-accent);
 }
 
 .tasks-card .card-action-btn:hover {
-  background: #2563eb;
+  background: var(--info);
   transform: scale(1.02);
 }
 
 .pomodoro-card .card-action-btn {
-  background: #f97316;
-  color: white;
+  background: var(--orange);
+  color: var(--text-on-accent);
 }
 
 .pomodoro-card .card-action-btn:hover {
-  background: #ea580c;
+  background: var(--warning);
   transform: scale(1.02);
 }
 
 .schedule-card .card-action-btn {
-  background: #8b5cf6;
-  color: white;
+  background: var(--purple);
+  color: var(--text-on-accent);
 }
 
 .schedule-card .card-action-btn:hover {
-  background: #7c3aed;
+  background: var(--purple);
   transform: scale(1.02);
 }
 
 .forest-card .card-action-btn {
-  background: #10b981;
-  color: white;
+  background: var(--success);
+  color: var(--text-on-accent);
 }
 
 .forest-card .card-action-btn:hover {
-  background: #059669;
+  background: var(--success);
   transform: scale(1.02);
 }
 
@@ -129,23 +129,23 @@
   align-items: flex-start;
   padding: 0.5rem;
   border-radius: 6px;
-  background: rgba(0, 0, 0, 0.02);
+  background: var(--bg-hover);
 }
 
 .event-time {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #8b5cf6;
+  color: var(--purple);
 }
 
 .event-title {
   font-size: 0.9rem;
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-primary);
 }
 
 .empty-state {
   text-align: center;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
   font-size: 0.9rem;
   padding: 1rem 0;
 }
@@ -161,13 +161,13 @@
 
 .summary-label {
   font-size: 0.9rem;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
 }
 
 .summary-value {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #14b8a6;
+  color: var(--success);
 }
 
 .daily-breakdown {
@@ -179,7 +179,7 @@
 
 .day-bar {
   flex: 1;
-  background: linear-gradient(to top, #14b8a6, #6ee7b7);
+  background: linear-gradient(to top, var(--success), var(--success));
   border-radius: 4px 4px 0 0;
   min-height: 4px;
   transition: all 0.2s ease;
@@ -200,7 +200,7 @@
 }
 
 .forest-status svg {
-  color: #10b981;
+  color: var(--success);
   flex-shrink: 0;
 }
 
@@ -211,7 +211,7 @@
 .tree-level {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
 }
 
@@ -231,14 +231,14 @@
 
 .health-fill {
   height: 100%;
-  background: linear-gradient(to right, #10b981, #6ee7b7);
+  background: linear-gradient(to right, var(--success), var(--success));
   transition: width 0.3s ease;
 }
 
 .health-text {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #10b981;
+  color: var(--success);
   min-width: 30px;
   text-align: right;
 }
@@ -272,7 +272,7 @@
 
 .pomodoro-btn {
   background: rgba(249, 115, 22, 0.1);
-  color: #f97316;
+  color: var(--orange);
   border: 1px solid rgba(249, 115, 22, 0.3);
 }
 
@@ -282,7 +282,7 @@
 
 .task-btn {
   background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
+  color: var(--info);
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
@@ -292,7 +292,7 @@
 
 .schedule-btn {
   background: rgba(139, 92, 246, 0.1);
-  color: #8b5cf6;
+  color: var(--purple);
   border: 1px solid rgba(139, 92, 246, 0.3);
 }
 
@@ -301,13 +301,13 @@
 }
 
 .forest-btn {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
 }
 
 .forest-btn:hover {
-  background: rgba(16, 185, 129, 0.2);
+  background: var(--success-bg); opacity: 0.8;
 }
 
 /* Responsive */
@@ -325,8 +325,8 @@
 /* Experience Progress Card */
 
 .experience-card {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+  color: var(--text-on-accent);
   border: none;
   box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
 }
@@ -382,7 +382,7 @@
 
 .exp-fill {
   height: 100%;
-  background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+  background: linear-gradient(90deg, var(--warning) 0%, var(--warning) 100%);
   transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
 }
@@ -414,12 +414,12 @@
 .exp-value {
   font-size: 1rem;
   font-weight: 700;
-  color: #fbbf24;
+  color: var(--warning);
 }
 
 .experience-card .card-action-btn {
   background: rgba(255, 255, 255, 0.25);
-  color: white;
+  color: var(--text-on-accent);
   border: 1px solid rgba(255, 255, 255, 0.3);
   font-weight: 600;
 }

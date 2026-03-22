@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Moon, Sun, Map, LayoutGrid } from 'lucide-react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useDashboardUI } from '../contexts/DashboardUIContext';
+import { useTheme } from '../contexts/ThemeContext';
 import '../styles/pages/Settings.css';
 
 export default function Settings() {
   const navigate = useNavigate();
   const { dashboardMode, setDashboardMode } = useDashboardUI();
+  const { theme, toggleTheme } = useTheme();
   const contentRef = React.useRef(null);
-  const [darkMode, setDarkMode] = useState(false);
+  
+  const isDarkMode = theme === 'dark';
 
   // Animate on mount
   useGSAP(
@@ -135,13 +138,13 @@ export default function Settings() {
             <label className="settings-toggle">
               <input
                 type="checkbox"
-                checked={darkMode}
-                onChange={(e) => setDarkMode(e.target.checked)}
+                checked={isDarkMode}
+                onChange={toggleTheme}
                 className="toggle-input"
               />
               <div className="toggle-track">
                 <div className="toggle-thumb"></div>
-                {darkMode ? (
+                {isDarkMode ? (
                   <Moon size={14} className="toggle-icon" />
                 ) : (
                   <Sun size={14} className="toggle-icon" />
