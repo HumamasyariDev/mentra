@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import planetTasksSvg from '../../assets/dashboard_planets/planet_tasks.svg';
 import planetPomodoroSvg from '../../assets/dashboard_planets/planet_pomodoro.svg';
 import planetForestSvg from '../../assets/dashboard_planets/planet_forest.svg';
@@ -7,8 +7,88 @@ import planetChatSvg from '../../assets/dashboard_planets/planet_ai_chat.svg';
 import planetForumSvg from '../../assets/dashboard_planets/planet_forum.svg';
 import '../../styles/components/dashboard/Island.css';
 
-export function Island({ island }) {
+/**
+ * Planet accent colors for tooltips and glows
+ */
+const PLANET_COLORS = {
+  tasks: { accent: '#60a5fa', glow: 'rgba(96, 165, 250, 0.4)' },
+  pomodoro: { accent: '#f87171', glow: 'rgba(248, 113, 113, 0.4)' },
+  forest: { accent: '#c084fc', glow: 'rgba(192, 132, 252, 0.4)' },
+  schedules: { accent: '#4ade80', glow: 'rgba(74, 222, 128, 0.4)' },
+  chat: { accent: '#22d3ee', glow: 'rgba(34, 211, 238, 0.4)' },
+  forum: { accent: '#fbbf24', glow: 'rgba(251, 191, 36, 0.4)' },
+};
+
+/**
+ * Tooltip position config per planet — offset direction so tooltip doesn't tower above.
+ * dx/dy are offsets from planet center in SVG units.
+ */
+const TOOLTIP_POSITIONS = {
+  tasks:     { dx: 130, dy: -80 },   // upper-right
+  pomodoro:  { dx: -170, dy: -80 },  // upper-left (planet is far right)
+  forest:    { dx: 170, dy: -40 },   // right
+  schedules: { dx: -180, dy: -60 },  // left (planet is far right)
+  chat:      { dx: 170, dy: -50 },   // right
+  forum:     { dx: 130, dy: -80 },   // upper-right
+};
+
+/**
+ * Build tooltip content for each planet based on dashboard API data
+ */
+function getTooltipContent(id, dashboardData) {
+  if (!dashboardData) return null;
+
+  switch (id) {
+    case 'tasks': {
+      const t = dashboardData.tasks;
+      if (!t) return null;
+      return {
+        title: 'Tasks',
+        lines: [
+          { label: 'Pending', value: `${t.pending ?? 0}` },
+          { label: 'In progress', value: `${t.in_progress ?? 0}` },
+          { label: 'Done today', value: `${t.today_completed ?? 0}` },
+        ],
+      };
+    }
+    case 'pomodoro': {
+      const p = dashboardData.pomodoro;
+      if (!p) return null;
+      return {
+        title: 'Pomodoro',
+        lines: [
+          { label: 'Sessions', value: `${p.today_sessions ?? 0}` },
+          { label: 'Focused', value: `${p.today_minutes ?? 0}m` },
+        ],
+      };
+    }
+    case 'schedules': {
+      const schedules = dashboardData.today_schedules ?? [];
+      const upcoming = schedules.slice(0, 2);
+      if (upcoming.length === 0) return { title: 'Schedule', lines: [{ label: 'No events today', value: '' }] };
+      return {
+        title: 'Schedule',
+        lines: upcoming.map(s => ({ label: s.title ?? 'Untitled', value: '' })),
+      };
+    }
+    case 'forest':
+      return { title: 'Forest', lines: [{ label: 'Grow your forest', value: '' }] };
+    case 'chat':
+      return { title: 'AI Chat', lines: [{ label: 'Chat with AI', value: '' }] };
+    case 'forum':
+      return { title: 'Forum', lines: [{ label: 'Community hub', value: '' }] };
+    default:
+      return null;
+  }
+}
+
+export function Island({ island, dashboardData, isZooming }) {
   const { id, x, y, label, size = 200 } = island;
+  const [hovered, setHovered] = useState(false);
+
+  const tooltip = useMemo(() => getTooltipContent(id, dashboardData), [id, dashboardData]);
+  const colors = PLANET_COLORS[id] || PLANET_COLORS.tasks;
+  const tooltipPos = TOOLTIP_POSITIONS[id] || { dx: 140, dy: -70 };
 
   // Map of planet IDs to their SVG assets
   const planetSvgs = {
@@ -23,10 +103,36 @@ export function Island({ island }) {
   const svgImage = planetSvgs[id];
   const svgSize = size; // Use individual size from island config
 
+  const handleMouseEnter = () => {
+    if (!isZooming) setHovered(true);
+  };
+  const handleMouseLeave = () => {
+    setHovered(false);
+  };
+
   // If SVG asset exists for this planet, render it
   if (svgImage) {
+    // Tooltip positioning — side/diagonal, not directly above
+    const tooltipWidth = 180;
+    const lineCount = tooltip ? tooltip.lines.length : 0;
+    const tooltipHeight = 32 + lineCount * 24 + 12; // title + lines + padding
+    const tooltipX = x + tooltipPos.dx;
+    const tooltipY = y + tooltipPos.dy;
+
+    // Connector line from planet edge to tooltip
+    const connectorStartX = x + (tooltipPos.dx > 0 ? svgSize / 2 + 6 : -svgSize / 2 - 6);
+    const connectorStartY = y;
+    const connectorEndX = tooltipPos.dx > 0 ? tooltipX : tooltipX + tooltipWidth;
+    const connectorEndY = tooltipY + tooltipHeight / 2;
+
+    const showTooltip = hovered && tooltip && !isZooming;
+
     return (
-      <g className="island-group">
+      <g
+        className="island-group"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
         {/* Glow filter */}
         <defs>
           <filter id={`glow-${id}`} x="-100%" y="-100%" width="300%" height="300%">
@@ -99,6 +205,63 @@ export function Island({ island }) {
           className="island-hover-ring"
           pointerEvents="none"
         />
+
+        {/* Tooltip — redesigned card with connector line */}
+        {showTooltip && (
+          <>
+            {/* Connector line from planet to tooltip */}
+            <line
+              x1={connectorStartX}
+              y1={connectorStartY}
+              x2={connectorEndX}
+              y2={connectorEndY}
+              stroke={colors.accent}
+              strokeWidth="1.5"
+              strokeOpacity="0.5"
+              strokeDasharray="4 3"
+              pointerEvents="none"
+              className="tooltip-connector"
+            />
+            {/* Small dot at connector start (on planet edge) */}
+            <circle
+              cx={connectorStartX}
+              cy={connectorStartY}
+              r="3"
+              fill={colors.accent}
+              fillOpacity="0.7"
+              pointerEvents="none"
+              className="tooltip-connector-dot"
+            />
+
+            <foreignObject
+              x={tooltipX}
+              y={tooltipY}
+              width={tooltipWidth}
+              height={tooltipHeight + 8}
+              pointerEvents="none"
+              className="planet-tooltip-fo"
+            >
+              <div
+                className="planet-tooltip"
+                xmlns="http://www.w3.org/1999/xhtml"
+                style={{ '--tooltip-accent': colors.accent, '--tooltip-glow': colors.glow }}
+              >
+                <div className="planet-tooltip-header">
+                  <span className="planet-tooltip-accent-bar" />
+                  <span className="planet-tooltip-title">{tooltip.title}</span>
+                </div>
+                <div className="planet-tooltip-body">
+                  {tooltip.lines.map((line, i) => (
+                    <div key={i} className="planet-tooltip-row">
+                      <span className="planet-tooltip-label">{line.label}</span>
+                      {line.value && <span className="planet-tooltip-value">{line.value}</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </foreignObject>
+          </>
+        )}
       </g>
     );
   }

@@ -6,11 +6,12 @@ import GalaxyCanvas from './GalaxyCanvas';
 import useParticleTrail from '../../hooks/useParticleTrail';
 import '../../styles/components/dashboard/MapViewport.css';
 
-export const MapViewport = ({ onIslandClick }) => {
+export const MapViewport = ({ onIslandClick, dashboardData }) => {
   const svgRef = useRef(null);
   const groupRef = useRef(null);
   const containerRef = useRef(null);
   const isZooming = useRef(false);
+  const [isZoomingState, setIsZoomingState] = React.useState(false);
   const animationFrameRef = useRef(null);
   const rafThrottleRef = useRef(null);
   const pendingMouseMoveRef = useRef(null);
@@ -29,8 +30,9 @@ export const MapViewport = ({ onIslandClick }) => {
     handleMouseMove,
   } = useParticleTrail({
     enabled: true,
-    panZoomRef: panZoomState, // Pass ref for live updates during drag
-    containerRef: svgRef, // Pass SVG ref instead of container for better local coordinates
+    panZoomRef: panZoomState,
+    containerRef: svgRef,
+    maxParticles: 80,
   });
 
   // Initialize GSAP context
@@ -225,6 +227,7 @@ export const MapViewport = ({ onIslandClick }) => {
     
     // Animate camera zooming into the planet before navigating
     isZooming.current = true;
+    setIsZoomingState(true);
     
     const targetScale = 4;
     
@@ -301,15 +304,7 @@ export const MapViewport = ({ onIslandClick }) => {
         preserveAspectRatio="xMidYMid meet"
         onMouseMove={handleMouseMove}
       >
-        <defs>
-          <filter id="nebula-blur" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="150" />
-          </filter>
-          <filter id="stardust-glow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="1.5" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-        </defs>
+        <defs />
 
         {/* Background is now the GalaxyCanvas - this SVG is transparent for islands/particles */}
         <rect width="2000" height="1400" fill="none" />
@@ -326,7 +321,6 @@ export const MapViewport = ({ onIslandClick }) => {
                 r={particle.size || 1.5}
                 fill={particle.color || '#a78bfa'}
                 opacity={particle.opacity}
-                filter="url(#stardust-glow)"
               />
             ))}
           </g>
@@ -336,12 +330,12 @@ export const MapViewport = ({ onIslandClick }) => {
             <g
               key={island.id}
               onClick={() => handleIslandClick(island)}
-              className={`island ${island.id}-island`}
+              className={`island ${island.id}-island${isZoomingState ? ' island-zooming' : ''}`}
               style={{
                 transformOrigin: `${island.x}px ${island.y}px`,
               }}
             >
-              <Island island={island} />
+              <Island island={island} dashboardData={dashboardData} isZooming={isZoomingState} />
             </g>
           ))}
         </g>

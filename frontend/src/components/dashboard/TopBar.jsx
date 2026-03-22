@@ -6,6 +6,7 @@ import '../../styles/components/TopBar.css';
 
 export default function TopBar({ user }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showNotifTooltip, setShowNotifTooltip] = useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -37,10 +38,20 @@ export default function TopBar({ user }) {
         {/* Actions */}
         <div className="topbar-actions">
           {/* Notifications */}
-          <button className="topbar-action-btn" title="Notifications">
-            <Bell size={20} />
-            <span className="topbar-notification-badge">3</span>
-          </button>
+          <div className="topbar-notif-container">
+            <button
+              className="topbar-action-btn"
+              title="Notifications"
+              onClick={() => setShowNotifTooltip(!showNotifTooltip)}
+            >
+              <Bell size={20} />
+            </button>
+            {showNotifTooltip && (
+              <div className="topbar-notif-dropdown">
+                <p className="topbar-notif-empty">No notifications yet</p>
+              </div>
+            )}
+          </div>
 
           {/* Profile Menu */}
           <div className="topbar-profile-container">
