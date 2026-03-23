@@ -1,30 +1,92 @@
-import React, { useState } from 'react';
-import { Play, Plus, Calendar, CheckCircle2, Circle, Clock, Flame, ArrowRight, MoreHorizontal } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Play, Plus, Calendar, CheckCircle2, Circle, Clock, ArrowRight, MoreHorizontal } from 'lucide-react';
+import streakHappy from '../../assets/streak_fire/streak_fire_state_happy.png';
+import streakSad from '../../assets/streak_fire/streak_fire_state_sad.png';
+import streakNormal from '../../assets/streak_fire/streak_fire_state_normal.png';
+import streakSleep from '../../assets/streak_fire/streak_fire_state_sleep.png';
 import '../../styles/components/dashboard/SimplifiedDashboard.css';
 
-export function SimplifiedDashboard() {
-  const [dashboardData] = useState({
-    user: { name: 'Alex' },
-    tasks: { 
-      active: [
-        { id: 1, title: 'Review Q3 Marketing Deck', time: '10:00 AM', urgent: true },
-        { id: 2, title: 'Sync with Engineering Team', time: '1:30 PM', urgent: false },
-        { id: 3, title: 'Draft Product Requirements', time: 'Tomorrow', urgent: false },
-        { id: 4, title: 'Update Onboarding Docs', time: 'This Week', urgent: false },
-      ],
-      completed: 12 
-    },
-    pomodoro: { sessionsToday: 5, streak: 7 },
-    schedule: { events: [
-      { time: '09:00', period: 'AM', title: 'Daily Standup', duration: '30m' },
-      { time: '11:00', period: 'AM', title: 'Design Review', duration: '1h' },
-      { time: '14:00', period: 'PM', title: '1-on-1 Sync', duration: '45m' },
-    ]},
-    forest: { level: 3, health: 85 },
-    experience: { level: 12, currentExp: 3200, maxExp: 5000 },
-  });
+function getStreakState(streak, todayCompleted) {
+  if (!streak?.last_activity_date || (streak?.current_streak ?? 0) === 0) return 'sleep';
 
-  const expPercentage = (dashboardData.experience.currentExp / dashboardData.experience.maxExp) * 100;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const lastActivity = new Date(streak.last_activity_date);
+  lastActivity.setHours(0, 0, 0, 0);
+  const diffDays = Math.floor((today - lastActivity) / (1000 * 60 * 60 * 24));
+
+  if (diffDays > 1) return 'sad';
+  if (todayCompleted > 0) return 'happy';
+  return 'normal';
+}
+
+const STREAK_IMAGES = {
+  happy: streakHappy,
+  sad: streakSad,
+  normal: streakNormal,
+  sleep: streakSleep,
+};
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning,';
+  if (hour < 17) return 'Good afternoon,';
+  return 'Good evening,';
+}
+
+export function SimplifiedDashboard({ dashboardData, loading }) {
+  const navigate = useNavigate();
+  // Build display data from API response, with sensible fallbacks
+  const data = useMemo(() => {
+    if (!dashboardData) return null;
+
+    const d = dashboardData;
+    return {
+      userName: d.user?.name ?? 'Explorer',
+      level: d.user?.level ?? 1,
+      currentExp: d.user?.current_exp ?? 0,
+      maxExp: d.user?.exp_to_next_level ?? 100,
+      streak: d.streak?.current_streak ?? 0,
+      streakObj: d.streak ?? null,
+      todayCompleted: d.tasks?.today_completed ?? 0,
+      pomodoroSessions: d.pomodoro?.today_sessions ?? 0,
+      todaySchedules: d.today_schedules ?? [],
+    };
+  }, [dashboardData]);
+
+  // While loading or no data yet, show skeleton-ish state
+  if (loading || !data) {
+    return (
+      <div className="bento-container">
+        <div className="bento-grid">
+          <div className="bento-card card-profile">
+            <div className="profile-header">
+              <div>
+                <p className="greeting">{getGreeting()}</p>
+                <h1 className="name">...</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const expPercentage = data.maxExp > 0 ? (data.currentExp / data.maxExp) * 100 : 0;
+  const streakState = getStreakState(data.streakObj, data.todayCompleted);
+  const streakImg = STREAK_IMAGES[streakState];
+
+  // Build schedule events from today_schedules
+  const scheduleEvents = data.todaySchedules.slice(0, 3).map((s) => {
+    const startTime = s.start_time ? new Date(`2000-01-01T${s.start_time}`) : null;
+    return {
+      time: startTime ? startTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }) : '--:--',
+      period: startTime ? (startTime.getHours() < 12 ? 'AM' : 'PM') : '',
+      title: s.title ?? 'Untitled',
+      duration: s.duration_minutes ? `${s.duration_minutes}m` : '',
+    };
+  });
 
   return (
     <div className="bento-container">
@@ -34,8 +96,8 @@ export function SimplifiedDashboard() {
         <div className="bento-card card-profile">
           <div className="profile-header">
             <div>
-              <p className="greeting">Good morning,</p>
-              <h1 className="name">{dashboardData.user.name}.</h1>
+              <p className="greeting">{getGreeting()}</p>
+              <h1 className="name">{data.userName}.</h1>
             </div>
             <div className="date-badge">
               {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
@@ -44,8 +106,8 @@ export function SimplifiedDashboard() {
           
           <div className="level-overview">
             <div className="level-info">
-              <span className="level-tag">Level {dashboardData.experience.level}</span>
-              <span className="exp-count">{dashboardData.experience.currentExp} / {dashboardData.experience.maxExp} XP</span>
+              <span className="level-tag">Level {data.level}</span>
+              <span className="exp-count">{data.currentExp} / {data.maxExp} XP</span>
             </div>
             <div className="exp-track">
               <div className="exp-fill" style={{ width: `${expPercentage}%` }}></div>
@@ -55,80 +117,76 @@ export function SimplifiedDashboard() {
 
         {/* Quick Actions (Span 2x1) */}
         <div className="bento-card card-actions">
-          <button className="action-btn primary">
+          <button className="action-btn primary" onClick={() => navigate('/pomodoro')}>
             <div className="action-icon-wrap"><Play size={24} fill="currentColor" /></div>
             <span className="action-label">Focus Session</span>
           </button>
-          <button className="action-btn secondary">
+          <button className="action-btn secondary" onClick={() => navigate('/tasks')}>
             <div className="action-icon-wrap"><Plus size={24} /></div>
             <span className="action-label">New Task</span>
           </button>
-          <button className="action-btn secondary">
+          <button className="action-btn secondary" onClick={() => navigate('/schedules')}>
             <div className="action-icon-wrap"><Calendar size={24} /></div>
             <span className="action-label">Schedule Event</span>
           </button>
         </div>
 
-        {/* Tasks / Up Next (Span 2x2) */}
+        {/* Tasks / Up Next (Span 2x2) — placeholder for now, tasks need separate fetch */}
         <div className="bento-card card-tasks">
           <div className="card-header">
             <h2 className="card-title">Up Next</h2>
-            <button className="icon-btn"><MoreHorizontal size={20} /></button>
+            <button className="icon-btn" onClick={() => navigate('/tasks')}><MoreHorizontal size={20} /></button>
           </div>
           <div className="task-list">
-            {dashboardData.tasks.active.map((task) => (
-              <div key={task.id} className="task-item">
-                <button className="check-btn">
-                  <div className="check-circle-wrapper">
-                    <CheckCircle2 size={20} className="check-icon" />
-                  </div>
-                </button>
-                <div className="task-content">
-                  <p className="task-title">{task.title}</p>
-                  <span className={`task-time ${task.urgent ? 'urgent' : ''}`}>
-                    <Clock size={12} className="clock-icon" /> {task.time}
-                  </span>
-                </div>
-              </div>
-            ))}
+            <div className="task-empty-state">
+              <p className="task-empty-text">
+                {data.todayCompleted > 0
+                  ? `${data.todayCompleted} task${data.todayCompleted !== 1 ? 's' : ''} completed today`
+                  : 'No tasks yet — create one to get started!'}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Schedule (Span 1x2 -> now 1x1 in new grid) */}
+        {/* Schedule */}
         <div className="bento-card card-schedule">
           <div className="card-header">
             <h2 className="card-title">Today's Schedule</h2>
-            <button className="icon-btn"><ArrowRight size={20} /></button>
+            <button className="icon-btn" onClick={() => navigate('/schedules')}><ArrowRight size={20} /></button>
           </div>
           <div className="timeline">
-            {dashboardData.schedule.events.map((event, i) => (
-              <div key={i} className="timeline-event">
-                <div className="event-time">
-                  <span className="time-val">{event.time}</span>
-                  <span className="time-period">{event.period}</span>
+            {scheduleEvents.length > 0 ? (
+              scheduleEvents.map((event, i) => (
+                <div key={i} className="timeline-event">
+                  <div className="event-time">
+                    <span className="time-val">{event.time}</span>
+                    <span className="time-period">{event.period}</span>
+                  </div>
+                  <div className="event-details">
+                    <p className="event-title">{event.title}</p>
+                    <p className="event-duration">{event.duration}</p>
+                  </div>
                 </div>
-                <div className="event-details">
-                  <p className="event-title">{event.title}</p>
-                  <p className="event-duration">{event.duration}</p>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="schedule-empty-text">No events scheduled today</p>
+            )}
           </div>
         </div>
 
-        {/* Pomodoro Focus (Span 1x1 in new grid) */}
+        {/* Pomodoro Focus */}
         <div className="bento-card card-pomodoro">
           <div className="pomodoro-content">
             <div className="pomo-header">
-              <Flame size={20} className="flame-icon" />
-              <span className="streak-text">{dashboardData.pomodoro.streak} Day Streak</span>
+              <img src={streakImg} alt="streak" className="streak-icon-img-simplified" />
+              <span className="streak-text">{data.streak} Day Streak</span>
             </div>
             <div className="pomo-stats">
-              <span className="pomo-count">{dashboardData.pomodoro.sessionsToday}</span>
+              <span className="pomo-count">{data.pomodoroSessions}</span>
               <span className="pomo-label">Sessions<br/>Today</span>
             </div>
             
-            <button className="pomo-quick-start">
+            <button className="pomo-quick-start" onClick={() => navigate('/pomodoro')}>
               <Play size={18} fill="currentColor" />
               Start Focus
             </button>

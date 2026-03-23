@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { scheduleApi } from "../services/api";
-import { ChevronLeft, ChevronRight, Filter, HelpCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Filter, HelpCircle, Plus, X } from "lucide-react";
+import ScheduleCreateForm from "../components/schedules/ScheduleCreateForm";
 import "../styles/pages/Schedules.css";
 
 const MONTHS = [
@@ -32,6 +33,8 @@ export default function Schedules() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
+  const [showForm, setShowForm] = useState(false);
+  const [filterType, setFilterType] = useState(null); // null = show all, 'daily' | 'weekly' | 'monthly'
 
   const { data: schedules, isLoading } = useQuery({
     queryKey: ["schedules", "calendar"],
@@ -99,6 +102,7 @@ export default function Schedules() {
     const dateStr = formatDate(date);
     return (schedules || []).filter((s) => {
       if (!s.is_active) return false;
+      if (filterType && s.type !== filterType) return false;
       const dow = date.getDay();
       const dom = date.getDate();
       if (s.type === "daily") return true;
@@ -134,7 +138,7 @@ export default function Schedules() {
       });
     }
     return events.slice(0, 10);
-  }, [schedules]);
+  }, [schedules, filterType]);
 
   const activityByDate = useMemo(() => {
     const firstDay = new Date(year, month, 1);
@@ -156,7 +160,7 @@ export default function Schedules() {
     }
 
     return dateMap;
-  }, [year, month, schedules]);
+  }, [year, month, schedules, filterType]);
 
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
@@ -180,15 +184,40 @@ export default function Schedules() {
           <div className="schedule-header">
             <h1 className="schedule-title">Activity Calendar</h1>
             <div className="schedule-header-actions">
-              <button className="schedule-btn-icon">
+              <button
+                className={`schedule-btn-icon${filterType ? ' active' : ''}`}
+                onClick={() => setFilterType(filterType ? null : 'daily')}
+                title={filterType ? `Filtering: ${filterType} (click to clear)` : 'Filter events'}
+              >
                 <Filter className="schedule-icon" />
-                <span>Filter</span>
+                <span>{filterType ? filterType : 'Filter'}</span>
               </button>
-              <button className="schedule-btn-icon-only">
-                <HelpCircle className="schedule-icon" />
+              <button
+                className="schedule-btn-icon primary"
+                onClick={() => setShowForm(!showForm)}
+              >
+                {showForm ? <X className="schedule-icon" /> : <Plus className="schedule-icon" />}
+                <span>{showForm ? 'Cancel' : 'Create'}</span>
               </button>
             </div>
           </div>
+
+          {/* Create Schedule Form */}
+          {showForm && (
+            <div className="schedule-form-wrapper">
+              <ScheduleCreateForm
+                onSubmit={(data, resetForm) => {
+                  createMutation.mutate(data, {
+                    onSuccess: () => {
+                      resetForm();
+                      setShowForm(false);
+                    },
+                  });
+                }}
+                isPending={createMutation.isPending}
+              />
+            </div>
+          )}
 
           {/* Month Selector */}
           <div className="schedule-month-selector">
@@ -326,7 +355,16 @@ export default function Schedules() {
           {/* Upcoming Events */}
           <div className="schedule-sidebar-header">
             <h2 className="schedule-sidebar-title">Upcoming events</h2>
-            <button className="schedule-btn-icon">
+            <button
+              className={`schedule-btn-icon${filterType ? ' active' : ''}`}
+              onClick={() => {
+                // Cycle through filter types: null → daily → weekly → monthly → null
+                const cycle = [null, 'daily', 'weekly', 'monthly'];
+                const currentIdx = cycle.indexOf(filterType);
+                setFilterType(cycle[(currentIdx + 1) % cycle.length]);
+              }}
+              title={filterType ? `Filtering: ${filterType}` : 'Filter by type'}
+            >
               <Filter className="schedule-icon" />
             </button>
           </div>

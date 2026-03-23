@@ -2,7 +2,7 @@
 
 .schedule-page {
   padding: 24px;
-  background-color: #fafafa;
+  background-color: var(--bg-base);
   min-height: 100vh;
   overflow-x: hidden;
   overflow-y: hidden;
@@ -18,10 +18,10 @@
 
 /* Left Panel - Calendar */
 .schedule-calendar-panel {
-  background-color: #ffffff;
+  background-color: var(--bg-surface);
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
   height: calc(100vh - 48px);
   overflow-y: hidden;
   display: flex;
@@ -38,7 +38,7 @@
 .schedule-title {
   font-size: 18px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -53,16 +53,47 @@
   gap: 6px;
   padding: 8px 12px;
   background-color: transparent;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   font-size: 13px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .schedule-btn-icon:hover {
-  background-color: #f9fafb;
+  background-color: var(--bg-inset);
+}
+
+.schedule-btn-icon.active {
+  background-color: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--accent-light);
+}
+
+.schedule-btn-icon.primary {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-on-accent);
+}
+
+.schedule-btn-icon.primary:hover {
+  background-color: var(--accent-dark);
+}
+
+/* Schedule Create Form Wrapper */
+.schedule-form-wrapper {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  animation: formSlideDown 0.2s ease-out;
+}
+
+@keyframes formSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .schedule-btn-icon-only {
@@ -72,14 +103,14 @@
   width: 36px;
   height: 36px;
   background-color: transparent;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .schedule-btn-icon-only:hover {
-  background-color: #f9fafb;
+  background-color: var(--bg-inset);
 }
 
 .schedule-icon {
@@ -107,19 +138,19 @@
   border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-secondary);
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s;
 }
 
 .schedule-month-btn:hover {
-  background-color: #f3f4f6;
+  background-color: var(--bg-hover);
 }
 
 .schedule-month-btn.active {
-  background-color: #1a1a1a;
-  color: #ffffff;
+  background-color: var(--accent);
+  color: var(--text-on-accent);
 }
 
 /* Calendar */
@@ -147,7 +178,7 @@
 .schedule-calendar-month {
   font-size: 16px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
   min-width: 120px;
   text-align: center;
@@ -160,7 +191,7 @@
   width: 32px;
   height: 32px;
   background-color: transparent;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s;
@@ -168,13 +199,13 @@
 }
 
 .schedule-nav-btn:hover {
-  background-color: #f9fafb;
+  background-color: var(--bg-inset);
 }
 
 .schedule-nav-btn .schedule-icon {
   width: 18px;
   height: 18px;
-  stroke: #1a1a1a;
+  stroke: var(--text-primary);
   stroke-width: 2;
   fill: none;
   display: block;
@@ -191,7 +222,7 @@
   text-align: center;
   font-size: 11px;
   font-weight: 500;
-  color: #9ca3af;
+  color: var(--text-tertiary);
   padding: 8px 0;
 }
 
@@ -207,15 +238,15 @@
 
 /* Date Card Styles */
 .schedule-date-card {
-  background-color: #f9fafb;
+  background-color: var(--bg-inset);
   border-radius: 10px;
   padding: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   transition: all 0.15s;
 }
 
 .schedule-date-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-card);
 }
 
 .schedule-date-header {
@@ -224,20 +255,20 @@
   gap: 8px;
   margin-bottom: 10px;
   padding-bottom: 8px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .schedule-date-number {
   font-size: 20px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   min-width: 32px;
 }
 
 .schedule-date-label {
   font-size: 13px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-secondary);
   text-transform: uppercase;
 }
 
@@ -262,31 +293,31 @@
 }
 
 .schedule-event-item.event-daily {
-  background-color: #dbeafe;
-  border-left: 3px solid #3b82f6;
+  background-color: var(--info-bg);
+  border-left: 3px solid var(--info);
 }
 
 .schedule-event-item.event-weekly {
-  background-color: #d1fae5;
-  border-left: 3px solid #10b981;
+  background-color: var(--success-bg);
+  border-left: 3px solid var(--success);
 }
 
 .schedule-event-item.event-monthly {
-  background-color: #fce7f3;
-  border-left: 3px solid #ec4899;
+  background-color: var(--purple-bg);
+  border-left: 3px solid var(--purple);
 }
 
 .schedule-event-label {
   font-weight: 500;
   font-size: 13px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   flex: 1;
 }
 
 .schedule-event-time {
   font-size: 11px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
@@ -297,7 +328,7 @@
   gap: 16px;
   margin-top: 20px;
   padding-top: 16px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-default);
 }
 
 .schedule-legend-item {
@@ -305,7 +336,7 @@
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .schedule-legend-dot {
@@ -315,20 +346,20 @@
 }
 
 .schedule-legend-dot.daily {
-  background-color: #3b82f6;
+  background-color: var(--info);
 }
 
 .schedule-legend-dot.weekly {
-  background-color: #10b981;
+  background-color: var(--success);
 }
 
 .schedule-legend-dot.monthly {
-  background-color: #ec4899;
+  background-color: var(--purple);
 }
 
 .schedule-legend-count {
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 /* Right Panel - Upcoming Events */
@@ -340,10 +371,10 @@
 
 /* Mini Calendar Widget */
 .schedule-mini-calendar {
-  background-color: #ffffff;
+  background-color: var(--bg-surface);
   border-radius: 12px;
   padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .schedule-mini-header {
@@ -356,7 +387,7 @@
 .schedule-mini-month {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -367,20 +398,20 @@
   width: 28px;
   height: 28px;
   background-color: transparent;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-default);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .schedule-mini-nav-btn:hover {
-  background-color: #f9fafb;
+  background-color: var(--bg-inset);
 }
 
 .schedule-mini-nav-btn .schedule-icon {
   width: 14px;
   height: 14px;
-  stroke: #1a1a1a;
+  stroke: var(--text-primary);
   stroke-width: 2;
   fill: none;
   display: block;
@@ -397,7 +428,7 @@
   text-align: center;
   font-size: 10px;
   font-weight: 500;
-  color: #9ca3af;
+  color: var(--text-tertiary);
   padding: 4px 0;
 }
 
@@ -417,23 +448,23 @@
   border-radius: 6px;
   font-size: 11px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .schedule-mini-day:hover {
-  background-color: #f3f4f6;
+  background-color: var(--bg-hover);
 }
 
 .schedule-mini-day.today {
-  background-color: #1a1a1a;
-  color: #ffffff;
+  background-color: var(--accent);
+  color: var(--text-on-accent);
 }
 
 .schedule-mini-day.selected {
-  background-color: #3b82f6;
-  color: #ffffff;
+  background-color: var(--info);
+  color: var(--text-on-accent);
 }
 
 .schedule-mini-day.other-month {
@@ -450,9 +481,9 @@
   right: 4px;
   width: 6px;
   height: 6px;
-  background-color: #fbbf24;
+  background-color: var(--warning);
   border-radius: 50%;
-  border: 1px solid #ffffff;
+  border: 1px solid var(--bg-surface);
 }
 
 .schedule-sidebar-header {
@@ -460,16 +491,16 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
-  background-color: #ffffff;
+  background-color: var(--bg-surface);
   border-radius: 12px;
   padding: 16px 20px 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .schedule-sidebar-title {
   font-size: 16px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -477,10 +508,10 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background-color: #ffffff;
+  background-color: var(--bg-surface);
   border-radius: 0 0 12px 12px;
   padding: 0 20px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
   max-height: 400px;
   overflow-y: auto;
 }
@@ -494,19 +525,19 @@
 
 .schedule-event-card:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-card);
 }
 
 .schedule-event-card.event-daily {
-  background-color: #dbeafe;
+  background-color: var(--info-bg);
 }
 
 .schedule-event-card.event-weekly {
-  background-color: #fef3c7;
+  background-color: var(--warning-bg);
 }
 
 .schedule-event-card.event-monthly {
-  background-color: #e0e7ff;
+  background-color: var(--purple-bg);
 }
 
 .schedule-event-header {
@@ -519,14 +550,14 @@
 .schedule-event-title {
   font-size: 14px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .schedule-event-days {
   font-size: 11px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
@@ -535,7 +566,7 @@
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-bottom: 8px;
 }
 
@@ -549,7 +580,7 @@
 
 .schedule-event-description {
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-bottom: 8px;
   line-height: 1.4;
 }
@@ -562,14 +593,14 @@
 
 .schedule-event-type-badge {
   font-size: 11px;
-  color: #6b7280;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 .schedule-events-empty {
   padding: 40px 20px;
   text-align: center;
-  color: #9ca3af;
+  color: var(--text-tertiary);
   font-size: 14px;
 }
 

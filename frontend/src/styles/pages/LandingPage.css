@@ -5,27 +5,20 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-:root {
-  --bg-base: #020617; /* Slate 950 */
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --accent-primary: #6366f1;
-  --accent-glow: rgba(99, 102, 241, 0.4);
-  --glass-bg: rgba(255, 255, 255, 0.02);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-body {
-  background-color: var(--bg-base);
-  color: var(--text-main);
-  font-family: var(--font-main);
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-
 .landing-page {
-  background-color: var(--bg-base);
+  --lp-bg-base: #020617; /* Slate 950 */
+  --lp-text-main: #f8fafc;
+  --lp-text-muted: #94a3b8;
+  --lp-accent-primary: #6366f1;
+  --lp-accent-glow: rgba(99, 102, 241, 0.4);
+  --lp-glass-bg: rgba(255, 255, 255, 0.02);
+  --lp-glass-border: rgba(255, 255, 255, 0.08);
+  --lp-font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  background-color: var(--lp-bg-base);
+  color: var(--lp-text-main);
+  font-family: var(--lp-font-main);
+  -webkit-font-smoothing: antialiased;
   position: relative;
   overflow: hidden;
 }
@@ -71,7 +64,7 @@ body {
   max-width: 1000px;
   border-radius: 100px;
   background: rgba(2, 6, 23, 0.7);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--lp-glass-border);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   will-change: transform, width, background-color;
@@ -99,7 +92,7 @@ body {
 }
 
 .landing-nav-link {
-  color: var(--text-muted);
+  color: var(--lp-text-muted);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
@@ -225,7 +218,7 @@ body {
 
 .hero-subtitle {
   font-size: clamp(1.2rem, 2.5vw, 1.5rem);
-  color: var(--text-muted);
+  color: var(--lp-text-muted);
   max-width: 600px;
   margin: 0 auto 3rem;
   line-height: 1.6;
@@ -354,7 +347,7 @@ body {
 
 .loop-panel p {
   font-size: clamp(1.2rem, 2vw, 1.5rem);
-  color: var(--text-muted);
+  color: var(--lp-text-muted);
   line-height: 1.6;
 }
 
@@ -393,8 +386,8 @@ body {
 }
 
 .bento-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: var(--lp-glass-bg);
+  border: 1px solid var(--lp-glass-border);
   border-radius: 32px;
   padding: 3rem;
   position: relative;
@@ -460,7 +453,7 @@ body {
 .bento-icon {
   width: 64px; height: 64px;
   background: rgba(255,255,255,0.05);
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--lp-glass-border);
   border-radius: 20px;
   display: flex; align-items: center; justify-content: center;
   color: #fff;
@@ -480,7 +473,7 @@ body {
   letter-spacing: -0.02em;
 }
 .bento-card p {
-  color: var(--text-muted); line-height: 1.6; font-size: 1.1rem;
+  color: var(--lp-text-muted); line-height: 1.6; font-size: 1.1rem;
 }
 
 /* Grid Spans */
@@ -554,8 +547,8 @@ body {
 /* ---------- Tech Marquee ---------- */
 .tech-marquee-wrapper {
   padding: 8rem 0;
-  border-top: 1px solid var(--glass-border);
-  border-bottom: 1px solid var(--glass-border);
+  border-top: 1px solid var(--lp-glass-border);
+  border-bottom: 1px solid var(--lp-glass-border);
   background: rgba(255,255,255,0.01);
 }
 
@@ -584,7 +577,7 @@ body {
   gap: 1rem;
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--text-muted);
+  color: var(--lp-text-muted);
   opacity: 0.4;
   transition: opacity 0.3s, color 0.3s;
   letter-spacing: -0.02em;
@@ -605,7 +598,7 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: radial-gradient(circle at center, rgba(99, 102, 241, 0) 0%, var(--bg-base) 100%);
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0) 0%, var(--lp-bg-base) 100%);
 }
 
 .huge-cta-text {
@@ -647,9 +640,9 @@ body {
 
 /* ---------- Enhanced Footer ---------- */
 .landing-footer {
-  border-top: 1px solid var(--glass-border);
+  border-top: 1px solid var(--lp-glass-border);
   padding: 6rem 2rem 2rem;
-  background: var(--bg-base);
+  background: var(--lp-bg-base);
   position: relative;
   z-index: 10;
   max-width: 1400px;
@@ -678,7 +671,7 @@ body {
 }
 
 .footer-tagline {
-  color: var(--text-muted);
+  color: var(--lp-text-muted);
   line-height: 1.6;
 }
 
@@ -702,7 +695,7 @@ body {
 }
 
 .footer-col a {
-  color: var(--text-muted);
+  color: var(--lp-text-muted);
   text-decoration: none;
   transition: color 0.2s;
   font-size: 0.95rem;
@@ -719,8 +712,8 @@ body {
   justify-content: space-between;
   gap: 1.5rem;
   padding-top: 2rem;
-  border-top: 1px solid var(--glass-border);
-  color: var(--text-muted);
+  border-top: 1px solid var(--lp-glass-border);
+  color: var(--lp-text-muted);
   font-size: 0.9rem;
 }
 
@@ -730,7 +723,7 @@ body {
 }
 
 .footer-socials a {
-  color: var(--text-muted);
+  color: var(--lp-text-muted);
   transition: color 0.2s, transform 0.2s;
   display: block;
 }

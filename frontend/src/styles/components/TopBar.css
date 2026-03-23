@@ -5,11 +5,11 @@
   top: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
-  border-bottom: 1px solid #e5e5e7;
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--topbar-border);
   padding: 0;
   z-index: 100;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .topbar-content {
@@ -30,10 +30,10 @@
 .topbar-logo {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
   letter-spacing: -0.02em;
-  background: linear-gradient(90deg, #1a1a1a 0%, #6366f1 100%);
+  background: linear-gradient(90deg, var(--text-primary) 0%, var(--accent) 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -60,7 +60,7 @@
   height: 2.5rem;
   border: none;
   background: transparent;
-  color: #86868b;
+  color: var(--text-secondary);
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -69,12 +69,12 @@
 }
 
 .topbar-action-btn:hover {
-  background: #f5f5f7;
-  color: #1a1a1a;
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .topbar-action-btn:active {
-  background: #ebebf0;
+  background: var(--bg-active);
 }
 
 .topbar-notification-badge {
@@ -83,20 +83,46 @@
   right: -4px;
   width: 18px;
   height: 18px;
-  background: #ef4444;
-  border: 2px solid #ffffff;
+  background: var(--danger);
+  border: 2px solid var(--bg-surface);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.6rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-on-accent);
 }
 
 /* Profile Section */
 .topbar-profile-container {
   position: relative;
+}
+
+/* Notifications Dropdown */
+.topbar-notif-container {
+  position: relative;
+}
+
+.topbar-notif-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
+  border-radius: 12px;
+  box-shadow: var(--dropdown-shadow);
+  min-width: 220px;
+  padding: 1rem;
+  animation: dropdownSlideIn 0.2s ease;
+  z-index: 1000;
+}
+
+.topbar-notif-empty {
+  color: var(--text-tertiary);
+  font-size: 0.85rem;
+  text-align: center;
+  margin: 0;
 }
 
 .topbar-profile-btn {
@@ -119,13 +145,13 @@
 .topbar-avatar {
   width: 2.5rem;
   height: 2.5rem;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  border: 2px solid #e5e5e7;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--purple) 100%);
+  border: 2px solid var(--border-default);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--text-on-accent);
   font-weight: 700;
   font-size: 0.85rem;
   transition: all 0.3s ease;
@@ -137,10 +163,10 @@
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
-  background: #ffffff;
-  border: 1px solid #e5e5e7;
+  background: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
   border-radius: 12px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--dropdown-shadow);
   min-width: 200px;
   overflow: hidden;
   animation: dropdownSlideIn 0.2s ease;
@@ -160,19 +186,19 @@
 
 .topbar-dropdown-header {
   padding: 1rem;
-  border-bottom: 1px solid #f5f5f7;
-  background: #f9f9fb;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-inset);
 }
 
 .topbar-dropdown-name {
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0 0 0.25rem 0;
   font-size: 0.95rem;
 }
 
 .topbar-dropdown-email {
-  color: #86868b;
+  color: var(--text-secondary);
   font-size: 0.8rem;
   margin: 0;
   font-weight: 500;
@@ -180,7 +206,7 @@
 
 .topbar-dropdown-divider {
   height: 1px;
-  background: #e5e5e7;
+  background: var(--border-default);
   margin: 0;
 }
 
@@ -191,7 +217,7 @@
   width: 100%;
   border: none;
   background: transparent;
-  color: #1a1a1a;
+  color: var(--text-primary);
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
   font-weight: 500;
@@ -202,8 +228,8 @@
 }
 
 .topbar-dropdown-item:hover:not(.topbar-dropdown-item-danger) {
-  background: #f5f5f7;
-  color: #6366f1;
+  background: var(--dropdown-hover);
+  color: var(--accent);
 }
 
 .topbar-dropdown-item svg {
@@ -213,11 +239,11 @@
 }
 
 .topbar-dropdown-item-danger {
-  color: #ef4444;
+  color: var(--danger);
 }
 
 .topbar-dropdown-item-danger:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--danger-bg);
 }
 
 /* Mobile Responsive */

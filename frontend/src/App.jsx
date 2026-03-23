@@ -22,10 +22,12 @@ import MentraAgentWithSessions from "./agents/MentraAgentWithSessions";
 import LandingPage from "./pages/LandingPage";
 import { DashboardUIProvider } from "./contexts/DashboardUIContext";
 import { PageTransitionProvider } from "./contexts/PageTransitionContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 export default function App() {
   return (
     <BrowserRouter>
+      <ThemeProvider>
       <DashboardUIProvider>
         <PageTransitionProvider>
           <TransitionWrapper>
@@ -69,6 +71,7 @@ export default function App() {
           </TransitionWrapper>
         </PageTransitionProvider>
       </DashboardUIProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

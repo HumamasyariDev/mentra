@@ -13,7 +13,7 @@ const GalaxyCanvas = ({
 
   // Initialize background stardust particles
   const initParticles = useCallback((width, height) => {
-    const particleCount = Math.floor((width * height) / 12000); // More particles for space depth
+    const particleCount = Math.floor((width * height) / 20000); // Balanced particle count for performance
     const newParticles = [];
     const colors = ['#ffffff', '#e0f2fe', '#c084fc', '#fdf4ff', '#818cf8']; // Spacey colors
 

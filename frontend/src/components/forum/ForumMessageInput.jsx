@@ -66,7 +66,12 @@ export default function ForumMessageInput({ onSend, replyTo, onCancelReply, edit
 
       {/* Input */}
       <form onSubmit={handleSubmit} className="forum-input-form">
-        <button type="button" className="forum-input-action-btn">
+        <button
+          type="button"
+          className="forum-input-action-btn"
+          title="Attachments coming soon"
+          onClick={() => {/* Attachment feature not yet implemented */}}
+        >
           <Plus size={20} />
         </button>
         <input
@@ -80,7 +85,12 @@ export default function ForumMessageInput({ onSend, replyTo, onCancelReply, edit
           maxLength={2000}
         />
         <div className="forum-input-actions">
-          <button type="button" className="forum-input-action-btn">
+          <button
+            type="button"
+            className="forum-input-action-btn"
+            title="Emoji picker coming soon"
+            onClick={() => {/* Emoji picker not yet implemented */}}
+          >
             <Smile size={20} />
           </button>
           {message.trim() && (

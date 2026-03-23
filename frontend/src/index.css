@@ -1,24 +1,56 @@
 @import "tailwindcss";
+@import "./styles/theme.css";
 
 @layer base {
   :root {
-    --color-primary: #6366f1;
-    --color-primary-light: #818cf8;
-    --color-primary-dark: #4f46e5;
-    --color-accent: #f59e0b;
-    --color-success: #10b981;
-    --color-danger: #ef4444;
-    --color-warning: #f59e0b;
-    --color-bg: #f8fafc;
-    --color-surface: #ffffff;
-    --color-text: #1e293b;
-    --color-text-muted: #64748b;
-    --color-border: #e2e8f0;
+    --color-primary: var(--accent);
+    --color-primary-light: var(--accent-light);
+    --color-primary-dark: var(--accent-dark);
+    --color-accent: var(--warning);
+    --color-success: var(--success);
+    --color-danger: var(--danger);
+    --color-warning: var(--warning);
+    --color-bg: var(--bg-base);
+    --color-surface: var(--bg-surface);
+    --color-text: var(--text-primary);
+    --color-text-muted: var(--text-secondary);
+    --color-border: var(--border-default);
   }
 
   body {
-    @apply bg-[var(--color-bg)] text-[var(--color-text)] antialiased;
+    @apply bg-[var(--bg-base)] text-[var(--text-primary)] antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* ── Global Scrollbar ──────────────────────── */
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  }
+
+  /* WebKit (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 

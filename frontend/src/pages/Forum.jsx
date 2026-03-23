@@ -366,7 +366,7 @@ export default function Forum() {
               </div>
 
               {/* React to Post Button */}
-              <div className="forum-react-btn">
+              <div className="forum-react-btn" title="Reactions coming soon" style={{ cursor: 'pointer' }}>
                 <MessageSquare size={16} style={{ color: '#64748b' }} />
                 <span>React to Post</span>
               </div>
@@ -433,6 +433,7 @@ export default function Forum() {
               <button
                 type="button"
                 className="forum-reply-add-btn"
+                title="Attachments coming soon"
               >
                 <Plus size={20} />
               </button>
