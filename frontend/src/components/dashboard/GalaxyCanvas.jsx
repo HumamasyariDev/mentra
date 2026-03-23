@@ -1,4 +1,9 @@
 import React, { useEffect, useRef, useCallback } from 'react';
+import '../../styles/components/dashboard/GalaxyCanvas.css';
+
+/** Check if user prefers reduced motion */
+const prefersReducedMotion = () =>
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
 const GalaxyCanvas = ({
   viewportState = { pan: { x: 0, y: 0 }, zoom: 1 },
@@ -10,6 +15,10 @@ const GalaxyCanvas = ({
   // Interactive network particles state
   const bgParticlesRef = useRef([]);
   const mouseRef = useRef({ x: -1000, y: -1000 });
+
+  // Shooting stars state
+  const shootingStarsRef = useRef([]);
+  const nextShootingStarTimeRef = useRef(0);
 
   // Initialize background stardust particles
   const initParticles = useCallback((width, height) => {
@@ -37,8 +46,35 @@ const GalaxyCanvas = ({
     bgParticlesRef.current = newParticles;
   }, []);
 
+  // Spawn a new shooting star
+  const spawnShootingStar = useCallback((width, height) => {
+    // Random angle between -35 and -15 degrees (similar to auth's -25deg)
+    const angle = (-15 - Math.random() * 20) * (Math.PI / 180);
+    // Start from a random position along the top or left edge
+    const startFromLeft = Math.random() > 0.4;
+    const x = startFromLeft ? -50 : Math.random() * width * 0.6;
+    const y = startFromLeft ? Math.random() * height * 0.5 : -20;
+
+    return {
+      x,
+      y,
+      angle,
+      speed: 6 + Math.random() * 8,         // px per frame
+      length: 80 + Math.random() * 100,      // trail length in px
+      life: 1.0,                              // 1.0 = full, fades to 0
+      decay: 0.008 + Math.random() * 0.006,  // how fast it fades
+      // Purple-ish tones matching auth: rgba(167,139,250) and rgba(196,181,253)
+      color: Math.random() > 0.5
+        ? { r: 167, g: 139, b: 250 }
+        : { r: 196, g: 181, b: 253 },
+      width: 1.2 + Math.random() * 0.8,
+    };
+  }, []);
+
   // Draw interactive starfield
   const drawNetwork = useCallback((ctx, width, height, panX, panY) => {
+    const reducedMotion = prefersReducedMotion();
+
     // Clear canvas
     ctx.fillStyle = '#050814'; // Deep void
     ctx.fillRect(0, 0, width, height);
@@ -50,6 +86,26 @@ const GalaxyCanvas = ({
     bgGradient.addColorStop(1, 'rgba(5, 8, 20, 1)');
     ctx.fillStyle = bgGradient;
     ctx.fillRect(0, 0, width, height);
+
+    // ── Enhanced ambient glow patches (matching auth's asymmetric nebula) ──
+    const glowPatches = [
+      { x: 0.15, y: 0.85, rx: 0.50, ry: 0.50, color: [167, 139, 250], alpha: 0.07 },
+      { x: 0.85, y: 0.15, rx: 0.40, ry: 0.30, color: [56, 189, 248],  alpha: 0.05 },
+      { x: 0.60, y: 1.10, rx: 0.60, ry: 0.40, color: [192, 132, 252], alpha: 0.04 },
+      { x: 0.05, y: 0.25, rx: 0.35, ry: 0.25, color: [52, 232, 187],  alpha: 0.035 },
+      { x: 0.90, y: 0.70, rx: 0.30, ry: 0.30, color: [139, 92, 246],  alpha: 0.04 },
+    ];
+
+    for (const glow of glowPatches) {
+      const cx = glow.x * width;
+      const cy = glow.y * height;
+      const r = Math.max(glow.rx * width, glow.ry * height);
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      grad.addColorStop(0, `rgba(${glow.color[0]}, ${glow.color[1]}, ${glow.color[2]}, ${glow.alpha})`);
+      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+    }
 
     const particles = bgParticlesRef.current;
     const mouseConnectionDist = 200;
@@ -177,7 +233,66 @@ const GalaxyCanvas = ({
         p1.vy *= 0.99;
       }
     }
-  }, []);
+
+    // ── Shooting Stars ──
+    // Spawn new shooting stars periodically (skip if reduced motion)
+    if (!reducedMotion) {
+      const now = performance.now();
+      // Initialize next spawn time on first frame (3s initial delay)
+      if (nextShootingStarTimeRef.current === 0) {
+        nextShootingStarTimeRef.current = now + 3000;
+      }
+
+      if (now >= nextShootingStarTimeRef.current) {
+        shootingStarsRef.current.push(spawnShootingStar(width, height));
+        // Occasionally spawn a second one for variety
+        if (Math.random() > 0.7) {
+          shootingStarsRef.current.push(spawnShootingStar(width, height));
+        }
+        // Schedule next spawn 6-12 seconds from now
+        nextShootingStarTimeRef.current = now + 6000 + Math.random() * 6000;
+      }
+
+      // Update and draw shooting stars
+      const activeStars = [];
+      for (const star of shootingStarsRef.current) {
+        // Move along angle
+        star.x += Math.cos(star.angle) * star.speed;
+        star.y -= Math.sin(star.angle) * star.speed;
+        star.life -= star.decay;
+
+        if (star.life <= 0) continue;
+        activeStars.push(star);
+
+        // Draw the shooting star as a gradient line (matching auth purple tones)
+        const tailX = star.x - Math.cos(star.angle) * star.length;
+        const tailY = star.y + Math.sin(star.angle) * star.length;
+
+        const grad = ctx.createLinearGradient(tailX, tailY, star.x, star.y);
+        grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
+        grad.addColorStop(0.3, `rgba(${star.color.r}, ${star.color.g}, ${star.color.b}, ${star.life * 0.3})`);
+        grad.addColorStop(0.7, `rgba(${star.color.r}, ${star.color.g}, ${star.color.b}, ${star.life * 0.7})`);
+        grad.addColorStop(1, `rgba(255, 255, 255, ${star.life * 0.9})`);
+
+        ctx.beginPath();
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = star.width;
+        ctx.lineCap = 'round';
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(star.x, star.y);
+        ctx.stroke();
+
+        // Small bright head glow
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.life * 0.6})`;
+        ctx.arc(star.x, star.y, star.width * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      shootingStarsRef.current = activeStars;
+    }
+
+    ctx.globalAlpha = 1;
+  }, [spawnShootingStar]);
 
   // Animation loop using requestAnimationFrame
   const animate = useCallback(() => {
@@ -272,6 +387,14 @@ const GalaxyCanvas = ({
           backgroundColor: '#050814',
         }}
       />
+
+      {/* Vignette overlay — darkened edges matching auth */}
+      <div className="galaxy-vignette" aria-hidden="true" />
+
+      {/* Orbital rings — slow-rotating decorative circles matching auth */}
+      <div className="galaxy-orbital-ring galaxy-orbital-ring--1" aria-hidden="true" />
+      <div className="galaxy-orbital-ring galaxy-orbital-ring--2" aria-hidden="true" />
+      <div className="galaxy-orbital-ring galaxy-orbital-ring--3" aria-hidden="true" />
     </div>
   );
 };

@@ -210,6 +210,17 @@
     /* Slightly reduce complexity on mobile */
     contain: layout style paint;
   }
+
+  /* Simplify orbital rings on mobile */
+  .galaxy-orbital-ring--2,
+  .galaxy-orbital-ring--3 {
+    display: none;
+  }
+
+  .galaxy-orbital-ring--1 {
+    width: 400px;
+    height: 400px;
+  }
 }
 
 /* Tablet and small screens */
@@ -235,6 +246,21 @@
 
   .particle {
     /* Slightly increase glow on larger screens */
+  }
+
+  .galaxy-orbital-ring--1 {
+    width: 1000px;
+    height: 1000px;
+  }
+
+  .galaxy-orbital-ring--2 {
+    width: 700px;
+    height: 700px;
+  }
+
+  .galaxy-orbital-ring--3 {
+    width: 1300px;
+    height: 1300px;
   }
 }
 
@@ -319,6 +345,65 @@
 }
 
 /* ============================================
+   VIGNETTE — darkened edges for depth (matches auth)
+   ============================================ */
+.galaxy-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 40%, rgba(2, 6, 23, 0.45) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ============================================
+   ORBITAL RINGS — decorative rotating ellipses
+   Matching auth layout style but adapted for
+   the larger dashboard canvas
+   ============================================ */
+.galaxy-orbital-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(148, 163, 184, 0.05);
+  pointer-events: none;
+  z-index: 2;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.galaxy-orbital-ring--1 {
+  width: 800px;
+  height: 800px;
+  bottom: -20%;
+  left: -10%;
+  border-color: rgba(167, 139, 250, 0.06);
+  animation: galaxy-orbital-rotate 100s linear infinite;
+}
+
+.galaxy-orbital-ring--2 {
+  width: 550px;
+  height: 550px;
+  top: -8%;
+  right: -8%;
+  border-color: rgba(56, 189, 248, 0.04);
+  border-style: dashed;
+  animation: galaxy-orbital-rotate 130s linear infinite reverse;
+}
+
+.galaxy-orbital-ring--3 {
+  width: 1000px;
+  height: 1000px;
+  top: 30%;
+  left: 40%;
+  transform: translate(-50%, -50%) translateZ(0);
+  border-color: rgba(139, 92, 246, 0.03);
+  animation: galaxy-orbital-rotate 160s linear infinite;
+}
+
+@keyframes galaxy-orbital-rotate {
+  to { transform: rotate(360deg) translateZ(0); }
+}
+
+/* ============================================
    ACCESSIBILITY CONSIDERATIONS
    ============================================ */
 
@@ -350,5 +435,9 @@
   .debris-piece:hover {
     opacity: 0.75;
     stroke-width: 1.5px;
+  }
+
+  .galaxy-orbital-ring {
+    animation: none !important;
   }
 }
