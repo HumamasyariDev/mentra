@@ -355,9 +355,9 @@ export default function Register() {
                         />
                         <label htmlFor="reg-tos" className="reg-terms-text">
                           By signing up you agree to the{' '}
-                          <a href="/terms-of-service" className="reg-terms-link">terms of service</a>
+                          <Link to="/terms-of-service" className="reg-terms-link">terms of service</Link>
                           {' '}and the{' '}
-                          <a href="/privacy-policy" className="reg-terms-link">privacy policy</a>.
+                          <Link to="/privacy-policy" className="reg-terms-link">privacy policy</Link>.
                         </label>
                       </div>
 
