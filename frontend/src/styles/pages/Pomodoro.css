@@ -1,66 +1,46 @@
-/* Pomodoro Page Styles */
+/* ============================================================
+   Pomodoro Page Styles
+   Single consolidated file — layout, typography, animations
+   ============================================================ */
 
-.pomodoro-loading-spinner {
-  width: 1.25rem;
-  height: 1.25rem;
-  flex-shrink: 0;
-  animation: pomodoro-spin 0.7s linear infinite;
+/* ── Page Layout ── */
+.pomodoro-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-height: 100%;
 }
 
-@keyframes pomodoro-spin {
-  to { transform: rotate(360deg); }
-}
-
-.pomodoro-wrapper {
-  margin: -1.5rem;
-  min-height: 100vh;
-  padding: 2rem;
-  position: relative;
-}
-
-.pomodoro-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-}
-
-/* Header */
+/* ── Header ── */
 .pomodoro-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 2rem;
   flex-wrap: wrap;
   gap: 1rem;
 }
 
-.pom-header-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  margin: 0;
-}
-
-.pom-header-sub {
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  margin-top: 0.25rem;
+.pomodoro-header-info {
+  display: flex;
+  flex-direction: column;
 }
 
 .pomodoro-title {
   font-size: 2rem;
   font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.04em;
   margin: 0;
 }
 
 .pomodoro-subtitle {
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 6px 0 0 0;
+  font-weight: 400;
 }
 
-/* Theme Picker */
+/* ── Theme Picker ── */
 .pomodoro-theme-picker {
   position: relative;
 }
@@ -69,21 +49,21 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
+  padding: 0.5rem 0.875rem;
+  border-radius: 10px;
+  font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
-  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-default);
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
 }
 
 .pomodoro-theme-btn:hover {
-  opacity: 0.9;
-}
-
-.pomodoro-theme-label {
-  font-size: 0.875rem;
+  background: var(--bg-active);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
 }
 
 .pomodoro-theme-dropdown {
@@ -91,9 +71,10 @@
   top: calc(100% + 0.5rem);
   right: 0;
   background: var(--bg-elevated);
-  border-radius: 0.75rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  padding: 0.5rem;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  padding: 0.375rem;
   min-width: 200px;
   z-index: 50;
 }
@@ -101,32 +82,49 @@
 .pomodoro-theme-option {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.625rem;
   width: 100%;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
   border: none;
+  background: none;
+  color: var(--text-secondary);
   text-align: left;
+  transition: all 0.15s ease;
 }
 
 .pomodoro-theme-option:hover {
-  background-color: var(--bg-hover);
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
-.pomodoro-theme-preview {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.375rem;
+.pomodoro-theme-option.active {
+  background: var(--pom-accent-bg, var(--accent-bg));
+  color: var(--pom-accent, var(--accent));
+}
+
+.pomodoro-theme-swatch {
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
   flex-shrink: 0;
+  border: 1.5px solid var(--border-default);
 }
 
-/* Grid Layout */
+.pomodoro-theme-check {
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-left: auto;
+  color: var(--pom-accent, var(--accent));
+}
+
+/* ── Bento Grid ── */
 .pomodoro-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1.5rem;
 }
 
@@ -136,96 +134,285 @@
   }
 }
 
-/* Timer Column */
-.pomodoro-timer-col {
-  display: flex;
-  flex-direction: column;
+/* ── Cards ── */
+.pomodoro-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--pom-accent-bg, var(--border-default));
+  border-radius: 12px;
+  padding: 24px;
+  transition: border-color 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.pomodoro-card:hover {
+  border-color: var(--card-hover-border);
+  box-shadow: var(--card-hover-shadow);
 }
 
 .pomodoro-timer-card {
-  border-radius: 1.5rem;
-  padding: 2.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  grid-column: 1 / 3;
+  grid-row: 1 / 3;
+  border-color: var(--pom-accent-bg, var(--border-default));
 }
 
-/* Cat Scene */
-.pomodoro-cat-scene {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
+/* Accent glow on timer card when session is running */
+.pomodoro-timer-card.pom-card-running {
+  border-color: var(--pom-accent-bg, var(--border-default));
+  box-shadow: 0 0 24px var(--pom-glow, transparent), 0 0 48px var(--pom-glow, transparent);
 }
 
-.pomodoro-food-progress {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  width: 100%;
-  max-width: 400px;
+@media (max-width: 1024px) {
+  .pomodoro-timer-card {
+    grid-column: auto;
+    grid-row: auto;
+  }
 }
 
-.pomodoro-food-bar {
-  flex: 1;
-  height: 0.5rem;
-  border-radius: 9999px;
-  overflow: hidden;
-}
-
-.pomodoro-food-fill {
-  height: 100%;
-  background: linear-gradient(to right, var(--warning), var(--success));
-  border-radius: 9999px;
-  transition: width 0.3s ease;
-}
-
-.pomodoro-food-percent {
-  font-size: 0.75rem;
+.pomodoro-card-title {
+  font-size: 0.8125rem;
   font-weight: 600;
-  min-width: 3rem;
-  text-align: right;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.01em;
 }
 
-.pomodoro-cat {
+/* ── Water Progress Bar ── */
+.pom-water-progress-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.pom-water-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--pom-accent, var(--info));
+}
+
+.pom-progress-track {
+  flex: 1;
+  max-width: 200px;
+  height: 0.5rem;
+  border-radius: 8px;
+  background: var(--bg-inset);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.pom-progress-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: var(--pom-accent, var(--accent));
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pom-progress-pct {
+  font-size: 0.75rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  min-width: 2.25rem;
+  text-align: right;
+  color: var(--pom-accent, var(--text-tertiary));
+  flex-shrink: 0;
+}
+
+/* ── Watering Animation Scene ── */
+.pom-scene {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+  background: var(--pom-accent-bg, var(--bg-inset));
+  border: 1px solid var(--pom-accent-bg, var(--border-default));
+  transition:
+    width 0.9s cubic-bezier(0.34, 1.2, 0.64, 1),
+    height 0.9s cubic-bezier(0.34, 1.2, 0.64, 1),
+    border-radius 0.9s cubic-bezier(0.34, 1.2, 0.64, 1),
+    box-shadow 0.5s ease,
+    background 0.3s ease;
 }
 
-.pomodoro-cat-emoji {
-  font-size: 5rem;
-  line-height: 1;
+.pom-scene-idle {
+  width: 192px;
+  height: 192px;
+  border-radius: 96px;
 }
 
-.pomodoro-cat-label {
-  font-size: 0.875rem;
+.pom-scene-running {
+  width: 320px;
+  height: 480px;
+  border-radius: 16px;
+  box-shadow: 0 0 16px var(--pom-glow, transparent), var(--shadow-md);
+}
+
+.pom-scene-skip-morph {
+  transition: none !important;
+}
+.pom-scene-skip-morph .pom-scene-kran,
+.pom-scene-skip-morph .pom-scene-kran *,
+.pom-scene-skip-morph .pom-scene-can,
+.pom-scene-skip-morph .pom-scene-can * {
+  transition: none !important;
+}
+
+.pom-scene:not(.pom-scene-skip-morph) .pom-scene-kran,
+.pom-scene:not(.pom-scene-skip-morph) .pom-scene-can {
+  transition: all 0.7s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+/* Kran positioning */
+.pom-scene-kran {
+  flex-shrink: 0;
+  z-index: 10;
+  align-self: center;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+.pom-scene-kran-idle {
+  margin-left: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.pom-scene-kran-running {
+  margin-left: 8rem;
+  margin-top: -60px;
+  padding-top: 1rem;
+}
+
+.pom-kran-img {
+  object-fit: contain;
+}
+
+.pom-kran-img-idle {
+  width: 8rem;
+  height: 8rem;
+}
+
+.pom-kran-img-running {
+  width: 12.5rem;
+  height: 12.5rem;
+}
+
+/* Water drops container */
+.pom-drops-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Single water drop — positioned absolutely */
+.pom-drop-single {
+  position: absolute;
+  width: 2rem;
+  height: 2.5rem;
+  top: 18%;
+  left: calc(50% - 1rem + 12px);
+  backface-visibility: hidden;
+  transform-origin: top center;
+  animation: pom-fall-1 3s cubic-bezier(0.4, 0, 0.6, 1) 0s infinite backwards;
+  will-change: transform, opacity;
+  animation-play-state: running;
+}
+
+.pom-drop-z1 { z-index: 32; }
+.pom-drop-z2 { z-index: 31; }
+.pom-drop-z3 { z-index: 30; }
+
+/* Watering can */
+.pom-scene-can {
+  flex-shrink: 0;
+  z-index: 10;
+  padding-bottom: 1rem;
+}
+
+.pom-scene-can-idle {
+  position: absolute;
+  bottom: 0;
+}
+
+.pom-can-img {
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
+.pom-can-img-idle {
+  width: 6rem;
+  height: 6rem;
+}
+
+.pom-can-img-running {
+  width: 9rem;
+  height: 9rem;
+}
+
+/* Scene spacer — pushes can to bottom when running */
+.pom-scene-spacer {
+  flex: 1;
+}
+
+/* ── Status Text ── */
+.pom-status-sub {
+  font-size: 0.8125rem;
   font-weight: 500;
-}
-
-/* Timer Display */
-.pomodoro-timer-display {
+  color: var(--pom-accent, var(--text-secondary));
+  margin-top: 1rem;
   text-align: center;
-  padding: 1rem 0;
 }
 
-.pomodoro-timer-time {
-  font-size: 5rem;
+/* ── Timer Display ── */
+.pom-timer-section {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.pom-timer-display {
+  font-size: 4rem;
   font-weight: 700;
-  line-height: 1;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   margin: 0;
-  letter-spacing: -0.02em;
 }
 
-.pomodoro-timer-status {
-  font-size: 0.875rem;
-  margin-top: 0.75rem;
+@media (min-width: 768px) {
+  .pom-timer-display {
+    font-size: 4.5rem;
+  }
+}
+
+.pom-timer-display.pom-running {
+  transform: scale(1.05);
+  color: var(--pom-accent, var(--text-primary));
+}
+
+.pom-timer-display.pom-paused {
+  animation: pom-timer-pause-pulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pom-timer-display.pom-stopped {
+  animation: pom-timer-stop-shake 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pom-status-label {
+  font-size: 0.9375rem;
   font-weight: 500;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
 }
 
-/* Setup block — duration, task, start button */
+.pom-status-label-running {
+  color: var(--pom-accent-light, var(--text-secondary));
+}
+
+/* ── Setup Block (duration, custom, task) ── */
 .pom-setup-block {
   display: flex;
   flex-direction: column;
@@ -235,37 +422,42 @@
   margin: 0 auto;
 }
 
-/* Duration presets */
+/* Duration pills — segment control pattern */
 .pom-duration-row {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.25rem;
   width: 100%;
   justify-content: center;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 0.25rem;
 }
 
 .pom-duration-btn {
   flex: 1;
   min-width: 0;
-  padding: 0.625rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: -0.02em;
   cursor: pointer;
   border: none;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: transparent;
+  color: var(--text-tertiary);
+  transition: all 0.2s ease;
 }
 
 .pom-duration-btn:hover {
-  transform: translateY(-1px);
-}
-
-.pom-duration-btn:active {
-  transform: scale(0.97);
+  color: var(--text-primary);
+  background: var(--bg-hover);
 }
 
 .pom-duration-btn-active {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: var(--pom-accent-bg, var(--bg-surface));
+  color: var(--pom-accent, var(--text-primary));
+  box-shadow: var(--shadow-sm);
 }
 
 /* Custom duration row */
@@ -277,10 +469,11 @@
   width: 100%;
 }
 
-.pom-custom-label {
+.pom-custom-label,
+.pom-custom-unit {
   font-size: 0.8125rem;
   font-weight: 500;
-  letter-spacing: -0.01em;
+  color: var(--text-tertiary);
 }
 
 .pom-custom-input {
@@ -290,13 +483,15 @@
   font-size: 0.875rem;
   font-weight: 600;
   text-align: center;
-  border: none;
+  border: 1.5px solid transparent;
   outline: none;
-  transition: box-shadow 0.2s ease;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  transition: border-color 0.2s ease;
 }
 
 .pom-custom-input:focus {
-  box-shadow: 0 0 0 2px currentColor;
+  border-color: var(--input-focus-border);
 }
 
 .pom-custom-input::-webkit-inner-spin-button,
@@ -309,11 +504,6 @@
   -moz-appearance: textfield;
 }
 
-.pom-custom-unit {
-  font-size: 0.8125rem;
-  font-weight: 500;
-}
-
 /* Task selector */
 .pom-task-row {
   width: 100%;
@@ -322,68 +512,22 @@
 .pom-task-select {
   width: 100%;
   padding: 0.625rem 1rem;
-  border-radius: 12px;
+  border-radius: 10px;
   font-size: 0.875rem;
   font-weight: 500;
-  letter-spacing: -0.01em;
   cursor: pointer;
-  border: none;
+  border: 1.5px solid transparent;
   outline: none;
-  transition: all 0.2s ease;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  transition: border-color 0.2s ease;
 }
 
 .pom-task-select:focus {
-  box-shadow: 0 0 0 2px currentColor;
+  border-color: var(--input-focus-border);
 }
 
-/* Water Plants — primary CTA */
-.pom-start-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.875rem 2rem;
-  border-radius: 14px;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  cursor: pointer;
-  border: none;
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.pom-start-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px -4px rgba(99, 102, 241, 0.4);
-}
-
-.pom-start-btn:active:not(:disabled) {
-  transform: translateY(0) scale(0.98);
-}
-
-.pom-start-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-/* Legacy compatibility */
-.pomodoro-duration-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.pomodoro-duration-buttons {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.5rem;
-}
-
-.pomodoro-task-section {
-  margin-top: 0;
-}
-
-/* Controls */
+/* ── Control Buttons ── */
 .pomodoro-controls {
   display: flex;
   flex-wrap: wrap;
@@ -393,61 +537,91 @@
   margin-top: 1.5rem;
 }
 
-/* Control button base — smooth transitions */
-.pom-btn-resume,
-.pom-btn-pause,
+/* Start — primary CTA */
+.pom-start-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: var(--pom-accent, var(--accent));
+  color: var(--text-on-accent);
+  transition: all 0.2s ease;
+}
+
+.pom-start-btn:hover:not(:disabled) {
+  background: var(--pom-accent-dark, var(--accent-dark));
+  transform: translateY(-1px);
+}
+
+.pom-start-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.pom-start-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Pause/Resume */
+.pom-btn-pause {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--pom-accent-bg, var(--border-default));
+  background: var(--bg-hover);
+  color: var(--pom-accent, var(--text-primary));
+  transition: all 0.2s ease;
+}
+
+.pom-btn-pause:hover {
+  background: var(--pom-accent-bg, var(--bg-active));
+  border-color: var(--pom-accent-light, var(--border-hover));
+}
+
+/* Stop */
 .pom-btn-stop {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  border-radius: 14px;
+  border-radius: 10px;
   font-size: 0.9375rem;
   font-weight: 600;
-  letter-spacing: -0.01em;
   cursor: pointer;
-  border: none;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.25s ease,
-    background-color 0.2s ease;
+  border: 1px solid var(--danger-border);
+  background: var(--danger-bg);
+  color: var(--danger);
+  transition: all 0.2s ease;
 }
 
-.pom-btn-resume:active,
-.pom-btn-pause:active,
-.pom-btn-stop:active {
-  transform: scale(0.96);
+.pom-btn-stop:hover {
+  background: rgba(239, 68, 68, 0.2);
 }
 
-.pom-btn-resume:hover:not(:disabled),
-.pom-btn-pause:hover:not(:disabled),
-.pom-btn-stop:hover:not(:disabled) {
-  transform: scale(1.02);
-}
-
-/* Pause/Resume — soft press animation */
-.pom-btn-pause {
-  animation: pom-btn-ready 0.4s ease;
-}
-
-/* Pause — scale bounce */
+/* Button press animations */
 .pom-btn-pause.pom-just-paused {
   animation: pom-btn-pause-press 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Resume — scale bounce (same button as pause) */
 .pom-btn-pause.pom-just-resumed {
   animation: pom-btn-resume-press 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Stop — shake + scale */
 .pom-btn-stop.pom-just-stopped {
   animation: pom-btn-stop-press 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes pom-btn-ready {
-  from { opacity: 0.9; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes pom-btn-pause-press {
@@ -474,21 +648,40 @@
   100% { transform: scale(1) translateX(0); }
 }
 
-/* Timer typography */
-.pom-timer-display {
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.03em;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* ── Completed State ── */
+.pom-completed-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+  animation: pom-pulse 2s ease-in-out infinite;
 }
 
-.pom-timer-display.pom-paused {
-  animation: pom-timer-pause-pulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+.pom-cans-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+  padding: 0.125rem 0.5rem;
+  background: var(--info-bg);
+  color: var(--info);
+  border-radius: 9999px;
+  font-size: 0.8125rem;
 }
 
-.pom-timer-display.pom-stopped {
-  animation: pom-timer-stop-shake 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+@keyframes pom-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
+/* ── Timer Animations ── */
 @keyframes pom-timer-pause-pulse {
   0%, 100% { transform: scale(1); opacity: 1; }
   40% { transform: scale(0.96); opacity: 0.85; }
@@ -504,172 +697,251 @@
   80% { transform: translateX(0) scale(1.02); }
 }
 
-/* Status text hierarchy */
-.pom-status-label {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+/* ── Water Drop Animation ── */
+@keyframes pom-fall-1 {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1) translateZ(0);
+    filter: drop-shadow(0 2px 8px rgba(100, 150, 200, 0.3));
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(210px) scale(1) translateZ(0);
+    filter: drop-shadow(0 4px 12px rgba(100, 150, 200, 0.4));
+  }
+  95% {
+    opacity: 0.4;
+    transform: translateY(235px) scale(0.8) translateZ(0);
+    filter: drop-shadow(0 2px 6px rgba(100, 150, 200, 0.2));
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(238px) scale(0.5) translateZ(0);
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0));
+  }
 }
 
-.pom-status-sub {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  opacity: 0.85;
+/* ── Watering Can Bounce ── */
+@keyframes pom-bounce {
+  0% {
+    transform: translateY(0) scaleY(1) scaleX(1);
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+  }
+  25% {
+    transform: translateY(8px) scaleY(0.9) scaleX(1);
+    filter: drop-shadow(0 14px 22px rgba(0, 0, 0, 0.22));
+  }
+  50% {
+    transform: translateY(0px) scaleY(1) scaleX(1);
+    filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.1));
+  }
+  75% {
+    transform: translateY(0px) scaleY(1) scaleX(1);
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.16));
+  }
+  100% {
+    transform: translateY(0) scaleY(1) scaleX(1);
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+  }
 }
 
-/* Water progress row — icon, bar, and % aligned vertically */
-.pom-water-progress-row {
+.pom-can-bounce {
+  animation-name: pom-bounce;
+  animation-duration: 1s;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-delay: 0.3s;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+/* ── Loading Spinner ── */
+.pomodoro-loading-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  animation: pom-spin 0.7s linear infinite;
+}
+
+@keyframes pom-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Stats Card ── */
+.pom-stats-list {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   gap: 0.75rem;
 }
 
-/* Progress bar smooth transition */
-.pom-progress-fill {
-  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+.pom-stat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: var(--bg-inset);
 }
 
-
-.pomodoro-start-btn,
-.pomodoro-pause-btn,
-.pomodoro-stop-btn {
+.pom-stat-label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
-  border-radius: 0.75rem;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.pom-stat-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.pom-stat-icon-accent { color: var(--pom-accent, var(--accent)); }
+.pom-stat-icon-success { color: var(--success); }
+
+.pom-stat-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pom-stat-value-accent { color: var(--pom-accent, var(--accent)); }
+.pom-stat-value-success { color: var(--success); }
+
+/* ── History Card ── */
+.pom-history-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.pom-history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.pom-history-item:last-child {
+  border-bottom: none;
+}
+
+.pom-history-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.pom-history-task {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pom-history-meta {
+  font-size: 0.625rem;
+  color: var(--text-tertiary);
+  margin: 0.125rem 0 0 0;
+}
+
+.pom-history-badge {
+  font-size: 0.625rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
   font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
 }
 
-.pomodoro-start-btn {
-  background: linear-gradient(to right, var(--accent), var(--purple));
-  color: var(--text-on-accent);
-  flex: 1;
-  max-width: 300px;
+.pom-badge-completed {
+  background: var(--success-bg);
+  color: var(--success);
 }
 
-.pomodoro-start-btn:hover:not(:disabled) {
-  opacity: 0.9;
-}
-
-.pomodoro-start-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.pomodoro-pause-btn {
-  flex: 1;
-}
-
-.pomodoro-pause-btn:hover {
-  opacity: 0.9;
-}
-
-.pomodoro-stop-btn {
-  background-color: rgba(239, 68, 68, 0.1);
+.pom-badge-cancelled {
+  background: var(--danger-bg);
   color: var(--danger);
 }
 
-.pomodoro-stop-btn:hover {
-  background-color: rgba(239, 68, 68, 0.2);
+.pom-badge-running {
+  background: var(--warning-bg);
+  color: var(--warning);
 }
 
-.pomodoro-completed-msg {
-  padding: 1rem 1.5rem;
-  border-radius: 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-/* Sidebar */
-.pomodoro-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.pomodoro-stats-card,
-.pomodoro-history-card {
-  border-radius: 1.5rem;
-  padding: 1.75rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.pomodoro-stats-title,
-.pomodoro-history-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  margin: 0 0 1.25rem 0;
-}
-
-/* Stats */
-.pomodoro-stats-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.pomodoro-stat-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-radius: 0.75rem;
-}
-
-.pomodoro-stat-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-}
-
-.pomodoro-stat-value {
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-
-/* History */
-.pomodoro-history-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.pomodoro-history-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 0;
-}
-
-.pomodoro-history-item:last-child {
-  border-bottom: none !important;
-}
-
-.pomodoro-history-info {
-  flex: 1;
-}
-
-.pomodoro-history-task {
-  font-size: 0.875rem;
+/* ── Dev Button ── */
+.pom-dev-btn {
+  margin-left: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: var(--orange-bg);
+  color: var(--orange);
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, monospace;
   font-weight: 500;
-  margin: 0;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
 }
 
-.pomodoro-history-meta {
-  font-size: 0.75rem;
-  margin: 0.25rem 0 0 0;
+.pom-dev-btn:hover {
+  background: rgba(249, 115, 22, 0.2);
 }
 
-.pomodoro-history-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+.pom-dev-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Accessibility ── */
+@media (prefers-reduced-motion: reduce) {
+  .pom-drop-single {
+    animation: pom-fall-reduced 2s linear 0s infinite backwards;
+  }
+
+  .pom-can-bounce {
+    animation: none;
+    transform: none;
+  }
+
+  @keyframes pom-fall-reduced {
+    0% {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.8) translateZ(0);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(120px) scale(1) translateZ(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(238px) scale(0.8) translateZ(0);
+    }
+  }
+}
+
+/* ── Mobile Responsive ── */
+@media (max-width: 640px) {
+  .pomodoro-page {
+    gap: 1rem;
+  }
+
+  .pomodoro-title {
+    font-size: 1.5rem;
+  }
+
+  .pom-timer-display {
+    font-size: 3rem;
+  }
+
+  .pomodoro-card {
+    padding: 20px;
+  }
+
+  .pom-scene-running {
+    width: 260px;
+    height: 400px;
+  }
 }
