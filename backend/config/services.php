@@ -35,6 +35,18 @@ return [
         ],
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('APP_URL', 'http://localhost:8000') . '/auth/google/callback',
+    ],
+
+    'facebook' => [
+        'client_id' => env('FACEBOOK_CLIENT_ID'),
+        'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
+        'redirect' => env('APP_URL', 'http://localhost:8000') . '/auth/facebook/callback',
+    ],
+
     'openai' => [
         'key' => env('OPENAI_API_KEY'),
         'model' => env('OPENAI_MODEL', 'gpt-3.5-turbo'),

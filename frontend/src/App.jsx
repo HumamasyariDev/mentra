@@ -5,6 +5,8 @@ import ForestLayout from "./layouts/ForestLayout";
 import { TransitionWrapper } from "./components/TransitionWrapper";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ResetPassword from "./pages/ResetPassword";
+import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import Settings from "./pages/Settings";
 import Tasks from "./pages/Tasks";
@@ -34,7 +36,11 @@ export default function App() {
               {/* Auth routes */}
               <Route element={<AuthLayout />}>
                 <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+              </Route>
+              <Route path="/register" element={<Register />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route element={<AuthLayout />}>
+                <Route path="/reset-password" element={<ResetPassword />} />
               </Route>
 
               {/* Forest Tree Care — separate layout with transition overlay but no sidebar */}

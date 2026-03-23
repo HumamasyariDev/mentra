@@ -17,6 +17,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'provider',
+        'provider_id',
         'level',
         'total_exp',
         'current_exp',

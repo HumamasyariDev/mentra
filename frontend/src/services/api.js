@@ -47,6 +47,10 @@ export const authApi = {
   login: (data) => api.post("/login", data),
   logout: () => api.post("/logout"),
   me: () => api.get("/me"),
+  sendOtp: (email) => api.post("/auth/send-otp", { email }),
+  verifyOtp: (email, code) => api.post("/auth/verify-otp", { email, code }),
+  forgotPassword: (email) => api.post("/auth/forgot-password", { email }),
+  resetPassword: (data) => api.post("/auth/reset-password", data),
 };
 
 // Dashboard

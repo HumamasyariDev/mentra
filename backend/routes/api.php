@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Route;
 //  Public Routes ──
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/auth/send-otp', [AuthController::class, 'sendOtp']);
+Route::post('/auth/verify-otp', [AuthController::class, 'verifyOtp']);
+Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
 
 //  Protected Routes (Sanctum) ─
 Route::middleware('auth:sanctum')->group(function () {

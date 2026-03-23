@@ -1,0 +1,1072 @@
+/* ============================================
+   REGISTER PAGE — Windsurf-identical layout
+   Two-column: left form, right visual
+   Dark space theme (Mentra)
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+/* ── Loading ── */
+.reg-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #020617;
+}
+
+.reg-loading .reg-spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  animation: reg-spin 0.8s linear infinite;
+  color: #a78bfa;
+}
+
+@keyframes reg-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   PAGE — Two-column flex (Windsurf: flex)
+   ============================================ */
+.reg-page {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  background: #0f172a;
+  font-family: 'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   LEFT PANEL — Form side
+   Windsurf: relative z-10 w-full px-5 md:px-10
+   border-r border-black/15 bg-white lg:flex-[3]
+   ============================================ */
+.reg-left {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  border-right: 1px solid rgba(148, 163, 184, 0.1);
+  background: #0f172a;
+}
+
+@media (min-width: 768px) {
+  .reg-left {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .reg-left {
+    flex: 3;
+  }
+}
+
+.reg-left-inner {
+  width: 100%;
+}
+
+/* Windsurf: relative flex min-h-screen w-full flex-col
+   items-center justify-center overflow-y-auto py-10 */
+.reg-left-content {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
+/* ============================================
+   HEADER — Logo + heading + subtitle
+   Windsurf: z-10 mb-11 flex w-full max-w-lg
+   flex-col items-start justify-center gap-14
+   ============================================ */
+.reg-header {
+  z-index: 10;
+  margin-bottom: 2.75rem;
+  display: flex;
+  width: 100%;
+  max-width: 32rem;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 3.5rem;
+}
+
+/* Windsurf logo: h-auto w-16 */
+.reg-logo {
+  width: 4rem;
+  height: 4rem;
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  box-shadow:
+    0 0 24px rgba(167, 139, 250, 0.3),
+    0 0 48px rgba(124, 58, 237, 0.15);
+  flex-shrink: 0;
+}
+
+/* Windsurf: flex flex-col gap-4 */
+.reg-heading-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Windsurf: subheading2 text-center tracking-tight text-sk-black
+   (their subheading2 is ~1.5rem-1.875rem, semibold) */
+.reg-title {
+  font-size: 1.875rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: #f1f5f9;
+  line-height: 1.2;
+  margin: 0;
+}
+
+/* Windsurf: body3 flex items-center gap-1
+   font-medium tracking-tight text-sk-black/50 */
+.reg-subtitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: rgba(148, 163, 184, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Windsurf: cursor-pointer hover:underline text-sk-sea/70 */
+.reg-link {
+  color: rgba(167, 139, 250, 0.7);
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.reg-link:hover {
+  text-decoration: underline;
+  color: #a78bfa;
+}
+
+/* Windsurf: h-4 w-4 text-sk-sea arrow SVG */
+.reg-arrow {
+  width: 1rem;
+  height: 1rem;
+  color: #a78bfa;
+  flex-shrink: 0;
+}
+
+/* ============================================
+   FORM SECTION
+   Windsurf: z-10 flex w-full flex-col
+   items-center justify-center
+   ============================================ */
+.reg-form-wrap {
+  z-index: 10;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Windsurf: mx-auto mb-5 flex w-full max-w-lg flex-col gap-4 */
+.reg-form-inner {
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1.25rem;
+  display: flex;
+  width: 100%;
+  max-width: 32rem;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reg-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ── Error ── */
+.reg-error {
+  background: rgba(239, 68, 68, 0.08);
+  color: #fca5a5;
+  font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  line-height: 1.5;
+}
+
+/* ============================================
+   FORM FIELDS
+   Windsurf: flex w-full flex-col items-start gap-1.5
+   ============================================ */
+.reg-field {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.375rem;
+}
+
+/* Windsurf: body3 tracking-tight text-sk-black */
+.reg-label {
+  font-size: 0.875rem;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+/* Windsurf: placeholder-tracking-tight body3 leading-tight
+   flex items-center w-full flex-shrink-0 rounded-md
+   px-3 pt-2 pb-2 border-2 border-sk-black/10
+   focus:border-sk-aqua focus:ring-sk-aqua focus:ring-1 */
+.reg-input {
+  width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: none;
+  border: 2px solid rgba(148, 163, 184, 0.12);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: rgba(241, 245, 249, 0.75);
+  line-height: 1.25;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.reg-input::placeholder {
+  color: rgba(148, 163, 184, 0.2);
+  letter-spacing: -0.015em;
+}
+
+.reg-input:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 1px #a78bfa;
+}
+
+.reg-input--error {
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.reg-input--error:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 1px #ef4444;
+}
+
+.reg-field-error {
+  color: #fca5a5;
+  font-size: 0.8125rem;
+  margin: 0.125rem 0 0;
+}
+
+/* ============================================
+   NAME ROW — Side by side
+   Windsurf: flex w-full gap-4
+   Children: flex w-1/2 flex-col gap-1.5
+   ============================================ */
+.reg-name-row {
+  display: flex;
+  width: 100%;
+  gap: 1rem;
+}
+
+.reg-field--half {
+  width: 50%;
+}
+
+/* ============================================
+   PASSWORD WRAPPER
+   ============================================ */
+.reg-password-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.reg-password-wrap .reg-input {
+  padding-right: 2.5rem;
+}
+
+.reg-password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: rgba(148, 163, 184, 0.35);
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+  border-radius: 4px;
+}
+
+.reg-password-toggle:hover {
+  color: rgba(148, 163, 184, 0.7);
+}
+
+.reg-password-toggle:focus-visible {
+  color: #a78bfa;
+  outline: 2px solid rgba(167, 139, 250, 0.4);
+  outline-offset: 1px;
+}
+
+/* ============================================
+   EMAIL PREVIEW (Step 2 — read-only email display)
+   Matches Windsurf: plain text under "Email" label
+   ============================================ */
+.reg-email-preview {
+  font-size: 0.875rem;
+  color: rgba(148, 163, 184, 0.65);
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+  letter-spacing: -0.015em;
+}
+
+/* ============================================
+   PASSWORD REQUIREMENTS CHECKLIST
+   Windsurf: "Your password must contain:" + check items
+   Green checkmarks when requirement is met
+   ============================================ */
+.reg-pw-requirements {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+}
+
+.reg-pw-requirements-title {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: rgba(148, 163, 184, 0.5);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.reg-pw-requirements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.reg-pw-req {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: rgba(148, 163, 184, 0.3);
+  transition: color 0.2s ease;
+}
+
+.reg-pw-req svg {
+  flex-shrink: 0;
+  color: rgba(148, 163, 184, 0.2);
+  transition: color 0.2s ease;
+}
+
+.reg-pw-req--met {
+  color: #34d399;
+}
+
+.reg-pw-req--met svg {
+  color: #34d399;
+}
+
+/* ============================================
+   BACK LINK (Windsurf style: ← Other Sign up options)
+   ============================================ */
+.reg-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  color: rgba(148, 163, 184, 0.5);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  margin-top: 0.5rem;
+}
+
+.reg-back-link:hover {
+  color: #a78bfa;
+}
+
+.reg-back-link:focus-visible {
+  outline: 2px solid rgba(167, 139, 250, 0.4);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ============================================
+   TERMS CHECKBOX
+   Windsurf: flex items-center space-x-2 pt-2
+   Checkbox: cursor-pointer appearance-none rounded-sm
+   border border-sk-black/20 bg-sk-black/20
+   checked:border-sk-sea checked:bg-sk-sea
+   ============================================ */
+.reg-terms {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.reg-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  min-width: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 2px;
+  background: rgba(148, 163, 184, 0.15);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.reg-checkbox:checked {
+  background: #7c3aed;
+  border-color: #7c3aed;
+}
+
+.reg-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.reg-checkbox:hover:checked {
+  background: #7c3aed;
+}
+
+.reg-checkbox:focus {
+  border-color: #7c3aed;
+  outline: none;
+  box-shadow: none;
+}
+
+/* Windsurf: caption1 text-left text-sk-black/50 */
+.reg-terms-text {
+  font-size: 0.75rem;
+  color: rgba(148, 163, 184, 0.5);
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+}
+
+.reg-terms-link {
+  color: rgba(148, 163, 184, 0.5);
+  text-decoration: underline;
+}
+
+.reg-terms-link:hover {
+  color: #a78bfa;
+}
+
+/* ============================================
+   SUBMIT BUTTON
+   Windsurf: cursor-pointer whitespace-nowrap font-medium
+   leading-6 bg-sk-aqua text-sk-black hover:bg-sk-aqua-tint
+   py-2 px-3 text-base rounded-[2px]
+   disabled:opacity-30 disabled:pointer-events-none
+   ============================================ */
+.reg-submit {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: 2px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+  background: #7c3aed;
+  color: #ffffff;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+.reg-submit:hover:not(:disabled) {
+  background: #8b5cf6;
+}
+
+.reg-submit:focus-visible {
+  outline: 2px solid rgba(167, 139, 250, 0.5);
+  outline-offset: 4px;
+}
+
+.reg-submit:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.reg-submit-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  animation: reg-spin 0.7s linear infinite;
+}
+
+/* ============================================
+   DIVIDER
+   Windsurf: flex flex-row items-center
+   <hr> flex-1 border border-sk-black/10
+   <span> px-2.5 tracking-wider text-sk-black/50
+   ============================================ */
+.reg-divider {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.reg-divider-line {
+  flex: 1;
+  border: none;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  margin: 0;
+}
+
+.reg-divider-text {
+  padding-left: 0.625rem;
+  padding-right: 0.625rem;
+  font-size: 0.875rem;
+  color: rgba(148, 163, 184, 0.4);
+  letter-spacing: 0.05em;
+}
+
+/* ============================================
+   SOCIAL BUTTONS
+   Windsurf: space-y-6 → gap-2 between buttons
+   Button: bg-sk-white text-sk-black/70
+   hover:bg-sk-black/5 border border-sk-black/20
+   py-2 px-3 text-base pr-5 rounded-[2px]
+   gap-3 for icon+text
+   ============================================ */
+.reg-social-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reg-social-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  padding-right: 1.25rem;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 2px;
+  background: rgba(15, 23, 42, 0.4);
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: inherit;
+  color: rgba(241, 245, 249, 0.7);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+.reg-social-btn:hover {
+  background: rgba(30, 41, 59, 0.55);
+  border-color: rgba(148, 163, 184, 0.25);
+}
+
+.reg-social-btn:focus-visible {
+  outline: 2px solid rgba(167, 139, 250, 0.4);
+  outline-offset: 4px;
+}
+
+.reg-social-btn svg,
+.reg-social-btn img {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* ============================================
+   STEP TRANSITIONS (entrance animation)
+   ============================================ */
+.reg-step {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: reg-step-enter 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes reg-step-enter {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.reg-back-btn {
+  font-size: 0.875rem;
+  color: rgba(148, 163, 184, 0.5);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-weight: 500;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.reg-back-btn:hover {
+  color: #a78bfa;
+}
+
+.reg-back-btn:focus-visible {
+  outline: 2px solid rgba(167, 139, 250, 0.4);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.reg-back-btn--center {
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* ============================================
+   OTP STEP — Email verification
+   ============================================ */
+
+/* Logo icon for OTP step — premium glassmorphism container */
+.reg-logo-icon {
+  position: relative;
+  width: 4.5rem;
+  height: 4.5rem;
+  background:
+    linear-gradient(135deg, rgba(124, 58, 237, 0.18) 0%, rgba(88, 28, 135, 0.22) 50%, rgba(67, 20, 110, 0.18) 100%);
+  border: 1.5px solid rgba(139, 92, 246, 0.25);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(139, 92, 246, 0.08),
+    0 4px 24px rgba(124, 58, 237, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(167, 139, 250, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Soft ambient glow behind the icon */
+.reg-logo-icon-glow {
+  position: absolute;
+  inset: -8px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.2) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Mail SVG sits above the glow */
+.reg-mail-svg {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.25));
+}
+
+.reg-otp-subtitle {
+  font-size: 0.875rem;
+  color: rgba(148, 163, 184, 0.5);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.reg-otp-subtitle strong {
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+/* OTP input row */
+.reg-otp-group {
+  display: flex;
+  justify-content: center;
+  gap: 0.625rem;
+  margin: 0.5rem 0;
+}
+
+.reg-otp-input {
+  width: 3rem;
+  height: 3.5rem;
+  text-align: center;
+  font-size: 1.375rem;
+  font-weight: 600;
+  font-family: 'Space Grotesk', 'DM Sans', monospace;
+  letter-spacing: 0;
+  color: #f1f5f9;
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid rgba(148, 163, 184, 0.12);
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.15s ease;
+  caret-color: #a78bfa;
+}
+
+.reg-otp-input:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 1px #a78bfa, 0 0 20px rgba(167, 139, 250, 0.12);
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.reg-otp-input--filled {
+  border-color: rgba(167, 139, 250, 0.35);
+  background: rgba(15, 23, 42, 0.8);
+}
+
+/* Resend footer */
+.reg-otp-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding-top: 0.25rem;
+}
+
+.reg-otp-footer-text {
+  font-size: 0.8125rem;
+  color: rgba(148, 163, 184, 0.4);
+}
+
+.reg-otp-resend {
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #a78bfa;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.reg-otp-resend:hover:not(:disabled) {
+  color: #c4b5fd;
+  text-decoration: underline;
+}
+
+.reg-otp-resend:disabled {
+  color: rgba(148, 163, 184, 0.3);
+  cursor: not-allowed;
+}
+
+/* ============================================
+   RIGHT PANEL — Visual showcase
+   Windsurf: relative z-10 hidden flex-[4]
+   overflow-hidden pl-20 lg:flex
+   background: linear-gradient(180deg,
+   rgba(83,155,255,0.20) 0%,
+   rgba(83,155,255,0.00) 77.95%)
+   ============================================ */
+.reg-right {
+  position: relative;
+  z-index: 10;
+  display: none;
+  flex: 4;
+  overflow: hidden;
+  padding: 3rem 3rem 2rem;
+  background:
+    linear-gradient(180deg, rgba(139, 92, 246, 0.12) 0%, rgba(139, 92, 246, 0.00) 78%),
+    radial-gradient(circle at 30% 50%, #1e1b4b 0%, #0f172a 40%, #020617 100%);
+}
+
+@media (min-width: 1024px) {
+  .reg-right {
+    display: flex;
+  }
+}
+
+/* Windsurf: relative z-20 flex h-full w-full flex-col
+   items-start justify-center gap-8 */
+.reg-right-content {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-bottom: 3rem;
+}
+
+/* ── Stars ── */
+.reg-right-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.reg-star {
+  position: absolute;
+  background: #cbd5e1;
+  border-radius: 50%;
+  opacity: 0;
+  will-change: opacity;
+  animation: reg-twinkle ease-in-out infinite;
+  transform: translateZ(0);
+}
+
+.reg-star--bright {
+  background: #f1f5f9;
+  box-shadow: 0 0 6px rgba(241, 245, 249, 0.5);
+}
+
+@keyframes reg-twinkle {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: 0.7; }
+}
+
+/* ============================================
+   SHOWCASE IMAGE — Replaces floating planets
+   Windsurf: h-[60vh] w-auto max-w-none object-left
+   ============================================ */
+.reg-showcase {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+.reg-showcase-img {
+  width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 16px;
+  /* Fade edges smoothly into the dark background */
+  -webkit-mask-image:
+    radial-gradient(ellipse 85% 80% at 50% 50%, #000 40%, transparent 100%);
+  mask-image:
+    radial-gradient(ellipse 85% 80% at 50% 50%, #000 40%, transparent 100%);
+  /* Tone down the bright whites so it blends with dark theme */
+  filter: brightness(0.78) contrast(1.05) saturate(1.1);
+  mix-blend-mode: lighten;
+}
+
+/* ============================================
+   TESTIMONIAL — Matches Windsurf's quote section
+   Windsurf: relative flex flex-col gap-6 px-8
+   ============================================ */
+.reg-testimonial {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  margin-top: 0;
+}
+
+/* Windsurf: absolute inset-0 -m-8 opacity-90 blur-[100px]
+   background: linear-gradient(180deg, #FFF 0%, #FFF 100%) */
+.reg-testimonial-blur {
+  position: absolute;
+  inset: -2rem;
+  opacity: 0.6;
+  filter: blur(100px);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Windsurf: relative z-10 pl-10 */
+.reg-testimonial-inner {
+  position: relative;
+  z-index: 10;
+  padding-left: 2.5rem;
+}
+
+/* Windsurf: body1 font-medium leading-relaxed text-sk-black/50 */
+.reg-quote {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.625;
+  color: rgba(148, 163, 184, 0.5);
+  margin: 0;
+}
+
+/* Windsurf: mt-6 flex items-center gap-3 */
+.reg-quote-author {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* Windsurf: h-12 w-12 rounded-full */
+.reg-quote-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+/* Windsurf: flex flex-col gap-1 */
+.reg-quote-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Windsurf: body3 font-medium text-sk-black/40 */
+.reg-quote-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(148, 163, 184, 0.4);
+  margin: 0;
+}
+
+.reg-quote-role {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(148, 163, 184, 0.25);
+  margin: 0;
+  font-family: 'Space Grotesk', 'DM Sans', sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ============================================
+   SCREEN-READER ONLY
+   ============================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   ACCESSIBILITY — Reduced motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .reg-star,
+  .reg-step {
+    animation: none !important;
+  }
+
+  .reg-star { opacity: 0.3; }
+  .reg-star--bright { opacity: 0.6; }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+/* < lg: single column, hide right panel */
+@media (max-width: 1023px) {
+  .reg-left {
+    flex: 1;
+    border-right: none;
+  }
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+  .reg-left {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .reg-header {
+    gap: 2rem;
+  }
+
+  .reg-logo {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.125rem;
+    border-radius: 10px;
+  }
+
+  .reg-title {
+    font-size: 1.5rem;
+  }
+
+  .reg-name-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .reg-field--half {
+    width: 100%;
+  }
+}

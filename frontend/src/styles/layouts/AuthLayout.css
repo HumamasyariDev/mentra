@@ -1,62 +1,554 @@
-/* AuthLayout Styles */
+/* ============================================
+   AUTH LAYOUT — Dark Space Theme
+   Artistic composition with floating planets,
+   typography labels, orbital rings, depth layers
+   ============================================ */
 
-.auth-layout-loading {
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500&display=swap');
+
+/* ── Loading ── */
+.auth-loading {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f8fafc;
+  background: #020617;
 }
 
-.auth-layout-loading-spinner {
-  width: 2rem;
-  height: 2rem;
-  animation: spin 1s linear infinite;
-  color: #6366f1;
+.auth-loading .auth-spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  animation: auth-spin 0.8s linear infinite;
+  color: #a78bfa;
 }
 
-@keyframes spin {
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   PAGE
+   ============================================ */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 40% 60%, #1e1b4b 0%, #0f172a 40%, #020617 100%);
+  font-family: 'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem 1.25rem;
+}
+
+/* ── Vignette — darkened edges for depth focus ── */
+.auth-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 40%, rgba(2, 6, 23, 0.5) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Ambient glow — asymmetric for visual interest ── */
+.auth-bg-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 50% 50% at 15% 85%, rgba(167, 139, 250, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 85% 15%, rgba(56, 189, 248, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 60% 110%, rgba(192, 132, 252, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 35% 25% at 5% 25%, rgba(52, 232, 187, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 30% at 90% 70%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================
+   STARS — two brightness layers, GPU-optimised
+   ============================================ */
+.auth-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.auth-star {
+  position: absolute;
+  background: #cbd5e1;
+  border-radius: 50%;
+  opacity: 0;
+  will-change: opacity;
+  animation: auth-twinkle ease-in-out infinite;
+  transform: translateZ(0);
+}
+
+.auth-star--bright {
+  background: #f1f5f9;
+  box-shadow: 0 0 6px rgba(241, 245, 249, 0.5);
+}
+
+@keyframes auth-twinkle {
+  0%, 100% { opacity: 0.05; }
+  50% { opacity: 0.75; }
+}
+
+/* ============================================
+   SHOOTING STAR
+   ============================================ */
+.auth-shooting-star {
+  position: absolute;
+  top: 18%;
+  left: -5%;
+  width: 120px;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.7), rgba(196, 181, 253, 0.3), transparent);
+  border-radius: 1px;
+  z-index: 0;
+  opacity: 0;
+  transform: rotate(-25deg) translateZ(0);
+  will-change: transform, opacity;
+  animation: shooting-star 9s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+@keyframes shooting-star {
+  0%   { opacity: 0; transform: rotate(-25deg) translateX(0); }
+  4%   { opacity: 1; }
+  14%  { opacity: 0; transform: rotate(-25deg) translateX(calc(100vw + 200px)); }
+  100% { opacity: 0; transform: rotate(-25deg) translateX(0); }
+}
+
+/* ============================================
+   ORBITAL RINGS — decorative ellipses, GPU
+   ============================================ */
+.auth-orbital-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(148, 163, 184, 0.06);
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.auth-orbital-ring--1 {
+  width: 600px;
+  height: 600px;
+  bottom: -25%;
+  left: -15%;
+  border-color: rgba(167, 139, 250, 0.07);
+  animation: orbital-rotate 90s linear infinite;
+}
+
+.auth-orbital-ring--2 {
+  width: 400px;
+  height: 400px;
+  top: -10%;
+  right: -12%;
+  border-color: rgba(56, 189, 248, 0.05);
+  border-style: dashed;
+  animation: orbital-rotate 120s linear infinite reverse;
+}
+
+@keyframes orbital-rotate {
+  to { transform: rotate(360deg) translateZ(0); }
+}
+
+/* ============================================
+   PLANET GROUPS — artistic asymmetric layout
+   Each group: glow aura + planet image + label
+   ============================================ */
+.auth-planets {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.planet-group {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* ── Planet image ── */
+.planet-img {
+  position: relative;
+  z-index: 1;
+  filter: saturate(0.85);
+}
+
+/* ── Planet glow aura — subtle pulse ── */
+.planet-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  animation: glow-pulse 6s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 1; transform: translate(-50%, -55%) scale(1); }
+  50%      { opacity: 0.6; transform: translate(-50%, -55%) scale(1.08); }
+}
+
+/* ── Planet label / typography ── */
+.planet-label {
+  font-family: 'Space Grotesk', 'DM Sans', sans-serif;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: rgba(203, 213, 225, 0.25);
+  white-space: nowrap;
+  z-index: 1;
+  position: relative;
+  margin-top: 8px;
+}
+
+/* ────────────────────────────────────────────
+   INDIVIDUAL PLANET COMPOSITIONS
+   Asymmetric, layered for depth
+   ──────────────────────────────────────────── */
+
+/* ── 1. TASKS — Hero planet, bottom-left, large, partially off-screen ── */
+.planet-tasks {
+  bottom: -4%;
+  left: -3%;
+  animation: drift-slow 22s ease-in-out infinite;
+}
+
+.planet-tasks .planet-img {
+  width: 180px;
+  opacity: 0.45;
+}
+
+.planet-tasks .planet-glow {
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.14) 0%, transparent 70%);
+  animation-delay: -1s;
+}
+
+.planet-tasks .planet-label {
+  font-size: 0.6875rem;
+  color: rgba(167, 139, 250, 0.3);
+  margin-top: 10px;
+}
+
+/* ── 2. POMODORO — Top-right, medium-large, prominent ── */
+.planet-pomodoro {
+  top: 5%;
+  right: 4%;
+  animation: drift-medium 18s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+.planet-pomodoro .planet-img {
+  width: 120px;
+  opacity: 0.4;
+}
+
+.planet-pomodoro .planet-glow {
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(251, 146, 60, 0.1) 0%, transparent 70%);
+  animation-delay: -3s;
+}
+
+.planet-pomodoro .planet-label {
+  font-size: 0.625rem;
+  color: rgba(251, 191, 36, 0.22);
+}
+
+/* ── 3. FOREST — Left side, medium, vertically off-center up ── */
+.planet-forest {
+  top: 18%;
+  left: 2%;
+  animation: drift-gentle 25s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+.planet-forest .planet-img {
+  width: 95px;
+  opacity: 0.35;
+}
+
+.planet-forest .planet-glow {
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.09) 0%, transparent 70%);
+  animation-delay: -5s;
+}
+
+.planet-forest .planet-label {
+  font-size: 0.5625rem;
+  color: rgba(52, 211, 153, 0.22);
+}
+
+/* ── 4. SCHEDULE — Right side, mid-low, medium ── */
+.planet-schedule {
+  bottom: 22%;
+  right: 1%;
+  animation: drift-slow 20s ease-in-out infinite;
+  animation-delay: -12s;
+}
+
+.planet-schedule .planet-img {
+  width: 105px;
+  opacity: 0.35;
+}
+
+.planet-schedule .planet-glow {
+  width: 155px;
+  height: 155px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.09) 0%, transparent 70%);
+  animation-delay: -2s;
+}
+
+.planet-schedule .planet-label {
+  font-size: 0.5625rem;
+  color: rgba(56, 189, 248, 0.22);
+}
+
+/* ── 5. AI CHAT — Far background, small, top-center-left ── */
+.planet-ai-chat {
+  top: 6%;
+  left: 28%;
+  animation: drift-gentle 28s ease-in-out infinite;
+  animation-delay: -6s;
+}
+
+.planet-ai-chat .planet-img {
+  width: 50px;
+  opacity: 0.2;
+  filter: saturate(0.7) blur(0.3px);
+}
+
+.planet-ai-chat .planet-glow {
+  width: 75px;
+  height: 75px;
+  background: radial-gradient(circle, rgba(192, 132, 252, 0.07) 0%, transparent 70%);
+}
+
+.planet-ai-chat .planet-label {
+  font-size: 0.4375rem;
+  letter-spacing: 0.3em;
+  color: rgba(192, 132, 252, 0.16);
+}
+
+/* ── 6. FORUM — Far background, tiny, bottom-right area ── */
+.planet-forum {
+  bottom: 8%;
+  right: 25%;
+  animation: drift-medium 24s ease-in-out infinite;
+  animation-delay: -15s;
+}
+
+.planet-forum .planet-img {
+  width: 42px;
+  opacity: 0.18;
+  filter: saturate(0.7) blur(0.3px);
+}
+
+.planet-forum .planet-glow {
+  width: 65px;
+  height: 65px;
+  background: radial-gradient(circle, rgba(129, 140, 248, 0.06) 0%, transparent 70%);
+}
+
+.planet-forum .planet-label {
+  font-size: 0.375rem;
+  letter-spacing: 0.35em;
+  color: rgba(129, 140, 248, 0.14);
+}
+
+/* ============================================
+   DRIFT ANIMATIONS — varied, GPU-composited
+   ============================================ */
+@keyframes drift-slow {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate3d(6px, -14px, 0) rotate(1.5deg);
+  }
+  66% {
+    transform: translate3d(-4px, -8px, 0) rotate(-0.8deg);
+  }
+}
+
+@keyframes drift-medium {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate3d(-8px, -10px, 0) rotate(-1.2deg);
+  }
+  50% {
+    transform: translate3d(4px, -18px, 0) rotate(0.5deg);
+  }
+  75% {
+    transform: translate3d(-3px, -6px, 0) rotate(-0.3deg);
+  }
+}
+
+@keyframes drift-gentle {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(5px, -10px, 0);
+  }
+}
+
+/* ============================================
+   CONTENT — fade-in entrance
+   ============================================ */
+.auth-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 448px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: auth-entrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes auth-entrance {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(16px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.auth-layout-container {
-  min-height: 100vh;
+/* ── Logo — subtle breathe ── */
+.auth-logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.auth-logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(to bottom right, #f8fafc, #eef2ff);
-  padding: 1rem;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  box-shadow:
+    0 0 20px rgba(167, 139, 250, 0.3),
+    0 0 40px rgba(124, 58, 237, 0.15);
+  animation: logo-breathe 4s ease-in-out infinite;
 }
 
-.auth-layout-content {
-  width: 100%;
-  max-width: 28rem;
+@keyframes logo-breathe {
+  0%, 100% { box-shadow: 0 0 20px rgba(167, 139, 250, 0.3), 0 0 40px rgba(124, 58, 237, 0.15); }
+  50%      { box-shadow: 0 0 28px rgba(167, 139, 250, 0.45), 0 0 56px rgba(124, 58, 237, 0.22); }
 }
 
-.auth-layout-header {
-  text-align: center;
-  margin-bottom: 2rem;
+/* ============================================
+   ACCESSIBILITY — Reduced motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .auth-star,
+  .auth-shooting-star,
+  .auth-orbital-ring,
+  .planet-group,
+  .planet-glow,
+  .auth-logo-icon,
+  .auth-content {
+    animation: none !important;
+  }
+
+  .auth-star { opacity: 0.3; }
+  .auth-star--bright { opacity: 0.6; }
+  .auth-content { opacity: 1; transform: none; }
 }
 
-.auth-layout-logo {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #4f46e5;
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 500px) {
+  .auth-page {
+    padding: 1.5rem 1rem;
+    align-items: flex-start;
+    padding-top: 3rem;
+  }
+
+  .auth-logo-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 0.875rem;
+    border-radius: 8px;
+  }
+
+  /* Simplify on mobile — hide background planets, keep hero + one accent */
+  .planet-ai-chat,
+  .planet-forum,
+  .planet-schedule {
+    display: none;
+  }
+
+  .planet-tasks .planet-img { width: 100px; }
+  .planet-pomodoro .planet-img { width: 70px; }
+  .planet-forest .planet-img { width: 55px; }
+
+  .planet-label { display: none; }
+
+  .auth-orbital-ring--1 { width: 350px; height: 350px; }
+  .auth-orbital-ring--2 { display: none; }
+  .auth-shooting-star { display: none; }
 }
 
-.auth-layout-tagline {
-  color: #64748b;
-  margin-top: 0.25rem;
+@media (min-width: 1200px) {
+  /* Larger canvas — spread planets out, increase sizes */
+  .planet-tasks .planet-img { width: 220px; opacity: 0.5; }
+  .planet-tasks { left: 1%; bottom: -2%; }
+  .planet-tasks .planet-glow { width: 300px; height: 300px; }
+
+  .planet-pomodoro .planet-img { width: 150px; opacity: 0.45; }
+  .planet-pomodoro { right: 6%; top: 4%; }
+
+  .planet-forest .planet-img { width: 115px; opacity: 0.38; }
+  .planet-forest { left: 5%; top: 14%; }
+
+  .planet-schedule .planet-img { width: 130px; opacity: 0.38; }
+  .planet-schedule { right: 3%; bottom: 18%; }
+
+  .planet-ai-chat .planet-img { width: 60px; opacity: 0.22; }
+  .planet-forum .planet-img { width: 50px; opacity: 0.2; }
+
+  .auth-orbital-ring--1 { width: 800px; height: 800px; }
+  .auth-orbital-ring--2 { width: 550px; height: 550px; }
 }
 
-.auth-layout-card {
-  padding: 1.5rem;
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.75rem;
+@media (min-width: 1600px) {
+  .planet-tasks .planet-img { width: 260px; }
+  .planet-pomodoro .planet-img { width: 170px; }
+  .planet-forest .planet-img { width: 130px; }
+  .planet-schedule .planet-img { width: 145px; }
+  .planet-ai-chat .planet-img { width: 72px; opacity: 0.25; }
+  .planet-forum .planet-img { width: 58px; opacity: 0.22; }
 }
