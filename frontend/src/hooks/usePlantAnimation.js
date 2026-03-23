@@ -2,6 +2,16 @@ import { useCallback } from 'react';
 import gsap from 'gsap';
 import { useReducedMotion } from './useReducedMotion';
 
+/** Read a CSS custom property from :root */
+function getCSSVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+/** Build an rgba() string using the --forest-shadow-rgb triplet */
+function shadowRgba(alpha) {
+  return `rgba(${getCSSVar('--forest-shadow-rgb')}, ${alpha})`;
+}
+
 /**
  * usePlantAnimation - Orchestrates the planting animation sequence
  *
@@ -67,13 +77,13 @@ export function usePlantAnimation() {
           scale: 0.2,
           opacity: 0,
           y: -50,
-          filter: 'drop-shadow(0 0px 0px rgba(15, 23, 42, 0))',
+          filter: `drop-shadow(0 0px 0px ${shadowRgba(0)})`,
         },
         {
           scale: 1.15,
           opacity: 1,
           y: 0,
-          filter: 'drop-shadow(0 16px 32px rgba(15, 23, 42, 0.12))',
+          filter: `drop-shadow(0 16px 32px ${shadowRgba(0.12)})`,
           duration: 0.7,
           ease: 'bounce.out',
         },
@@ -110,7 +120,7 @@ export function usePlantAnimation() {
           scale: 0.1,
           y: 40,
           opacity: 0,
-          filter: 'drop-shadow(0 4px 8px rgba(15, 23, 42, 0))',
+          filter: `drop-shadow(0 4px 8px ${shadowRgba(0)})`,
           duration: 0.5,
           ease: 'back.in(1.2)',
           onComplete: onSwapImage,
@@ -128,13 +138,13 @@ export function usePlantAnimation() {
           scale: 0.4,
           y: 60,
           opacity: 0,
-          filter: 'drop-shadow(0 8px 16px rgba(15, 23, 42, 0.04))',
+          filter: `drop-shadow(0 8px 16px ${shadowRgba(0.04)})`,
         },
         {
           scale: 1.0,
           y: 0,
           opacity: 1,
-          filter: 'drop-shadow(0 24px 40px rgba(15, 23, 42, 0.1))',
+          filter: `drop-shadow(0 24px 40px ${shadowRgba(0.1)})`,
           duration: 0.6,
           ease: 'elastic.out(1, 0.65)',
         },

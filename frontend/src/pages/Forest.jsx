@@ -63,6 +63,16 @@ const HERO_WIDTHS = {
 
 const MAX_BACKGROUND_TREES = 100;
 
+/** Read a CSS custom property from :root (used for GSAP inline styles) */
+function getCSSVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+/** Build an rgba() string using the --forest-shadow-rgb triplet */
+function shadowRgba(alpha) {
+  return `rgba(${getCSSVar('--forest-shadow-rgb')}, ${alpha})`;
+}
+
 function getTreeAsset(typeName, stage) {
   const stageName = stage === 5 ? 'stage_final' : `stage_${stage}`;
   return TREE_ASSETS[typeName]?.[stageName] ?? pinePurpleFinal;
@@ -308,19 +318,19 @@ export default function Forest() {
     if (heroPanelRef.current) {
       timeline.fromTo(heroPanelRef.current, {
         y: 0,
-        boxShadow: '0 22px 60px rgba(15, 23, 42, 0.08)',
+        boxShadow: `0 22px 60px ${shadowRgba(0.08)}`,
       }, {
         y: -4,
         boxShadow: variant === 'advance'
-          ? '0 28px 80px rgba(15, 23, 42, 0.12)'
-          : '0 24px 72px rgba(15, 23, 42, 0.1)',
+          ? `0 28px 80px ${shadowRgba(0.12)}`
+          : `0 24px 72px ${shadowRgba(0.1)}`,
         duration: 0.25,
         ease: 'power2.out',
       }, 0.16);
 
       timeline.to(heroPanelRef.current, {
         y: 0,
-        boxShadow: '0 22px 60px rgba(15, 23, 42, 0.08)',
+        boxShadow: `0 22px 60px ${shadowRgba(0.08)}`,
         duration: 0.4,
         ease: 'power2.out',
       }, variant === 'archive' ? 0.95 : 0.48);
@@ -342,7 +352,7 @@ export default function Forest() {
         scale: 1,
         filter: variant === 'advance'
           ? 'drop-shadow(0 30px 55px rgba(34, 197, 94, 0.2))'
-          : 'drop-shadow(0 24px 40px rgba(15, 23, 42, 0.1))',
+          : `drop-shadow(0 24px 40px ${shadowRgba(0.1)})`,
         duration: variant === 'advance' ? 0.55 : 0.42,
         ease: variant === 'advance' ? 'back.out(1.6)' : 'elastic.out(1, 0.65)',
       }, 0.42);
@@ -442,7 +452,7 @@ export default function Forest() {
           scale: data.archived ? 0.4 : 1,
           x: data.archived ? (window.innerWidth > 768 ? 220 : 110) : 0,
           autoAlpha: data.archived ? 0 : 1,
-          filter: 'drop-shadow(0 24px 40px rgba(15, 23, 42, 0.1))',
+          filter: `drop-shadow(0 24px 40px ${shadowRgba(0.1)})`,
           duration: 0.72,
           ease: data.archived ? 'power2.inOut' : 'back.out(1.4)',
         });
@@ -510,12 +520,12 @@ export default function Forest() {
           autoAlpha: 0,
           y: 20,
           scale: 0.82,
-          filter: 'drop-shadow(0 10px 20px rgba(15, 23, 42, 0.06))',
+          filter: `drop-shadow(0 10px 20px ${shadowRgba(0.06)})`,
         }, {
           autoAlpha: 1,
           y: 0,
           scale: 1,
-          filter: 'drop-shadow(0 24px 40px rgba(15, 23, 42, 0.1))',
+          filter: `drop-shadow(0 24px 40px ${shadowRgba(0.1)})`,
           duration: 0.72,
           ease: 'back.out(1.5)',
         });
