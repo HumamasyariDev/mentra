@@ -258,7 +258,10 @@ export default function Register() {
   };
 
   const handleSocialLogin = (provider) => {
-    window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/auth/${provider}/redirect`;
+    // OAuth routes are on web.php (not api.php), so we use origin without /api
+    // In production, this will be https://mentra.page/auth/{provider}/redirect
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || window.location.origin;
+    window.location.href = `${backendUrl}/auth/${provider}/redirect`;
   };
 
   return (
