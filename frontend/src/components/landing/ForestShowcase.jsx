@@ -124,6 +124,35 @@ export default function ForestShowcase() {
       }, 1.2);
     });
 
+    // Mobile: simple scroll-triggered reveals, no pin
+    mm.add("(max-width: 767px)", () => {
+      gsap.fromTo('.forest-showcase-title',
+        { y: 30, opacity: 0 },
+        {
+          y: 0, opacity: 1, duration: 0.8, ease: 'power3.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' }
+        }
+      );
+
+      gsap.fromTo('.forest-showcase-subtitle',
+        { y: 20, opacity: 0 },
+        {
+          y: 0, opacity: 1, duration: 0.6, ease: 'power2.out',
+          scrollTrigger: { trigger: sectionRef.current, start: 'top 75%' }
+        }
+      );
+
+      gsap.fromTo('.forest-showcase-tree',
+        { scale: 0, opacity: 0 },
+        {
+          scale: 1, opacity: 1, duration: 1,
+          ease: 'back.out(1.2)',
+          stagger: { amount: 0.8, from: 'center' },
+          scrollTrigger: { trigger: '.forest-showcase-scene', start: 'top 85%' }
+        }
+      );
+    });
+
     // Ambient sway on all trees
     gsap.utils.toArray('.forest-showcase-tree').forEach((tree, i) => {
       gsap.to(tree, {

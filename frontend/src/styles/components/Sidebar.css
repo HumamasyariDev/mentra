@@ -562,3 +562,16 @@
   background: var(--bg-hover);
   color: var(--text-primary);
 }
+
+/* ── Mobile Adjustments ── */
+@media (max-width: 480px) {
+  .sidebar {
+    width: 240px;
+  }
+}
+
+@media (max-width: 360px) {
+  .sidebar {
+    width: 220px;
+  }
+}

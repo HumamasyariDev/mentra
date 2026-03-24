@@ -244,7 +244,7 @@
 }
 
 .pom-scene-running {
-  width: 320px;
+  width: min(320px, calc(100vw - 3rem));
   height: 480px;
   border-radius: 16px;
   box-shadow: 0 0 16px var(--pom-glow, transparent), var(--shadow-md);
@@ -941,7 +941,27 @@
   }
 
   .pom-scene-running {
-    width: 260px;
-    height: 400px;
+    width: min(260px, calc(100vw - 2.5rem));
+    height: 380px;
+  }
+
+  .pom-scene-kran-running {
+    margin-left: 5rem;
+    margin-top: -48px;
+  }
+
+  .pom-kran-img-running {
+    width: 10rem;
+    height: 10rem;
+  }
+
+  .pom-can-img-running {
+    width: 7rem;
+    height: 7rem;
+  }
+
+  .pomodoro-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

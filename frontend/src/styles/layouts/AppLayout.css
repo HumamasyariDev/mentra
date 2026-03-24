@@ -38,6 +38,12 @@
   inset: 0;
   background-color: var(--bg-overlay);
   z-index: 40;
+  animation: overlay-fade-in 0.25s ease;
+}
+
+@keyframes overlay-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @media (min-width: 1024px) {
@@ -213,5 +219,12 @@
   /* When sidebar is visible in focus mode, shift toggle to the right */
   .app-layout-container:not(.app-layout-focus-hidden) .focus-sidebar-toggle {
     left: 260px;
+  }
+}
+
+/* ── Mobile Content Padding Adjustment ── */
+@media (max-width: 640px) {
+  .app-layout-content {
+    padding: 0.75rem;
   }
 }

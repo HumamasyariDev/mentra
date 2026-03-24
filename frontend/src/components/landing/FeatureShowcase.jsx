@@ -37,44 +37,59 @@ export default function FeatureShowcase() {
       const cards = gsap.utils.toArray('.stack-card');
       const totalCards = cards.length;
 
-      // Hide ALL cards initially — first card also animates in after title
+      // Hide ALL cards initially
       gsap.set(cards, { yPercent: 100, opacity: 0 });
 
-      // Single timeline driving everything — scrubbed by one ScrollTrigger
+      // ── Even phase spacing so snap points land in rest windows ──
+      // Layout: [title | card0 | card1 | ... | card5 | hold]
+      // Each phase = 1 unit, animations take 0.5 units → 0.5-unit rest gap.
+      // Hold is shorter (0.4 phase) to minimize dead scroll after last card.
+      const PHASE = 1;
+      const HOLD = PHASE * 0.4;
+      const contentPhases = totalCards + 1; // title + cards
+      const totalDuration = contentPhases * PHASE + HOLD;
+
+      // Snap points at each phase boundary + end
+      const snapPoints = Array.from(
+        { length: contentPhases + 1 },
+        (_, i) => (i * PHASE) / totalDuration
+      );
+      snapPoints.push(1.0);
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: `+=${(totalCards + 1) * 800}`,
+          end: `+=${totalDuration * 800}`,
           pin: true,
           pinSpacing: true,
           scrub: 0.5,
           snap: {
-            snapTo: 1 / (totalCards + 1), // +1 for the title phase
-            duration: { min: 0.2, max: 0.4 },
+            snapTo: snapPoints,
+            duration: { min: 0.2, max: 0.5 },
             ease: 'power2.inOut',
           },
         }
       });
 
-      // Phase 0: Title reveal
+      // Phase 0: Title reveal (scrubbed — scrolls away naturally)
       tl.fromTo('.feature-title-word',
         { y: 60, opacity: 0, rotateX: -45 },
         { y: 0, opacity: 1, rotateX: 0, duration: 0.5, stagger: 0.06, ease: 'power3.out' },
         0
       );
 
-      // Phase 1: First card appears AFTER title finishes
+      // Phase 1: First card slides in
       tl.to(cards[0], {
         yPercent: 0,
         opacity: 1,
         duration: 0.5,
         ease: 'power3.out',
-      }, 0.6);
+      }, 1 * PHASE);
 
-      // Phase 2+: Each subsequent card slides up & stacks
+      // Phase 2..N: Each subsequent card slides up & pushes previous cards back
       for (let i = 1; i < totalCards; i++) {
-        const cardStart = 0.6 + i * 0.8;
+        const cardStart = (i + 1) * PHASE;
 
         // Slide new card in
         tl.to(cards[i], {
@@ -84,7 +99,7 @@ export default function FeatureShowcase() {
           ease: 'power3.out',
         }, cardStart);
 
-        // Push previous cards back (scale down + shift up)
+        // Push previous cards back (scale down + shift up for depth)
         for (let j = 0; j < i; j++) {
           const depth = i - j;
           tl.to(cards[j], {
@@ -96,8 +111,8 @@ export default function FeatureShowcase() {
         }
       }
 
-      // Hold at end so last card stays visible
-      tl.to({}, { duration: 0.6 });
+      // Short hold so last card stays visible briefly before section unpins
+      tl.to({}, { duration: HOLD }, contentPhases * PHASE);
     });
 
     // Mobile: simple fade-up stagger

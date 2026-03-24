@@ -78,42 +78,44 @@ export default function Navbar() {
   };
 
   return (
-    <nav ref={navRef} className="landing-nav">
-      <div className="landing-nav-inner">
-        <Link to="/" ref={logoRef} className="landing-nav-logo">
-          <span className="landing-nav-logo-icon">M</span>
-          <span className="landing-nav-logo-text">Mentra</span>
-        </Link>
+    <>
+      <nav ref={navRef} className="landing-nav">
+        <div className="landing-nav-inner">
+          <Link to="/" ref={logoRef} className="landing-nav-logo">
+            <span className="landing-nav-logo-icon">M</span>
+            <span className="landing-nav-logo-text">Mentra</span>
+          </Link>
 
-        <div className="landing-nav-links">
-          {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className="landing-nav-link" onClick={(e) => scrollTo(e, link.href)}>
-              {link.label}
-            </a>
-          ))}
-        </div>
+          <div className="landing-nav-links">
+            {NAV_LINKS.map((link) => (
+              <a key={link.href} href={link.href} className="landing-nav-link" onClick={(e) => scrollTo(e, link.href)}>
+                {link.label}
+              </a>
+            ))}
+          </div>
 
-        <div className="landing-nav-actions">
-          <button
-            className="landing-nav-lang-toggle"
-            onClick={toggleLanguage}
-            aria-label={`Switch to ${currentLang === 'id' ? 'English' : 'Indonesian'}`}
-          >
-            <span className={`landing-nav-lang-option ${currentLang === 'id' ? 'landing-nav-lang-option--active' : ''}`}>ID</span>
-            <span className="landing-nav-lang-divider">/</span>
-            <span className={`landing-nav-lang-option ${currentLang === 'en' ? 'landing-nav-lang-option--active' : ''}`}>EN</span>
+          <div className="landing-nav-actions">
+            <button
+              className="landing-nav-lang-toggle"
+              onClick={toggleLanguage}
+              aria-label={`Switch to ${currentLang === 'id' ? 'English' : 'Indonesian'}`}
+            >
+              <span className={`landing-nav-lang-option ${currentLang === 'id' ? 'landing-nav-lang-option--active' : ''}`}>ID</span>
+              <span className="landing-nav-lang-divider">/</span>
+              <span className={`landing-nav-lang-option ${currentLang === 'en' ? 'landing-nav-lang-option--active' : ''}`}>EN</span>
+            </button>
+            <Link to="/login" className="landing-nav-link">{t('landing:navbar.login')}</Link>
+            <Link to="/register" ref={ctaRef} className="landing-nav-cta">{t('landing:navbar.getStarted')}</Link>
+          </div>
+
+          <button className="landing-nav-hamburger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          <Link to="/login" className="landing-nav-link">{t('landing:navbar.login')}</Link>
-          <Link to="/register" ref={ctaRef} className="landing-nav-cta">{t('landing:navbar.getStarted')}</Link>
         </div>
-
-        <button className="landing-nav-hamburger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
-          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
+      </nav>
 
       {mobileOpen && (
-        <div className="landing-nav-mobile-overlay" style={{ opacity: 1, pointerEvents: 'auto' }}>
+        <div className="landing-nav-mobile-overlay">
           {NAV_LINKS.map((link) => (
             <a key={link.href} href={link.href} className="mobile-nav-link" onClick={(e) => scrollTo(e, link.href)}>
               {link.label}
@@ -132,6 +134,6 @@ export default function Navbar() {
           <Link to="/register" className="mobile-nav-cta" onClick={() => setMobileOpen(false)}>{t('landing:navbar.getStarted')}</Link>
         </div>
       )}
-    </nav>
+    </>
   );
 }

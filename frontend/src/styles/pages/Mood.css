@@ -405,9 +405,23 @@
 }
 
 /* ── Responsive ── */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .mood-page {
     padding: 24px 20px;
+  }
+
+  .mood-page-header h1 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 640px) {
+  .mood-page {
+    padding: 16px 12px;
+  }
+
+  .mood-page-header {
+    margin-bottom: 20px;
   }
 
   .mood-options {
@@ -437,5 +451,37 @@
 
   .mood-day-emoji {
     font-size: 18px;
+  }
+
+  .mood-today {
+    padding: 20px;
+  }
+
+  .mood-selector-card {
+    padding: 20px;
+  }
+
+  .mood-weekly {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 400px) {
+  .mood-options {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+
+  .mood-opt-btn {
+    padding: 10px 2px;
+    gap: 4px;
+  }
+
+  .mood-opt-emoji {
+    font-size: 22px;
+  }
+
+  .mood-weekly-days {
+    grid-template-columns: repeat(4, 1fr);
   }
 }

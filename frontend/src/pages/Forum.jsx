@@ -10,7 +10,7 @@ import EditPostModal from '../components/forum/EditPostModal';
 import DeleteConfirmModal from '../components/forum/DeleteConfirmModal';
 import {
   Search, ChevronDown, Plus, Loader2, MessageSquare,
-  Trash2, Edit2, X, Send, Filter,
+  Trash2, Edit2, X, Send, Filter, ArrowLeft,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -446,6 +446,12 @@ export default function Forum() {
           {/* Detail Header */}
           <div className="forum-detail-header">
             <div className="forum-detail-title-wrapper">
+              <button
+                onClick={() => closePanel()}
+                className="forum-mobile-back-btn"
+              >
+                <ArrowLeft size={20} />
+              </button>
               <MessageSquare size={20} className="forum-detail-header-icon" />
               <h2 className="forum-detail-title">{selectedPost.title}</h2>
             </div>

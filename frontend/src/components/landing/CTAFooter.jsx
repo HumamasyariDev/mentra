@@ -22,44 +22,74 @@ export default function CTAFooter() {
       return;
     }
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top top',
-        end: '+=1500',
-        scrub: 1,
-        pin: true,
-        pinSpacing: true
-      }
+    let mm = gsap.matchMedia();
+
+    // Desktop: full pinned scrub experience
+    mm.add("(min-width: 768px)", () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: '+=1500',
+          scrub: 1,
+          pin: true,
+          pinSpacing: true
+        }
+      });
+
+      tl.to('.huge-cta-letter', {
+        backgroundSize: '100% 100%',
+        ease: 'none',
+        duration: 2,
+        stagger: 0.15
+      })
+      .to('.huge-cta-text', {
+        scale: 1.02,
+        duration: 0.3,
+        ease: 'sine.inOut',
+      })
+      .to('.huge-cta-text', {
+        scale: 1,
+        duration: 0.3,
+        ease: 'sine.inOut',
+      })
+      .to('.cta-button-wrapper', {
+        opacity: 1,
+        y: -30,
+        ease: 'power2.out',
+        duration: 0.5
+      }, "-=0.3");
     });
 
-    // Each letter fills individually with gradient — staggered wave
-    tl.to('.huge-cta-letter', {
-      backgroundSize: '100% 100%',
-      ease: 'none',
-      duration: 2,
-      stagger: 0.15
-    })
-    // Subtle scale pulse on completion
-    .to('.huge-cta-text', {
-      scale: 1.02,
-      duration: 0.3,
-      ease: 'sine.inOut',
-    })
-    .to('.huge-cta-text', {
-      scale: 1,
-      duration: 0.3,
-      ease: 'sine.inOut',
-    })
-    // Reveal the button below
-    .to('.cta-button-wrapper', {
-      opacity: 1,
-      y: -30,
-      ease: 'power2.out',
-      duration: 0.5
-    }, "-=0.3");
+    // Mobile: simple entrance, no pin
+    mm.add("(max-width: 767px)", () => {
+      gsap.to('.huge-cta-letter', {
+        backgroundSize: '100% 100%',
+        duration: 0.6,
+        stagger: 0.08,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 75%',
+          toggleActions: 'play none none none',
+        }
+      });
 
-    // CTA button cosmic pulse
+      gsap.to('.cta-button-wrapper', {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        delay: 0.3,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 60%',
+          toggleActions: 'play none none none',
+        }
+      });
+    });
+
+    // CTA button cosmic pulse (all sizes)
     gsap.to('.cta-primary-btn', {
       boxShadow: "0 0 60px rgba(167, 139, 250, 0.4), 0 0 120px rgba(124, 58, 237, 0.15)",
       duration: 2,
@@ -68,6 +98,7 @@ export default function CTAFooter() {
       ease: 'sine.inOut'
     });
 
+    return () => mm.revert();
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
   const letters = 'MENTRA'.split('');

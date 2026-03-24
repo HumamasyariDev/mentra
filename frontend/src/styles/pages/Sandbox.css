@@ -128,7 +128,7 @@
 /* ── Card Grid ── */
 .sandbox-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -735,5 +735,28 @@
 
   .sandbox-msg-bubble {
     max-width: 85%;
+  }
+}
+
+@media (max-width: 480px) {
+  .sandbox-page {
+    padding: 16px 12px;
+  }
+
+  .sandbox-header-text h1 {
+    font-size: 22px;
+  }
+
+  .sandbox-card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .sandbox-messages {
+    padding: 12px;
+  }
+
+  .sandbox-input-area {
+    padding: 12px;
   }
 }

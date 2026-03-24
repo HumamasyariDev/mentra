@@ -61,3 +61,11 @@
 @keyframes dashboard-spin {
   to { transform: rotate(360deg); }
 }
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .dashboard-map-mode {
+    margin: -0.75rem;
+    width: calc(100% + 1.5rem);
+  }
+}

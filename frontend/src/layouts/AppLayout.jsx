@@ -26,6 +26,19 @@ function AppLayoutContent() {
   const currentSidebarOpen = isDashboardPage ? sidebarOpen : localSidebarOpen;
   const setCurrentSidebarOpen = isDashboardPage ? setSidebarOpen : setLocalSidebarOpen;
 
+  // Body scroll lock when mobile sidebar is open
+  useEffect(() => {
+    const isMobile = window.innerWidth < 1024;
+    if (isMobile && currentSidebarOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [currentSidebarOpen]);
+
   // Listen for Pomodoro focus mode events
   useEffect(() => {
     const handleStarted = () => {

@@ -75,6 +75,26 @@ export default function GamificationLoop() {
       });
     });
 
+    // Mobile & tablet: vertical layout, simple scroll reveal
+    mm.add("(max-width: 1023px)", () => {
+      gsap.utils.toArray('.loop-panel').forEach((panel) => {
+        const content = panel.querySelector('.loop-panel-content');
+        gsap.fromTo(content,
+          { y: 40, opacity: 0 },
+          {
+            y: 0, opacity: 1,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: panel,
+              start: 'top 85%',
+              toggleActions: 'play none none none',
+            }
+          }
+        );
+      });
+    });
+
     return () => mm.revert();
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
