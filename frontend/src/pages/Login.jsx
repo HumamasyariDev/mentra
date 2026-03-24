@@ -49,8 +49,13 @@ export default function Login() {
   const handleEmailChange = (e) => {
     const val = e.target.value;
     setForm({ ...form, email: val });
+    
+    // Clear both email error and general error when typing
     if (emailError && isValidEmail(val)) {
       setEmailError('');
+    }
+    if (error) {
+      setError('');
     }
   };
 
@@ -80,7 +85,18 @@ export default function Login() {
     try {
       await login(form);
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      const errorData = err.response?.data;
+      const errorType = errorData?.error_type;
+      
+      if (errorType === 'email_not_found') {
+        setError('No account found with this email address. Please check your email or create a new account.');
+      } else if (errorType === 'wrong_password') {
+        setError('Incorrect password. Please try again or reset your password.');
+      } else if (errorType === 'social_only_account') {
+        setError(errorData.message); // "This account uses social login. Please sign in with Google/Facebook."
+      } else {
+        setError(errorData?.message || 'Login failed. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }
@@ -168,15 +184,19 @@ export default function Login() {
           {/* Password */}
           <div className="auth-field-group">
             <label className="auth-label">Password</label>
-            <input
-              type="password"
-              className="auth-input"
-              placeholder="Enter your password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              required
-              autoComplete="current-password"
-            />
+              <input
+                type="password"
+                className="auth-input"
+                placeholder="Enter your password"
+                value={form.password}
+                onChange={(e) => {
+                  setForm({ ...form, password: e.target.value });
+                  // Clear error when typing password
+                  if (error) setError('');
+                }}
+                required
+                autoComplete="current-password"
+              />
             <p className="auth-forgot-text">
               Forgot password?{' '}
               <button

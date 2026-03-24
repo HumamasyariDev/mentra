@@ -273,13 +273,34 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        if (!Auth::attempt($validated)) {
+        $email = strtolower($validated['email']);
+
+        // Check if user exists
+        $user = User::where('email', $email)->first();
+        
+        if (!$user) {
             return response()->json([
-                'message' => 'Invalid credentials.',
+                'message' => 'No account found with this email address.',
+                'error_type' => 'email_not_found'
             ], 401);
         }
 
-        $user = User::where('email', $validated['email'])->first();
+        // Check if user has password (not social-only account)
+        if (!$user->password && $user->provider) {
+            return response()->json([
+                'message' => 'This account uses social login. Please sign in with ' . ucfirst($user->provider) . '.',
+                'error_type' => 'social_only_account'
+            ], 401);
+        }
+
+        // Check password
+        if (!Auth::attempt(['email' => $email, 'password' => $validated['password']])) {
+            return response()->json([
+                'message' => 'Incorrect password. Please try again.',
+                'error_type' => 'wrong_password'
+            ], 401);
+        }
+
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
