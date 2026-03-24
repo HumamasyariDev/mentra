@@ -1,0 +1,469 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   WATERING ANIMATION - Pure CSS Keyframes
+   Gamification Loading: Watering Can → Filling Plant Pot
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────
+   CONTAINER
+   ───────────────────────────────────────────────────────────────────────── */
+
+.watering-animation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  padding: 2rem;
+}
+
+.watering-scene {
+  position: relative;
+  width: 280px;
+  height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   WATERING CAN
+   ───────────────────────────────────────────────────────────────────────── */
+
+.watering-can {
+  position: relative;
+  width: 100px;
+  height: 70px;
+  z-index: 2;
+}
+
+.watering-scene.watering .watering-can {
+  animation: tiltCan 2.5s ease-in-out infinite;
+}
+
+@keyframes tiltCan {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-18deg) translateY(-5px);
+  }
+}
+
+.can-body {
+  position: absolute;
+  bottom: 10px;
+  left: 15px;
+  width: 60px;
+  height: 50px;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+}
+
+.can-body::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 12px;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  border-radius: 6px 6px 0 0;
+}
+
+.can-spout {
+  position: absolute;
+  bottom: 35px;
+  left: 0;
+  width: 35px;
+  height: 10px;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  border-radius: 5px 0 0 5px;
+  box-shadow: 0 2px 6px rgba(74, 222, 128, 0.3);
+}
+
+.can-spout::after {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: #22c55e;
+  border-radius: 50%;
+}
+
+.can-handle {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  width: 32px;
+  height: 38px;
+  border: 4px solid #4ade80;
+  border-left: none;
+  border-radius: 0 16px 16px 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   WATER DROPS
+   ───────────────────────────────────────────────────────────────────────── */
+
+.water-drops {
+  position: absolute;
+  bottom: -45px;
+  left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1;
+}
+
+.water-drops .drop {
+  width: 7px;
+  height: 14px;
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  animation: dropFalling 1.8s ease-in infinite;
+  opacity: 0;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.water-drops .drop:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.water-drops .drop:nth-child(2) {
+  animation-delay: 0.3s;
+  margin-left: 10px;
+}
+
+.water-drops .drop:nth-child(3) {
+  animation-delay: 0.6s;
+  margin-left: 5px;
+}
+
+.water-drops .drop:nth-child(4) {
+  animation-delay: 0.9s;
+  margin-left: 12px;
+}
+
+@keyframes dropFalling {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(1);
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(60px) scale(0.8);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PLANT CONTAINER
+   ───────────────────────────────────────────────────────────────────────── */
+
+.plant-container {
+  position: relative;
+  width: 140px;
+  height: 100px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.plant-pot {
+  position: relative;
+  width: 100px;
+  height: 75px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   POT BODY
+   ───────────────────────────────────────────────────────────────────────── */
+
+.pot-body {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 70px;
+  background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+  border-radius: 0 0 10px 10px;
+  clip-path: polygon(18% 0%, 82% 0%, 100% 100%, 0% 100%);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.pot-body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95px;
+  height: 8px;
+  background: linear-gradient(180deg, #ea580c 0%, #d97706 100%);
+  border-radius: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   WATER LEVEL (FILLING ANIMATION)
+   ───────────────────────────────────────────────────────────────────────── */
+
+.water-level {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 75px;
+  height: 0;
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  border-radius: 6px;
+  transition: height 0.3s ease;
+  opacity: 0.85;
+  z-index: 1;
+}
+
+.water-level.filling {
+  animation: fillWaterLevel 2.5s ease-out forwards;
+}
+
+@keyframes fillWaterLevel {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 45px;
+  }
+}
+
+/* Water surface ripple effect */
+.water-level.filling::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 4px;
+  background: rgba(147, 197, 253, 0.6);
+  border-radius: 99px;
+  animation: ripple 1.5s ease-in-out infinite;
+}
+
+@keyframes ripple {
+  0%, 100% {
+    transform: translateX(-50%) scaleX(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateX(-50%) scaleX(1.1);
+    opacity: 0.9;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PLANT SPROUT (APPEARS DURING FILLING)
+   ───────────────────────────────────────────────────────────────────────── */
+
+.plant-sprout {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  animation: sproutGrow 2s ease-out forwards;
+}
+
+@keyframes sproutGrow {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px) scale(0);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.stem {
+  width: 4px;
+  height: 35px;
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+  border-radius: 2px;
+  margin: 0 auto;
+}
+
+.leaf {
+  position: absolute;
+  width: 18px;
+  height: 12px;
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  border-radius: 50% 0;
+  box-shadow: 0 2px 6px rgba(74, 222, 128, 0.3);
+}
+
+.leaf.left {
+  top: 12px;
+  left: -12px;
+  transform: rotate(-45deg);
+  animation: leafSway 2s ease-in-out infinite;
+}
+
+.leaf.right {
+  top: 18px;
+  right: -12px;
+  transform: rotate(135deg);
+  animation: leafSway 2s ease-in-out infinite 0.5s;
+}
+
+@keyframes leafSway {
+  0%, 100% {
+    transform: rotate(-45deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-45deg) translateY(-3px);
+  }
+}
+
+.leaf.right {
+  animation-name: leafSwayRight;
+}
+
+@keyframes leafSwayRight {
+  0%, 100% {
+    transform: rotate(135deg) translateY(0);
+  }
+  50% {
+    transform: rotate(135deg) translateY(-3px);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   STATUS TEXT
+   ───────────────────────────────────────────────────────────────────────── */
+
+.watering-status {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.status-text {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  animation: textPulse 2s ease-in-out infinite;
+}
+
+@keyframes textPulse {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.status-text.success {
+  color: #22c55e;
+  animation: successBounce 0.6s ease-out;
+}
+
+@keyframes successBounce {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Loading dots */
+.status-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 0.75rem;
+}
+
+.status-dots span {
+  width: 8px;
+  height: 8px;
+  background: #4ade80;
+  border-radius: 50%;
+  animation: dotBounce 1.4s ease-in-out infinite;
+}
+
+.status-dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.status-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.status-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dotBounce {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .watering-scene {
+    width: 240px;
+    height: 200px;
+  }
+
+  .watering-can {
+    width: 85px;
+    height: 60px;
+  }
+
+  .can-body {
+    width: 50px;
+    height: 42px;
+  }
+
+  .plant-container {
+    width: 120px;
+    height: 90px;
+  }
+
+  .status-text {
+    font-size: 0.9375rem;
+  }
+}

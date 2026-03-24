@@ -2,9 +2,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { sandboxApi } from "../services/api";
-import { Send, ArrowLeft, FileText, Network } from "lucide-react";
+import { Send, ArrowLeft, FileText, Network, Loader2 } from "lucide-react";
 import InfiniteCanvasMindMap from "../components/sandbox/InfiniteCanvasMindMap.jsx";
-import WateringAnimation from "../components/sandbox/WateringAnimation.jsx";
 import { parseMarkdownToReact } from "../utils/markdownParser.jsx";
 import "../styles/pages/SandboxChat.css";
 import "../styles/utils/markdown.css";
@@ -90,7 +89,8 @@ export default function SandboxChat() {
     return (
       <div className="sandbox-workspace">
         <div className="sandbox-loading-container">
-          <WateringAnimation />
+          <Loader2 size={48} className="sandbox-loading-spinner" />
+          <p>Memuat sandbox...</p>
         </div>
       </div>
     );
@@ -139,7 +139,8 @@ export default function SandboxChat() {
             {loading && (
               <div className="sandbox-message assistant">
                 <div className="sandbox-message-bubble loading">
-                  <WateringAnimation />
+                  <Loader2 size={20} className="sandbox-message-spinner" />
+                  <span>AI sedang berpikir...</span>
                 </div>
               </div>
             )}

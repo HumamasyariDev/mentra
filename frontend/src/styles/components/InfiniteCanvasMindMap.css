@@ -1,0 +1,414 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   INFINITE CANVAS MIND MAP - Pure CSS (Flat Minimalist Design)
+   Pan, Zoom, and Nested Card Structure with Connecting Lines
+   NO shadows, NO gradients, NO glows - Pure flat design
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────
+   CANVAS CONTAINER
+   ───────────────────────────────────────────────────────────────────────── */
+
+.infinite-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #fafafa;
+  cursor: grab;
+  user-select: none;
+}
+
+.infinite-canvas-container:active {
+  cursor: grabbing;
+}
+
+.infinite-canvas-board {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+  user-select: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   EMPTY STATE & GENERATING STATE
+   ───────────────────────────────────────────────────────────────────────── */
+
+.mindmap-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
+  text-align: center;
+}
+
+.mindmap-empty-icon {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  color: #1a1a1a;
+  margin-bottom: 1.5rem;
+}
+
+.mindmap-empty-state h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.mindmap-empty-state p {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9375rem;
+  color: #6b6b6b;
+}
+
+.mindmap-generate-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #1a1a1a;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.mindmap-generate-btn:hover:not(:disabled) {
+  background: #333333;
+}
+
+.mindmap-generate-btn:disabled {
+  background: #e0e0e0;
+  color: #9e9e9e;
+  cursor: not-allowed;
+}
+
+.mindmap-hint {
+  margin-top: 1rem;
+  font-size: 0.8125rem;
+  color: #9e9e9e;
+}
+
+.mindmap-generating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   CANVAS CONTROLS
+   ───────────────────────────────────────────────────────────────────────── */
+
+.canvas-controls {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.canvas-control-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  color: #1a1a1a;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.canvas-control-btn:hover {
+  background: #f5f5f5;
+  border-color: #1a1a1a;
+}
+
+.canvas-control-btn:active {
+  background: #e0e0e0;
+}
+
+.canvas-zoom-indicator {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  padding: 0.5rem 1rem;
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  z-index: 10;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   MIND MAP NODE STRUCTURE
+   ───────────────────────────────────────────────────────────────────────── */
+
+.mindmap-node-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  position: relative;
+  margin: 1rem 0;
+}
+
+.mindmap-node-wrapper[data-level="0"] {
+  margin: 2rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   MIND MAP CARDS
+   ───────────────────────────────────────────────────────────────────────── */
+
+.mindmap-card {
+  min-width: 240px;
+  max-width: 280px;
+  padding: 1.25rem 1.5rem;
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  transition: border-color 0.2s ease;
+  position: relative;
+  animation: cardAppear 0.3s ease;
+  user-select: none;
+}
+
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.mindmap-card:hover {
+  border-color: #1a1a1a;
+}
+
+.mindmap-card.root {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #ffffff;
+  min-width: 280px;
+  padding: 1.5rem 1.75rem;
+}
+
+.mindmap-card.root .mindmap-card-title {
+  color: #ffffff;
+  font-size: 1.125rem;
+}
+
+.mindmap-card.root .mindmap-card-caption {
+  color: #e0e0e0;
+}
+
+.mindmap-card.expanded {
+  border-color: #1a1a1a;
+  border-width: 3px;
+}
+
+/* Card Header */
+.mindmap-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.mindmap-card-title {
+  flex: 1;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.mindmap-expand-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  color: #6b6b6b;
+  transition: all 0.2s ease;
+}
+
+.mindmap-card:hover .mindmap-expand-icon {
+  background: #e0e0e0;
+  color: #1a1a1a;
+}
+
+.mindmap-expand-icon.expanded {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+.mindmap-card.root .mindmap-expand-icon {
+  background: #333333;
+  border-color: #333333;
+  color: #ffffff;
+}
+
+.mindmap-card.root:hover .mindmap-expand-icon {
+  background: #4a4a4a;
+  border-color: #4a4a4a;
+}
+
+/* Card Caption */
+.mindmap-card-caption {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #86868b;
+  line-height: 1.5;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   CHILDREN CONTAINER & CONNECTING LINES
+   ───────────────────────────────────────────────────────────────────────── */
+
+.mindmap-children {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-left: 2rem;
+}
+
+.mindmap-child-container {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  animation: childSlideIn 0.3s ease;
+}
+
+@keyframes childSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Connecting Line (L-shaped path) - Contrasting color */
+.mindmap-connector-line {
+  position: absolute;
+  left: -2rem;
+  top: 50%;
+  width: 2rem;
+  height: 3px;
+  background: #1a1a1a;
+  transform: translateY(-50%);
+}
+
+.mindmap-connector-line::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: calc(var(--line-height, 100px));
+  background: #1a1a1a;
+  transform: translateY(-50%);
+}
+
+/* First child - line goes up */
+.mindmap-child-container:first-child .mindmap-connector-line::before {
+  --line-height: 50px;
+  transform-origin: bottom;
+}
+
+/* Middle children - full height line */
+.mindmap-child-container:not(:first-child):not(:last-child)
+  .mindmap-connector-line::before {
+  --line-height: 100px;
+}
+
+/* Connector dot at junction */
+.mindmap-connector-line::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  background: #1a1a1a;
+  border: 2px solid #fafafa;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .mindmap-card {
+    min-width: 200px;
+    max-width: 240px;
+    padding: 1rem 1.25rem;
+  }
+
+  .mindmap-card.root {
+    min-width: 220px;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .mindmap-children {
+    gap: 1rem;
+    margin-left: 1.5rem;
+  }
+
+  .mindmap-connector-line {
+    left: -1.5rem;
+    width: 1.5rem;
+  }
+
+  .canvas-controls {
+    bottom: 1rem;
+    right: 1rem;
+  }
+
+  .canvas-zoom-indicator {
+    bottom: 1rem;
+    left: 1rem;
+    font-size: 0.8125rem;
+  }
+}
