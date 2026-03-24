@@ -34,7 +34,7 @@ export default function TechStack() {
   const marqueeItems = [...TECH, ...TECH];
 
   return (
-    <section className="landing-section" style={{ padding: '4rem 0' }}>
+    <section className="tech-marquee-wrapper">
       <div className="tech-marquee" ref={marqueeRef}>
         <div className="tech-marquee-content">
           {marqueeItems.map((item, i) => (

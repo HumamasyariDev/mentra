@@ -19,26 +19,36 @@ export default function Hero() {
     { text: "Your Work.", highlight: true }
   ];
 
-  // More fragments for a truly dense field
   const fragments = Array.from({ length: 22 });
 
   useGSAP(() => {
     if (prefersReducedMotion) return;
 
-    const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
+    const master = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
-    // ENTRANCE: Words rotate and slide up tightly
-    tl.fromTo('.hero-title-word', 
-      { y: 120, opacity: 0, rotateX: -60, filter: 'blur(10px)' },
-      { y: 0, opacity: 1, rotateX: 0, filter: 'blur(0px)', duration: 1.5, stagger: 0.1 }
-    )
-    .fromTo(['.hero-subtitle', '.hero-actions'], 
-      { y: 30, opacity: 0, filter: 'blur(5px)' },
-      { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.2, stagger: 0.2 }, 
-      "-=1"
-    );
+    // ENTRANCE: Cinematic word reveal with stagger
+    master
+      .fromTo('.hero-title-word',
+        { y: 120, opacity: 0, rotateX: -60, filter: 'blur(10px)' },
+        { y: 0, opacity: 1, rotateX: 0, filter: 'blur(0px)', duration: 1.5, stagger: 0.1 }
+      )
+      .fromTo('.hero-subtitle',
+        { y: 30, opacity: 0, filter: 'blur(5px)' },
+        { y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.2 },
+        "-=1"
+      )
+      .fromTo('.hero-actions',
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: 'back.out(1.7)' },
+        "-=0.8"
+      )
+      .fromTo('.hero-scroll-indicator',
+        { opacity: 0, y: -10 },
+        { opacity: 1, y: 0, duration: 0.8 },
+        "-=0.4"
+      );
 
-    // Initial 3D scatter: randomized depth and rotation
+    // Glass fragments: scattered 3D field
     gsap.set('.glass-fragment', {
       x: () => gsap.utils.random(-1200, 1200),
       y: () => gsap.utils.random(-800, 800),
@@ -51,13 +61,13 @@ export default function Hero() {
     });
 
     // Fade in with variance
-    tl.to('.glass-fragment', {
-      opacity: () => gsap.utils.random(0.2, 0.5),
+    master.to('.glass-fragment', {
+      opacity: () => gsap.utils.random(0.15, 0.4),
       duration: 2.5,
       stagger: { amount: 2, from: "random" }
-    }, "-=1.5");
+    }, "-=2");
 
-    // Hyper-space constant motion
+    // Constant hyper-space rotation
     gsap.to('.glass-fragment', {
       rotationY: "+=360",
       rotationX: "+=180",
@@ -66,7 +76,7 @@ export default function Hero() {
       ease: "none"
     });
 
-    // SCROLL PARALLAX: Hyperspace effect
+    // Scroll parallax: hyperspace warp
     gsap.to('.glass-fragment', {
       z: 2500,
       opacity: 0,
@@ -79,6 +89,7 @@ export default function Hero() {
       }
     });
 
+    // Hero content fade on scroll
     gsap.to('.hero-content', {
       y: -150,
       opacity: 0,
@@ -92,9 +103,18 @@ export default function Hero() {
       }
     });
 
+    // Scroll indicator bounce
+    gsap.to('.hero-scroll-chevron', {
+      y: 6,
+      duration: 0.8,
+      repeat: -1,
+      yoyo: true,
+      ease: 'sine.inOut'
+    });
+
   }, { scope: containerRef, dependencies: [prefersReducedMotion] });
 
-  // Deep Mouse Tracking
+  // Deep Mouse Tracking for 3D scene
   useEffect(() => {
     if (prefersReducedMotion || !sceneRef.current) return;
     
@@ -106,12 +126,12 @@ export default function Hero() {
 
     const handleMouseMove = (e) => {
       const { innerWidth, innerHeight } = window;
-      const xNorm = (e.clientX / innerWidth - 0.5); 
-      const yNorm = (e.clientY / innerHeight - 0.5); 
+      const xNorm = (e.clientX / innerWidth - 0.5);
+      const yNorm = (e.clientY / innerHeight - 0.5);
       
-      xTo(xNorm * 15); 
-      yTo(yNorm * -15); 
-      xMoveTo(xNorm * -100); 
+      xTo(xNorm * 15);
+      yTo(yNorm * -15);
+      xMoveTo(xNorm * -100);
       yMoveTo(yNorm * -100);
     };
 
@@ -123,7 +143,7 @@ export default function Hero() {
     <section ref={containerRef} className="hero-wrapper" style={{ overflow: 'hidden', perspective: '1500px' }}>
       <div className="hero-glow"></div>
       
-      {/* Immersive 3D Grid-less Field */}
+      {/* Immersive 3D Glass Fragment Field */}
       <div ref={sceneRef} className="hero-3d-scene" style={{ transformStyle: 'preserve-3d' }}>
         {fragments.map((_, i) => (
           <div key={i} className="glass-fragment"></div>
@@ -131,6 +151,13 @@ export default function Hero() {
       </div>
 
       <div className="hero-content">
+        {/* Logo badge */}
+        <div className="hero-badge">
+          <div className="hero-badge-glow" />
+          <span className="hero-badge-icon">M</span>
+          <span className="hero-badge-text">Mentra &mdash; Your Productivity Universe</span>
+        </div>
+
         <h1 className="hero-title">
           {titleLines.map((line, i) => (
             <div key={i} className="hero-title-line" style={{ gap: '0.3em' }}>
@@ -145,13 +172,26 @@ export default function Hero() {
             </div>
           ))}
         </h1>
+
         <p className="hero-subtitle">
           Turn your daily tasks into an epic journey. Build habits, earn XP, and watch your virtual forest come alive with every checked box.
         </p>
+
         <div className="hero-actions">
           <Link to="/register" ref={btn1Ref} className="hero-btn-primary">
             Start Your Journey
           </Link>
+          <a href="#features" className="hero-btn-secondary" onClick={(e) => { e.preventDefault(); document.querySelector('#features')?.scrollIntoView({ behavior: 'smooth' }); }}>
+            Explore Features
+          </a>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="hero-scroll-indicator">
+          <span className="hero-scroll-text">Scroll to explore</span>
+          <svg className="hero-scroll-chevron" width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M5 8L10 13L15 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </div>
       </div>
     </section>

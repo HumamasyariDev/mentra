@@ -15,7 +15,7 @@ export default function CTAFooter() {
 
   useGSAP(() => {
     if (prefersReducedMotion) {
-      gsap.to('.huge-cta-word', { backgroundSize: '100% 100%' });
+      gsap.to('.huge-cta-letter', { backgroundSize: '100% 100%' });
       gsap.to('.cta-button-wrapper', { opacity: 1 });
       return;
     }
@@ -24,39 +24,43 @@ export default function CTAFooter() {
       scrollTrigger: {
         trigger: sectionRef.current,
         start: 'top top',
-        end: '+=1500', // Sane scroll length
+        end: '+=1500',
         scrub: 1,
         pin: true,
         pinSpacing: true
       }
     });
 
-    // Fill the words from bottom to top (Sequential)
-    // We target "growing" then "start" to simulate a rising tide from the bottom
-    tl.to('.huge-cta-word.growing', {
+    // Each letter fills individually with gradient — staggered wave
+    tl.to('.huge-cta-letter', {
       backgroundSize: '100% 100%',
       ease: 'none',
-      duration: 1
+      duration: 2,
+      stagger: 0.15
     })
-    .to('.huge-cta-word.start', {
-      backgroundSize: '100% 100%',
-      ease: 'none',
-      duration: 1
-    }, "-=0.3") // Slight overlap for fluid feel
-
+    // Subtle scale pulse on completion
+    .to('.huge-cta-text', {
+      scale: 1.02,
+      duration: 0.3,
+      ease: 'sine.inOut',
+    })
+    .to('.huge-cta-text', {
+      scale: 1,
+      duration: 0.3,
+      ease: 'sine.inOut',
+    })
     // Reveal the button below
     .to('.cta-button-wrapper', {
       opacity: 1,
       y: -30,
       ease: 'power2.out',
       duration: 0.5
-    }, "-=0.2");
+    }, "-=0.3");
 
-    // Continuous pulse on the button
-    gsap.to('.landing-cta-button', {
-      scale: 1.05,
-      boxShadow: "0 10px 40px rgba(255, 255, 255, 0.2)",
-      duration: 1.5,
+    // CTA button cosmic pulse
+    gsap.to('.cta-primary-btn', {
+      boxShadow: "0 0 60px rgba(167, 139, 250, 0.4), 0 0 120px rgba(124, 58, 237, 0.15)",
+      duration: 2,
       yoyo: true,
       repeat: -1,
       ease: 'sine.inOut'
@@ -64,26 +68,32 @@ export default function CTAFooter() {
 
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
+  const letters = 'MENTRA'.split('');
+
   return (
     <div ref={sectionRef}>
-      <section style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', background: 'radial-gradient(circle at center, rgba(99, 102, 241, 0) 0%, var(--bg-base) 100%)' }}>
-        
+      <section className="cta-section-inner">
+        {/* Cosmic radial backdrop */}
+        <div className="cta-cosmic-glow" />
+
         <h2 className="huge-cta-text">
-          <span className="huge-cta-word start">START</span><br/>
-          <span className="huge-cta-word growing">GROWING</span>
+          {letters.map((letter, i) => (
+            <span key={i} className="huge-cta-letter">{letter}</span>
+          ))}
         </h2>
         
+        <p className="cta-tagline">Your Productivity Universe Awaits</p>
+        
         <div className="cta-button-wrapper">
-          <Link to="/register" ref={ctaBtnRef} className="hero-btn-primary" style={{ padding: '1.5rem 4rem', fontSize: '1.25rem' }}>
+          <Link to="/register" ref={ctaBtnRef} className="cta-primary-btn">
             Create Free Account
           </Link>
-          <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-            <Link to="/login" style={{ color: 'var(--text-muted)', textDecoration: 'none', fontWeight: 500 }}>
+          <div className="cta-login-link-wrapper">
+            <Link to="/login" className="cta-login-link">
               Already have an account? Log in &rarr;
             </Link>
           </div>
         </div>
-
       </section>
     </div>
   );

@@ -1,12 +1,12 @@
 /* ============================================
-   PREMIUM AWWWARDS LANDING PAGE STYLES
-   Theme: "Glass & Flow" (Dark Mode)
+   MENTRA LANDING PAGE — Dark Space Theme
+   Consistent with auth/dashboard cosmos aesthetic
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500&display=swap');
 
 .landing-page {
-  --lp-bg-base: #020617; /* Slate 950 */
+  --lp-bg-base: #020617;
   --lp-text-main: #f8fafc;
   --lp-text-muted: #94a3b8;
   --lp-accent-primary: #6366f1;
@@ -15,7 +15,7 @@
   --lp-glass-border: rgba(255, 255, 255, 0.08);
   --lp-font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  background-color: var(--lp-bg-base);
+  background: radial-gradient(circle at 40% 60%, #1e1b4b 0%, #0f172a 40%, #020617 100%);
   color: var(--lp-text-main);
   font-family: var(--lp-font-main);
   -webkit-font-smoothing: antialiased;
@@ -31,7 +31,7 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   opacity: 0.04;
   pointer-events: none;
-  z-index: 50; 
+  z-index: 50;
 }
 
 .landing-section {
@@ -53,7 +53,350 @@
   text-align: center;
 }
 
-/* ---------- Navbar ---------- */
+/* ============================================
+   COSMIC BACKGROUND — Parallax Container
+   All bg layers live inside this fixed container
+   which GSAP shifts on scroll for parallax depth
+   ============================================ */
+.lp-bg-parallax {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Vignette — darkened edges for depth focus */
+.lp-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 40%, rgba(2, 6, 23, 0.6) 100%);
+  pointer-events: none;
+}
+
+/* Ambient deep-space glow — asymmetric color pools */
+.lp-bg-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 50% 50% at 15% 85%, rgba(167, 139, 250, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 30% at 85% 15%, rgba(56, 189, 248, 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 60% 110%, rgba(192, 132, 252, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 35% 25% at 5% 25%, rgba(52, 232, 187, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 30% at 90% 70%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* ============================================
+   STARS — two brightness layers
+   ============================================ */
+.lp-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.lp-star {
+  position: absolute;
+  background: #cbd5e1;
+  border-radius: 50%;
+  opacity: 0;
+  will-change: opacity;
+  animation: lp-twinkle ease-in-out infinite;
+  transform: translateZ(0);
+}
+
+.lp-star--bright {
+  background: #f1f5f9;
+  box-shadow: 0 0 6px rgba(241, 245, 249, 0.5);
+}
+
+@keyframes lp-twinkle {
+  0%, 100% { opacity: 0.05; }
+  50%      { opacity: 0.75; }
+}
+
+/* ============================================
+   SHOOTING STAR
+   ============================================ */
+.lp-shooting-star {
+  position: absolute;
+  top: 15%;
+  left: -5%;
+  width: 120px;
+  height: 1.5px;
+  background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.7), rgba(196, 181, 253, 0.3), transparent);
+  border-radius: 1px;
+  opacity: 0;
+  transform: rotate(-25deg) translateZ(0);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+/* ============================================
+   ORBITAL RINGS — decorative ellipses
+   ============================================ */
+.lp-orbital-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(148, 163, 184, 0.05);
+  pointer-events: none;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.lp-orbital-ring--1 {
+  width: 700px;
+  height: 700px;
+  bottom: -30%;
+  left: -15%;
+  border-color: rgba(167, 139, 250, 0.06);
+}
+
+.lp-orbital-ring--2 {
+  width: 500px;
+  height: 500px;
+  top: -12%;
+  right: -10%;
+  border-color: rgba(56, 189, 248, 0.04);
+  border-style: dashed;
+}
+
+.lp-orbital-ring--3 {
+  width: 900px;
+  height: 900px;
+  top: 30%;
+  left: 50%;
+  margin-left: -450px;
+  border-color: rgba(192, 132, 252, 0.03);
+  border-style: dotted;
+}
+
+/* ============================================
+   FLOATING PLANETS
+   ============================================ */
+.lp-planets {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.lp-planet {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.lp-planet-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  animation: lp-glow-pulse 6s ease-in-out infinite;
+}
+
+@keyframes lp-glow-pulse {
+  0%, 100% { opacity: 1; transform: translate(-50%, -55%) scale(1); }
+  50%      { opacity: 0.6; transform: translate(-50%, -55%) scale(1.08); }
+}
+
+.lp-planet-img {
+  position: relative;
+  z-index: 1;
+  filter: saturate(0.85);
+}
+
+.lp-planet-label {
+  font-family: 'Space Grotesk', 'DM Sans', sans-serif;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: rgba(203, 213, 225, 0.2);
+  white-space: nowrap;
+  z-index: 1;
+  position: relative;
+  margin-top: 8px;
+}
+
+/* ── Individual planet compositions ── */
+.lp-planet--tasks {
+  bottom: -4%;
+  left: -3%;
+  animation: drift-slow 22s ease-in-out infinite;
+}
+
+.lp-planet--tasks .lp-planet-img {
+  width: 160px;
+  opacity: 0.35;
+}
+
+.lp-planet--tasks .lp-planet-glow {
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.12) 0%, transparent 70%);
+  animation-delay: -1s;
+}
+
+.lp-planet--tasks .lp-planet-label {
+  font-size: 0.625rem;
+  color: rgba(167, 139, 250, 0.25);
+}
+
+.lp-planet--pomodoro {
+  top: 5%;
+  right: 4%;
+  animation: drift-medium 18s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+.lp-planet--pomodoro .lp-planet-img {
+  width: 110px;
+  opacity: 0.3;
+}
+
+.lp-planet--pomodoro .lp-planet-glow {
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle, rgba(251, 146, 60, 0.08) 0%, transparent 70%);
+  animation-delay: -3s;
+}
+
+.lp-planet--pomodoro .lp-planet-label {
+  font-size: 0.5625rem;
+  color: rgba(251, 191, 36, 0.18);
+}
+
+.lp-planet--forest {
+  top: 20%;
+  left: 2%;
+  animation: drift-gentle 25s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+.lp-planet--forest .lp-planet-img {
+  width: 85px;
+  opacity: 0.28;
+}
+
+.lp-planet--forest .lp-planet-glow {
+  width: 125px;
+  height: 125px;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.07) 0%, transparent 70%);
+  animation-delay: -5s;
+}
+
+.lp-planet--forest .lp-planet-label {
+  font-size: 0.5rem;
+  color: rgba(52, 211, 153, 0.18);
+}
+
+.lp-planet--schedule {
+  bottom: 22%;
+  right: 1%;
+  animation: drift-slow 20s ease-in-out infinite;
+  animation-delay: -12s;
+}
+
+.lp-planet--schedule .lp-planet-img {
+  width: 95px;
+  opacity: 0.28;
+}
+
+.lp-planet--schedule .lp-planet-glow {
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.07) 0%, transparent 70%);
+  animation-delay: -2s;
+}
+
+.lp-planet--schedule .lp-planet-label {
+  font-size: 0.5rem;
+  color: rgba(56, 189, 248, 0.18);
+}
+
+.lp-planet--ai-chat {
+  top: 8%;
+  left: 28%;
+  animation: drift-gentle 28s ease-in-out infinite;
+  animation-delay: -6s;
+}
+
+.lp-planet--ai-chat .lp-planet-img {
+  width: 45px;
+  opacity: 0.18;
+  filter: saturate(0.7) blur(0.3px);
+}
+
+.lp-planet--ai-chat .lp-planet-glow {
+  width: 65px;
+  height: 65px;
+  background: radial-gradient(circle, rgba(192, 132, 252, 0.06) 0%, transparent 70%);
+}
+
+.lp-planet--ai-chat .lp-planet-label {
+  font-size: 0.375rem;
+  letter-spacing: 0.3em;
+  color: rgba(192, 132, 252, 0.14);
+}
+
+.lp-planet--forum {
+  bottom: 10%;
+  right: 22%;
+  animation: drift-medium 24s ease-in-out infinite;
+  animation-delay: -15s;
+}
+
+.lp-planet--forum .lp-planet-img {
+  width: 38px;
+  opacity: 0.15;
+  filter: saturate(0.7) blur(0.3px);
+}
+
+.lp-planet--forum .lp-planet-glow {
+  width: 55px;
+  height: 55px;
+  background: radial-gradient(circle, rgba(129, 140, 248, 0.05) 0%, transparent 70%);
+}
+
+.lp-planet--forum .lp-planet-label {
+  font-size: 0.3125rem;
+  letter-spacing: 0.35em;
+  color: rgba(129, 140, 248, 0.12);
+}
+
+/* ============================================
+   DRIFT ANIMATIONS — GPU-composited
+   ============================================ */
+@keyframes drift-slow {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  33%      { transform: translate3d(6px, -14px, 0) rotate(1.5deg); }
+  66%      { transform: translate3d(-4px, -8px, 0) rotate(-0.8deg); }
+}
+
+@keyframes drift-medium {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  25%      { transform: translate3d(-8px, -10px, 0) rotate(-1.2deg); }
+  50%      { transform: translate3d(4px, -18px, 0) rotate(0.5deg); }
+  75%      { transform: translate3d(-3px, -6px, 0) rotate(-0.3deg); }
+}
+
+@keyframes drift-gentle {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(5px, -10px, 0); }
+}
+
+
+/* ============================================
+   NAVBAR
+   ============================================ */
 .landing-nav {
   position: fixed;
   top: 1.5rem;
@@ -63,7 +406,7 @@
   width: 90%;
   max-width: 1000px;
   border-radius: 100px;
-  background: rgba(2, 6, 23, 0.7);
+  background: rgba(2, 6, 23, 0.6);
   border: 1px solid var(--lp-glass-border);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -79,10 +422,32 @@
 }
 
 .landing-nav-logo {
-  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.landing-nav-logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%);
+  border-radius: 8px;
+  font-size: 0.8rem;
   font-weight: 800;
   color: #fff;
-  text-decoration: none;
+  letter-spacing: -0.02em;
+  box-shadow: 0 0 12px rgba(167, 139, 250, 0.3);
+  flex-shrink: 0;
+}
+
+.landing-nav-logo-text {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
   letter-spacing: -0.04em;
 }
 
@@ -114,6 +479,12 @@
   font-size: 0.9rem;
   font-weight: 700;
   text-decoration: none;
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+
+.landing-nav-cta:hover {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  transform: scale(1.03);
 }
 
 .landing-nav-hamburger {
@@ -130,23 +501,64 @@
   .landing-nav-hamburger { display: none; }
 }
 
+/* Mobile overlay */
 .landing-nav-mobile-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(3, 7, 18, 0.95);
+  background: rgba(3, 7, 18, 0.97);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
-  z-index: 90; 
+  z-index: 90;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 2rem;
-  opacity: 0;
-  pointer-events: none; 
 }
 
-/* ---------- Hero ---------- */
+.mobile-nav-link {
+  color: var(--lp-text-main);
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  transition: color 0.2s;
+}
+
+.mobile-nav-link:hover {
+  color: #a78bfa;
+}
+
+.mobile-nav-link--muted {
+  color: var(--lp-text-muted);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.mobile-nav-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #020617;
+  background: #fff;
+  border-radius: 100px;
+  text-decoration: none;
+  margin-top: 1rem;
+  transition: box-shadow 0.3s, transform 0.2s;
+}
+
+.mobile-nav-cta:hover {
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+
+/* ============================================
+   HERO
+   ============================================ */
 .hero-wrapper {
   min-height: 100vh;
   position: relative;
@@ -180,6 +592,53 @@
   text-align: center;
   max-width: 1000px;
   padding: 0 1rem;
+}
+
+/* Hero badge */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1.25rem 0.5rem 0.5rem;
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(167, 139, 250, 0.15);
+  border-radius: 100px;
+  margin-bottom: 2rem;
+  position: relative;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.hero-badge-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 30% 50%, rgba(167, 139, 250, 0.15), transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.hero-badge-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.4);
+  flex-shrink: 0;
+}
+
+.hero-badge-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(196, 181, 253, 0.8);
+  letter-spacing: 0.01em;
 }
 
 .hero-title {
@@ -247,9 +706,55 @@
   transition: box-shadow 0.3s, transform 0.3s;
   will-change: transform;
 }
-.hero-btn-primary:hover { 
+.hero-btn-primary:hover {
   box-shadow: 0 0 30px rgba(255,255,255,0.3);
   transform: scale(1.05);
+}
+
+.hero-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--lp-text-muted);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s, border-color 0.3s, background 0.3s, transform 0.3s;
+}
+
+.hero-btn-secondary:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.04);
+  transform: scale(1.03);
+}
+
+/* Scroll indicator */
+.hero-scroll-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 4rem;
+  opacity: 0;
+}
+
+.hero-scroll-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(148, 163, 184, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+.hero-scroll-chevron {
+  color: rgba(148, 163, 184, 0.4);
+  will-change: transform;
 }
 
 /* Mind-Blowing 3D Hero Fragments */
@@ -281,7 +786,6 @@
   will-change: transform, opacity;
 }
 
-/* Internal Glow for fragments */
 .glass-fragment::before {
   content: "";
   position: absolute;
@@ -290,20 +794,22 @@
   border-radius: inherit;
 }
 
-/* ---------- Horizontal Gamification Loop ---------- */
+
+/* ============================================
+   HORIZONTAL GAMIFICATION LOOP
+   ============================================ */
 .loop-horizontal-wrapper {
   width: 100%;
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background: #020617;
   display: flex;
   align-items: center;
 }
 
 .loop-horizontal-container {
   display: flex;
-  width: 400vw; 
+  width: 400vw;
   height: 100%;
   will-change: transform;
 }
@@ -361,6 +867,7 @@
   border-radius: 2px;
   z-index: 20;
 }
+
 .loop-progress-fill {
   height: 100%;
   width: 0%;
@@ -368,17 +875,19 @@
   border-radius: 2px;
 }
 
-/* ---------- Feature Showcase ---------- */
+
+/* ============================================
+   FEATURE SHOWCASE — Bento Grid
+   ============================================ */
 .features-section {
   padding: 10rem 2rem;
-  background: #020617;
   position: relative;
 }
 
 .bento-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-auto-rows: minmax(280px, auto);
+  grid-auto-rows: minmax(220px, auto);
   gap: 1.5rem;
   width: 100%;
   max-width: 1400px;
@@ -396,12 +905,16 @@
   will-change: transform, opacity;
 }
 
-/* ENHANCED Spotlight glow effect */
+/* Spotlight glow effect */
 .bento-card::before {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(129, 140, 248, 0.15), transparent 40%);
+  background: radial-gradient(
+    800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    color-mix(in srgb, var(--card-accent, #818cf8) 15%, transparent),
+    transparent 40%
+  );
   z-index: 0;
   pointer-events: none;
   opacity: 0;
@@ -409,14 +922,18 @@
 }
 .bento-card:hover::before { opacity: 1; }
 
-/* ENHANCED Outer border tracking glow */
+/* Outer border tracking glow */
 .bento-card::after {
   content: "";
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   border-radius: inherit;
   padding: 2px;
-  background: radial-gradient(500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(129, 140, 248, 0.8), transparent 45%);
+  background: radial-gradient(
+    500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    color-mix(in srgb, var(--card-accent, #818cf8) 60%, transparent),
+    transparent 45%
+  );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -458,14 +975,14 @@
   display: flex; align-items: center; justify-content: center;
   color: #fff;
   margin-bottom: 2rem;
-  transition: transform 0.3s ease-out, background 0.3s;
+  transition: transform 0.3s ease-out, background 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 
 .bento-card:hover .bento-icon {
   transform: translateY(-10px) scale(1.1) translateZ(20px);
-  background: rgba(99,102,241,0.25);
-  border-color: rgba(99,102,241,0.5);
-  box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+  background: color-mix(in srgb, var(--card-accent, #6366f1) 25%, transparent);
+  border-color: color-mix(in srgb, var(--card-accent, #6366f1) 50%, transparent);
+  box-shadow: 0 10px 40px color-mix(in srgb, var(--card-accent, #6366f1) 40%, transparent);
 }
 
 .bento-card h3 {
@@ -477,7 +994,7 @@
 }
 
 /* Grid Spans */
-.bento-card:nth-child(1) { grid-column: span 12; min-height: 400px; } 
+.bento-card:nth-child(1) { grid-column: span 12; min-height: 400px; }
 .bento-card:nth-child(2) { grid-column: span 12; }
 .bento-card:nth-child(3) { grid-column: span 12; }
 .bento-card:nth-child(4) { grid-column: span 12; }
@@ -493,58 +1010,116 @@
   .bento-card:nth-child(6) { grid-column: span 12; }
 }
 
-/* ---------- Forest Portal (Dive In) ---------- */
-.forest-section {
-  height: 200vh;
-  position: relative;
-}
 
-.forest-pin-wrapper {
+/* ============================================
+   FOREST SHOWCASE — Planetary-curve tree scene
+   ============================================ */
+.forest-showcase-section {
+  position: relative;
+  width: 100%;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
-  position: relative;
-  background: #020617;
+  background: radial-gradient(ellipse 80% 60% at 50% 100%, #0c0a1f 0%, var(--lp-bg-base) 60%);
 }
 
-.forest-portal {
+.forest-showcase-glow {
   position: absolute;
-  top: 50%; left: 50%;
+  top: 30%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  width: 100%; /* FIXED: Start full width */
-  height: 100%; /* FIXED: Start full height */
-  background: #020617;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 70vw;
+  height: 60vw;
+  max-width: 900px;
+  max-height: 700px;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.06) 0%, rgba(52, 211, 153, 0.03) 40%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
 }
 
-.forest-text-overlay {
+.forest-showcase-text {
   position: absolute;
-  z-index: 50;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
   text-align: center;
   pointer-events: none;
-  mix-blend-mode: difference;
+  width: 90%;
+  max-width: 700px;
 }
 
-.forest-scene-inner {
+.forest-showcase-title {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  background: linear-gradient(180deg, #ffffff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.forest-showcase-subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--lp-text-muted);
+  line-height: 1.6;
+  opacity: 0.8;
+}
+
+.forest-showcase-scene {
   position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
+  inset: 0;
+  z-index: 10;
   will-change: transform;
+  transform: translateZ(0);
 }
 
-.forest-asset {
+.forest-showcase-tree {
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.forest-showcase-tree img {
+  width: clamp(100px, 14vw, 220px);
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5));
+}
+
+.forest-showcase-ground {
   position: absolute;
-  bottom: -10%;
-  transform-origin: bottom center;
-  will-change: transform;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 25%;
+  background: linear-gradient(to top, var(--lp-bg-base) 0%, transparent 100%);
+  z-index: 15;
+  pointer-events: none;
 }
 
-/* ---------- Tech Marquee ---------- */
+/* ============================================
+   SECTION DIVIDER — visual separation overlay
+   ============================================ */
+.lp-section-divider {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  background: linear-gradient(
+    to bottom,
+    rgba(12, 10, 31, 0.95) 0%,
+    rgba(2, 6, 23, 0.6) 40%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 5;
+  margin-top: -1px; /* prevent subpixel gap */
+}
+
+
+/* ============================================
+   TECH MARQUEE
+   ============================================ */
 .tech-marquee-wrapper {
   padding: 8rem 0;
   border-top: 1px solid var(--lp-glass-border);
@@ -585,20 +1160,171 @@
 .tech-item:hover { opacity: 1; color: #fff; }
 .tech-item svg { width: 32px; height: 32px; }
 
-/* ---------- Massive CTA Footer ---------- */
-.cta-section {
-  height: 150vh;
+
+/* ============================================
+   FAQ SECTION — Glassmorphism Accordion
+   ============================================ */
+.faq-section {
+  padding: 8rem 2rem;
   position: relative;
+  z-index: 10;
 }
 
-.cta-pin-wrapper {
-  height: 100vh;
+.faq-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-heading {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-align: center;
+  margin-bottom: 4rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.2em;
+  perspective: 800px;
+}
+
+.faq-heading-word {
+  display: inline-block;
+  will-change: transform, opacity;
+  transform-origin: bottom center;
+}
+
+.faq-heading-default {
+  background: linear-gradient(180deg, #ffffff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.faq-heading-accent {
+  background: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.faq-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.3s, background 0.3s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  will-change: transform, opacity;
+}
+
+.faq-item:hover {
+  border-color: rgba(167, 139, 250, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.faq-item--open {
+  border-color: rgba(167, 139, 250, 0.2);
+  background: rgba(167, 139, 250, 0.04);
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  background: none;
+  border: none;
+  color: var(--lp-text-main);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.faq-question:hover {
+  color: #c4b5fd;
+}
+
+.faq-question-index {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(167, 139, 250, 0.5);
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  min-width: 1.5rem;
+}
+
+.faq-question-text {
+  flex: 1;
+}
+
+.faq-chevron {
+  color: var(--lp-text-muted);
+  flex-shrink: 0;
+  transition: color 0.2s;
+  will-change: transform;
+}
+
+.faq-item--open .faq-chevron {
+  color: #a78bfa;
+}
+
+.faq-answer {
+  overflow: hidden;
+}
+
+.faq-answer-text {
+  padding: 0 1.5rem 1.5rem;
+  padding-left: calc(1.5rem + 1rem + 1.5rem); /* align with text after index */
+  color: var(--lp-text-muted);
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+
+/* ============================================
+   CTA SECTION — Massive "MENTRA" reveal
+   ============================================ */
+.cta-section-inner {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: radial-gradient(circle at center, rgba(99, 102, 241, 0) 0%, var(--lp-bg-base) 100%);
+  position: relative;
+  padding: 4rem 2rem;
+}
+
+.cta-cosmic-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80vw;
+  height: 80vw;
+  max-width: 1000px;
+  max-height: 1000px;
+  background: radial-gradient(
+    circle,
+    rgba(167, 139, 250, 0.12) 0%,
+    rgba(124, 58, 237, 0.06) 40%,
+    transparent 70%
+  );
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .huge-cta-text {
@@ -606,43 +1332,90 @@
   font-weight: 900;
   text-transform: uppercase;
   color: transparent;
-  -webkit-text-stroke: 2px rgba(255,255,255,0.1);
+  -webkit-text-stroke: 2px rgba(255,255,255,0.08);
   text-align: center;
   line-height: 0.85;
   margin: 0;
   letter-spacing: -0.05em;
   will-change: transform;
+  position: relative;
+  z-index: 1;
 }
 
-.huge-cta-word {
+.huge-cta-letter {
   display: inline-block;
   background-clip: text;
   -webkit-background-clip: text;
   background-repeat: no-repeat;
   background-position: bottom;
   background-size: 100% 0%;
+  background-image: linear-gradient(135deg, #a78bfa 0%, #7c3aed 40%, #c084fc 70%, #818cf8 100%);
   will-change: background-size;
 }
 
-.huge-cta-word.start {
-  background-image: linear-gradient(180deg, #fff 0%, #fff 100%);
-}
-
-.huge-cta-word.growing {
-  background-image: linear-gradient(135deg, #818cf8 0%, #c084fc 100%);
+.cta-tagline {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--lp-text-muted);
+  text-align: center;
+  margin-top: 2rem;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
 }
 
 .cta-button-wrapper {
-  margin-top: 4rem;
+  margin-top: 3rem;
   opacity: 0;
   will-change: opacity, transform;
+  text-align: center;
+  position: relative;
+  z-index: 1;
 }
 
-/* ---------- Enhanced Footer ---------- */
+.cta-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%);
+  border-radius: 100px;
+  text-decoration: none;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 0 30px rgba(167, 139, 250, 0.25), 0 0 60px rgba(124, 58, 237, 0.1);
+}
+
+.cta-primary-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(167, 139, 250, 0.4), 0 0 80px rgba(124, 58, 237, 0.2);
+}
+
+.cta-login-link-wrapper {
+  margin-top: 1.5rem;
+}
+
+.cta-login-link {
+  color: var(--lp-text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.cta-login-link:hover {
+  color: #c4b5fd;
+}
+
+
+/* ============================================
+   FOOTER
+   ============================================ */
 .landing-footer {
   border-top: 1px solid var(--lp-glass-border);
   padding: 6rem 2rem 2rem;
-  background: var(--lp-bg-base);
   position: relative;
   z-index: 10;
   max-width: 1400px;
@@ -661,13 +1434,34 @@
 }
 
 .footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  margin-bottom: 1rem;
+}
+
+.footer-logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  box-shadow: 0 0 10px rgba(167, 139, 250, 0.25);
+  flex-shrink: 0;
+}
+
+.footer-logo span:last-child {
   font-size: 2rem;
   font-weight: 800;
   color: #fff;
-  text-decoration: none;
   letter-spacing: -0.04em;
-  display: block;
-  margin-bottom: 1rem;
 }
 
 .footer-tagline {
@@ -746,4 +1540,90 @@
   .footer-bottom {
     flex-direction: row;
   }
+}
+
+
+/* ============================================
+   ACCESSIBILITY — Reduced motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .lp-star,
+  .lp-shooting-star,
+  .lp-orbital-ring,
+  .lp-planet,
+  .lp-planet-glow,
+  .glass-fragment,
+  .hero-scroll-chevron,
+  .forest-showcase-tree {
+    animation: none !important;
+  }
+
+  .lp-star { opacity: 0.3; }
+  .lp-star--bright { opacity: 0.6; }
+}
+
+
+/* ============================================
+   RESPONSIVE — Planet & ring scaling
+   ============================================ */
+@media (max-width: 500px) {
+  .lp-planet--ai-chat,
+  .lp-planet--forum,
+  .lp-planet--schedule {
+    display: none;
+  }
+
+  .lp-planet--tasks .lp-planet-img { width: 90px; }
+  .lp-planet--pomodoro .lp-planet-img { width: 65px; }
+  .lp-planet--forest .lp-planet-img { width: 50px; }
+
+  .lp-planet-label { display: none; }
+
+  .lp-orbital-ring--1 { width: 350px; height: 350px; }
+  .lp-orbital-ring--2 { display: none; }
+  .lp-orbital-ring--3 { display: none; }
+  .lp-shooting-star { display: none; }
+
+  .hero-badge { padding: 0.4rem 1rem 0.4rem 0.4rem; gap: 0.5rem; }
+  .hero-badge-text { font-size: 0.7rem; }
+
+  .faq-answer-text { padding-left: 1.5rem; }
+
+  /* Forest showcase — fewer visible trees, smaller sizing */
+  .forest-showcase-section { height: 80vh; }
+  .forest-showcase-text { top: 6%; }
+  .forest-showcase-title { margin-bottom: 0.5rem; }
+  .forest-showcase-tree img { width: clamp(60px, 18vw, 140px); }
+  .forest-showcase-tree:nth-child(n+20) { display: none; }
+  .lp-section-divider { height: 150px; }
+}
+
+@media (min-width: 1200px) {
+  .lp-planet--tasks .lp-planet-img { width: 200px; opacity: 0.4; }
+  .lp-planet--tasks { left: 1%; bottom: -2%; }
+
+  .lp-planet--pomodoro .lp-planet-img { width: 140px; opacity: 0.35; }
+  .lp-planet--pomodoro { right: 6%; top: 4%; }
+
+  .lp-planet--forest .lp-planet-img { width: 105px; opacity: 0.32; }
+  .lp-planet--forest { left: 5%; top: 16%; }
+
+  .lp-planet--schedule .lp-planet-img { width: 120px; opacity: 0.32; }
+  .lp-planet--schedule { right: 3%; bottom: 18%; }
+
+  .lp-planet--ai-chat .lp-planet-img { width: 55px; opacity: 0.2; }
+  .lp-planet--forum .lp-planet-img { width: 45px; opacity: 0.17; }
+
+  .lp-orbital-ring--1 { width: 900px; height: 900px; }
+  .lp-orbital-ring--2 { width: 650px; height: 650px; }
+  .lp-orbital-ring--3 { width: 1100px; height: 1100px; }
+}
+
+@media (min-width: 1600px) {
+  .lp-planet--tasks .lp-planet-img { width: 240px; }
+  .lp-planet--pomodoro .lp-planet-img { width: 160px; }
+  .lp-planet--forest .lp-planet-img { width: 120px; }
+  .lp-planet--schedule .lp-planet-img { width: 135px; }
+  .lp-planet--ai-chat .lp-planet-img { width: 65px; opacity: 0.22; }
+  .lp-planet--forum .lp-planet-img { width: 52px; opacity: 0.19; }
 }

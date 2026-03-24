@@ -8,12 +8,12 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
 gsap.registerPlugin(ScrollTrigger);
 
 const FEATURES = [
-  { icon: Bot, title: 'AI Productivity Assistant', desc: 'Your personal AI coach powered by Puter.js. Get instant motivation, study tips, or help breaking down complex projects into manageable chunks.' },
-  { icon: CheckSquare, title: 'Smart Tasks', desc: 'More than just a checklist. Kanban boards, calendar views, and smart prioritization.' },
-  { icon: Timer, title: 'Pomodoro Companion', desc: 'Focus sessions with immersive themes. Feed your virtual cat by staying focused on your work.' },
-  { icon: BrainCircuit, title: 'AI Agent', desc: 'Just chat naturally. Our agent understands context and creates tasks, schedules, and quizzes for you automatically.' },
-  { icon: Smile, title: 'Mood Tracking', desc: 'Log daily energy levels to understand your personal productivity rhythms over time.' },
-  { icon: Calendar, title: 'Schedules & Habits', desc: 'Build lasting routines with daily, weekly, and monthly recurring schedules.' },
+  { icon: Bot, title: 'AI Productivity Assistant', desc: 'Your personal AI coach powered by Puter.js. Get instant motivation, study tips, or help breaking down complex projects into manageable chunks.', accent: '#818cf8' },
+  { icon: CheckSquare, title: 'Smart Tasks', desc: 'More than just a checklist. Kanban boards, calendar views, and smart prioritization.', accent: '#a78bfa' },
+  { icon: Timer, title: 'Pomodoro Companion', desc: 'Focus sessions with immersive themes. Feed your virtual cat by staying focused on your work.', accent: '#c084fc' },
+  { icon: BrainCircuit, title: 'AI Agent', desc: 'Just chat naturally. Our agent understands context and creates tasks, schedules, and quizzes for you automatically.', accent: '#7c3aed' },
+  { icon: Smile, title: 'Mood Tracking', desc: 'Log daily energy levels to understand your personal productivity rhythms over time.', accent: '#34d399' },
+  { icon: Calendar, title: 'Schedules & Habits', desc: 'Build lasting routines with daily, weekly, and monthly recurring schedules.', accent: '#38bdf8' },
 ];
 
 export default function FeatureShowcase() {
@@ -28,7 +28,6 @@ export default function FeatureShowcase() {
 
     let mm = gsap.matchMedia();
 
-    // Simplified Fly-In and Snap Grid
     mm.add("(min-width: 1024px)", () => {
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -43,7 +42,6 @@ export default function FeatureShowcase() {
 
       const cards = gsap.utils.toArray('.bento-card');
 
-      // Set initial state: Fly in from below and slightly in front (Z)
       gsap.set(cards, { 
         y: 600,
         z: 300,
@@ -52,14 +50,14 @@ export default function FeatureShowcase() {
         scale: 0.9
       });
 
-      // 1. Premium Word-Split Title reveal
+      // Word-split title reveal
       tl.fromTo('.feature-title-word', 
         { y: 60, opacity: 0, rotateX: -45 }, 
         { y: 0, opacity: 1, rotateX: 0, duration: 1, stagger: 0.1, ease: 'power3.out' }, 
         0
       );
 
-      // 2. Simple Fly-In and Snap
+      // Cards fly in from the void
       tl.to(cards, { 
         y: 0, 
         z: 0, 
@@ -71,7 +69,7 @@ export default function FeatureShowcase() {
         stagger: 0.15 
       }, 0.3);
 
-      // 3. Subtle grid pop at the end
+      // Subtle grid pulse
       tl.to('.bento-grid', { scale: 1.02, duration: 0.5, ease: 'sine.inOut' }, ">-0.3");
       tl.to('.bento-grid', { scale: 1, duration: 0.5, ease: 'sine.inOut' });
     });
@@ -126,7 +124,7 @@ export default function FeatureShowcase() {
         
         <div ref={gridRef} className="bento-grid" onMouseMove={handleMouseMove}>
           {FEATURES.map((feature, i) => (
-            <div key={i} className="bento-card">
+            <div key={i} className="bento-card" style={{ '--card-accent': feature.accent }}>
               <div className="bento-content">
                 <div className="bento-icon">
                   <feature.icon size={32} />

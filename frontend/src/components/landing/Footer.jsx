@@ -6,9 +6,12 @@ export default function Footer() {
       <div className="landing-footer-grid">
         
         <div className="footer-brand-col">
-          <Link to="/" className="footer-logo">Mentra.</Link>
+          <Link to="/" className="footer-logo">
+            <span className="footer-logo-icon">M</span>
+            <span>Mentra</span>
+          </Link>
           <p className="footer-tagline">
-            Productivity that grows with you. Turn your daily tasks into an epic journey.
+            Your productivity universe. Turn daily tasks into an epic journey across the cosmos.
           </p>
         </div>
 
@@ -18,7 +21,7 @@ export default function Footer() {
             <a href="#features">Features</a>
             <a href="#how-it-works">How it works</a>
             <a href="#forest">The Forest</a>
-            <Link to="/register">Sign up</Link>
+            <a href="#faq">FAQ</a>
           </div>
 
           <div className="footer-col">
@@ -30,10 +33,9 @@ export default function Footer() {
           </div>
 
           <div className="footer-col">
-            <h4>Company</h4>
-            <a href="#">About</a>
-            <a href="#">Careers</a>
-            <a href="#">Legal</a>
+            <h4>Legal</h4>
+            <Link to="/terms-of-service">Terms of Service</Link>
+            <Link to="/privacy-policy">Privacy Policy</Link>
             <a href="#">Contact</a>
           </div>
         </div>

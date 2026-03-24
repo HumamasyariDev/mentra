@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -13,11 +13,11 @@ const NAV_LINKS = [
   { label: 'How It Works', href: '#how-it-works' },
   { label: 'Features', href: '#features' },
   { label: 'Forest World', href: '#forest' },
+  { label: 'FAQ', href: '#faq' },
 ];
 
 export default function Navbar() {
   const navRef = useRef(null);
-  const mobileMenuRef = useRef(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   
@@ -35,7 +35,6 @@ export default function Navbar() {
       });
     }
 
-    // Static clean scroll effect - NO WIGGLE/SKEW
     ScrollTrigger.create({
       start: 'top -50',
       end: 99999,
@@ -74,7 +73,10 @@ export default function Navbar() {
   return (
     <nav ref={navRef} className="landing-nav">
       <div className="landing-nav-inner">
-        <Link to="/" ref={logoRef} className="landing-nav-logo">Mentra.</Link>
+        <Link to="/" ref={logoRef} className="landing-nav-logo">
+          <span className="landing-nav-logo-icon">M</span>
+          <span className="landing-nav-logo-text">Mentra</span>
+        </Link>
 
         <div className="landing-nav-links">
           {NAV_LINKS.map((link) => (
@@ -89,19 +91,20 @@ export default function Navbar() {
           <Link to="/register" ref={ctaRef} className="landing-nav-cta">Get Started</Link>
         </div>
 
-        <button className="landing-nav-hamburger" onClick={() => setMobileOpen(!mobileOpen)}>
+        <button className="landing-nav-hamburger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
           {mobileOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {mobileOpen && (
-        <div className="landing-nav-mobile-overlay" style={{ opacity: 1, pointerEvents: 'auto', transition: 'opacity 0.3s' }}>
+        <div className="landing-nav-mobile-overlay" style={{ opacity: 1, pointerEvents: 'auto' }}>
           {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} style={{ color: '#fff', fontSize: '2rem', fontWeight: 'bold', textDecoration: 'none' }} onClick={(e) => scrollTo(e, link.href)}>
+            <a key={link.href} href={link.href} className="mobile-nav-link" onClick={(e) => scrollTo(e, link.href)}>
               {link.label}
             </a>
           ))}
-          <Link to="/login" style={{ color: '#94a3b8', fontSize: '1.5rem', textDecoration: 'none', marginTop: '2rem' }} onClick={() => setMobileOpen(false)}>Log in</Link>
+          <Link to="/login" className="mobile-nav-link mobile-nav-link--muted" onClick={() => setMobileOpen(false)}>Log in</Link>
+          <Link to="/register" className="mobile-nav-cta" onClick={() => setMobileOpen(false)}>Get Started</Link>
         </div>
       )}
     </nav>
