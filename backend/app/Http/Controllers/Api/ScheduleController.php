@@ -71,6 +71,7 @@ class ScheduleController extends Controller
             'days_of_week' => ['nullable', 'array'],
             'day_of_month' => ['nullable', 'integer', 'between:1,31'],
             'is_active' => ['boolean'],
+            'exp_reward' => ['nullable', 'integer', 'min:1', 'max:50'],
         ]);
 
         $schedule->update($validated);

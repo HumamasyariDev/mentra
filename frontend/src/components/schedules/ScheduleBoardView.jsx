@@ -4,12 +4,12 @@ import ScheduleItem from './ScheduleItem';
 import '../../styles/components/schedules/ScheduleComponents.css';
 
 const columns = [
-  { key: 'daily', label: 'Daily', color: '#60a5fa', bg: '#eff6ff' },
-  { key: 'weekly', label: 'Weekly', color: '#a78bfa', bg: '#f5f3ff' },
-  { key: 'monthly', label: 'Monthly', color: '#fbbf24', bg: '#fffbeb' },
+  { key: 'daily', label: 'Daily', color: 'var(--info)' },
+  { key: 'weekly', label: 'Weekly', color: 'var(--purple)' },
+  { key: 'monthly', label: 'Monthly', color: 'var(--warning)' },
 ];
 
-export default function ScheduleBoardView({ schedules, isLoading, onComplete, onUncomplete, onDelete, onUpdateType }) {
+export default function ScheduleBoardView({ schedules, isLoading, onComplete, onUncomplete, onDelete, onEdit, onUpdateType }) {
   const [dragOverCol, setDragOverCol] = useState(null);
 
   if (isLoading) {
@@ -54,30 +54,28 @@ export default function ScheduleBoardView({ schedules, isLoading, onComplete, on
         return (
           <div
             key={col.key}
-            className="schedule-board-column"
+            className={`schedule-board-column ${isDragOver ? 'drag-over' : ''}`}
             onDragOver={(e) => handleDragOver(e, col.key)}
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, col.key)}
           >
             {/* Column header */}
-            <div className="schedule-board-header" style={{ backgroundColor: col.bg, borderLeftColor: col.color }}>
-              <h3 className="schedule-board-title">{col.label}</h3>
-              <span className="schedule-board-count">
+            <div className="schedule-board-col-header">
+              <span
+                className="schedule-board-col-indicator"
+                style={{ backgroundColor: col.color }}
+              />
+              <h3 className="schedule-board-col-title">{col.label}</h3>
+              <span className="schedule-board-col-count">
                 {colSchedules.length}
               </span>
             </div>
 
-            {/* Column schedules */}
-            <div
-              className={`schedule-board-content ${isDragOver ? 'drag-over' : ''}`}
-            >
-              {colSchedules.length === 0 && !isDragOver ? (
-                <div className="schedule-board-empty">
-                  No schedules
-                </div>
-              ) : colSchedules.length === 0 && isDragOver ? (
-                <div className="schedule-board-drop-zone">
-                  Drop here
+            {/* Column body */}
+            <div className="schedule-board-col-body">
+              {colSchedules.length === 0 ? (
+                <div className={`schedule-board-empty ${isDragOver ? 'drop-active' : ''}`}>
+                  {isDragOver ? 'Drop here' : 'No schedules'}
                 </div>
               ) : (
                 colSchedules.map((schedule) => (
@@ -92,6 +90,8 @@ export default function ScheduleBoardView({ schedules, isLoading, onComplete, on
                       onComplete={onComplete}
                       onUncomplete={onUncomplete}
                       onDelete={onDelete}
+                      onEdit={onEdit}
+                      hideType
                     />
                   </div>
                 ))

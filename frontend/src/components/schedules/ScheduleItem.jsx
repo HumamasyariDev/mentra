@@ -1,10 +1,19 @@
-import { CheckCircle2, Circle, Trash2, Clock, Repeat } from 'lucide-react';
+import { CheckCircle2, Circle, Trash2, Pencil } from 'lucide-react';
 import '../../styles/components/schedules/ScheduleComponents.css';
 
-const typeColors = {
-  daily: { bg: '#dbeafe', text: '#1e40af' },
-  weekly: { bg: '#f3e8ff', text: '#7c3aed' },
-  monthly: { bg: '#fef3c7', text: '#a16207' },
+const typeLabels = {
+  daily: 'Daily',
+  weekly: 'Weekly',
+  monthly: 'Monthly',
+};
+
+export const formatTime = (time) => {
+  if (!time) return null;
+  const [h, m] = time.split(':');
+  const hour = parseInt(h, 10);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  const display = hour % 12 || 12;
+  return `${display}:${m} ${ampm}`;
 };
 
 export function isCompletedOnDate(schedule, dateStr) {
@@ -23,12 +32,24 @@ export function isCompletedToday(schedule) {
   return isCompletedOnDate(schedule, `${y}-${m}-${d}`);
 }
 
-export default function ScheduleItem({ schedule, onComplete, onUncomplete, onDelete, compact = false, checkDate }) {
+export default function ScheduleItem({
+  schedule,
+  onComplete,
+  onUncomplete,
+  onDelete,
+  onEdit,
+  compact = false,
+  checkDate,
+  hideType = false,
+}) {
   const completed = checkDate
     ? isCompletedOnDate(schedule, checkDate)
     : isCompletedToday(schedule);
 
+  const canToggle = !!(onComplete || onUncomplete);
+
   const handleToggle = () => {
+    if (!canToggle) return;
     if (completed) {
       onUncomplete?.(schedule.id);
     } else {
@@ -36,68 +57,89 @@ export default function ScheduleItem({ schedule, onComplete, onUncomplete, onDel
     }
   };
 
+  const timeDisplay = formatTime(schedule.start_time);
+  const endDisplay = formatTime(schedule.end_time);
+  const typeLabel = typeLabels[schedule.type] || 'Daily';
+
   if (compact) {
     return (
-      <div className={`schedule-item-compact ${completed ? 'completed' : ''}`}>
-        <button onClick={handleToggle} className="schedule-toggle-btn">
+      <div className={`schedule-compact-item ${completed ? 'completed' : ''}`}>
+        <button
+          onClick={handleToggle}
+          className="schedule-compact-toggle"
+          disabled={!canToggle}
+        >
           {completed ? (
-            <CheckCircle2 className="schedule-icon completed" />
+            <CheckCircle2 className="schedule-icon done" />
           ) : (
             <Circle className="schedule-icon pending" />
           )}
         </button>
-        <span className={`schedule-compact-title ${completed ? 'completed' : ''}`}>
+        <span className={`schedule-compact-title ${completed ? 'done' : ''}`}>
           {schedule.title}
         </span>
-        {schedule.start_time && (
-          <span className="schedule-compact-time">{schedule.start_time}</span>
+        {timeDisplay && (
+          <span className="schedule-compact-time">{timeDisplay}</span>
         )}
       </div>
     );
   }
 
   return (
-    <div className={`schedule-item-card ${completed ? 'completed' : ''}`}>
-      <button onClick={handleToggle} className="schedule-toggle-btn">
+    <div className={`schedule-agenda-card ${completed ? 'completed' : ''}`}>
+      <button
+        onClick={handleToggle}
+        className={`schedule-agenda-toggle ${!canToggle ? 'disabled' : ''}`}
+        disabled={!canToggle}
+      >
         {completed ? (
-          <CheckCircle2 className="schedule-icon-large completed" />
+          <CheckCircle2 className="schedule-icon done" />
         ) : (
-          <Circle className="schedule-icon-large pending" />
+          <Circle className="schedule-icon pending" />
         )}
       </button>
 
-      <div className="schedule-item-content">
-        <p className={`schedule-item-title ${completed ? 'completed' : ''}`}>
+      <div className="schedule-agenda-time-col">
+        {timeDisplay ? (
+          <span className="schedule-agenda-time">{timeDisplay}</span>
+        ) : (
+          <span className="schedule-agenda-time no-time">--:--</span>
+        )}
+        {endDisplay && (
+          <span className="schedule-agenda-end-time">to {endDisplay}</span>
+        )}
+      </div>
+
+      <div className="schedule-agenda-content">
+        <p className={`schedule-agenda-title ${completed ? 'done' : ''}`}>
           {schedule.title}
         </p>
         {schedule.description && (
-          <p className="schedule-item-description">{schedule.description}</p>
+          <p className="schedule-agenda-desc">{schedule.description}</p>
         )}
-        <div className="schedule-item-meta">
-          <span className="schedule-type-badge" style={{
-            backgroundColor: typeColors[schedule.type].bg,
-            color: typeColors[schedule.type].text
-          }}>
-            <Repeat style={{ width: '0.75rem', height: '0.75rem', display: 'inline', marginRight: '0.25rem' }} />
-            {schedule.type}
-          </span>
-          {schedule.start_time && (
-            <span className="schedule-time-badge">
-              <Clock style={{ width: '0.75rem', height: '0.75rem' }} />
-              {schedule.start_time}
-              {schedule.end_time && ` - ${schedule.end_time}`}
-            </span>
-          )}
-          <span className="schedule-exp-badge">+{schedule.exp_reward} EXP</span>
-        </div>
+        {!hideType && (
+          <span className={`schedule-agenda-type ${schedule.type}`}>{typeLabel}</span>
+        )}
       </div>
 
-      <button
-        onClick={() => onDelete?.(schedule.id)}
-        className="schedule-delete-btn"
-      >
-        <Trash2 style={{ width: '1rem', height: '1rem' }} />
-      </button>
+      <div className="schedule-agenda-actions">
+        {onEdit && (
+          <button
+            onClick={() => onEdit(schedule)}
+            className="schedule-agenda-action-btn edit"
+          >
+            <Pencil className="schedule-agenda-action-icon" />
+          </button>
+        )}
+        {onDelete && (
+          <button
+            onClick={() => onDelete(schedule.id)}
+            className="schedule-agenda-action-btn delete"
+          >
+            <Trash2 className="schedule-agenda-action-icon" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }

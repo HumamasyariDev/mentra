@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Loader2, Calendar } from 'lucide-react';
-import ScheduleItem, { isCompletedOnDate } from './ScheduleItem';
+import ScheduleItem, { isCompletedOnDate, formatTime } from './ScheduleItem';
 import '../../styles/components/schedules/ScheduleComponents.css';
 
 const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -12,7 +12,7 @@ const formatDate = (d) => {
   return `${y}-${m}-${day}`;
 };
 
-export default function ScheduleCalendarView({ schedules, isLoading, onComplete, onUncomplete, onDelete }) {
+export default function ScheduleCalendarView({ schedules, isLoading, onComplete, onUncomplete, onDelete, onEdit }) {
   const todayStr = formatDate(new Date());
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(todayStr);
@@ -71,9 +71,17 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
     year: 'numeric',
   });
 
-  const selectedDaySchedules = selectedDate
-    ? getSchedulesForDate(new Date(selectedDate + 'T00:00:00'))
-    : [];
+  const selectedDaySchedules = useMemo(() => {
+    if (!selectedDate) return [];
+    const daySchedules = getSchedulesForDate(new Date(selectedDate + 'T00:00:00'));
+    // Sort by start_time for timeline display (nulls last)
+    return [...daySchedules].sort((a, b) => {
+      if (!a.start_time && !b.start_time) return 0;
+      if (!a.start_time) return 1;
+      if (!b.start_time) return -1;
+      return a.start_time.localeCompare(b.start_time);
+    });
+  }, [selectedDate, schedules]);
 
   const selectedDateLabel = selectedDate
     ? new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
@@ -82,6 +90,8 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
         day: 'numeric',
       })
     : '';
+
+  const isSelectedToday = selectedDate === todayStr;
 
   if (isLoading) {
     return (
@@ -93,35 +103,41 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
 
   return (
     <div className="schedule-calendar-grid">
-      {/* Left: Schedule list for selected date */}
+      {/* Left: Timeline list for selected date */}
       <div className="schedule-list-panel">
         <h4 className="schedule-list-title">{selectedDateLabel}</h4>
         <p className="schedule-list-count">
           {selectedDaySchedules.length} schedule{selectedDaySchedules.length !== 1 ? 's' : ''}
         </p>
 
-        <div className="schedule-list-container">
+        <div className="schedule-cal-timeline">
           {selectedDaySchedules.length === 0 ? (
             <div className="schedule-list-empty">
-              <Calendar style={{ width: '2.5rem', height: '2.5rem', margin: '0 auto 0.5rem', opacity: '0.4' }} />
+              <Calendar style={{ width: '2.5rem', height: '2.5rem', opacity: 0.4 }} />
               <p>No schedules for this day</p>
             </div>
           ) : (
-            selectedDaySchedules.map((schedule) => (
-              <ScheduleItem
-                key={schedule.id}
-                schedule={schedule}
-                onComplete={onComplete}
-                onUncomplete={onUncomplete}
-                onDelete={onDelete}
-                checkDate={selectedDate}
-              />
-            ))
+            <div className="schedule-cal-timeline-inner">
+              <div className="schedule-timeline-line" />
+              {selectedDaySchedules.map((schedule) => (
+                <div key={schedule.id} className="schedule-timeline-item">
+                  <div className="schedule-timeline-node item-node" />
+                  <ScheduleItem
+                    schedule={schedule}
+                    onComplete={isSelectedToday ? onComplete : undefined}
+                    onUncomplete={isSelectedToday ? onUncomplete : undefined}
+                    onDelete={onDelete}
+                    onEdit={onEdit}
+                    checkDate={selectedDate}
+                  />
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>
 
-      {/* Right: Mini calendar */}
+      {/* Right: Calendar panel */}
       <div className="schedule-calendar-panel">
         {/* Calendar Header */}
         <div className="schedule-calendar-header">
@@ -159,28 +175,23 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
             const completedCount = daySchedules.filter((s) => isCompletedOnDate(s, dateStr)).length;
             const totalCount = daySchedules.length;
 
+            let badgeClass = 'pending';
+            if (totalCount > 0 && completedCount === totalCount) badgeClass = 'completed';
+            else if (completedCount > 0) badgeClass = 'partial';
+
             return (
               <button
                 key={i}
                 onClick={() => setSelectedDate(dateStr)}
                 className={`schedule-calendar-cell ${!isCurrentMonth ? 'other-month' : ''} ${isSelected ? 'selected' : ''}`}
               >
-                <span
-                  className="schedule-calendar-date"
-                  style={{
-                    backgroundColor: isToday ? '#6366f1' : 'transparent',
-                    color: isToday ? '#ffffff' : '#475569'
-                  }}
-                >
+                <span className={`schedule-calendar-date ${isToday ? 'today' : ''}`}>
                   {date.getDate()}
                 </span>
 
                 {totalCount > 0 && isCurrentMonth && (
                   <div className="schedule-calendar-badge-container">
-                    <span className="schedule-calendar-badge" style={{
-                      backgroundColor: completedCount === totalCount ? '#d1fae5' : completedCount > 0 ? '#fef3c7' : '#dbeafe',
-                      color: completedCount === totalCount ? '#047857' : completedCount > 0 ? '#a16207' : '#1e40af'
-                    }}>
+                    <span className={`schedule-calendar-badge ${badgeClass}`}>
                       {completedCount}/{totalCount}
                     </span>
                   </div>
@@ -193,13 +204,13 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
         {/* Legend */}
         <div className="schedule-calendar-legend">
           <span className="schedule-legend-item">
-            <span className="schedule-legend-dot" style={{ backgroundColor: '#dbeafe', border: '1px solid #bfdbfe' }} /> Pending
+            <span className="schedule-legend-dot pending" /> Pending
           </span>
           <span className="schedule-legend-item">
-            <span className="schedule-legend-dot" style={{ backgroundColor: '#fef3c7', border: '1px solid #fde68a' }} /> Partial
+            <span className="schedule-legend-dot partial" /> Partial
           </span>
           <span className="schedule-legend-item">
-            <span className="schedule-legend-dot" style={{ backgroundColor: '#d1fae5', border: '1px solid #a7f3d0' }} /> Done
+            <span className="schedule-legend-dot completed" /> Done
           </span>
         </div>
       </div>
