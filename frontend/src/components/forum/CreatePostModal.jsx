@@ -2,20 +2,18 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import '../../styles/components/forum/ForumModals.css';
 
-export default function CreatePostModal({ onClose, onSubmit, channels = [] }) {
+export default function CreatePostModal({ onClose, onSubmit }) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [channelId, setChannelId] = useState(channels.length > 0 ? channels[0].id : '');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim() || !channelId) return;
+    if (!title.trim() || !content.trim()) return;
     
     setLoading(true);
     try {
       await onSubmit({ 
-        channel_id: channelId,
         title: title.trim(), 
         content: content.trim() 
       });
@@ -39,22 +37,6 @@ export default function CreatePostModal({ onClose, onSubmit, channels = [] }) {
 
         <form onSubmit={handleSubmit} className="modal-body">
           <div className="modal-form">
-            <div className="form-group">
-              <label className="form-label">Channel</label>
-              <select
-                value={channelId}
-                onChange={(e) => setChannelId(e.target.value)}
-                className="form-input"
-              >
-                <option value="">Select a channel...</option>
-                {channels.map((channel) => (
-                  <option key={channel.id} value={channel.id}>
-                    {channel.name} {channel.forum && `(${channel.forum.name})`}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             <div className="form-group">
               <label className="form-label">Title</label>
               <input
@@ -89,7 +71,7 @@ export default function CreatePostModal({ onClose, onSubmit, channels = [] }) {
               </button>
               <button 
                 type="submit" 
-                disabled={!title.trim() || !content.trim() || !channelId || loading} 
+                disabled={!title.trim() || !content.trim() || loading} 
                 className="btn btn-primary"
               >
                 {loading ? 'Creating...' : 'Create Post'}

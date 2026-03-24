@@ -1,12 +1,17 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import '../styles/pages/Forum.css';
-import { forumPostApi, forumChannelApi } from '../services/api';
+import { forumPostApi } from '../services/api';
 import CreatePostModal from '../components/forum/CreatePostModal';
-import { Search, ChevronDown, Plus, Loader2, MessageSquare, Trash2, Edit2, X, Send } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 import EditPostModal from '../components/forum/EditPostModal';
 import DeleteConfirmModal from '../components/forum/DeleteConfirmModal';
+import {
+  Search, ChevronDown, Plus, Loader2, MessageSquare,
+  Trash2, Edit2, X, Send, Filter,
+} from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Forum() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,47 +21,110 @@ export default function Forum() {
   const [postToEdit, setPostToEdit] = useState(null);
   const [postToDelete, setPostToDelete] = useState(null);
   const [sortBy, setSortBy] = useState('recent');
-  const [viewAs, setViewAs] = useState('list');
+  const [filterBy, setFilterBy] = useState('all');
   const [showSortDropdown, setShowSortDropdown] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
+  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [panelVisible, setPanelVisible] = useState(false);
+  const [panelReady, setPanelReady] = useState(false);
+  const panelTimerRef = useRef(null);
   const [replyContent, setReplyContent] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // ─── Queries ───
-  const { data: channels } = useQuery({
-    queryKey: ['forum-channels'],
-    queryFn: () => forumChannelApi.list().then((r) => r.data),
-  });
+  // Panel open/close animation
+  const openPanel = useCallback((postId) => {
+    clearTimeout(panelTimerRef.current);
+    setSelectedPostId(postId);
+    setPanelVisible(true);
+    // Trigger enter animation on next frame
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setPanelReady(true));
+    });
+  }, []);
 
+  const closePanel = useCallback(() => {
+    setPanelReady(false);
+    panelTimerRef.current = setTimeout(() => {
+      setPanelVisible(false);
+      setSelectedPostId(null);
+    }, 250); // match CSS transition duration
+  }, []);
+
+  useEffect(() => {
+    return () => clearTimeout(panelTimerRef.current);
+  }, []);
+
+  // Clear errors after 5 seconds
+  useEffect(() => {
+    if (!errorMessage) return;
+    const t = setTimeout(() => setErrorMessage(''), 5000);
+    return () => clearTimeout(t);
+  }, [errorMessage]);
+
+  // ─── Queries ───
   const { data: posts, isLoading: postsLoading } = useQuery({
     queryKey: ['forum-posts'],
     queryFn: () => forumPostApi.list().then((r) => r.data),
     refetchInterval: 5000,
   });
 
+  // Derive selectedPost from live query data (never stale)
+  const allMessages = posts?.data || [];
+  const allPosts = useMemo(() => allMessages.filter((m) => !m.reply_to_id), [allMessages]);
+  const selectedPost = useMemo(
+    () => (selectedPostId ? allPosts.find((p) => p.id === selectedPostId) || null : null),
+    [selectedPostId, allPosts],
+  );
+
+  const selectedReplies = useMemo(
+    () =>
+      selectedPostId
+        ? allMessages
+            .filter((m) => m.reply_to_id === selectedPostId)
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+        : [],
+    [selectedPostId, allMessages],
+  );
+
   // ─── Mutations ───
+  const invalidate = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['forum-posts'] });
+  }, [queryClient]);
+
   const createPostMutation = useMutation({
     mutationFn: (data) => forumPostApi.create(data).then((r) => r.data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['forum-posts'] });
-    },
+    onSuccess: invalidate,
+    onError: (err) => setErrorMessage(err?.response?.data?.message || 'Failed to create post'),
   });
 
   const updatePostMutation = useMutation({
     mutationFn: ({ id, data }) => forumPostApi.update(id, data).then((r) => r.data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['forum-posts'] });
-    },
+    onSuccess: invalidate,
+    onError: (err) => setErrorMessage(err?.response?.data?.message || 'Failed to update post'),
   });
 
   const deletePostMutation = useMutation({
     mutationFn: (id) => forumPostApi.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['forum-posts'] });
+      invalidate();
       setShowDeleteConfirm(false);
       setPostToDelete(null);
+              // If we deleted the selected post, close panel
+              if (postToDelete && postToDelete.id === selectedPostId) {
+                closePanel();
+              }
     },
+    onError: (err) => setErrorMessage(err?.response?.data?.message || 'Failed to delete post'),
+  });
+
+  const replyMutation = useMutation({
+    mutationFn: (data) => forumPostApi.create(data).then((r) => r.data),
+    onSuccess: () => {
+      invalidate();
+      setReplyContent('');
+    },
+    onError: (err) => setErrorMessage(err?.response?.data?.message || 'Failed to send reply'),
   });
 
   // ─── Handlers ───
@@ -78,13 +146,29 @@ export default function Forum() {
 
   const handleUpdatePost = async (data) => {
     if (postToEdit) {
-      await updatePostMutation.mutateAsync({ 
-        id: postToEdit.id, 
-        data 
-      });
+      await updatePostMutation.mutateAsync({ id: postToEdit.id, data });
       setShowEditPost(false);
       setPostToEdit(null);
     }
+  };
+
+  const handleReplySubmit = (e) => {
+    e.preventDefault();
+    if (!replyContent.trim() || !selectedPost) return;
+    replyMutation.mutate({
+      content: replyContent.trim(),
+      reply_to_id: selectedPost.id,
+    });
+  };
+
+  const canModify = (message) => {
+    if (!user || !message) return false;
+    return message.user_id === user.id;
+  };
+
+  const canDelete = (message) => {
+    if (!user || !message) return false;
+    return message.user_id === user.id || !!user.is_admin;
   };
 
   // Format timestamp
@@ -92,7 +176,7 @@ export default function Forum() {
     const now = new Date();
     const postDate = new Date(date);
     const diffInHours = Math.floor((now - postDate) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) {
       const diffInMinutes = Math.floor((now - postDate) / (1000 * 60));
       return diffInMinutes <= 1 ? 'Just now' : `${diffInMinutes}m ago`;
@@ -101,253 +185,314 @@ export default function Forum() {
     } else if (diffInHours < 168) {
       const diffInDays = Math.floor(diffInHours / 24);
       return `${diffInDays}d ago`;
-    } else {
-      return postDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
+    return postDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  // Filter and sort posts
-  const allPosts = (posts?.data || []).filter(m => !m.reply_to_id);
-  const filteredPosts = allPosts.filter(post => {
-    if (!searchQuery) return true;
-    const search = searchQuery.toLowerCase();
-    return (
-      post.title?.toLowerCase().includes(search) ||
-      post.content?.toLowerCase().includes(search) ||
-      post.user?.name?.toLowerCase().includes(search)
-    );
-  });
+  // Filter and sort
+  const filteredPosts = useMemo(() => {
+    let result = allPosts;
 
-  const sortedPosts = [...filteredPosts].sort((a, b) => {
-    if (sortBy === 'recent') {
-      // Sort by most recent activity (latest reply or creation)
-      return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
+    // Apply filter
+    if (filterBy === 'mine' && user) {
+      result = result.filter((post) => post.user_id === user.id);
+    } else if (filterBy === 'most-replied') {
+      result = result.filter((post) => {
+        const count = typeof post.replies_count === 'number'
+          ? post.replies_count
+          : allMessages.filter((m) => m.reply_to_id === post.id).length;
+        return count > 0;
+      });
     }
-    if (sortBy === 'date') {
-      // Sort by creation date
+
+    // Apply search
+    if (searchQuery) {
+      const search = searchQuery.toLowerCase();
+      result = result.filter(
+        (post) =>
+          post.title?.toLowerCase().includes(search) ||
+          post.content?.toLowerCase().includes(search) ||
+          post.user?.name?.toLowerCase().includes(search),
+      );
+    }
+
+    // Apply sort
+    return [...result].sort((a, b) => {
+      if (filterBy === 'most-replied') {
+        const countA = typeof a.replies_count === 'number'
+          ? a.replies_count
+          : allMessages.filter((m) => m.reply_to_id === a.id).length;
+        const countB = typeof b.replies_count === 'number'
+          ? b.replies_count
+          : allMessages.filter((m) => m.reply_to_id === b.id).length;
+        if (countB !== countA) return countB - countA;
+      }
+      if (sortBy === 'recent') {
+        return new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at);
+      }
       return new Date(b.created_at) - new Date(a.created_at);
-    }
-    return 0;
-  });
+    });
+  }, [allPosts, allMessages, searchQuery, sortBy, filterBy, user]);
+
+  // Reply count helper — use backend replies_count if available, else fall back to client counting
+  const getReplyCount = (post) => {
+    if (typeof post.replies_count === 'number') return post.replies_count;
+    return allMessages.filter((m) => m.reply_to_id === post.id).length;
+  };
 
   return (
     <div className="forum-split-container">
       {/* Left Panel - Post List */}
-      <div className={`forum-left-panel ${selectedPost ? 'has-selection' : ''}`}>
+      <div className={`forum-left-panel ${panelVisible && selectedPost ? 'has-selection' : ''}`}>
         {/* Header */}
         <div className="forum-header">
           <div className="forum-header-content">
-          <div className="forum-header-top">
-            <h1 className="forum-title">Forum</h1>
-            <button
-              onClick={() => setShowCreatePost(true)}
-              className="forum-new-post-btn"
-            >
-              <Plus size={18} />
-              New Post
-            </button>
-          </div>
-          
-          {/* Search Bar */}
-          <div className="forum-search-container">
-            <Search className="forum-search-icon" size={18} />
-            <input
-              type="text"
-              placeholder="Search or create a post..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="forum-search-input"
-            />
-          </div>
+            <div className="forum-header-top">
+              <h1 className="forum-title">Forum</h1>
+              <button
+                onClick={() => setShowCreatePost(true)}
+                className="forum-new-post-btn"
+              >
+                <Plus size={18} />
+                New Post
+              </button>
+            </div>
 
-          {/* Sort & View Dropdown */}
-          <div className="forum-sort-container">
-            <button
-              onClick={() => setShowSortDropdown(!showSortDropdown)}
-              className="forum-sort-btn"
-            >
-              <span>Sort & View</span>
-              <ChevronDown size={16} />
-            </button>
+            {/* Search Bar */}
+            <div className="forum-search-container">
+              <Search className="forum-search-icon" size={18} />
+              <input
+                type="text"
+                placeholder="Search posts..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="forum-search-input"
+              />
+            </div>
 
-            {/* Dropdown Menu */}
-            {showSortDropdown && (
-              <>
-                <div 
-                  className="forum-dropdown-overlay" 
-                  onClick={() => setShowSortDropdown(false)}
-                />
-                <div className="forum-dropdown-menu">
-                  {/* Sort By Section */}
-                  <div className="forum-dropdown-section">
-                    <div className="forum-dropdown-section-title">Sort By</div>
-                    <div className="forum-dropdown-options">
-                      <label className="forum-dropdown-option">
-                        <input
-                          type="radio"
-                          name="sortBy"
-                          value="recent"
-                          checked={sortBy === 'recent'}
-                          onChange={(e) => setSortBy(e.target.value)}
-                          className="forum-radio-input"
-                        />
-                        <span className="forum-option-label">Recently Active</span>
-                      </label>
-                      <label className="forum-dropdown-option">
-                        <input
-                          type="radio"
-                          name="sortBy"
-                          value="date"
-                          checked={sortBy === 'date'}
-                          onChange={(e) => setSortBy(e.target.value)}
-                          className="forum-radio-input"
-                        />
-                        <span className="forum-option-label">Date Posted</span>
-                      </label>
+            {/* Sort & Filter Dropdown */}
+            <div className="forum-sort-container">
+              <button
+                onClick={() => setShowSortDropdown(!showSortDropdown)}
+                className="forum-sort-btn"
+              >
+                <Filter size={14} />
+                <span>
+                  {filterBy === 'all' ? 'All' : filterBy === 'mine' ? 'My Posts' : 'Most Replied'}
+                  {' · '}
+                  {sortBy === 'recent' ? 'Recently Active' : 'Date Posted'}
+                </span>
+                <ChevronDown size={16} />
+              </button>
+
+              {showSortDropdown && (
+                <>
+                  <div
+                    className="forum-dropdown-overlay"
+                    onClick={() => setShowSortDropdown(false)}
+                  />
+                  <div className="forum-dropdown-menu">
+                    {/* Filter Section */}
+                    <div className="forum-dropdown-section">
+                      <div className="forum-dropdown-section-title">Filter</div>
+                      <div className="forum-dropdown-options">
+                        <label className="forum-dropdown-option">
+                          <input
+                            type="radio"
+                            name="filterBy"
+                            value="all"
+                            checked={filterBy === 'all'}
+                            onChange={(e) => setFilterBy(e.target.value)}
+                            className="forum-radio-input"
+                          />
+                          <span className="forum-option-label">All Posts</span>
+                        </label>
+                        <label className="forum-dropdown-option">
+                          <input
+                            type="radio"
+                            name="filterBy"
+                            value="mine"
+                            checked={filterBy === 'mine'}
+                            onChange={(e) => setFilterBy(e.target.value)}
+                            className="forum-radio-input"
+                          />
+                          <span className="forum-option-label">My Posts</span>
+                        </label>
+                        <label className="forum-dropdown-option">
+                          <input
+                            type="radio"
+                            name="filterBy"
+                            value="most-replied"
+                            checked={filterBy === 'most-replied'}
+                            onChange={(e) => setFilterBy(e.target.value)}
+                            className="forum-radio-input"
+                          />
+                          <span className="forum-option-label">Most Replied</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Sort Section */}
+                    <div className="forum-dropdown-section forum-dropdown-section-last">
+                      <div className="forum-dropdown-section-title">Sort By</div>
+                      <div className="forum-dropdown-options">
+                        <label className="forum-dropdown-option">
+                          <input
+                            type="radio"
+                            name="sortBy"
+                            value="recent"
+                            checked={sortBy === 'recent'}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="forum-radio-input"
+                          />
+                          <span className="forum-option-label">Recently Active</span>
+                        </label>
+                        <label className="forum-dropdown-option">
+                          <input
+                            type="radio"
+                            name="sortBy"
+                            value="date"
+                            checked={sortBy === 'date'}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="forum-radio-input"
+                          />
+                          <span className="forum-option-label">Date Posted</span>
+                        </label>
+                      </div>
                     </div>
                   </div>
-
-                  {/* View As Section */}
-                  <div className="forum-dropdown-section forum-dropdown-section-last">
-                    <div className="forum-dropdown-section-title">View As</div>
-                    <div className="forum-dropdown-options">
-                      <label className="forum-dropdown-option">
-                        <input
-                          type="radio"
-                          name="viewAs"
-                          value="list"
-                          checked={viewAs === 'list'}
-                          onChange={(e) => setViewAs(e.target.value)}
-                          className="forum-radio-input"
-                        />
-                        <span className="forum-option-label">List</span>
-                      </label>
-                      <label className="forum-dropdown-option">
-                        <input
-                          type="radio"
-                          name="viewAs"
-                          value="gallery"
-                          checked={viewAs === 'gallery'}
-                          onChange={(e) => setViewAs(e.target.value)}
-                          className="forum-radio-input"
-                        />
-                        <span className="forum-option-label">Gallery</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Reset to default */}
-                  <div className="forum-dropdown-reset">
-                    <button
-                      onClick={() => {
-                        setSortBy('recent');
-                        setViewAs('list');
-                      }}
-                      className="forum-reset-btn"
-                    >
-                      Reset to default
-                    </button>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Posts List */}
-        <div className="forum-posts-container">
-        {postsLoading ? (
-          <div className="forum-loading">
-            <Loader2 className="forum-loading-spinner" size={32} />
-          </div>
-        ) : sortedPosts.length === 0 ? (
-          <div className="forum-empty">
-            <MessageSquare size={48} className="forum-empty-icon" />
-            <p className="forum-empty-title">
-              {searchQuery ? 'No posts found' : 'No posts yet'}
-            </p>
-            <p className="forum-empty-subtitle">
-              {searchQuery ? 'Try a different search term' : 'Be the first to start a discussion'}
-            </p>
-            {!searchQuery && (
-              <button
-                onClick={() => setShowCreatePost(true)}
-                className="forum-empty-cta"
-              >
-                Create First Post
-              </button>
-            )}
-          </div>
-        ) : (
-          <div className="forum-posts-list">
-            {sortedPosts.map((post) => {
-              const replyCount = (posts?.data || []).filter(m => m.reply_to_id === post.id).length;
-              return (
-                <div 
-                  key={post.id}
-                  onClick={() => setSelectedPost(post)}
-                  className={`forum-post-card ${selectedPost?.id === post.id ? 'selected' : ''}`}
-                >
-                  {/* Title */}
-                  <h3 className="forum-post-title">
-                    {post.title || 'Untitled Post'}
-                  </h3>
-                  
-                  {/* Username + Content in one line */}
-                  <p className="forum-post-preview">
-                    <span className="forum-post-author">{post.user?.name || 'Anonymous'}</span>
-                    {post.content && (
-                      <span>: {post.content}</span>
-                    )}
-                  </p>
-                  
-                  {/* Meta info - message count and timestamp */}
-                  <div className="forum-post-meta">
-                    <div className="forum-post-replies">
-                      <MessageSquare size={14} />
-                      <span>{replyCount}</span>
-                    </div>
-                    <span className="forum-post-meta-dot">•</span>
-                    <span>{formatTimestamp(post.created_at)}</span>
-                  </div>
-                </div>
-              );
-            })}
+        {/* Error Toast */}
+        {errorMessage && (
+          <div className="forum-error-toast">
+            <span>{errorMessage}</span>
+            <button onClick={() => setErrorMessage('')} className="forum-error-close">
+              <X size={14} />
+            </button>
           </div>
         )}
+
+        {/* Posts List */}
+        <div className="forum-posts-container">
+          {postsLoading ? (
+            <div className="forum-loading">
+              <Loader2 className="forum-loading-spinner" size={32} />
+            </div>
+          ) : filteredPosts.length === 0 ? (
+            <div className="forum-empty">
+              <MessageSquare size={48} className="forum-empty-icon" />
+              <p className="forum-empty-title">
+                {searchQuery ? 'No posts found' : 'No posts yet'}
+              </p>
+              <p className="forum-empty-subtitle">
+                {searchQuery ? 'Try a different search term' : 'Be the first to start a discussion'}
+              </p>
+              {!searchQuery && (
+                <button
+                  onClick={() => setShowCreatePost(true)}
+                  className="forum-empty-cta"
+                >
+                  Create First Post
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="forum-posts-list">
+              {filteredPosts.map((post) => {
+                const replyCount = getReplyCount(post);
+                return (
+                  <div
+                    key={post.id}
+                    onClick={() => openPanel(post.id)}
+                    className={`forum-post-card ${selectedPostId === post.id ? 'selected' : ''}`}
+                  >
+                    <h3 className="forum-post-title">
+                      {post.title || 'Untitled Post'}
+                    </h3>
+                    <p className="forum-post-preview">
+                      <span className="forum-post-author">{post.user?.name || 'Anonymous'}</span>
+                      {post.content && <span>: {post.content}</span>}
+                    </p>
+                    <div className="forum-post-meta">
+                      <div className="forum-post-replies">
+                        <MessageSquare size={14} />
+                        <span>{replyCount}</span>
+                      </div>
+                      <span className="forum-post-meta-dot">&middot;</span>
+                      <span>{formatTimestamp(post.created_at)}</span>
+                      {post.is_edited && (
+                        <span className="forum-edited-badge">edited</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Right Panel - Post Detail */}
-      {selectedPost && (
-        <div className="forum-right-panel">
+      {panelVisible && selectedPost && (
+        <div className={`forum-right-panel ${panelReady ? 'panel-ready' : ''}`}>
           {/* Detail Header */}
           <div className="forum-detail-header">
             <div className="forum-detail-title-wrapper">
-              <MessageSquare size={20} style={{ color: '#475569' }} />
+              <MessageSquare size={20} className="forum-detail-header-icon" />
               <h2 className="forum-detail-title">{selectedPost.title}</h2>
             </div>
-            <button
-              onClick={() => setSelectedPost(null)}
-              className="forum-close-detail-btn"
-            >
-              <X size={20} />
-            </button>
+            <div className="forum-detail-header-actions">
+              {canModify(selectedPost) && (
+                <button
+                  onClick={() => handleEditPost(selectedPost)}
+                  className="forum-detail-action-btn"
+                  title="Edit post"
+                >
+                  <Edit2 size={16} />
+                </button>
+              )}
+              {canDelete(selectedPost) && (
+                <button
+                  onClick={() => handleDeletePost(selectedPost)}
+                  className="forum-detail-action-btn danger"
+                  title="Delete post"
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
+              <button
+                onClick={() => closePanel()}
+                className="forum-close-detail-btn"
+              >
+                <X size={20} />
+              </button>
+            </div>
           </div>
 
           {/* Post Content */}
           <div className="forum-detail-content">
             {/* Original Post Section */}
             <div className="forum-detail-post">
-              {/* Large Message Icon + Title */}
               <div className="forum-detail-post-header">
                 <div className="forum-detail-icon">
-                  <MessageSquare size={32} style={{ color: '#ffffff' }} />
+                  <MessageSquare size={32} />
                 </div>
                 <h1 className="forum-detail-post-title">{selectedPost.title}</h1>
                 <p className="forum-detail-post-subtitle">
-                  {selectedPost.user?.name || 'Anonymous'} started this post • {new Date(selectedPost.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                  {selectedPost.user?.name || 'Anonymous'} started this post &middot;{' '}
+                  {new Date(selectedPost.created_at).toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                  {selectedPost.is_edited && (
+                    <span className="forum-edited-inline"> &middot; edited</span>
+                  )}
                 </p>
               </div>
 
@@ -356,57 +501,101 @@ export default function Forum() {
                 <div className="forum-message-avatar">
                   {(selectedPost.user?.name || 'A').charAt(0).toUpperCase()}
                 </div>
-                <div className="forum-message-content">
+                <div className="forum-message-body">
                   <div className="forum-message-header">
-                    <span className="forum-message-author">{selectedPost.user?.name || 'Anonymous'}</span>
-                    <span className="forum-message-time">{new Date(selectedPost.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}</span>
+                    <span className="forum-message-author">
+                      {selectedPost.user?.name || 'Anonymous'}
+                    </span>
+                    <span className="forum-message-time">
+                      {new Date(selectedPost.created_at).toLocaleString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true,
+                      })}
+                    </span>
                   </div>
-                  <p className="forum-message-text">{selectedPost.content}</p>
+                  <div className="forum-message-text forum-markdown-content">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {selectedPost.content}
+                    </ReactMarkdown>
+                  </div>
                 </div>
-              </div>
-
-              {/* React to Post Button */}
-              <div className="forum-react-btn" title="Reactions coming soon" style={{ cursor: 'pointer' }}>
-                <MessageSquare size={16} style={{ color: '#64748b' }} />
-                <span>React to Post</span>
               </div>
             </div>
 
             {/* Replies Section */}
-            {(posts?.data || []).filter(m => m.reply_to_id === selectedPost.id).length > 0 && (
+            {selectedReplies.length > 0 && (
               <>
-                {/* Date Separator */}
                 <div className="forum-date-separator">
-                  <div className="forum-separator-line"></div>
+                  <div className="forum-separator-line" />
                   <span className="forum-separator-text">
-                    {new Date((posts?.data || []).filter(m => m.reply_to_id === selectedPost.id)[0]?.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    {selectedReplies.length} {selectedReplies.length === 1 ? 'Reply' : 'Replies'}
                   </span>
-                  <div className="forum-separator-line"></div>
+                  <div className="forum-separator-line" />
                 </div>
 
-                {/* Replies List */}
                 <div className="forum-replies-list">
-                  {(posts?.data || [])
-                    .filter(m => m.reply_to_id === selectedPost.id)
-                    .map(reply => (
-                      <div key={reply.id} className="forum-reply-item">
-                        <div className="forum-reply-avatar">
-                          {(reply.user?.name || 'A').charAt(0).toUpperCase()}
+                  {selectedReplies.map((reply) => (
+                    <div key={reply.id} className="forum-reply-item">
+                      <div className="forum-reply-avatar">
+                        {(reply.user?.name || 'A').charAt(0).toUpperCase()}
+                      </div>
+                      <div className="forum-reply-body">
+                        <div className="forum-reply-header">
+                          <span className="forum-reply-author">
+                            {reply.user?.name || 'Anonymous'}
+                          </span>
+                          {reply.user_id === selectedPost.user_id && (
+                            <span className="forum-op-badge">OP</span>
+                          )}
+                          {reply.is_edited && (
+                            <span className="forum-edited-badge">edited</span>
+                          )}
+                          <span className="forum-reply-time">
+                            {new Date(reply.created_at).toLocaleString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                              hour: 'numeric',
+                              minute: '2-digit',
+                              hour12: true,
+                            })}
+                          </span>
+                          {/* Reply actions */}
+                          {(canModify(reply) || canDelete(reply)) && (
+                            <div className="forum-reply-actions">
+                              {canModify(reply) && (
+                                <button
+                                  onClick={() => handleEditPost(reply)}
+                                  className="forum-reply-action-btn"
+                                  title="Edit reply"
+                                >
+                                  <Edit2 size={13} />
+                                </button>
+                              )}
+                              {canDelete(reply) && (
+                                <button
+                                  onClick={() => handleDeletePost(reply)}
+                                  className="forum-reply-action-btn danger"
+                                  title="Delete reply"
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        <div className="forum-reply-content">
-                          <div className="forum-reply-header">
-                            <span className="forum-reply-author">{reply.user?.name || 'Anonymous'}</span>
-                            {reply.user_id === selectedPost.user_id && (
-                              <span className="forum-op-badge">
-                                OP
-                              </span>
-                            )}
-                            <span className="forum-reply-time">{new Date(reply.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })}</span>
-                          </div>
-                          <p className="forum-reply-text">{reply.content}</p>
+                        <div className="forum-reply-text forum-markdown-content">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {reply.content}
+                          </ReactMarkdown>
                         </div>
                       </div>
-                    ))}
+                    </div>
+                  ))}
                 </div>
               </>
             )}
@@ -414,44 +603,22 @@ export default function Forum() {
 
           {/* Reply Input */}
           <div className="forum-reply-input-container">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (replyContent.trim()) {
-                  createPostMutation.mutate(
-                    { content: replyContent.trim(), reply_to_id: selectedPost.id },
-                    {
-                      onSuccess: () => {
-                        setReplyContent('');
-                      }
-                    }
-                  );
-                }
-              }}
-              className="forum-reply-form"
-            >
-              <button
-                type="button"
-                className="forum-reply-add-btn"
-                title="Attachments coming soon"
-              >
-                <Plus size={20} />
-              </button>
+            <form onSubmit={handleReplySubmit} className="forum-reply-form">
               <input
                 type="text"
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
-                placeholder={`Send a message in "${selectedPost.title}"`}
-                disabled={createPostMutation.isPending}
+                placeholder={`Reply to "${selectedPost.title}"...`}
+                disabled={replyMutation.isPending}
                 className="forum-reply-input"
               />
               {replyContent.trim() && (
                 <button
                   type="submit"
-                  disabled={createPostMutation.isPending}
+                  disabled={replyMutation.isPending}
                   className="forum-reply-send-btn"
                 >
-                  {createPostMutation.isPending ? (
+                  {replyMutation.isPending ? (
                     <Loader2 size={18} className="forum-loading-spinner" />
                   ) : (
                     <Send size={18} />
@@ -468,7 +635,6 @@ export default function Forum() {
         <CreatePostModal
           onClose={() => setShowCreatePost(false)}
           onSubmit={(data) => createPostMutation.mutateAsync(data)}
-          channels={channels || []}
         />
       )}
 

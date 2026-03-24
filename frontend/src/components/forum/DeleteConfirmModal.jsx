@@ -6,9 +6,9 @@ export default function DeleteConfirmModal({ onClose, onConfirm, loading }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container modal-container-small" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ width: '2.5rem', height: '2.5rem', borderRadius: '50%', backgroundColor: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <AlertTriangle size={20} style={{ color: '#dc2626' }} />
+          <div className="delete-modal-icon-wrapper">
+            <div className="delete-modal-icon-circle">
+              <AlertTriangle size={20} />
             </div>
             <h3 className="modal-title">Delete Post</h3>
           </div>
