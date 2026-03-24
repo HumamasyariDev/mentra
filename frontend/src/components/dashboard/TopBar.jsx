@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bell, User, LogOut, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../styles/components/TopBar.css';
 
 export default function TopBar({ user }) {
+  const { t } = useTranslation(['dashboard', 'common']);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifTooltip, setShowNotifTooltip] = useState(false);
   const navigate = useNavigate();
@@ -41,14 +43,14 @@ export default function TopBar({ user }) {
           <div className="topbar-notif-container">
             <button
               className="topbar-action-btn"
-              title="Notifications"
+              title={t('common:account.notifications')}
               onClick={() => setShowNotifTooltip(!showNotifTooltip)}
             >
               <Bell size={20} />
             </button>
             {showNotifTooltip && (
               <div className="topbar-notif-dropdown">
-                <p className="topbar-notif-empty">No notifications yet</p>
+                <p className="topbar-notif-empty">{t('common:account.noNotifications')}</p>
               </div>
             )}
           </div>
@@ -58,7 +60,7 @@ export default function TopBar({ user }) {
             <button
               className="topbar-profile-btn"
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              title={`Profile - ${user.name}`}
+              title={t('dashboard:topbar.profileTitle', { name: user.name })}
             >
               <div className="topbar-avatar">
                 {getInitials(user.name)}
@@ -70,21 +72,21 @@ export default function TopBar({ user }) {
               <div className="topbar-dropdown-menu">
                 <div className="topbar-dropdown-header">
                   <p className="topbar-dropdown-name">{user.name}</p>
-                  <p className="topbar-dropdown-email">Level {user.level}</p>
+                  <p className="topbar-dropdown-email">{t('common:level')} {user.level}</p>
                 </div>
                 <div className="topbar-dropdown-divider" />
                 <button className="topbar-dropdown-item" onClick={() => navigate('/profile')}>
                   <User size={16} />
-                  <span>Profile</span>
+                  <span>{t('common:account.profile')}</span>
                 </button>
                 <button className="topbar-dropdown-item" onClick={() => navigate('/settings')}>
                   <Settings size={16} />
-                  <span>Settings</span>
+                  <span>{t('common:nav.settings')}</span>
                 </button>
                 <div className="topbar-dropdown-divider" />
                 <button className="topbar-dropdown-item topbar-dropdown-item-danger" onClick={handleLogout}>
                   <LogOut size={16} />
-                  <span>Logout</span>
+                  <span>{t('common:account.logout')}</span>
                 </button>
               </div>
             )}

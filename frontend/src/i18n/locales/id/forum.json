@@ -1,0 +1,79 @@
+{
+  "pageTitle": "Forum",
+  "newPost": "Postingan Baru",
+  "searchPosts": "Cari postingan...",
+  "replyToPost": "Balas ke \"{{title}}\"...",
+
+  "filter": {
+    "allPosts": "Semua Postingan",
+    "myPosts": "Postingan Saya",
+    "mostReplied": "Paling Banyak Dibalas"
+  },
+
+  "sort": {
+    "recentlyActive": "Terakhir Aktif",
+    "datePosted": "Tanggal Posting"
+  },
+
+  "empty": {
+    "noPostsYet": "Belum ada postingan",
+    "noPostsFound": "Tidak ada postingan ditemukan",
+    "beFirst": "Jadilah yang pertama memulai diskusi",
+    "tryDifferentSearch": "Coba kata pencarian yang berbeda",
+    "createFirstPost": "Buat Postingan Pertama"
+  },
+
+  "post": {
+    "untitled": "Postingan Tanpa Judul",
+    "anonymous": "Anonim",
+    "edited": "diedit",
+    "startedPost": "{{name}} memulai postingan ini",
+    "editPost": "Ubah postingan",
+    "deletePost": "Hapus postingan",
+    "editReply": "Ubah balasan",
+    "deleteReply": "Hapus balasan",
+    "op": "OP"
+  },
+
+  "replies": {
+    "reply_one": "{{count}} Balasan",
+    "reply_other": "{{count}} Balasan"
+  },
+
+  "createModal": {
+    "title": "Buat Postingan Baru",
+    "titleLabel": "Judul",
+    "titlePlaceholder": "Tentang apa postingan Anda?",
+    "contentLabel": "Konten",
+    "contentPlaceholder": "Bagikan pemikiran, ajukan pertanyaan, atau mulai diskusi...",
+    "charCount": "{{count}}/{{max}}",
+    "creating": "Membuat...",
+    "createPost": "Buat Postingan"
+  },
+
+  "editModal": {
+    "editPost": "Ubah Postingan",
+    "editReply": "Ubah Balasan",
+    "titleLabel": "Judul",
+    "titlePlaceholder": "Tentang apa postingan Anda?",
+    "contentLabel": "Konten",
+    "contentPlaceholderPost": "Bagikan pemikiran, ajukan pertanyaan, atau mulai diskusi...",
+    "contentPlaceholderReply": "Ubah balasan Anda...",
+    "charCount": "{{count}}/{{max}}",
+    "saveChanges": "Simpan Perubahan"
+  },
+
+  "deleteModal": {
+    "title": "Hapus Postingan",
+    "message": "Apakah Anda yakin ingin menghapus postingan ini?",
+    "warning": "Tindakan ini tidak dapat dibatalkan. Semua balasan pada postingan ini juga akan dihapus.",
+    "deletePost": "Hapus Postingan"
+  },
+
+  "errors": {
+    "createFailed": "Gagal membuat postingan",
+    "updateFailed": "Gagal memperbarui postingan",
+    "deleteFailed": "Gagal menghapus postingan",
+    "replyFailed": "Gagal mengirim balasan"
+  }
+}

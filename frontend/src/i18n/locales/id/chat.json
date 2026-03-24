@@ -1,0 +1,21 @@
+{
+  "pageTitle": "Chat",
+  "pageSubtitle": "Mentra AI Assistant",
+  "clear": "Hapus",
+  "emptyTitle": "Mulai percakapan",
+  "emptySubtitle": "Tanyakan apa saja tentang produktivitas, teknik fokus, atau manajemen tugas.",
+  "suggestions": "Saran",
+  "inputPlaceholder": "Tulis pesan...",
+  "aiFallback": "Maaf, tidak bisa membaca respons AI.",
+  "aiError": "Maaf, sistem AI sedang sibuk. Coba lagi nanti.",
+  "quickActions": {
+    "sayHi": "Say Hi",
+    "sayHiMessage": "Halo! Apa yang bisa kamu bantu?",
+    "productivityTips": "Tips Produktivitas",
+    "productivityTipsMessage": "Berikan saya tips produktivitas terbaik!",
+    "pomodoroTechnique": "Teknik Pomodoro",
+    "pomodoroTechniqueMessage": "Jelaskan teknik Pomodoro",
+    "motivation": "Motivasi",
+    "motivationMessage": "Saya butuh motivasi untuk tetap fokus hari ini."
+  }
+}

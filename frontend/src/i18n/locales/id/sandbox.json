@@ -1,0 +1,31 @@
+{
+  "pageTitle": "Sandbox",
+  "pageSubtitle": "Buat dan kelola eksperimen AI chat kamu",
+  "newSandbox": "Sandbox Baru",
+  "emptyTitle": "Belum ada proyek sandbox",
+  "emptySubtitle": "Buat sandbox pertamamu untuk mulai bereksperimen",
+  "deleteConfirm": "Hapus sandbox ini?",
+  "modalTitleNew": "Sandbox Baru",
+  "modalTitleEdit": "Edit Sandbox",
+  "formName": "Nama",
+  "formNamePlaceholder": "contoh: Asisten Kode",
+  "formDescription": "Deskripsi",
+  "formDescriptionPlaceholder": "Untuk apa sandbox ini?",
+  "formPurposeLabel": "Tujuan Sandbox",
+  "purposes": {
+    "learning": "Belajar",
+    "working": "Bekerja",
+    "ideation": "Eksplorasi Ide",
+    "business": "Riset Bisnis",
+    "entertainment": "Hiburan"
+  },
+  "chatTitle": "Chat Assistant",
+  "chatEmpty": "Mulai percakapan dengan AI",
+  "chatInputPlaceholder": "Ketik pesan kamu...",
+  "chatThinking": "AI sedang berpikir...",
+  "loadingSandbox": "Memuat sandbox...",
+  "puterUnavailable": "Puter.js tidak tersedia",
+  "outputText": "Teks",
+  "outputMindMap": "Mind Map",
+  "outputEmpty": "Output teks akan muncul di sini"
+}

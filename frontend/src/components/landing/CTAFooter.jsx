@@ -3,6 +3,7 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useMagneticHover } from '../../hooks/useMagneticHover';
 
@@ -12,6 +13,7 @@ export default function CTAFooter() {
   const sectionRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
   const ctaBtnRef = useMagneticHover(0.4);
+  const { t } = useTranslation(['landing']);
 
   useGSAP(() => {
     if (prefersReducedMotion) {
@@ -82,15 +84,15 @@ export default function CTAFooter() {
           ))}
         </h2>
         
-        <p className="cta-tagline">Your Productivity Universe Awaits</p>
+        <p className="cta-tagline">{t('landing:cta.tagline')}</p>
         
         <div className="cta-button-wrapper">
           <Link to="/register" ref={ctaBtnRef} className="cta-primary-btn">
-            Create Free Account
+            {t('landing:cta.button')}
           </Link>
           <div className="cta-login-link-wrapper">
             <Link to="/login" className="cta-login-link">
-              Already have an account? Log in &rarr;
+              {t('landing:cta.loginPrompt')}
             </Link>
           </div>
         </div>

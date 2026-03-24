@@ -1,0 +1,109 @@
+{
+  "navbar": {
+    "howItWorks": "Cara Kerja",
+    "features": "Fitur",
+    "forestWorld": "Dunia Hutan",
+    "faq": "FAQ",
+    "login": "Masuk",
+    "getStarted": "Mulai Sekarang"
+  },
+  "hero": {
+    "titleLine1": "Level Up",
+    "titleLine2": "Kerjamu.",
+    "subtitle": "Ubah tugas harianmu jadi petualangan epik. Raih XP, jaga fokus dengan Pomodoro, dan kembangkan hutan virtual yang mencerminkan produktivitasmu.",
+    "cta": "Mulai Petualanganmu",
+    "secondaryCta": "Jelajahi Fitur",
+    "scrollText": "Scroll untuk menjelajahi"
+  },
+  "features": {
+    "title": "Semua yang kamu butuhkan.",
+    "items": [
+      {
+        "title": "Smart Tasks",
+        "desc": "Tampilan daftar, kalender, atau board dengan prioritas cerdas. Unggah materi belajar untuk auto-generate kuis AI dan raih XP."
+      },
+      {
+        "title": "Pomodoro Companion",
+        "desc": "Sesi fokus dengan 7 tema warna imersif. Dapatkan watering can untuk menumbuhkan Forest-mu di setiap sesi."
+      },
+      {
+        "title": "Hutan-mu",
+        "desc": "Tanam benih, siram dengan watering can dari sesi Pomodoro, dan saksikan pohon tumbuh melewati 5 tahap menjadi hutan yang subur."
+      },
+      {
+        "title": "Jadwal & Kebiasaan",
+        "desc": "Bangun rutinitas yang konsisten dengan jadwal harian, mingguan, dan bulanan. Pantau progress lewat tampilan daftar, kalender, atau board."
+      },
+      {
+        "title": "AI Assistant",
+        "desc": "AI agent yang bisa membuat task dari bahasa sehari-hari, mencari di knowledge base-mu, dan menghasilkan brainstorming mind-map di Sandbox."
+      },
+      {
+        "title": "Forum Komunitas",
+        "desc": "Terhubung dengan pengguna lain. Bagikan progress, ajukan pertanyaan, dan saling menjaga akuntabilitas."
+      }
+    ]
+  },
+  "gamification": {
+    "steps": [
+      {
+        "title": "Selesaikan",
+        "desc": "Kelola tugas harianmu dengan tampilan daftar, kalender, atau board yang keren. Simpel di permukaan, cerdas di dalamnya."
+      },
+      {
+        "title": "Raih XP",
+        "desc": "Setiap tugas yang diselesaikan menghasilkan experience points. Produktivitas nyatamu langsung mengisi progress digitalmu."
+      },
+      {
+        "title": "Naik Level",
+        "desc": "Capai milestone, pertahankan streak harian, dan naik level seiring kamu membangun kebiasaan yang lebih baik dan konsisten."
+      },
+      {
+        "title": "Lihat Bertumbuh",
+        "desc": "Dapatkan watering can dari sesi Pomodoro dan rawat pohon melewati lima tahap pertumbuhan hingga menjadi hutan yang hidup."
+      }
+    ]
+  },
+  "forest": {
+    "title": "Kembangkan Duniamu",
+    "subtitle": "Tetap fokus dengan Pomodoro. Dapatkan watering can. Rawat pohon melewati lima tahap pertumbuhan menjadi hutan yang subur."
+  },
+  "faq": {
+    "title": "Pertanyaan yang Sering Ditanyakan",
+    "items": [
+      {
+        "question": "Apa itu Mentra?",
+        "answer": "Mentra adalah platform produktivitas bergaya game yang mengubah tugas harianmu jadi petualangan epik. Selesaikan task untuk mendapatkan XP dan naik level, jaga fokus dengan Pomodoro untuk mendapatkan watering can, dan kembangkan hutan virtual — sambil membangun kebiasaan kerja yang lebih baik."
+      },
+      {
+        "question": "Apakah Mentra gratis?",
+        "answer": "Ya! Mentra sepenuhnya gratis. Kamu mendapat akses penuh ke manajemen task, timer Pomodoro, mood tracking, AI assistant, penjadwalan, dan dunia hutan tanpa biaya sama sekali."
+      },
+      {
+        "question": "Bagaimana sistem gamifikasi-nya bekerja?",
+        "answer": "Setiap task yang kamu selesaikan menghasilkan experience points (XP) berdasarkan tingkat kesulitan — Easy, Medium, atau Hard. Seiring XP terkumpul, kamu naik level. Menjaga streak harian membuat api streak-mu tetap menyala. Sementara itu, sesi fokus Pomodoro menghasilkan watering can yang menumbuhkan hutan virtualmu."
+      },
+      {
+        "question": "Apa itu Forest World?",
+        "answer": "Forest World adalah taman virtual pribadimu. Gunakan watering can yang didapat dari sesi fokus Pomodoro untuk merawat pohon melewati lima tahap pertumbuhan — dari Baby sampai Adult. Pohon yang sudah dewasa akan diarsipkan ke background forest yang semakin luas seiring produktivitasmu meningkat."
+      },
+      {
+        "question": "Apakah Mentra punya AI assistant?",
+        "answer": "Ya! Mentra dilengkapi berbagai fitur AI yang didukung Puter.js. AI Agent bisa membuat task dari bahasa sehari-hari dan mencari di knowledge base-mu. Sandbox memungkinkanmu brainstorming dengan AI dan memvisualisasikan percakapan sebagai mind map di kanvas tak terbatas. Kamu juga bisa mengunggah materi belajar untuk auto-generate kuis."
+      },
+      {
+        "question": "Bisa dipakai di perangkat mobile?",
+        "answer": "Mentra dibangun sebagai aplikasi web responsif yang tampil sempurna di desktop, tablet, dan perangkat mobile. Akses dari browser modern mana saja."
+      }
+    ]
+  },
+  "cta": {
+    "tagline": "Alam Semesta Produktivitasmu Menunggu",
+    "button": "Buat Akun Gratis",
+    "loginPrompt": "Sudah punya akun? Masuk →"
+  },
+  "footer": {
+    "terms": "Ketentuan",
+    "privacy": "Privasi"
+  }
+}

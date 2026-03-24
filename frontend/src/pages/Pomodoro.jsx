@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { pomodoroApi, taskApi } from "../services/api";
 import {
   Play,
@@ -50,15 +51,16 @@ const WaterDropSvg = ({ className, style, idSuffix = "0", colors }) => {
   );
 };
 
-const plantMoods = {
-  idle: { label: "Waiting for water..." },
-  focusing: { label: "Watering in progress..." },
-  paused: { label: "Tap is closed..." },
-  completed: { label: "Plant is happy & fully watered!" },
+const plantMoodKeys = {
+  idle: "mood_idle",
+  focusing: "mood_focusing",
+  paused: "mood_paused",
+  completed: "mood_completed",
 };
 
 export default function Pomodoro() {
   const queryClient = useQueryClient();
+  const { t, i18n } = useTranslation(['pomodoro', 'common']);
   const { theme, setTheme, backgrounds } = usePomodoroTheme();
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
@@ -269,7 +271,7 @@ export default function Pomodoro() {
   const totalSeconds = duration * 60;
   const elapsedSeconds = isRunning ? Math.max(0, totalSeconds - timeLeft) : 0;
   const progress = ((totalSeconds - timeLeft) / totalSeconds) * 100;
-  const mood = plantMoods[waterState];
+  const mood = plantMoodKeys[waterState];
   const waterProgress = Math.min(100, progress);
 
   return (
@@ -277,8 +279,8 @@ export default function Pomodoro() {
       {/* Header */}
       <div className="pomodoro-header">
         <div className="pomodoro-header-info">
-          <h1 className="pomodoro-title">Pomodoro</h1>
-          <p className="pomodoro-subtitle">Water your plants by staying focused</p>
+          <h1 className="pomodoro-title">{t('pomodoro:title')}</h1>
+          <p className="pomodoro-subtitle">{t('pomodoro:subtitle')}</p>
         </div>
         {/* Theme picker */}
         <div className="pomodoro-theme-picker">
@@ -384,7 +386,7 @@ export default function Pomodoro() {
           </div>
 
           {/* Status */}
-          <div className="pom-status-sub">{mood.label}</div>
+          <div className="pom-status-sub">{t(`pomodoro:${mood}`)}</div>
 
           {/* Timer */}
           <div className="pom-timer-section">
@@ -395,9 +397,9 @@ export default function Pomodoro() {
             <p className={`pom-status-label ${sessionId && isRunning ? "pom-status-label-running" : ""}`}>
               {sessionId
                 ? isRunning
-                  ? "Watering in progress..."
-                  : "Paused — tap is closed"
-                : "Start to water your plants"}
+                  ? t('pomodoro:status_running')
+                  : t('pomodoro:status_paused')
+                : t('pomodoro:status_idle')}
             </p>
           </div>
 
@@ -417,7 +419,7 @@ export default function Pomodoro() {
               </div>
 
               <div className="pom-custom-row">
-                <span className="pom-custom-label">or custom</span>
+                <span className="pom-custom-label">{t('pomodoro:or_custom')}</span>
                 <input
                   type="number"
                   min="1"
@@ -432,7 +434,7 @@ export default function Pomodoro() {
                   }}
                   className="pom-custom-input"
                 />
-                <span className="pom-custom-unit">min</span>
+                <span className="pom-custom-unit">{t('pomodoro:min_unit')}</span>
               </div>
 
               <div className="pom-task-row">
@@ -441,7 +443,7 @@ export default function Pomodoro() {
                   value={selectedTask}
                   onChange={(e) => setSelectedTask(e.target.value)}
                 >
-                  <option value="">No task linked</option>
+                  <option value="">{t('pomodoro:no_task_linked')}</option>
                   {tasks?.data?.map((task) => (
                     <option key={task.id} value={task.id}>
                       {task.title}
@@ -465,15 +467,15 @@ export default function Pomodoro() {
                 ) : (
                   <Play style={{ width: "1.25rem", height: "1.25rem" }} />
                 )}
-                Water Plants
+                {t('pomodoro:water_plants')}
               </button>
             ) : waterState === "completed" ? (
               <div className="pom-completed-msg">
-                <span>Plant is happy! +EXP earned</span>
+                <span>{t('pomodoro:completed_msg')}</span>
                 {cansEarned > 0 && (
                   <span className="pom-cans-badge">
                     <Sprout style={{ width: "1rem", height: "1rem" }} />
-                    +{cansEarned} cans
+                    {t('pomodoro:cans_earned', { count: cansEarned })}
                   </span>
                 )}
               </div>
@@ -488,14 +490,14 @@ export default function Pomodoro() {
                   ) : (
                     <Play style={{ width: "1.25rem", height: "1.25rem" }} />
                   )}
-                  {isRunning ? "Pause" : "Resume"}
+                  {isRunning ? t('pomodoro:pause') : t('pomodoro:resume')}
                 </button>
                 <button
                   onClick={handleStop}
                   className={`pom-btn-stop ${animState === "stopped" ? "pom-just-stopped" : ""}`}
                 >
                   <Square style={{ width: "1.25rem", height: "1.25rem" }} />
-                  Stop
+                  {t('pomodoro:stop')}
                 </button>
               </>
             )}
@@ -516,12 +518,12 @@ export default function Pomodoro() {
         {/* Stats Card */}
         {stats && (
           <div className="pomodoro-card">
-            <h3 className="pomodoro-card-title">Today's Progress</h3>
+            <h3 className="pomodoro-card-title">{t('pomodoro:todays_progress')}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <div className="pom-stat-item">
                 <div className="pom-stat-label">
                   <Clock className="pom-stat-icon pom-stat-icon-accent" />
-                  <span>Today Sessions</span>
+                  <span>{t('pomodoro:today_sessions')}</span>
                 </div>
                 <span className="pom-stat-value pom-stat-value-accent">
                   {stats.today_sessions}
@@ -530,7 +532,7 @@ export default function Pomodoro() {
               <div className="pom-stat-item">
                 <div className="pom-stat-label">
                   <CheckCircle className="pom-stat-icon pom-stat-icon-success" />
-                  <span>Total Focus</span>
+                  <span>{t('pomodoro:total_focus')}</span>
                 </div>
                 <span className="pom-stat-value pom-stat-value-success">
                   {stats.total_focus_minutes}m
@@ -543,18 +545,18 @@ export default function Pomodoro() {
         {/* History Card */}
         {history?.data?.length > 0 && (
           <div className="pomodoro-card">
-            <h3 className="pomodoro-card-title">Recent Sessions</h3>
+            <h3 className="pomodoro-card-title">{t('pomodoro:recent_sessions')}</h3>
             <div className="pom-history-list">
               {history.data.map((session) => (
                 <div key={session.id} className="pom-history-item">
                   <div className="pom-history-info">
                     <p className="pom-history-task">
-                      {session.task?.title || "No task"}
+                      {session.task?.title || t('pomodoro:no_task')}
                     </p>
                     <p className="pom-history-meta">
                       {session.duration_minutes}min ·{" "}
                       {new Date(session.created_at).toLocaleDateString(
-                        undefined,
+                        i18n.language === 'id' ? 'id-ID' : 'en-US',
                         { month: "short", day: "numeric" },
                       )}
                     </p>

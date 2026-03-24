@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { sandboxApi } from "../services/api";
 import { Send, ArrowLeft, FileText, Network, Loader2 } from "lucide-react";
 import InfiniteCanvasMindMap from "../components/sandbox/InfiniteCanvasMindMap.jsx";
@@ -9,6 +10,7 @@ import "../styles/pages/SandboxChat.css";
 import "../styles/utils/markdown.css";
 
 export default function SandboxChat() {
+  const { t } = useTranslation(["sandbox", "common"]);
   const { id } = useParams();
   const navigate = useNavigate();
   const [input, setInput] = useState("");
@@ -90,7 +92,7 @@ export default function SandboxChat() {
       <div className="sandbox-workspace">
         <div className="sandbox-loading-container">
           <Loader2 size={48} className="sandbox-loading-spinner" />
-          <p>Memuat sandbox...</p>
+          <p>{t("sandbox:loadingSandbox")}</p>
         </div>
       </div>
     );
@@ -107,11 +109,11 @@ export default function SandboxChat() {
           <ArrowLeft size={20} />
         </button>
         <div className="sandbox-workspace-info">
-          <h2>{sandbox?.name || "Sandbox"}</h2>
+          <h2>{sandbox?.name || t("sandbox:pageTitle")}</h2>
           {sandbox?.description && <p>{sandbox.description}</p>}
         </div>
         {!puterAvailable && (
-          <div className="sandbox-warning">Puter.js tidak tersedia</div>
+          <div className="sandbox-warning">{t("sandbox:puterUnavailable")}</div>
         )}
       </div>
 
@@ -120,14 +122,14 @@ export default function SandboxChat() {
         {/* Left Column: Chat */}
         <div className="sandbox-chat-column">
           <div className="sandbox-chat-header">
-            <h3>Chat Assistant</h3>
+            <h3>{t("sandbox:chatTitle")}</h3>
           </div>
 
           <div className="sandbox-chat-messages">
             {messages.length === 0 ? (
               <div className="sandbox-chat-empty">
                 <div className="sandbox-empty-icon">💬</div>
-                <p>Mulai percakapan dengan AI</p>
+                <p>{t("sandbox:chatEmpty")}</p>
               </div>
             ) : (
               messages.map((msg, idx) => (
@@ -140,7 +142,7 @@ export default function SandboxChat() {
               <div className="sandbox-message assistant">
                 <div className="sandbox-message-bubble loading">
                   <Loader2 size={20} className="sandbox-message-spinner" />
-                  <span>AI sedang berpikir...</span>
+                  <span>{t("sandbox:chatThinking")}</span>
                 </div>
               </div>
             )}
@@ -152,7 +154,7 @@ export default function SandboxChat() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ketik pesan Anda..."
+              placeholder={t("sandbox:chatInputPlaceholder")}
               className="sandbox-chat-input"
               disabled={loading || !puterAvailable}
             />
@@ -174,14 +176,14 @@ export default function SandboxChat() {
               onClick={() => setOutputType("text")}
             >
               <FileText size={18} />
-              <span>Text</span>
+              <span>{t("sandbox:outputText")}</span>
             </button>
             <button
               className={`sandbox-output-tab ${outputType === "mindmap" ? "active" : ""}`}
               onClick={() => setOutputType("mindmap")}
             >
               <Network size={18} />
-              <span>Mind Map</span>
+              <span>{t("sandbox:outputMindMap")}</span>
             </button>
           </div>
 
@@ -195,7 +197,7 @@ export default function SandboxChat() {
                 ) : (
                   <div className="sandbox-output-empty">
                     <FileText size={48} />
-                    <p>Output teks akan muncul di sini</p>
+                    <p>{t("sandbox:outputEmpty")}</p>
                   </div>
                 )}
               </div>

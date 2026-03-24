@@ -1,16 +1,18 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import ScheduleItem from './ScheduleItem';
 import '../../styles/components/schedules/ScheduleComponents.css';
 
-const columns = [
-  { key: 'daily', label: 'Daily', color: 'var(--info)' },
-  { key: 'weekly', label: 'Weekly', color: 'var(--purple)' },
-  { key: 'monthly', label: 'Monthly', color: 'var(--warning)' },
-];
-
 export default function ScheduleBoardView({ schedules, isLoading, onComplete, onUncomplete, onDelete, onEdit, onUpdateType }) {
+  const { t } = useTranslation(['schedules', 'common']);
   const [dragOverCol, setDragOverCol] = useState(null);
+
+  const columns = [
+    { key: 'daily', label: t('schedules:type.daily'), color: 'var(--info)' },
+    { key: 'weekly', label: t('schedules:type.weekly'), color: 'var(--purple)' },
+    { key: 'monthly', label: t('schedules:type.monthly'), color: 'var(--warning)' },
+  ];
 
   if (isLoading) {
     return (
@@ -75,7 +77,7 @@ export default function ScheduleBoardView({ schedules, isLoading, onComplete, on
             <div className="schedule-board-col-body">
               {colSchedules.length === 0 ? (
                 <div className={`schedule-board-empty ${isDragOver ? 'drop-active' : ''}`}>
-                  {isDragOver ? 'Drop here' : 'No schedules'}
+                  {isDragOver ? t('schedules:boardView.dropHere') : t('schedules:boardView.noSchedules')}
                 </div>
               ) : (
                 colSchedules.map((schedule) => (

@@ -1,0 +1,151 @@
+{
+  "cancel": "Cancel",
+  "save": "Save",
+  "saving": "Saving...",
+  "delete": "Delete",
+  "deleting": "Deleting...",
+  "edit": "Edit",
+  "create": "Create",
+  "loading": "Loading...",
+  "back": "Back",
+  "next": "Next",
+  "prev": "Prev",
+  "continue": "Continue",
+  "confirm": "Confirm",
+  "close": "Close",
+  "or": "or",
+  "search": "Search",
+  "searchPlaceholder": "Search...",
+  "noResults": "No results found",
+  "error": "Something went wrong",
+  "retry": "Try again",
+  "today": "Today",
+  "page": "Page",
+  "of": "of",
+  "all": "All",
+  "level": "Level",
+  "xp": "XP",
+  "exp": "EXP",
+  "send": "Send",
+  "submit": "Submit",
+  "yes": "Yes",
+  "no": "No",
+  "none": "None",
+  "done": "Done",
+  "add": "Add",
+  "remove": "Remove",
+  "reset": "Reset",
+  "filter": "Filter",
+  "sort": "Sort",
+  "view": "View",
+  "list": "List",
+  "calendar": "Calendar",
+  "board": "Board",
+  "title": "Title",
+  "description": "Description",
+  "name": "Name",
+  "email": "Email",
+  "password": "Password",
+  "optional": "Optional",
+  "required": "Required",
+  "type": "Type",
+  "selectPlaceholder": "Select...",
+
+  "days": {
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat",
+    "sun": "Sun",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December"
+  },
+
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago"
+  },
+
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  },
+
+  "status": {
+    "pending": "Pending",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "active": "Active",
+    "paused": "Paused"
+  },
+
+  "nav": {
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "pomodoro": "Pomodoro",
+    "forest": "Forest",
+    "schedules": "Schedules",
+    "mood": "Mood",
+    "chat": "Chat",
+    "agent": "Agent",
+    "sandbox": "Sandbox",
+    "forum": "Forum",
+    "settings": "Settings"
+  },
+
+  "sections": {
+    "productivity": "Productivity",
+    "aiChat": "AI & Chat",
+    "community": "Community",
+    "settings": "Settings",
+    "account": "Account"
+  },
+
+  "greeting": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening"
+  },
+
+  "account": {
+    "displayName": "Display Name",
+    "memberSince": "Member since",
+    "logout": "Logout",
+    "deleteAccount": "Delete Account",
+    "deleteConfirmText": "Type <strong>DELETE</strong> to permanently remove your account.",
+    "typeDelete": "Type DELETE",
+    "yourName": "Your name",
+    "user": "User",
+    "saveName": "Save name",
+    "failedUpdateName": "Failed to update name",
+    "failedDeleteAccount": "Failed to delete account",
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications yet"
+  }
+}

@@ -57,7 +57,6 @@ const STARS = generateStars(80);
 
 export default function LandingPage() {
   const pageRef = useRef(null);
-  const bgRef = useRef(null);
 
   const starElements = useMemo(() => (
     STARS.map((star) => (
@@ -70,34 +69,6 @@ export default function LandingPage() {
   ), []);
 
   useGSAP(() => {
-    // ── Background parallax ──
-    // Entire background layer drifts slower than scroll for depth
-    gsap.to(bgRef.current, {
-      yPercent: -15,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: pageRef.current,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 1,
-      }
-    });
-
-    // Planets have additional individual parallax offsets
-    gsap.utils.toArray('.lp-planet').forEach((planet, i) => {
-      const speed = 0.08 + (i * 0.04);
-      gsap.to(planet, {
-        yPercent: -50 * speed,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: pageRef.current,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 1.5,
-        }
-      });
-    });
-
     // Shooting star repeating animation
     gsap.fromTo('.lp-shooting-star',
       { x: '-10vw', y: '0', opacity: 0 },
@@ -122,8 +93,8 @@ export default function LandingPage() {
 
   return (
     <div ref={pageRef} className="landing-page">
-      {/* ── Parallax background container ── */}
-      <div ref={bgRef} className="lp-bg-parallax" aria-hidden="true">
+      {/* ── Fixed cosmic background ── */}
+      <div className="lp-bg-parallax" aria-hidden="true">
         <div className="lp-vignette" />
         <div className="lp-bg-glow" />
 

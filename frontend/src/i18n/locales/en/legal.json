@@ -1,0 +1,170 @@
+{
+  "privacy": {
+    "title": "Privacy Policy",
+    "backToRegister": "Back to Register",
+    "lastUpdated": "Last updated: {{date}}",
+    "sections": {
+      "introduction": {
+        "title": "1. Introduction",
+        "content": "Mentra (\"we\") values your privacy. This Privacy Policy explains how we collect, use, store, and protect your personal information when you use our services."
+      },
+      "dataCollection": {
+        "title": "2. Information We Collect",
+        "provided": {
+          "title": "2.1 Information You Provide",
+          "accountData": "<strong>Account data</strong> — name, email address, password (encrypted)",
+          "profileData": "<strong>Profile data</strong> — avatar, preference settings",
+          "userContent": "<strong>User content</strong> — tasks, schedules, notes, forum posts, mood data"
+        },
+        "automatic": {
+          "title": "2.2 Automatically Collected Information",
+          "usageData": "<strong>Usage data</strong> — Pomodoro sessions, productivity statistics, level and EXP",
+          "technicalData": "<strong>Technical data</strong> — browser type, IP address, access time"
+        },
+        "thirdParty": {
+          "title": "2.3 Information from Third Parties",
+          "content": "If you log in using Google or Facebook, we receive your name, email, and profile photo from those service providers in accordance with the permissions you grant."
+        }
+      },
+      "dataUsage": {
+        "title": "3. Use of Information",
+        "intro": "We use your information to:",
+        "items": {
+          "provideService": "Provide and maintain the Service",
+          "manageAccount": "Manage your account and authentication",
+          "storeData": "Store your tasks, schedules, and productivity data",
+          "aiFeatures": "Provide AI chat features and recommendations",
+          "emailVerification": "Send OTP verification emails and password resets",
+          "gamification": "Calculate gamification statistics (level, EXP, streak)",
+          "improveService": "Improve and develop the Service"
+        }
+      },
+      "dataStorage": {
+        "title": "4. Data Storage",
+        "content": "Your data is stored on secure servers. Passwords are encrypted using bcrypt hashing. Authentication tokens use Laravel Sanctum. We do not store passwords in plain text."
+      },
+      "dataSharing": {
+        "title": "5. Data Sharing",
+        "intro": "We <strong>do not sell</strong> your personal data. Your data is only shared under the following conditions:",
+        "items": {
+          "publicForum": "<strong>Public forum</strong> — messages you send in the forum can be viewed by other users",
+          "serviceProviders": "<strong>Service providers</strong> — we use third-party services for email (Gmail SMTP) and AI (OpenAI) that process data as needed",
+          "legalObligations": "<strong>Legal obligations</strong> — if required by applicable law"
+        }
+      },
+      "thirdPartyServices": {
+        "title": "6. Third-Party Services",
+        "intro": "We use the following third-party services:",
+        "items": {
+          "googleOauth": "<strong>Google OAuth</strong> — for social login authentication",
+          "facebookOauth": "<strong>Facebook OAuth</strong> — for social login authentication",
+          "openaiApi": "<strong>OpenAI API</strong> — for AI chat and agent features",
+          "gmailSmtp": "<strong>Gmail SMTP</strong> — for sending verification emails and notifications"
+        },
+        "note": "Each of these services has its own privacy policy governing their data processing."
+      },
+      "security": {
+        "title": "7. Security",
+        "intro": "We implement security measures to protect your data, including:",
+        "items": {
+          "bcrypt": "Password encryption with bcrypt",
+          "sanctum": "Token-based authentication (Sanctum)",
+          "rateLimiting": "Rate limiting on sensitive endpoints (OTP, password reset)",
+          "validation": "Input validation and sanitization on all forms"
+        },
+        "disclaimer": "However, no method of electronic transmission or storage is 100% secure. We cannot guarantee absolute security."
+      },
+      "yourRights": {
+        "title": "8. Your Rights",
+        "intro": "You have the right to:",
+        "items": {
+          "access": "<strong>Access</strong> — view the personal data we store about you",
+          "correct": "<strong>Correct</strong> — update inaccurate information",
+          "delete": "<strong>Delete</strong> — request deletion of your account and data",
+          "export": "<strong>Export</strong> — request a copy of your data"
+        },
+        "contact": "To exercise these rights, contact us at <a href=\"mailto:humamozik@gmail.com\" class=\"legal-link\">humamozik@gmail.com</a>."
+      },
+      "cookies": {
+        "title": "9. Cookies",
+        "content": "We use browser localStorage to store authentication tokens and user preferences. We do not use third-party tracking cookies for advertising purposes."
+      },
+      "minors": {
+        "title": "10. Minors",
+        "content": "Our Service is not intended for children under the age of 13. We do not knowingly collect data from children under 13. If you become aware that a minor has provided data to us, please contact us."
+      },
+      "policyChanges": {
+        "title": "11. Policy Changes",
+        "content": "We may update this Privacy Policy from time to time. Changes will be published on this page with a new update date."
+      },
+      "contact": {
+        "title": "12. Contact",
+        "content": "If you have questions about this Privacy Policy, please contact us at <a href=\"mailto:humamozik@gmail.com\" class=\"legal-link\">humamozik@gmail.com</a>."
+      }
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "backToRegister": "Back to Register",
+    "lastUpdated": "Last updated: {{date}}",
+    "sections": {
+      "acceptance": {
+        "title": "1. Acceptance of Terms",
+        "content": "By accessing and using Mentra (\"Service\"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our Service."
+      },
+      "serviceDescription": {
+        "title": "2. Service Description",
+        "content": "Mentra is a productivity platform that provides task management, Pomodoro sessions, scheduling, mood tracking, AI chat, community forums, and gamification through forest tree care. The Service is designed to help users organize their activities and improve their productivity."
+      },
+      "userAccount": {
+        "title": "3. User Account",
+        "intro": "To use the Service, you must create an account by providing accurate and complete information. You are responsible for:",
+        "items": {
+          "password": "Maintaining the confidentiality of your account password",
+          "activity": "All activity that occurs under your account",
+          "notify": "Notifying us immediately of any unauthorized use of your account",
+          "accurate": "Ensuring your account information is always accurate and up to date"
+        }
+      },
+      "acceptableUse": {
+        "title": "4. Acceptable Use",
+        "intro": "You agree to use the Service only for lawful purposes. You are not permitted to:",
+        "items": {
+          "illegal": "Use the Service for illegal or unauthorized purposes",
+          "disrupt": "Disrupt or damage the Service or connected servers",
+          "harmful": "Upload content that is harmful, offensive, or infringes on the rights of others",
+          "unauthorized": "Attempt to access other users' accounts without permission",
+          "bots": "Use bots, scrapers, or other automated tools without written permission"
+        }
+      },
+      "userContent": {
+        "title": "5. User Content",
+        "content": "You retain ownership of content you create through the Service (tasks, notes, forum posts, etc.). By uploading content, you grant Mentra a non-exclusive license to store and display that content in order to provide the Service to you."
+      },
+      "aiFeatures": {
+        "title": "6. AI Features",
+        "content": "Mentra provides AI chat and AI agent features to assist with productivity. AI responses are informational and should not be considered professional advice. We do not guarantee the accuracy or completeness of AI-generated responses."
+      },
+      "availability": {
+        "title": "7. Service Availability",
+        "content": "We strive to provide the Service continuously, but do not guarantee that the Service will always be available without interruption. We reserve the right to perform maintenance, updates, or changes to the Service at any time."
+      },
+      "termination": {
+        "title": "8. Termination",
+        "content": "We reserve the right to suspend or terminate your account if you violate these Terms of Service. You may also delete your account at any time through account settings."
+      },
+      "liability": {
+        "title": "9. Limitation of Liability",
+        "content": "The Service is provided \"as is\" without any warranties. Mentra is not liable for any direct, indirect, incidental, or consequential damages arising from the use of the Service."
+      },
+      "changes": {
+        "title": "10. Changes to Terms",
+        "content": "We may update these Terms of Service from time to time. Changes will take effect immediately upon publication on this page. Continued use of the Service after changes constitutes your acceptance of the updated terms."
+      },
+      "contact": {
+        "title": "11. Contact",
+        "content": "If you have questions about these Terms of Service, please contact us at <a href=\"mailto:humamozik@gmail.com\" class=\"legal-link\">humamozik@gmail.com</a>."
+      }
+    }
+  }
+}

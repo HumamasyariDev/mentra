@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { useReducedMotion } from '../hooks/useReducedMotion';
@@ -51,6 +52,7 @@ export default function ForestTreeCard({
   cardRefOverride,
 }) {
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation(['forest', 'common']);
   const internalCardRef = useRef(null);
   const cardRef = cardRefOverride || internalCardRef;
   const localTreeImageRef = useRef(null);
@@ -77,13 +79,13 @@ export default function ForestTreeCard({
   // Format cooldown into human-readable text
   useEffect(() => {
     if (canWater || !tree) {
-      setTimerText('Ready now');
+      setTimerText(t('forest:ready_now'));
       return;
     }
 
     const updateTimer = () => {
       if (cooldownSeconds <= 0) {
-        setTimerText('Ready now');
+        setTimerText(t('forest:ready_now'));
         return;
       }
 
@@ -103,7 +105,7 @@ export default function ForestTreeCard({
     updateTimer();
     const interval = window.setInterval(updateTimer, 30000); // Update every 30 seconds
     return () => window.clearInterval(interval);
-  }, [cooldownSeconds, canWater, tree]);
+  }, [cooldownSeconds, canWater, tree, t]);
 
   // Main Card Entrance Animation
   useGSAP(() => {
@@ -163,7 +165,7 @@ export default function ForestTreeCard({
 
   // Remove fast return null so we can render empty state inside this component
 
-  const buttonLabel = tree && tree.is_withered ? 'Rescue tree' : canWater ? 'Water tree' : 'Waiting to water';
+  const buttonLabel = tree && tree.is_withered ? t('forest:rescue_tree') : canWater ? t('forest:water_tree') : t('forest:waiting_to_water');
   const buttonDisabled = disabled || !canWater || wateringCanCount < 1 || isPending;
 
   return (
@@ -178,7 +180,7 @@ export default function ForestTreeCard({
            <img
              ref={treeRef}
              src={treeAsset}
-             alt={isPlanting ? 'Planting' : tree ? tree.tree_type.display_name : 'Seed'}
+              alt={isPlanting ? t('forest:alt_planting') : tree ? tree.tree_type.display_name : t('forest:alt_seed')}
              className={`forest-tree-card-image ${tree && tree.is_withered ? 'is-withered' : ''}`}
              style={{ '--tree-width': `${treeWidth}px` }}
            />
@@ -217,28 +219,28 @@ export default function ForestTreeCard({
             {isEmpty ? (
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%', justifyContent: 'center', alignItems: 'center', textAlign: 'center', gap: '1.2rem' }}>
                 <div>
-                  <span className="forest-tree-card-overline">No active tree</span>
-                  <h3 className="forest-tree-card-title">Start a new cycle</h3>
+                  <span className="forest-tree-card-overline">{t('forest:no_active_tree')}</span>
+                  <h3 className="forest-tree-card-title">{t('forest:start_new_cycle')}</h3>
                 </div>
-                <p className="forest-tree-card-status">Plant a seed, earn watering cans in Pomodoro, and grow your forest.</p>
+                <p className="forest-tree-card-status">{t('forest:empty_description')}</p>
                 <button
                   className="forest-tree-card-button"
                   onClick={onPlant}
                   disabled={isPending || disabled}
                   style={{ width: '100%', maxWidth: '240px', marginTop: 'auto' }}
                 >
-                  Plant a seed
+                  {t('forest:plant_a_seed')}
                 </button>
               </div>
             ) : (
               <>
                 <div className="forest-tree-card-header">
                   <div>
-                    <span className="forest-tree-card-overline">Active growth</span>
+                    <span className="forest-tree-card-overline">{t('forest:active_growth')}</span>
                     <h3 className="forest-tree-card-title">{tree?.tree_type?.display_name}</h3>
                   </div>
                   <div className={`forest-tree-card-stage ${isAtFinal ? 'is-final' : ''}`}>
-                    {isAtFinal ? 'Finalizing' : stageName}
+                    {isAtFinal ? t('forest:finalizing') : stageName}
                   </div>
                 </div>
 
@@ -248,7 +250,7 @@ export default function ForestTreeCard({
                     <div className="forest-tree-card-progress-fill" style={{ width: `${waterProgressPercent}%` }}></div>
                   </div>
                   <div className="forest-tree-card-progress-label">
-                    <span>{isAtFinal ? `Archive: ${waterProgress}/10` : `Watering: ${waterProgress} / ${stageCost}`}</span>
+                    <span>{isAtFinal ? t('forest:archive_progress', { progress: waterProgress }) : t('forest:watering_progress', { progress: waterProgress, cost: stageCost })}</span>
                     <span className="forest-tree-card-timer">{timerText}</span>
                   </div>
                 </div>
@@ -266,10 +268,10 @@ export default function ForestTreeCard({
                 {/* Status text */}
                 <p className="forest-tree-card-status">
                   {tree?.is_withered
-                    ? `Rescue within ${tree.rescue_hours_remaining ?? 0}h`
+                    ? t('forest:rescue_within', { hours: tree.rescue_hours_remaining ?? 0 })
                     : canWater
-                      ? 'Ready to water'
-                      : `Next in ${timerText}`}
+                      ? t('forest:ready_to_water')
+                      : t('forest:next_in', { time: timerText })}
                 </p>
               </>
             )}

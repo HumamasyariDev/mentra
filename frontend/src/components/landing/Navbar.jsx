@@ -4,25 +4,32 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useMagneticHover } from '../../hooks/useMagneticHover';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const NAV_LINKS = [
-  { label: 'How It Works', href: '#how-it-works' },
-  { label: 'Features', href: '#features' },
-  { label: 'Forest World', href: '#forest' },
-  { label: 'FAQ', href: '#faq' },
-];
-
 export default function Navbar() {
   const navRef = useRef(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const prefersReducedMotion = useReducedMotion();
+  const { t, i18n } = useTranslation(['landing']);
   
   const logoRef = useMagneticHover(0.3);
   const ctaRef = useMagneticHover(0.2);
+
+  const currentLang = i18n.language?.startsWith('en') ? 'en' : 'id';
+  const toggleLanguage = () => {
+    i18n.changeLanguage(currentLang === 'id' ? 'en' : 'id');
+  };
+
+  const NAV_LINKS = [
+    { label: t('landing:navbar.howItWorks'), href: '#how-it-works' },
+    { label: t('landing:navbar.features'), href: '#features' },
+    { label: t('landing:navbar.forestWorld'), href: '#forest' },
+    { label: t('landing:navbar.faq'), href: '#faq' },
+  ];
 
   useGSAP(() => {
     if (!prefersReducedMotion) {
@@ -87,8 +94,17 @@ export default function Navbar() {
         </div>
 
         <div className="landing-nav-actions">
-          <Link to="/login" className="landing-nav-link">Log in</Link>
-          <Link to="/register" ref={ctaRef} className="landing-nav-cta">Get Started</Link>
+          <button
+            className="landing-nav-lang-toggle"
+            onClick={toggleLanguage}
+            aria-label={`Switch to ${currentLang === 'id' ? 'English' : 'Indonesian'}`}
+          >
+            <span className={`landing-nav-lang-option ${currentLang === 'id' ? 'landing-nav-lang-option--active' : ''}`}>ID</span>
+            <span className="landing-nav-lang-divider">/</span>
+            <span className={`landing-nav-lang-option ${currentLang === 'en' ? 'landing-nav-lang-option--active' : ''}`}>EN</span>
+          </button>
+          <Link to="/login" className="landing-nav-link">{t('landing:navbar.login')}</Link>
+          <Link to="/register" ref={ctaRef} className="landing-nav-cta">{t('landing:navbar.getStarted')}</Link>
         </div>
 
         <button className="landing-nav-hamburger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
@@ -103,8 +119,17 @@ export default function Navbar() {
               {link.label}
             </a>
           ))}
-          <Link to="/login" className="mobile-nav-link mobile-nav-link--muted" onClick={() => setMobileOpen(false)}>Log in</Link>
-          <Link to="/register" className="mobile-nav-cta" onClick={() => setMobileOpen(false)}>Get Started</Link>
+          <button
+            className="mobile-nav-lang-toggle"
+            onClick={toggleLanguage}
+            aria-label={`Switch to ${currentLang === 'id' ? 'English' : 'Indonesian'}`}
+          >
+            <span className={`landing-nav-lang-option ${currentLang === 'id' ? 'landing-nav-lang-option--active' : ''}`}>ID</span>
+            <span className="landing-nav-lang-divider">/</span>
+            <span className={`landing-nav-lang-option ${currentLang === 'en' ? 'landing-nav-lang-option--active' : ''}`}>EN</span>
+          </button>
+          <Link to="/login" className="mobile-nav-link mobile-nav-link--muted" onClick={() => setMobileOpen(false)}>{t('landing:navbar.login')}</Link>
+          <Link to="/register" className="mobile-nav-cta" onClick={() => setMobileOpen(false)}>{t('landing:navbar.getStarted')}</Link>
         </div>
       )}
     </nav>

@@ -1,4 +1,5 @@
 import React, { useRef, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Menu } from 'lucide-react';
 import { useDashboardUI } from '../../contexts/DashboardUIContext';
 import gsap from 'gsap';
@@ -44,6 +45,7 @@ const STREAK_IMAGES = {
 };
 
 export const DashboardFloatingUI = ({ stats = {}, dashboardData, shouldFadeOut = false }) => {
+  const { t } = useTranslation(['dashboard', 'common']);
   const { setSidebarOpen } = useDashboardUI();
   const containerRef = useRef(null);
   const hamburgerRef = useRef(null);
@@ -86,7 +88,7 @@ export const DashboardFloatingUI = ({ stats = {}, dashboardData, shouldFadeOut =
         ref={hamburgerRef}
         className="dashboard-hamburger"
         onClick={handleHamburgerClick}
-        aria-label="Toggle menu"
+        aria-label={t('dashboard:sidebar.toggleMenu')}
         disabled={shouldFadeOut}
       >
         <Menu size={20} />
@@ -96,7 +98,7 @@ export const DashboardFloatingUI = ({ stats = {}, dashboardData, shouldFadeOut =
       <div className="dashboard-info-bar">
         {/* Level Badge */}
         <div className="info-badge info-level">
-          <span className="badge-label">Lvl</span>
+          <span className="badge-label">{t('dashboard:level.lvl')}</span>
           <span className="badge-value">{level}</span>
         </div>
 

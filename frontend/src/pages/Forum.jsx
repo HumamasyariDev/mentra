@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import '../styles/pages/Forum.css';
@@ -14,6 +15,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Forum() {
+  const { t, i18n } = useTranslation(['forum', 'common']);
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showEditPost, setShowEditPost] = useState(false);
@@ -58,8 +60,8 @@ export default function Forum() {
   // Clear errors after 5 seconds
   useEffect(() => {
     if (!errorMessage) return;
-    const t = setTimeout(() => setErrorMessage(''), 5000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setErrorMessage(''), 5000);
+    return () => clearTimeout(timer);
   }, [errorMessage]);
 
   // ─── Queries ───
@@ -95,13 +97,13 @@ export default function Forum() {
   const createPostMutation = useMutation({
     mutationFn: (data) => forumPostApi.create(data).then((r) => r.data),
     onSuccess: invalidate,
-    onError: (err) => setErrorMessage(err?.response?.data?.message || 'Failed to create post'),
+    onError: (err) => setErrorMessage(err?.response?.data?.message || t('forum:errors.createFailed')),
   });
 
   const updatePostMutation = useMutation({
     mutationFn: ({ id, data }) => forumPostApi.update(id, data).then((r) => r.data),
     onSuccess: invalidate,
-    onError: (err) => setErrorMessage(err?.response?.data?.message || 'Failed to update post'),
+    onError: (err) => setErrorMessage(err?.response?.data?.message || t('forum:errors.updateFailed')),
   });
 
   const deletePostMutation = useMutation({
@@ -115,7 +117,7 @@ export default function Forum() {
                 closePanel();
               }
     },
-    onError: (err) => setErrorMessage(err?.response?.data?.message || 'Failed to delete post'),
+    onError: (err) => setErrorMessage(err?.response?.data?.message || t('forum:errors.deleteFailed')),
   });
 
   const replyMutation = useMutation({
@@ -124,7 +126,7 @@ export default function Forum() {
       invalidate();
       setReplyContent('');
     },
-    onError: (err) => setErrorMessage(err?.response?.data?.message || 'Failed to send reply'),
+    onError: (err) => setErrorMessage(err?.response?.data?.message || t('forum:errors.replyFailed')),
   });
 
   // ─── Handlers ───
@@ -179,14 +181,15 @@ export default function Forum() {
 
     if (diffInHours < 1) {
       const diffInMinutes = Math.floor((now - postDate) / (1000 * 60));
-      return diffInMinutes <= 1 ? 'Just now' : `${diffInMinutes}m ago`;
+      return diffInMinutes <= 1 ? t('common:time.justNow') : t('common:time.minutesAgo', { count: diffInMinutes });
     } else if (diffInHours < 24) {
-      return `${diffInHours}h ago`;
+      return t('common:time.hoursAgo', { count: diffInHours });
     } else if (diffInHours < 168) {
       const diffInDays = Math.floor(diffInHours / 24);
-      return `${diffInDays}d ago`;
+      return t('common:time.daysAgo', { count: diffInDays });
     }
-    return postDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const locale = i18n.language === 'id' ? 'id-ID' : 'en-US';
+    return postDate.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
   };
 
   // Filter and sort
@@ -248,13 +251,13 @@ export default function Forum() {
         <div className="forum-header">
           <div className="forum-header-content">
             <div className="forum-header-top">
-              <h1 className="forum-title">Forum</h1>
+              <h1 className="forum-title">{t('forum:pageTitle')}</h1>
               <button
                 onClick={() => setShowCreatePost(true)}
                 className="forum-new-post-btn"
               >
                 <Plus size={18} />
-                New Post
+                {t('forum:newPost')}
               </button>
             </div>
 
@@ -263,7 +266,7 @@ export default function Forum() {
               <Search className="forum-search-icon" size={18} />
               <input
                 type="text"
-                placeholder="Search posts..."
+                placeholder={t('forum:searchPosts')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="forum-search-input"
@@ -278,9 +281,9 @@ export default function Forum() {
               >
                 <Filter size={14} />
                 <span>
-                  {filterBy === 'all' ? 'All' : filterBy === 'mine' ? 'My Posts' : 'Most Replied'}
+                  {filterBy === 'all' ? t('common:all') : filterBy === 'mine' ? t('forum:filter.myPosts') : t('forum:filter.mostReplied')}
                   {' · '}
-                  {sortBy === 'recent' ? 'Recently Active' : 'Date Posted'}
+                  {sortBy === 'recent' ? t('forum:sort.recentlyActive') : t('forum:sort.datePosted')}
                 </span>
                 <ChevronDown size={16} />
               </button>
@@ -294,7 +297,7 @@ export default function Forum() {
                   <div className="forum-dropdown-menu">
                     {/* Filter Section */}
                     <div className="forum-dropdown-section">
-                      <div className="forum-dropdown-section-title">Filter</div>
+                      <div className="forum-dropdown-section-title">{t('common:filter')}</div>
                       <div className="forum-dropdown-options">
                         <label className="forum-dropdown-option">
                           <input
@@ -305,7 +308,7 @@ export default function Forum() {
                             onChange={(e) => setFilterBy(e.target.value)}
                             className="forum-radio-input"
                           />
-                          <span className="forum-option-label">All Posts</span>
+                          <span className="forum-option-label">{t('forum:filter.allPosts')}</span>
                         </label>
                         <label className="forum-dropdown-option">
                           <input
@@ -316,7 +319,7 @@ export default function Forum() {
                             onChange={(e) => setFilterBy(e.target.value)}
                             className="forum-radio-input"
                           />
-                          <span className="forum-option-label">My Posts</span>
+                          <span className="forum-option-label">{t('forum:filter.myPosts')}</span>
                         </label>
                         <label className="forum-dropdown-option">
                           <input
@@ -327,14 +330,14 @@ export default function Forum() {
                             onChange={(e) => setFilterBy(e.target.value)}
                             className="forum-radio-input"
                           />
-                          <span className="forum-option-label">Most Replied</span>
+                          <span className="forum-option-label">{t('forum:filter.mostReplied')}</span>
                         </label>
                       </div>
                     </div>
 
                     {/* Sort Section */}
                     <div className="forum-dropdown-section forum-dropdown-section-last">
-                      <div className="forum-dropdown-section-title">Sort By</div>
+                      <div className="forum-dropdown-section-title">{t('common:sort')}</div>
                       <div className="forum-dropdown-options">
                         <label className="forum-dropdown-option">
                           <input
@@ -345,7 +348,7 @@ export default function Forum() {
                             onChange={(e) => setSortBy(e.target.value)}
                             className="forum-radio-input"
                           />
-                          <span className="forum-option-label">Recently Active</span>
+                          <span className="forum-option-label">{t('forum:sort.recentlyActive')}</span>
                         </label>
                         <label className="forum-dropdown-option">
                           <input
@@ -356,7 +359,7 @@ export default function Forum() {
                             onChange={(e) => setSortBy(e.target.value)}
                             className="forum-radio-input"
                           />
-                          <span className="forum-option-label">Date Posted</span>
+                          <span className="forum-option-label">{t('forum:sort.datePosted')}</span>
                         </label>
                       </div>
                     </div>
@@ -387,17 +390,17 @@ export default function Forum() {
             <div className="forum-empty">
               <MessageSquare size={48} className="forum-empty-icon" />
               <p className="forum-empty-title">
-                {searchQuery ? 'No posts found' : 'No posts yet'}
+                {searchQuery ? t('forum:empty.noPostsFound') : t('forum:empty.noPostsYet')}
               </p>
               <p className="forum-empty-subtitle">
-                {searchQuery ? 'Try a different search term' : 'Be the first to start a discussion'}
+                {searchQuery ? t('forum:empty.tryDifferentSearch') : t('forum:empty.beFirst')}
               </p>
               {!searchQuery && (
                 <button
                   onClick={() => setShowCreatePost(true)}
                   className="forum-empty-cta"
                 >
-                  Create First Post
+                  {t('forum:empty.createFirstPost')}
                 </button>
               )}
             </div>
@@ -412,10 +415,10 @@ export default function Forum() {
                     className={`forum-post-card ${selectedPostId === post.id ? 'selected' : ''}`}
                   >
                     <h3 className="forum-post-title">
-                      {post.title || 'Untitled Post'}
+                      {post.title || t('forum:post.untitled')}
                     </h3>
                     <p className="forum-post-preview">
-                      <span className="forum-post-author">{post.user?.name || 'Anonymous'}</span>
+                      <span className="forum-post-author">{post.user?.name || t('forum:post.anonymous')}</span>
                       {post.content && <span>: {post.content}</span>}
                     </p>
                     <div className="forum-post-meta">
@@ -426,7 +429,7 @@ export default function Forum() {
                       <span className="forum-post-meta-dot">&middot;</span>
                       <span>{formatTimestamp(post.created_at)}</span>
                       {post.is_edited && (
-                        <span className="forum-edited-badge">edited</span>
+                        <span className="forum-edited-badge">{t('forum:post.edited')}</span>
                       )}
                     </div>
                   </div>
@@ -451,7 +454,7 @@ export default function Forum() {
                 <button
                   onClick={() => handleEditPost(selectedPost)}
                   className="forum-detail-action-btn"
-                  title="Edit post"
+                  title={t('forum:post.editPost')}
                 >
                   <Edit2 size={16} />
                 </button>
@@ -460,7 +463,7 @@ export default function Forum() {
                 <button
                   onClick={() => handleDeletePost(selectedPost)}
                   className="forum-detail-action-btn danger"
-                  title="Delete post"
+                  title={t('forum:post.deletePost')}
                 >
                   <Trash2 size={16} />
                 </button>
@@ -484,14 +487,14 @@ export default function Forum() {
                 </div>
                 <h1 className="forum-detail-post-title">{selectedPost.title}</h1>
                 <p className="forum-detail-post-subtitle">
-                  {selectedPost.user?.name || 'Anonymous'} started this post &middot;{' '}
-                  {new Date(selectedPost.created_at).toLocaleDateString('en-US', {
+                  {t('forum:post.startedPost', { name: selectedPost.user?.name || t('forum:post.anonymous') })} &middot;{' '}
+                  {new Date(selectedPost.created_at).toLocaleDateString(i18n.language === 'id' ? 'id-ID' : 'en-US', {
                     month: 'long',
                     day: 'numeric',
                     year: 'numeric',
                   })}
                   {selectedPost.is_edited && (
-                    <span className="forum-edited-inline"> &middot; edited</span>
+                    <span className="forum-edited-inline"> &middot; {t('forum:post.edited')}</span>
                   )}
                 </p>
               </div>
@@ -504,10 +507,10 @@ export default function Forum() {
                 <div className="forum-message-body">
                   <div className="forum-message-header">
                     <span className="forum-message-author">
-                      {selectedPost.user?.name || 'Anonymous'}
+                      {selectedPost.user?.name || t('forum:post.anonymous')}
                     </span>
                     <span className="forum-message-time">
-                      {new Date(selectedPost.created_at).toLocaleString('en-US', {
+                      {new Date(selectedPost.created_at).toLocaleString(i18n.language === 'id' ? 'id-ID' : 'en-US', {
                         month: 'short',
                         day: 'numeric',
                         year: 'numeric',
@@ -532,7 +535,7 @@ export default function Forum() {
                 <div className="forum-date-separator">
                   <div className="forum-separator-line" />
                   <span className="forum-separator-text">
-                    {selectedReplies.length} {selectedReplies.length === 1 ? 'Reply' : 'Replies'}
+                    {t('forum:replies.reply', { count: selectedReplies.length })}
                   </span>
                   <div className="forum-separator-line" />
                 </div>
@@ -546,16 +549,16 @@ export default function Forum() {
                       <div className="forum-reply-body">
                         <div className="forum-reply-header">
                           <span className="forum-reply-author">
-                            {reply.user?.name || 'Anonymous'}
+                            {reply.user?.name || t('forum:post.anonymous')}
                           </span>
                           {reply.user_id === selectedPost.user_id && (
-                            <span className="forum-op-badge">OP</span>
+                            <span className="forum-op-badge">{t('forum:post.op')}</span>
                           )}
                           {reply.is_edited && (
-                            <span className="forum-edited-badge">edited</span>
+                            <span className="forum-edited-badge">{t('forum:post.edited')}</span>
                           )}
                           <span className="forum-reply-time">
-                            {new Date(reply.created_at).toLocaleString('en-US', {
+                            {new Date(reply.created_at).toLocaleString(i18n.language === 'id' ? 'id-ID' : 'en-US', {
                               month: 'short',
                               day: 'numeric',
                               year: 'numeric',
@@ -571,7 +574,7 @@ export default function Forum() {
                                 <button
                                   onClick={() => handleEditPost(reply)}
                                   className="forum-reply-action-btn"
-                                  title="Edit reply"
+                                  title={t('forum:post.editReply')}
                                 >
                                   <Edit2 size={13} />
                                 </button>
@@ -580,7 +583,7 @@ export default function Forum() {
                                 <button
                                   onClick={() => handleDeletePost(reply)}
                                   className="forum-reply-action-btn danger"
-                                  title="Delete reply"
+                                  title={t('forum:post.deleteReply')}
                                 >
                                   <Trash2 size={13} />
                                 </button>
@@ -608,7 +611,7 @@ export default function Forum() {
                 type="text"
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
-                placeholder={`Reply to "${selectedPost.title}"...`}
+                placeholder={t('forum:replyToPost', { title: selectedPost.title })}
                 disabled={replyMutation.isPending}
                 className="forum-reply-input"
               />

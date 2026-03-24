@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { chatSessionApi } from "../services/api";
 import { createTaskTool, searchKnowledgeTool } from "./MentraTools.js";
 import {
@@ -135,22 +136,12 @@ const WELCOME_MSG = {
   type: "text",
 };
 
-const QUICK_PROMPTS = [
-  {
-    label: "Buat Task",
-    text: "Buatkan task: belajar pgvector, deadline besok, prioritas sedang",
-  },
-  { label: "Pomodoro", text: "Jelaskan teknik Pomodoro" },
-  { label: "SMART Goal", text: "Apa itu SMART goals?" },
-  { label: "Tips Fokus", text: "Tips agar lebih fokus belajar" },
-  { label: "Deep Work", text: "Apa itu Deep Work?" },
-];
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Main Component
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function MentraAgentWithSessions() {
+  const { t } = useTranslation(["agent", "common"]);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -167,6 +158,17 @@ export default function MentraAgentWithSessions() {
   const endRef = useRef(null);
   const inputRef = useRef(null);
   const systemPrompt = useRef(buildSystemPrompt(buildUserContext()));
+
+  const QUICK_PROMPTS = [
+    {
+      label: t("agent:quickPrompts.createTask"),
+      text: "Buatkan task: belajar pgvector, deadline besok, prioritas sedang",
+    },
+    { label: t("agent:quickPrompts.pomodoro"), text: "Jelaskan teknik Pomodoro" },
+    { label: t("agent:quickPrompts.smartGoal"), text: "Apa itu SMART goals?" },
+    { label: t("agent:quickPrompts.focusTips"), text: "Tips agar lebih fokus belajar" },
+    { label: t("agent:quickPrompts.deepWork"), text: "Apa itu Deep Work?" },
+  ];
 
   // Fetch sessions
   const { data: sessions, isLoading: sessionsLoading } = useQuery({
@@ -265,7 +267,7 @@ export default function MentraAgentWithSessions() {
   };
 
   const handleDeleteSession = (sessionId) => {
-    if (window.confirm("Hapus sesi chat ini?")) {
+    if (window.confirm(t("agent:deleteSessionConfirm"))) {
       deleteSessionMutation.mutate(sessionId);
     }
   };
@@ -293,7 +295,7 @@ export default function MentraAgentWithSessions() {
       ];
 
       try {
-        setStatusMsg("🤔 Thinking…");
+        setStatusMsg("🤔 " + t("agent:statusThinking"));
         const puterResponse = await window.puter.ai.chat(conversation, {
           model: "claude-sonnet-4-5",
         });
@@ -380,17 +382,17 @@ export default function MentraAgentWithSessions() {
   const executeAction = useCallback(
     async (action, originalUserText, sessionId) => {
       if (action.action === "create_task") {
-        setStatusMsg("⚙️ Menyimpan task ke database…");
+        setStatusMsg("⚙️ " + t("agent:statusSavingTask"));
 
         const result = await createTaskTool(action.payload);
 
         if (result.success) {
-          const t = result.task;
+          const task = result.task;
           const successMsg = {
             role: "agent",
             type: "task_created",
-            content: `✅ **Task berhasil disimpan!**\n\n📌 **${t.title}**\nPriority: ${t.priority} | XP: +${t.exp_reward}${t.due_date ? ` | Deadline: ${t.due_date}` : ""}\nID: #${t.id}`,
-            task: t,
+            content: `✅ **Task berhasil disimpan!**\n\n📌 **${task.title}**\nPriority: ${task.priority} | XP: +${task.exp_reward}${task.due_date ? ` | Deadline: ${task.due_date}` : ""}\nID: #${task.id}`,
+            task: task,
           };
           setMessages((prev) => [...prev, successMsg]);
 
@@ -414,7 +416,7 @@ export default function MentraAgentWithSessions() {
             sessionId,
             message: {
               ...successMsg,
-              metadata: { task: t },
+              metadata: { task: task },
             },
           });
         } else {
@@ -433,12 +435,12 @@ export default function MentraAgentWithSessions() {
           }
         }
       } else if (action.action === "search_knowledge") {
-        setStatusMsg("🔍 Mencari di knowledge base…");
+        setStatusMsg("🔍 " + t("agent:statusSearching"));
 
         const result = await searchKnowledgeTool(action.payload.query);
         const baseContext = result.success ? result.context : "";
 
-        setStatusMsg("💭 Merangkum hasil pencarian…");
+        setStatusMsg("💭 " + t("agent:statusSummarizing"));
         const followUp = [
           {
             role: "system",
@@ -528,7 +530,7 @@ export default function MentraAgentWithSessions() {
         }
       }
     },
-    [],
+    [t],
   );
 
   const puterAvailable = typeof window !== "undefined" && !!window.puter?.ai;
@@ -540,20 +542,20 @@ export default function MentraAgentWithSessions() {
       {/* Sidebar */}
       <div className={`agent-page-sidebar ${sidebarOpen ? "" : "closed"}`}>
         <div className="agent-page-sidebar-header">
-          <h2 className="agent-page-sidebar-title">Chat Sessions</h2>
+          <h2 className="agent-page-sidebar-title">{t("agent:sidebarTitle")}</h2>
           <button
             className="agent-page-btn-new"
             onClick={handleCreateSession}
-            title="New Chat"
+            title={t("agent:newChat")}
           >
             <Plus size={18} />
-            <span>New Chat</span>
+            <span>{t("agent:newChat")}</span>
           </button>
         </div>
 
         <div className="agent-page-sessions">
           {sessionsLoading ? (
-            <div className="agent-page-sessions-loading">Loading...</div>
+            <div className="agent-page-sessions-loading">{t("agent:sessionsLoading")}</div>
           ) : sessions && sessions.length > 0 ? (
             sessions.map((session) => (
               <div
@@ -632,8 +634,8 @@ export default function MentraAgentWithSessions() {
             ))
           ) : (
             <div className="agent-page-sessions-empty">
-              <p>Belum ada sesi chat</p>
-              <p>Klik "New Chat" untuk memulai</p>
+              <p>{t("agent:sessionsEmpty")}</p>
+              <p>{t("agent:sessionsEmptyHint")}</p>
             </div>
           )}
         </div>
@@ -652,27 +654,27 @@ export default function MentraAgentWithSessions() {
           <div className="agent-page-header-info">
             <div className="agent-page-avatar">M</div>
             <div>
-              <h1 className="agent-page-title">Mentra AI</h1>
-              <p className="agent-page-subtitle">Asisten Produktivitas</p>
+              <h1 className="agent-page-title">{t("agent:pageTitle")}</h1>
+              <p className="agent-page-subtitle">{t("agent:pageSubtitle")}</p>
             </div>
           </div>
           <div
             className={`agent-page-status ${puterAvailable ? "online" : "offline"}`}
           >
             <span className="agent-page-status-dot" />
-            <span>{puterAvailable ? "Online" : "Offline"}</span>
+            <span>{puterAvailable ? t("agent:statusOnline") : t("agent:statusOffline")}</span>
           </div>
         </div>
 
         {!puterAvailable && (
           <div className="agent-page-warning">
-            Puter.js belum terdeteksi. Pastikan sudah login di puter.com.
+            {t("agent:puterWarning")}
           </div>
         )}
 
         <div className="agent-page-messages">
           {messages.map((msg, i) => (
-            <MessageBubble key={i} msg={msg} navigate={navigate} />
+            <MessageBubble key={i} msg={msg} navigate={navigate} t={t} />
           ))}
 
           {loading && (
@@ -715,7 +717,7 @@ export default function MentraAgentWithSessions() {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Tulis pesan..."
+            placeholder={t("agent:inputPlaceholder")}
             disabled={loading}
             autoComplete="off"
           />
@@ -750,7 +752,7 @@ export default function MentraAgentWithSessions() {
 // MessageBubble Component
 // ─────────────────────────────────────────────────────────────────────────────
 
-function MessageBubble({ msg, navigate }) {
+function MessageBubble({ msg, navigate, t }) {
   if (msg.role === "user")
     return (
       <div className="agent-page-message user">
@@ -779,7 +781,7 @@ function MessageBubble({ msg, navigate }) {
             className="agent-page-goto-tasks"
             onClick={() => navigate("/tasks")}
           >
-            📋 Lihat di halaman Tasks →
+            📋 {t("agent:viewTasks")} →
           </button>
         )}
       </div>

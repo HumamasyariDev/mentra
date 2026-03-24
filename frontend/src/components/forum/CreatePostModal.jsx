@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import '../../styles/components/forum/ForumModals.css';
 
 export default function CreatePostModal({ onClose, onSubmit }) {
+  const { t } = useTranslation(['forum', 'common']);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,7 +31,7 @@ export default function CreatePostModal({ onClose, onSubmit }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">Create New Post</h3>
+          <h3 className="modal-title">{t('forum:createModal.title')}</h3>
           <button onClick={onClose} className="modal-close-btn">
             <X size={20} />
           </button>
@@ -38,12 +40,12 @@ export default function CreatePostModal({ onClose, onSubmit }) {
         <form onSubmit={handleSubmit} className="modal-body">
           <div className="modal-form">
             <div className="form-group">
-              <label className="form-label">Title</label>
+              <label className="form-label">{t('forum:createModal.titleLabel')}</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="What's your post about?"
+                placeholder={t('forum:createModal.titlePlaceholder')}
                 className="form-input"
                 autoFocus
                 maxLength={255}
@@ -51,30 +53,30 @@ export default function CreatePostModal({ onClose, onSubmit }) {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Content</label>
+              <label className="form-label">{t('forum:createModal.contentLabel')}</label>
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="Share your thoughts, ask questions, or start a discussion..."
+                placeholder={t('forum:createModal.contentPlaceholder')}
                 className="form-input form-textarea"
                 rows={8}
                 maxLength={2000}
               />
               <div className="form-char-count">
-                {content.length}/2000
+                {t('forum:createModal.charCount', { count: content.length, max: 2000 })}
               </div>
             </div>
 
             <div className="modal-footer">
               <button type="button" onClick={onClose} className="btn btn-secondary">
-                Cancel
+                {t('common:cancel')}
               </button>
               <button 
                 type="submit" 
                 disabled={!title.trim() || !content.trim() || loading} 
                 className="btn btn-primary"
               >
-                {loading ? 'Creating...' : 'Create Post'}
+                {loading ? t('forum:createModal.creating') : t('forum:createModal.createPost')}
               </button>
             </div>
           </div>

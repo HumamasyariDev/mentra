@@ -5,6 +5,7 @@
  * overlay plays on top of this page before refreshing the task list.
  */
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { taskApi } from '../services/api';
 import { Plus, X, List, CalendarDays, Columns3, TreePine } from 'lucide-react';
@@ -16,13 +17,14 @@ import TaskBoardView from '../components/tasks/TaskBoardView';
 import GameWorld from '../components/gameworld/GameWorld';
 import '../styles/pages/Tasks.css';
 
-const views = [
-  { key: 'list', label: 'List', icon: List },
-  { key: 'calendar', label: 'Calendar', icon: CalendarDays },
-  { key: 'board', label: 'Board', icon: Columns3 },
+const viewKeys = [
+  { key: 'list', icon: List },
+  { key: 'calendar', icon: CalendarDays },
+  { key: 'board', icon: Columns3 },
 ];
 
 export default function Tasks() {
+  const { t } = useTranslation(['tasks', 'common']);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState('list');
@@ -187,8 +189,8 @@ export default function Tasks() {
         {/* Header */}
         <div className="tasks-header">
           <div className="tasks-header-info">
-            <h1 className="tasks-title">Tasks</h1>
-            <p className="tasks-subtitle">Manage your tasks and earn EXP</p>
+            <h1 className="tasks-title">{t('tasks:pageTitle')}</h1>
+            <p className="tasks-subtitle">{t('tasks:pageSubtitle')}</p>
           </div>
           <div className="tasks-header-actions">
             {/* Forest link */}
@@ -197,14 +199,14 @@ export default function Tasks() {
               className="tasks-forest-btn"
             >
               <TreePine className="tasks-forest-icon" />
-              Forest
+              {t('tasks:forest')}
             </button>
             <button
               onClick={() => setShowForm(!showForm)}
               className="tasks-new-btn"
             >
               {showForm ? <X className="tasks-new-icon" /> : <Plus className="tasks-new-icon" />}
-              {showForm ? 'Cancel' : 'New Task'}
+              {showForm ? t('common:cancel') : t('tasks:newTask')}
             </button>
           </div>
         </div>
@@ -216,14 +218,14 @@ export default function Tasks() {
 
         {/* View Tabs */}
         <div className="tasks-view-tabs">
-          {views.map(({ key, label, icon: Icon }) => (
+          {viewKeys.map(({ key, icon: Icon }) => (
             <button
               key={key}
               onClick={() => setActiveView(key)}
               className={`tasks-view-tab ${activeView === key ? 'active' : 'inactive'}`}
             >
               <Icon className="tasks-view-tab-icon" />
-              <span className="tasks-view-tab-label">{label}</span>
+              <span className="tasks-view-tab-label">{t(`common:${key}`)}</span>
             </button>
           ))}
         </div>

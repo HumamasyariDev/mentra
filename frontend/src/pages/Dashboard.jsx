@@ -1,5 +1,6 @@
 import React, { Suspense, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { Loader2 } from 'lucide-react';
@@ -16,10 +17,11 @@ const LazyMapViewport = React.lazy(() =>
 );
 
 function MapLoadingFallback() {
+  const { t } = useTranslation('dashboard');
   return (
     <div className="dashboard-map-loading">
       <Loader2 className="dashboard-map-loading-spinner" />
-      <p className="dashboard-map-loading-text">Loading galaxy...</p>
+      <p className="dashboard-map-loading-text">{t('dashboard:loadingGalaxy')}</p>
     </div>
   );
 }

@@ -1,21 +1,8 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calendar, Loader2, Sunrise, Sun, Sunset, Clock } from 'lucide-react';
 import ScheduleItem from './ScheduleItem';
 import '../../styles/components/schedules/ScheduleComponents.css';
-
-const typeOptions = [
-  { value: '', label: 'All Types' },
-  { value: 'daily', label: 'Daily' },
-  { value: 'weekly', label: 'Weekly' },
-  { value: 'monthly', label: 'Monthly' },
-];
-
-const timeGroups = [
-  { key: 'morning', label: 'Morning', Icon: Sunrise },
-  { key: 'afternoon', label: 'Afternoon', Icon: Sun },
-  { key: 'evening', label: 'Evening', Icon: Sunset },
-  { key: 'anytime', label: 'Anytime', Icon: Clock },
-];
 
 function getTimeGroup(schedule) {
   if (!schedule.start_time) return 'anytime';
@@ -26,7 +13,22 @@ function getTimeGroup(schedule) {
 }
 
 export default function ScheduleListView({ schedules, isLoading, onComplete, onUncomplete, onDelete, onEdit }) {
+  const { t } = useTranslation(['schedules', 'common']);
   const [typeFilter, setTypeFilter] = useState('');
+
+  const typeOptions = [
+    { value: '', label: t('schedules:listView.allTypes') },
+    { value: 'daily', label: t('schedules:type.daily') },
+    { value: 'weekly', label: t('schedules:type.weekly') },
+    { value: 'monthly', label: t('schedules:type.monthly') },
+  ];
+
+  const timeGroups = [
+    { key: 'morning', label: t('schedules:listView.morning'), Icon: Sunrise },
+    { key: 'afternoon', label: t('schedules:listView.afternoon'), Icon: Sun },
+    { key: 'evening', label: t('schedules:listView.evening'), Icon: Sunset },
+    { key: 'anytime', label: t('schedules:listView.anytime'), Icon: Clock },
+  ];
 
   const filtered = typeFilter
     ? schedules?.filter((s) => s.type === typeFilter)
@@ -85,7 +87,7 @@ export default function ScheduleListView({ schedules, isLoading, onComplete, onU
       ) : !hasItems ? (
         <div className="schedule-list-empty">
           <Calendar style={{ width: '3rem', height: '3rem', opacity: 0.4 }} />
-          <p>No schedules yet</p>
+          <p>{t('schedules:listView.noSchedules')}</p>
         </div>
       ) : (
         <div className="schedule-timeline">

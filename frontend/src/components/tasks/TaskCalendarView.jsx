@@ -1,9 +1,10 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Loader2, CheckCircle2 } from 'lucide-react';
 import TaskItem from './TaskItem';
 import '../../styles/components/tasks/TaskComponents.css';
 
-const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const dayKeyMap = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 const formatDate = (d) => {
   const y = d.getFullYear();
@@ -13,6 +14,9 @@ const formatDate = (d) => {
 };
 
 export default function TaskCalendarView({ tasks, isLoading, onComplete, onUncomplete, onDelete }) {
+  const { t, i18n } = useTranslation(['tasks', 'common']);
+  const locale = i18n.language === 'id' ? 'id-ID' : 'en-US';
+
   const todayStr = formatDate(new Date());
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(todayStr);
@@ -62,14 +66,14 @@ export default function TaskCalendarView({ tasks, isLoading, onComplete, onUncom
     setSelectedDate(todayStr);
   };
 
-  const monthLabel = currentDate.toLocaleDateString('en-US', {
+  const monthLabel = currentDate.toLocaleDateString(locale, {
     month: 'long',
     year: 'numeric',
   });
 
   const selectedTasks = selectedDate ? (tasksByDate[selectedDate] || []) : [];
   const selectedDateLabel = selectedDate
-    ? new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
+    ? new Date(selectedDate + 'T00:00:00').toLocaleDateString(locale, {
         weekday: 'long',
         month: 'long',
         day: 'numeric',
@@ -90,14 +94,14 @@ export default function TaskCalendarView({ tasks, isLoading, onComplete, onUncom
       <div className="task-list-panel">
         <h4 className="task-list-title">{selectedDateLabel}</h4>
         <p className="task-list-count">
-          {selectedTasks.length} task{selectedTasks.length !== 1 ? 's' : ''}
+          {t('tasks:calendarView.taskCount', { count: selectedTasks.length })}
         </p>
 
         <div className="task-list-container">
           {selectedTasks.length === 0 ? (
             <div className="task-list-empty">
               <CheckCircle2 style={{ width: '2.5rem', height: '2.5rem', margin: '0 auto 0.5rem', opacity: '0.4' }} />
-              <p>No tasks for this day</p>
+              <p>{t('tasks:calendarView.noTasksForDay')}</p>
             </div>
           ) : (
             selectedTasks.map((task) => (
@@ -120,7 +124,7 @@ export default function TaskCalendarView({ tasks, isLoading, onComplete, onUncom
           <h3 className="task-calendar-month">{monthLabel}</h3>
           <div className="task-calendar-nav">
             <button onClick={goToday} className="task-today-btn">
-              Today
+              {t('common:today')}
             </button>
             <button onClick={prevMonth} className="task-nav-btn">
               <ChevronLeft style={{ width: '1rem', height: '1rem' }} />
@@ -133,9 +137,9 @@ export default function TaskCalendarView({ tasks, isLoading, onComplete, onUncom
 
         {/* Day headers */}
         <div className="task-calendar-days-header">
-          {dayNames.map((d) => (
+          {dayKeyMap.map((d) => (
             <div key={d} className="task-day-name">
-              {d}
+              {t(`common:days.${d}`)}
             </div>
           ))}
         </div>

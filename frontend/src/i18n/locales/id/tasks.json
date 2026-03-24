@@ -1,0 +1,90 @@
+{
+  "pageTitle": "Tugas",
+  "pageSubtitle": "Kelola tugas dan dapatkan EXP",
+  "forest": "Hutan",
+  "newTask": "Tugas Baru",
+
+  "createForm": {
+    "normalTask": "Tugas Normal",
+    "quizTask": "Tugas Kuis",
+    "titleLabel": "Judul",
+    "titlePlaceholder": "Apa yang perlu dikerjakan?",
+    "descriptionLabel": "Deskripsi (opsional)",
+    "descriptionPlaceholder": "Tambahkan detail...",
+    "priorityLabel": "Prioritas",
+    "dueDateLabel": "Tenggat Waktu (opsional)",
+    "studyMaterialLabel": "Materi Belajar",
+    "studyMaterialHint": "Tempel catatan belajar atau unggah file (.txt, .md, .pdf, .docx, .pptx). Poin-poin penting akan diekstrak dan kuis dibuat secara otomatis.",
+    "questionCountLabel": "Jumlah Pertanyaan: <strong>{{count}}</strong>",
+    "materialPlaceholder": "Tempel materi belajar di sini...",
+    "uploadFile": "Unggah File",
+    "readingFile": "Membaca file...",
+    "createTask": "Buat Tugas",
+    "generatingQuiz": "Membuat Kuis\u2026",
+    "extractingKeyPoints": "Mengekstrak poin penting...",
+    "generatingQuestions": "Membuat pertanyaan kuis...",
+    "savingTask": "Menyimpan tugas...",
+    "errorNoMaterial": "Harap berikan materi belajar untuk kuis.",
+    "errorFileParse": "Gagal membaca file.",
+    "errorQuizGeneration": "Gagal membuat kuis. Silakan periksa materi Anda dan coba lagi."
+  },
+
+  "item": {
+    "completeQuizFirst": "Selesaikan kuis terlebih dahulu",
+    "quizBadge": "Kuis",
+    "quizTaskBadge": "Tugas Kuis",
+    "expReward": "+{{exp}} EXP",
+    "bonusLog": "+{{count}} Log",
+    "quizGateHint": "Selesaikan kuis untuk membuka tugas ini",
+    "flashcardToggle": "Aktifkan mode ulasan kartu",
+    "cards": "Kartu",
+    "retake": "Ulangi",
+    "retakeQuiz": "Ulangi Kuis",
+    "takeQuiz": "Mulai Kuis"
+  },
+
+  "listView": {
+    "noTasksFound": "Tidak ada tugas ditemukan",
+    "pageOf": "Halaman {{current}} dari {{last}}"
+  },
+
+  "boardView": {
+    "dropHere": "Taruh di sini",
+    "noTasks": "Tidak ada tugas"
+  },
+
+  "calendarView": {
+    "taskCount": "{{count}} tugas",
+    "taskCount_other": "{{count}} tugas",
+    "noTasksForDay": "Tidak ada tugas untuk hari ini"
+  },
+
+  "quiz": {
+    "flashcards": "Kartu Flash",
+    "challengeQuiz": "Kuis Tantangan",
+    "questionOf": "{{current}} dari {{total}}",
+    "loadingFlashcards": "Memuat kartu flash...",
+    "loadingQuiz": "Memuat pertanyaan kuis...",
+    "failedLoadFlashcards": "Gagal memuat kartu flash",
+    "failedLoadQuiz": "Gagal memuat kuis",
+    "errorText": "Terjadi kesalahan. Silakan coba lagi nanti.",
+    "cardNumber": "Kartu {{number}}",
+    "questionLabel": "Pertanyaan",
+    "answerLabel": "Jawaban",
+    "tapToFlip": "Ketuk untuk membalik",
+    "tapToFlipBack": "Ketuk untuk membalik kembali",
+    "flip": "Balik",
+    "skip": "Lewati",
+    "skipped": "Dilewati",
+    "correct": "Benar!",
+    "incorrect": "Salah",
+    "questionNumber": "Pertanyaan {{number}}",
+    "seeResults": "Lihat Hasil",
+    "excellentWork": "Kerja Luar Biasa!",
+    "goodEffort": "Usaha Bagus!",
+    "keepPracticing": "Terus Berlatih!",
+    "scoreText": "Kamu menjawab {{correct}} dari {{total}} pertanyaan dengan benar.",
+    "logEarned": "+{{count}} Log Diperoleh",
+    "scoreOf": "dari {{total}}"
+  }
+}

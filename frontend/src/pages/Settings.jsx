@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Moon, Sun, Map, LayoutGrid } from 'lucide-react';
+import { ChevronLeft, Moon, Sun, Map, LayoutGrid, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useDashboardUI } from '../contexts/DashboardUIContext';
@@ -9,11 +10,13 @@ import '../styles/pages/Settings.css';
 
 export default function Settings() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation(['settings', 'common']);
   const { dashboardMode, setDashboardMode } = useDashboardUI();
   const { theme, toggleTheme } = useTheme();
   const contentRef = React.useRef(null);
   
   const isDarkMode = theme === 'dark';
+  const currentLang = i18n.language;
 
   // Animate on mount
   useGSAP(
@@ -50,6 +53,10 @@ export default function Settings() {
     });
   };
 
+  const handleLanguageChange = (lang) => {
+    i18n.changeLanguage(lang);
+  };
+
   return (
     <div className="settings-page">
       <div ref={contentRef} className="settings-container">
@@ -58,21 +65,47 @@ export default function Settings() {
           <button
             className="settings-back-btn"
             onClick={handleBackClick}
-            aria-label="Go back"
+            aria-label={t('settings:goBack')}
           >
             <ChevronLeft size={24} />
           </button>
-          <h1 className="settings-title">Settings</h1>
+          <h1 className="settings-title">{t('settings:pageTitle')}</h1>
           <div className="settings-spacer"></div>
         </header>
 
         {/* Settings Sections */}
         <main className="settings-main">
+          {/* Language Switcher */}
+          <section className="settings-section">
+            <div className="section-title-row">
+              <Globe size={18} className="section-title-icon" />
+              <h2 className="section-title">{t('settings:language.title')}</h2>
+            </div>
+            <p className="section-description">
+              {t('settings:language.description')}
+            </p>
+
+            <div className="language-switcher">
+              <button
+                className={`language-btn ${currentLang === 'id' ? 'language-btn--active' : ''}`}
+                onClick={() => handleLanguageChange('id')}
+              >
+                {t('settings:language.indonesian')}
+              </button>
+              <button
+                className={`language-btn ${currentLang === 'en' ? 'language-btn--active' : ''}`}
+                onClick={() => handleLanguageChange('en')}
+              >
+                {t('settings:language.english')}
+              </button>
+            </div>
+          </section>
+
           {/* Dashboard Display Mode */}
           <section className="settings-section">
-            <h2 className="section-title">Dashboard Display</h2>
+            <h2 className="section-title">{t('settings:dashboardDisplay.title')}</h2>
             <p className="section-description">
-              Choose how you want to view your dashboard
+              {t('settings:dashboardDisplay.description')}
             </p>
 
             <div className="settings-options">
@@ -89,10 +122,10 @@ export default function Settings() {
                 <div className="option-content">
                   <div className="option-header">
                     <Map size={20} className="option-icon" />
-                    <span className="option-title">Archipelago Map</span>
+                    <span className="option-title">{t('settings:dashboardDisplay.mapTitle')}</span>
                   </div>
                   <p className="option-description">
-                    Explore your dashboard as an interactive island map with pan/zoom controls
+                    {t('settings:dashboardDisplay.mapDescription')}
                   </p>
                 </div>
                 <div className="option-checkmark"></div>
@@ -111,10 +144,10 @@ export default function Settings() {
                 <div className="option-content">
                   <div className="option-header">
                     <LayoutGrid size={20} className="option-icon" />
-                    <span className="option-title">Simplified Dashboard</span>
+                    <span className="option-title">{t('settings:dashboardDisplay.simplifiedTitle')}</span>
                   </div>
                   <p className="option-description">
-                    View your progress and quick actions in a clean card-based layout
+                    {t('settings:dashboardDisplay.simplifiedDescription')}
                   </p>
                 </div>
                 <div className="option-checkmark"></div>
@@ -122,17 +155,19 @@ export default function Settings() {
             </div>
 
             <div className="mode-note">
-              <p>
-                💡 <strong>Note:</strong> On mobile devices, the simplified dashboard is always used for better usability.
-              </p>
+              <p
+                dangerouslySetInnerHTML={{
+                  __html: `💡 ${t('settings:dashboardDisplay.mobileNote')}`,
+                }}
+              />
             </div>
           </section>
 
           {/* Theme Settings */}
           <section className="settings-section">
-            <h2 className="section-title">Appearance</h2>
+            <h2 className="section-title">{t('settings:appearance.title')}</h2>
             <p className="section-description">
-              Customize how the interface looks
+              {t('settings:appearance.description')}
             </p>
 
             <label className="settings-toggle">
@@ -150,26 +185,26 @@ export default function Settings() {
                   <Sun size={14} className="toggle-icon" />
                 )}
               </div>
-              <span className="toggle-label">Dark Mode</span>
+              <span className="toggle-label">{t('settings:appearance.darkMode')}</span>
             </label>
           </section>
 
           {/* About */}
           <section className="settings-section">
-            <h2 className="section-title">About</h2>
+            <h2 className="section-title">{t('settings:about.title')}</h2>
             <div className="about-content">
               <p>
-                <strong>Mentra Dashboard v1.0</strong>
+                <strong>{t('settings:about.appName')}</strong>
               </p>
-              <p>An intelligent productivity and learning companion.</p>
-              <p className="version-info">Version 1.0.0</p>
+              <p>{t('settings:about.appDescription')}</p>
+              <p className="version-info">{t('settings:about.version')}</p>
             </div>
           </section>
         </main>
 
         {/* Footer */}
         <footer className="settings-footer">
-          <p>© 2025 Mentra. All rights reserved.</p>
+          <p>{t('settings:footer.copyright')}</p>
         </footer>
       </div>
     </div>

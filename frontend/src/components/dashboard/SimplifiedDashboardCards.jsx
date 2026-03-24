@@ -1,63 +1,67 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Plus, Flame, Clock, TreePine, Play } from 'lucide-react';
 import '../../styles/components/dashboard/SimplifiedDashboardCards.css';
 
 export function TasksCard({ tasksData = {} }) {
+  const { t } = useTranslation(['dashboard', 'common']);
   const { active = 3, overdue = 1, completed = 12 } = tasksData;
   
   return (
     <div className="dashboard-card tasks-card">
-      <h3 className="card-title">Today's Tasks</h3>
+      <h3 className="card-title">{t('dashboard:cards.todaysTasks')}</h3>
       <div className="card-content">
         <div className="stat-row">
-          <span className="stat-label">Active:</span>
+          <span className="stat-label">{t('dashboard:cards.active')}:</span>
           <span className="stat-value">{active}</span>
         </div>
         <div className="stat-row">
-          <span className="stat-label">Overdue:</span>
+          <span className="stat-label">{t('dashboard:cards.overdue')}:</span>
           <span className="stat-value danger">{overdue}</span>
         </div>
         <div className="stat-row">
-          <span className="stat-label">Completed:</span>
+          <span className="stat-label">{t('dashboard:cards.completed')}:</span>
           <span className="stat-value success">{completed}</span>
         </div>
       </div>
       <button className="card-action-btn">
-        <Plus size={18} /> Add Task
+        <Plus size={18} /> {t('dashboard:cards.addTask')}
       </button>
     </div>
   );
 }
 
 export function PomodoroStatsCard({ pomodoroData = {} }) {
+  const { t } = useTranslation(['dashboard', 'common']);
   const { sessionsToday = 5, streak = 7 } = pomodoroData;
   
   return (
     <div className="dashboard-card pomodoro-card">
-      <h3 className="card-title">Pomodoro Stats</h3>
+      <h3 className="card-title">{t('dashboard:cards.pomodoroStats')}</h3>
       <div className="card-content">
         <div className="stat-row">
-          <span className="stat-label">Today:</span>
-          <span className="stat-value">{sessionsToday} sessions</span>
+          <span className="stat-label">{t('dashboard:cards.today')}:</span>
+          <span className="stat-value">{t('dashboard:cards.sessions', { count: sessionsToday })}</span>
         </div>
         <div className="stat-row">
-          <span className="stat-label">Streak:</span>
-          <span className="stat-value"><Flame size={16} /> {streak} days</span>
+          <span className="stat-label">{t('dashboard:cards.streak')}:</span>
+          <span className="stat-value"><Flame size={16} /> {t('dashboard:cards.days', { count: streak })}</span>
         </div>
       </div>
       <button className="card-action-btn">
-        <Play size={18} /> Start Pomodoro
+        <Play size={18} /> {t('dashboard:pomodoro.startPomodoro')}
       </button>
     </div>
   );
 }
 
 export function SchedulePreviewCard({ scheduleData = {} }) {
+  const { t } = useTranslation(['dashboard', 'common']);
   const { events = [] } = scheduleData;
   
   return (
     <div className="dashboard-card schedule-card">
-      <h3 className="card-title">Today's Schedule</h3>
+      <h3 className="card-title">{t('dashboard:schedule.todaysSchedule')}</h3>
       <div className="card-content">
         {events.length > 0 ? (
           <div className="events-list">
@@ -72,7 +76,7 @@ export function SchedulePreviewCard({ scheduleData = {} }) {
             ))}
           </div>
         ) : (
-          <p className="empty-state">No events today</p>
+          <p className="empty-state">{t('dashboard:schedule.noEventsToday')}</p>
         )}
       </div>
     </div>
@@ -80,19 +84,20 @@ export function SchedulePreviewCard({ scheduleData = {} }) {
 }
 
 export function WeeklySummaryCard({ summaryData = {} }) {
+  const { t } = useTranslation(['dashboard', 'common']);
   const { completedThisWeek = 34, dailyBreakdown = [5, 6, 8, 7, 4, 3, 1] } = summaryData;
   
   return (
     <div className="dashboard-card summary-card">
-      <h3 className="card-title">Weekly Summary</h3>
+      <h3 className="card-title">{t('dashboard:cards.weeklySummary')}</h3>
       <div className="card-content">
         <div className="summary-stat">
-          <span className="summary-label">Completed this week:</span>
-          <span className="summary-value">{completedThisWeek} tasks</span>
+          <span className="summary-label">{t('dashboard:cards.completedThisWeek')}:</span>
+          <span className="summary-value">{t('dashboard:cards.tasks', { count: completedThisWeek })}</span>
         </div>
         <div className="daily-breakdown">
           {dailyBreakdown.map((count, idx) => (
-            <div key={idx} className="day-bar" style={{ height: `${(count / 10) * 100}%` }} title={`Day ${idx + 1}: ${count}`} />
+            <div key={idx} className="day-bar" style={{ height: `${(count / 10) * 100}%` }} title={t('dashboard:cards.dayCount', { number: idx + 1, count })} />
           ))}
         </div>
       </div>
@@ -101,16 +106,17 @@ export function WeeklySummaryCard({ summaryData = {} }) {
 }
 
 export function ForestHealthCard({ forestData = {} }) {
+  const { t } = useTranslation(['dashboard', 'common']);
   const { level = 3, health = 85 } = forestData;
   
   return (
     <div className="dashboard-card forest-card">
-      <h3 className="card-title">Forest Health</h3>
+      <h3 className="card-title">{t('dashboard:cards.forestHealth')}</h3>
       <div className="card-content">
         <div className="forest-status">
           <TreePine size={48} />
           <div className="tree-info">
-            <div className="tree-level">Level {level}</div>
+            <div className="tree-level">{t('dashboard:level.level')} {level}</div>
             <div className="tree-health">
               <div className="health-bar">
                 <div className="health-fill" style={{ width: `${health}%` }} />
@@ -121,28 +127,29 @@ export function ForestHealthCard({ forestData = {} }) {
         </div>
       </div>
       <button className="card-action-btn">
-        <span>🌊</span> Water Tree
+        <span>🌊</span> {t('dashboard:cards.waterTree')}
       </button>
     </div>
   );
 }
 
 export function QuickActionsCard() {
+  const { t } = useTranslation(['dashboard', 'common']);
   return (
     <div className="dashboard-card quick-actions-card">
-      <h3 className="card-title">Quick Actions</h3>
+      <h3 className="card-title">{t('dashboard:cards.quickActions')}</h3>
       <div className="card-content quick-actions-grid">
         <button className="quick-action-btn pomodoro-btn">
-          <Play size={20} /> Pomodoro
+          <Play size={20} /> {t('common:nav.pomodoro')}
         </button>
         <button className="quick-action-btn task-btn">
-          <Plus size={20} /> Task
+          <Plus size={20} /> {t('common:nav.tasks')}
         </button>
         <button className="quick-action-btn schedule-btn">
-          <Clock size={20} /> Schedule
+          <Clock size={20} /> {t('common:nav.schedules')}
         </button>
         <button className="quick-action-btn forest-btn">
-          <TreePine size={20} /> Forest
+          <TreePine size={20} /> {t('common:nav.forest')}
         </button>
       </div>
     </div>
@@ -150,16 +157,17 @@ export function QuickActionsCard() {
 }
 
 export function ExperienceProgressCard({ level = 12, currentExp = 3200, maxExp = 5000, nextLevelExp = 5000 }) {
+  const { t } = useTranslation(['dashboard', 'common']);
   const percentage = (currentExp / maxExp) * 100;
   const expToNextLevel = maxExp - currentExp;
   
   return (
     <div className="dashboard-card experience-card">
-      <h3 className="card-title">Your Progress</h3>
+      <h3 className="card-title">{t('dashboard:cards.yourProgress')}</h3>
       <div className="card-content">
         <div className="level-display">
-          <div className="level-badge">Lvl {level}</div>
-          <div className="exp-text">{currentExp.toLocaleString()} / {maxExp.toLocaleString()} XP</div>
+          <div className="level-badge">{t('dashboard:level.lvl')} {level}</div>
+          <div className="exp-text">{currentExp.toLocaleString()} / {maxExp.toLocaleString()} {t('common:xp')}</div>
         </div>
         
         <div className="exp-progress-container">
@@ -170,12 +178,12 @@ export function ExperienceProgressCard({ level = 12, currentExp = 3200, maxExp =
         </div>
         
         <div className="exp-info">
-          <span className="exp-label">To Next Level:</span>
-          <span className="exp-value">{expToNextLevel.toLocaleString()} XP</span>
+          <span className="exp-label">{t('dashboard:level.toNextLevel')}:</span>
+          <span className="exp-value">{expToNextLevel.toLocaleString()} {t('common:xp')}</span>
         </div>
       </div>
       <button className="card-action-btn exp-btn">
-        <span>⭐</span> Earn More XP
+        <span>⭐</span> {t('dashboard:cards.earnMoreXP')}
       </button>
     </div>
   );

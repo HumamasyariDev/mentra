@@ -1,0 +1,38 @@
+{
+  "pageTitle": "Settings",
+  "goBack": "Go back",
+
+  "language": {
+    "title": "Language",
+    "description": "Choose display language",
+    "indonesian": "Bahasa Indonesia",
+    "english": "English"
+  },
+
+  "dashboardDisplay": {
+    "title": "Dashboard Display",
+    "description": "Choose how you want to view your dashboard",
+    "mapTitle": "Archipelago Map",
+    "mapDescription": "Explore your dashboard as an interactive island map with pan/zoom controls",
+    "simplifiedTitle": "Simplified Dashboard",
+    "simplifiedDescription": "View your progress and quick actions in a clean card-based layout",
+    "mobileNote": "<strong>Note:</strong> On mobile devices, the simplified dashboard is always used for better usability."
+  },
+
+  "appearance": {
+    "title": "Appearance",
+    "description": "Customize how the interface looks",
+    "darkMode": "Dark Mode"
+  },
+
+  "about": {
+    "title": "About",
+    "appName": "Mentra Dashboard v1.0",
+    "appDescription": "An intelligent productivity and learning companion.",
+    "version": "Version 1.0.0"
+  },
+
+  "footer": {
+    "copyright": "© 2025 Mentra. All rights reserved."
+  }
+}

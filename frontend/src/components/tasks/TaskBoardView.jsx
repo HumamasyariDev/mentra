@@ -1,15 +1,23 @@
 import { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import TaskItem from './TaskItem';
 import '../../styles/components/tasks/TaskComponents.css';
 
-const columns = [
-  { key: 'pending', label: 'Pending', color: '#94a3b8', accent: '#475569' },
-  { key: 'in_progress', label: 'In Progress', color: '#60a5fa', accent: '#2563eb' },
-  { key: 'completed', label: 'Completed', color: '#34d399', accent: '#059669' },
+const columnKeys = [
+  { key: 'pending', color: '#94a3b8', accent: '#475569' },
+  { key: 'in_progress', color: '#60a5fa', accent: '#2563eb' },
+  { key: 'completed', color: '#34d399', accent: '#059669' },
 ];
 
+const statusLabelMap = {
+  pending: 'status.pending',
+  in_progress: 'status.inProgress',
+  completed: 'status.completed',
+};
+
 export default function TaskBoardView({ tasks, isLoading, onComplete, onUncomplete, onDelete, onUpdateStatus }) {
+  const { t } = useTranslation(['tasks', 'common']);
   const [dragOverCol, setDragOverCol] = useState(null);
   const cardRefs = useRef({});
 
@@ -53,7 +61,7 @@ export default function TaskBoardView({ tasks, isLoading, onComplete, onUncomple
 
   return (
     <div className="task-board-grid">
-      {columns.map((col) => {
+      {columnKeys.map((col) => {
         const colTasks = tasks?.filter((t) => t.status === col.key) || [];
         const isDragOver = dragOverCol === col.key;
 
@@ -68,7 +76,7 @@ export default function TaskBoardView({ tasks, isLoading, onComplete, onUncomple
             {/* Column header */}
             <div className="task-board-col-header">
               <span className="task-board-col-indicator" style={{ background: col.color }} />
-              <h3 className="task-board-col-title">{col.label}</h3>
+              <h3 className="task-board-col-title">{t(`common:${statusLabelMap[col.key]}`)}</h3>
               <span className="task-board-col-count">{colTasks.length}</span>
             </div>
 
@@ -76,7 +84,7 @@ export default function TaskBoardView({ tasks, isLoading, onComplete, onUncomple
             <div className="task-board-col-body">
               {colTasks.length === 0 ? (
                 <div className={`task-board-empty ${isDragOver ? 'drop-active' : ''}`}>
-                  {isDragOver ? 'Drop here' : 'No tasks'}
+                  {isDragOver ? t('tasks:boardView.dropHere') : t('tasks:boardView.noTasks')}
                 </div>
               ) : (
                 colTasks.map((task) => (

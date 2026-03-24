@@ -1,0 +1,26 @@
+{
+  "sidebarTitle": "Chat Sessions",
+  "newChat": "New Chat",
+  "sessionsLoading": "Loading...",
+  "sessionsEmpty": "No chat sessions yet",
+  "sessionsEmptyHint": "Click \"New Chat\" to get started",
+  "pageTitle": "Mentra AI",
+  "pageSubtitle": "Productivity Assistant",
+  "statusOnline": "Online",
+  "statusOffline": "Offline",
+  "puterWarning": "Puter.js not detected. Make sure you're logged in at puter.com.",
+  "inputPlaceholder": "Type a message...",
+  "deleteSessionConfirm": "Delete this chat session?",
+  "viewTasks": "View in Tasks page",
+  "statusThinking": "Thinking...",
+  "statusSavingTask": "Saving task to database...",
+  "statusSearching": "Searching knowledge base...",
+  "statusSummarizing": "Summarizing search results...",
+  "quickPrompts": {
+    "createTask": "Create Task",
+    "pomodoro": "Pomodoro",
+    "smartGoal": "SMART Goal",
+    "focusTips": "Focus Tips",
+    "deepWork": "Deep Work"
+  }
+}

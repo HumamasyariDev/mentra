@@ -253,6 +253,62 @@
   color: var(--text-primary);
 }
 
+/* Section Title Row (with icon) */
+.section-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.section-title-row .section-title {
+  margin-bottom: 0;
+}
+
+.section-title-icon {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* Language Switcher */
+.language-switcher {
+  display: flex;
+  gap: 8px;
+}
+
+.language-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: 2px solid var(--border-default);
+  border-radius: 8px;
+  background: var(--bg-inset);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.language-btn:hover {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--text-primary);
+}
+
+.language-btn--active {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: 0 0 8px var(--accent-bg);
+}
+
+.language-btn--active:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 /* About Section */
 .about-content {
   display: flex;
@@ -326,5 +382,10 @@
 
   .option-description {
     font-size: 11px;
+  }
+
+  .language-btn {
+    padding: 8px 12px;
+    font-size: 13px;
   }
 }

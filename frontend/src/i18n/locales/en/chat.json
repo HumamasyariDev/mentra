@@ -1,0 +1,21 @@
+{
+  "pageTitle": "Chat",
+  "pageSubtitle": "Mentra AI Assistant",
+  "clear": "Clear",
+  "emptyTitle": "Start a conversation",
+  "emptySubtitle": "Ask anything about productivity, focus techniques, or task management.",
+  "suggestions": "Suggestions",
+  "inputPlaceholder": "Type a message...",
+  "aiFallback": "Sorry, couldn't read AI response.",
+  "aiError": "Sorry, the AI system is busy. Try again later.",
+  "quickActions": {
+    "sayHi": "Say Hi",
+    "sayHiMessage": "Hi! What can you help me with?",
+    "productivityTips": "Productivity Tips",
+    "productivityTipsMessage": "Give me your best productivity tips!",
+    "pomodoroTechnique": "Pomodoro Technique",
+    "pomodoroTechniqueMessage": "Explain the Pomodoro technique",
+    "motivation": "Motivation",
+    "motivationMessage": "I need motivation to stay focused today."
+  }
+}

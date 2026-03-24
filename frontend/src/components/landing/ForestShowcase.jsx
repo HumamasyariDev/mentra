@@ -2,19 +2,13 @@ import { useRef, useMemo } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
-// Tree growth stages — same assets as the app's forest
-import pineSeed from '../../assets/pine_purple/pine_purple_seed.png';
-import pineStage1 from '../../assets/pine_purple/pine_purple_stage_1.png';
-import pineStage2 from '../../assets/pine_purple/pine_purple_stage_2.png';
-import pineStage3 from '../../assets/pine_purple/pine_purple_stage_3.png';
-import pineStage4 from '../../assets/pine_purple/pine_purple_stage_4.png';
+// Only the full-grown tree
 import pineFinal from '../../assets/pine_purple/pine_purple_stage_final.png';
 
 gsap.registerPlugin(ScrollTrigger);
-
-const TREE_STAGES = [pineSeed, pineStage1, pineStage2, pineStage3, pineStage4, pineFinal];
 
 /**
  * Planetary-curve tree layout — mirrors the app's Forest.jsx algorithm.
@@ -28,43 +22,39 @@ function getTreeLayout(index, total) {
 
   // Golden ratio for even horizontal distribution
   let nx = ((index * 0.618033988749895) % 1) * 2 - 1;
-  nx += Math.sin(seed) * 0.12;
+  nx += Math.sin(seed) * 0.15;
 
-  // Spread: narrow at horizon (40%), wide at foreground (110%)
-  const maxSpread = 38 + Math.pow(depthProgress, 1.2) * 55;
+  // Spread: narrow at horizon, wide at foreground (matches Forest.jsx)
+  const maxSpread = 40 + Math.pow(depthProgress, 1.2) * 60;
   const leftPercent = 50 + nx * maxSpread;
 
-  // Planetary curve: horizon ~52%, drops to -8% at foreground
-  const baseBottom = 52 - depthProgress * 60;
-  const domeDrop = (nx * nx) * 16;
+  // Planetary curve: horizon ~55%, drops to -10% at foreground
+  const baseBottom = 55 - depthProgress * 65;
+  const domeDrop = (nx * nx) * 18;
   let bottomPercent = baseBottom - domeDrop;
-  bottomPercent += Math.sin(seed * 2) * 2;
+  bottomPercent += Math.sin(seed * 2) * 2.5;
 
-  // Scale: small at horizon, large at foreground
-  let scale = 0.3 + ((52 - bottomPercent) / 60) * 1.2;
-  scale *= 0.85 + Math.abs(Math.sin(seed * 3)) * 0.3;
+  // Scale: small at horizon, large at foreground (matches Forest.jsx values)
+  let scale = 0.35 + ((55 - bottomPercent) / 65) * 1.45;
+  scale *= 0.85 + Math.abs(Math.sin(seed * 3)) * 0.35;
 
-  const opacity = Math.min(1, 0.45 + depthProgress * 0.55);
-
-  // Stage: mostly mature trees but sprinkle in growth stages
-  // Front trees (higher depthProgress) tend to be more mature
-  const stageIndex = Math.min(5, Math.floor(depthProgress * 4.5 + Math.abs(Math.sin(seed * 4)) * 1.5));
+  const opacity = Math.min(1, 0.5 + depthProgress * 0.5);
 
   return {
     left: `${leftPercent}%`,
     bottom: `${bottomPercent}%`,
-    scale: Math.max(0.2, scale),
+    scale: Math.max(0.25, scale),
     opacity,
     zIndex: Math.round(1000 - bottomPercent * 10),
-    stageIndex,
   };
 }
 
-const TREE_COUNT = 28;
+const TREE_COUNT = 45;
 
 export default function ForestShowcase() {
   const sectionRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation(['landing']);
 
   // Pre-compute tree layout
   const trees = useMemo(() =>
@@ -158,10 +148,10 @@ export default function ForestShowcase() {
         {/* Text overlay */}
         <div className="forest-showcase-text">
           <h2 className="forest-showcase-title landing-section-heading">
-            Watch Your Forest Grow
+            {t('landing:forest.title')}
           </h2>
           <p className="forest-showcase-subtitle">
-            Every task you complete grows your personal forest. From tiny seeds to towering trees.
+            {t('landing:forest.subtitle')}
           </p>
         </div>
 
@@ -177,16 +167,16 @@ export default function ForestShowcase() {
                 bottom: tree.bottom,
                 zIndex: tree.zIndex,
                 opacity: tree.opacity,
-                transform: `scale(${tree.scale})`,
                 transformOrigin: 'bottom center',
               }}
             >
               <img
-                src={TREE_STAGES[tree.stageIndex]}
+                src={pineFinal}
                 alt=""
                 draggable={false}
                 loading="lazy"
                 decoding="async"
+                style={{ transform: `scale(${tree.scale})`, transformOrigin: 'bottom center' }}
               />
             </div>
           ))}

@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Circle, Trash2, Clock, Zap, Lock, BookOpen } from 'lucide-react';
 import { quizApi } from '../../services/api';
 import QuizModal from './QuizModal';
@@ -11,6 +12,7 @@ const priorityColors = {
 };
 
 export default function TaskItem({ task, onComplete, onUncomplete, onDelete, compact = false }) {
+  const { t, i18n } = useTranslation(['tasks', 'common']);
   const isCompleted = task.status === 'completed';
   const isQuizTask = task.type === 'quiz';
   const isBurned = (task.exp_logs_count ?? 0) > 0;
@@ -68,7 +70,7 @@ export default function TaskItem({ task, onComplete, onUncomplete, onDelete, com
       await quizApi.attempt(task.id, correctCount, totalCount, answersMap);
       setJustAttempted(true);
       if (correctCount > 0) {
-        setBonusMsg(`+${correctCount} Log`);
+        setBonusMsg(t('tasks:item.bonusLog', { count: correctCount }));
         setTimeout(() => setBonusMsg(''), 3000);
       }
     } catch (err) {
@@ -92,7 +94,7 @@ export default function TaskItem({ task, onComplete, onUncomplete, onDelete, com
         </span>
         {isQuizTask && (
           <span className="task-item-quiz-badge-compact">
-            <Zap style={{ width: '0.625rem', height: '0.625rem' }} /> Quiz
+            <Zap style={{ width: '0.625rem', height: '0.625rem' }} /> {t('tasks:item.quizBadge')}
           </span>
         )}
         <span className={`task-item-priority-badge ${priorityColors[task.priority]}`}>
@@ -110,7 +112,7 @@ export default function TaskItem({ task, onComplete, onUncomplete, onDelete, com
           onClick={handleToggle}
           className="task-item-toggle-btn-full"
           disabled={quizLocked && !justAttempted}
-          title={quizLocked && !justAttempted ? 'Complete the quiz first' : undefined}
+          title={quizLocked && !justAttempted ? t('tasks:item.completeQuizFirst') : undefined}
         >
           {isCompleted ? (
             <CheckCircle2 className="task-item-icon-full completed" />
@@ -130,20 +132,20 @@ export default function TaskItem({ task, onComplete, onUncomplete, onDelete, com
           )}
           <div className="task-item-meta">
             <span className={`task-item-priority-badge ${priorityColors[task.priority]}`}>
-              {task.priority}
+              {t(`common:priority.${task.priority}`)}
             </span>
             {isQuizTask && (
               <span className="task-item-type-badge quiz">
-                <Zap style={{ width: '0.75rem', height: '0.75rem' }} /> Quiz Task
+                <Zap style={{ width: '0.75rem', height: '0.75rem' }} /> {t('tasks:item.quizTaskBadge')}
               </span>
             )}
             {task.due_date && (
               <span className="task-item-meta-item">
                 <Clock className="task-item-meta-icon" />
-                {new Date(task.due_date).toLocaleDateString()}
+                {new Date(task.due_date).toLocaleDateString(i18n.language === 'id' ? 'id-ID' : 'en-US')}
               </span>
             )}
-            <span className="task-item-exp-badge">+{task.exp_reward} EXP</span>
+            <span className="task-item-exp-badge">{t('tasks:item.expReward', { exp: task.exp_reward })}</span>
 
             {bonusMsg && (
               <span className="task-item-bonus-msg">
@@ -154,7 +156,7 @@ export default function TaskItem({ task, onComplete, onUncomplete, onDelete, com
 
           {/* Quiz gate hint */}
           {quizLocked && !justAttempted && (
-            <p className="task-item-quiz-hint">Complete the quiz to unlock this task</p>
+            <p className="task-item-quiz-hint">{t('tasks:item.quizGateHint')}</p>
           )}
         </div>
 
@@ -163,23 +165,23 @@ export default function TaskItem({ task, onComplete, onUncomplete, onDelete, com
           {isQuizTask && (
             <>
               {(hasQuizAttempt || justAttempted) && (
-                <label className="task-item-flashcard-toggle" title="Enable flashcard review mode">
+                <label className="task-item-flashcard-toggle" title={t('tasks:item.flashcardToggle')}>
                   <input
                     type="checkbox"
                     checked={flashcardMode}
                     onChange={(e) => setFlashcardMode(e.target.checked)}
                   />
                   <BookOpen style={{ width: '0.75rem', height: '0.75rem' }} />
-                  Cards
+                  {t('tasks:item.cards')}
                 </label>
               )}
               <button
                 onClick={handleOpenQuiz}
-                title={hasQuizAttempt || justAttempted ? 'Retake Quiz' : 'Take Quiz'}
+                title={hasQuizAttempt || justAttempted ? t('tasks:item.retakeQuiz') : t('tasks:item.takeQuiz')}
                 className="task-item-quiz-btn"
               >
                 <Zap className="task-item-quiz-icon" />
-                {hasQuizAttempt || justAttempted ? 'Retake' : 'Quiz'}
+                {hasQuizAttempt || justAttempted ? t('tasks:item.retake') : t('tasks:item.quizBadge')}
               </button>
             </>
           )}

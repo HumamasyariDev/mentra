@@ -1,11 +1,6 @@
 import { CheckCircle2, Circle, Trash2, Pencil } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import '../../styles/components/schedules/ScheduleComponents.css';
-
-const typeLabels = {
-  daily: 'Daily',
-  weekly: 'Weekly',
-  monthly: 'Monthly',
-};
 
 export const formatTime = (time) => {
   if (!time) return null;
@@ -42,6 +37,8 @@ export default function ScheduleItem({
   checkDate,
   hideType = false,
 }) {
+  const { t } = useTranslation(['schedules', 'common']);
+
   const completed = checkDate
     ? isCompletedOnDate(schedule, checkDate)
     : isCompletedToday(schedule);
@@ -59,7 +56,7 @@ export default function ScheduleItem({
 
   const timeDisplay = formatTime(schedule.start_time);
   const endDisplay = formatTime(schedule.end_time);
-  const typeLabel = typeLabels[schedule.type] || 'Daily';
+  const typeLabel = t(`schedules:type.${schedule.type}`, t('schedules:type.daily'));
 
   if (compact) {
     return (
@@ -106,7 +103,7 @@ export default function ScheduleItem({
           <span className="schedule-agenda-time no-time">--:--</span>
         )}
         {endDisplay && (
-          <span className="schedule-agenda-end-time">to {endDisplay}</span>
+          <span className="schedule-agenda-end-time">{t('schedules:timeTo', { time: endDisplay })}</span>
         )}
       </div>
 

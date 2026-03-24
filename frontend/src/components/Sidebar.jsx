@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Home,
   BookOpen,
@@ -24,25 +25,26 @@ import { profileApi } from "../services/api";
 import "../styles/components/Sidebar.css";
 
 const productivityItems = [
-  { to: "/dashboard", label: "Dashboard", icon: Home },
-  { to: "/tasks", label: "Tasks", icon: BookOpen },
-  { to: "/pomodoro", label: "Pomodoro", icon: FileText },
-  { to: "/forest", label: "Forest", icon: TreePine },
-  { to: "/schedules", label: "Schedules", icon: Calendar },
-  { to: "/mood", label: "Mood", icon: Folder },
+  { to: "/dashboard", labelKey: "nav.dashboard", icon: Home },
+  { to: "/tasks", labelKey: "nav.tasks", icon: BookOpen },
+  { to: "/pomodoro", labelKey: "nav.pomodoro", icon: FileText },
+  { to: "/forest", labelKey: "nav.forest", icon: TreePine },
+  { to: "/schedules", labelKey: "nav.schedules", icon: Calendar },
+  { to: "/mood", labelKey: "nav.mood", icon: Folder },
 ];
 
 const aiItems = [
-  { to: "/chat", label: "Chat", icon: MessageSquare },
-  { to: "/agent", label: "Agent", icon: Sparkles },
-  { to: "/sandbox", label: "Sandbox", icon: GraduationCap },
+  { to: "/chat", labelKey: "nav.chat", icon: MessageSquare },
+  { to: "/agent", labelKey: "nav.agent", icon: Sparkles },
+  { to: "/sandbox", labelKey: "nav.sandbox", icon: GraduationCap },
 ];
 
 const communityItems = [
-  { to: "/forum", label: "Forum", icon: MessageCircle },
+  { to: "/forum", labelKey: "nav.forum", icon: MessageCircle },
 ];
 
 export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
+  const { t, i18n } = useTranslation('common');
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [showAccountPanel, setShowAccountPanel] = useState(false);
@@ -88,7 +90,7 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
       await refreshUser();
       setError("");
     } catch (err) {
-      setError(err?.response?.data?.message || "Failed to update name");
+      setError(err?.response?.data?.message || t('account.failedUpdateName'));
     } finally {
       setSaving(false);
     }
@@ -105,7 +107,7 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
       localStorage.removeItem("mentra_user");
       window.location.href = "/login";
     } catch (err) {
-      setError(err?.response?.data?.message || "Failed to delete account");
+      setError(err?.response?.data?.message || t('account.failedDeleteAccount'));
       setDeleting(false);
     }
   };
@@ -132,9 +134,9 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
 
       <div className="sidebar-sections">
         <div className="sidebar-section">
-          <div className="sidebar-section-title">Produktivitas</div>
+          <div className="sidebar-section-title">{t('sections.productivity')}</div>
           <nav className="sidebar-nav">
-            {productivityItems.map(({ to, label, icon: Icon }) => (
+            {productivityItems.map(({ to, labelKey, icon: Icon }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -144,16 +146,16 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
                 }
               >
                 <Icon className="sidebar-nav-icon" />
-                <span className="sidebar-nav-label">{label}</span>
+                <span className="sidebar-nav-label">{t(labelKey)}</span>
               </NavLink>
             ))}
           </nav>
         </div>
 
         <div className="sidebar-section sidebar-section-chat">
-          <div className="sidebar-section-title">AI & Chat</div>
+          <div className="sidebar-section-title">{t('sections.aiChat')}</div>
           <nav className="sidebar-nav">
-            {aiItems.map(({ to, label, icon: Icon, highlight }) => (
+            {aiItems.map(({ to, labelKey, icon: Icon, highlight }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -163,16 +165,16 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
                 }
               >
                 <Icon className="sidebar-nav-icon" />
-                <span className="sidebar-nav-label">{label}</span>
+                <span className="sidebar-nav-label">{t(labelKey)}</span>
               </NavLink>
             ))}
           </nav>
         </div>
 
         <div className="sidebar-section">
-          <div className="sidebar-section-title">Komunitas</div>
+          <div className="sidebar-section-title">{t('sections.community')}</div>
           <nav className="sidebar-nav">
-            {communityItems.map(({ to, label, icon: Icon }) => (
+            {communityItems.map(({ to, labelKey, icon: Icon }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -182,14 +184,14 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
                 }
               >
                 <Icon className="sidebar-nav-icon" />
-                <span className="sidebar-nav-label">{label}</span>
+                <span className="sidebar-nav-label">{t(labelKey)}</span>
               </NavLink>
             ))}
           </nav>
         </div>
 
         <div className="sidebar-section">
-          <div className="sidebar-section-title">Pengaturan</div>
+          <div className="sidebar-section-title">{t('sections.settings')}</div>
           <nav className="sidebar-nav">
             <NavLink
               to="/settings"
@@ -199,7 +201,7 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
               }
             >
               <Settings className="sidebar-nav-icon" />
-              <span className="sidebar-nav-label">Settings</span>
+              <span className="sidebar-nav-label">{t('nav.settings')}</span>
             </NavLink>
           </nav>
         </div>
@@ -213,12 +215,12 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
             <div className="sidebar-panel-header">
               <div className="sidebar-panel-avatar">{userInitial}</div>
               <div className="sidebar-panel-info">
-                <div className="sidebar-panel-name">{user?.name || "User"}</div>
+                <div className="sidebar-panel-name">{user?.name || t('account.user')}</div>
                 <div className="sidebar-panel-email">{user?.email}</div>
                 <div className="sidebar-panel-meta">
-                  Member since{" "}
+                  {t('account.memberSince')}{" "}
                   {user?.created_at
-                    ? new Date(user.created_at).toLocaleDateString("en-US", {
+                    ? new Date(user.created_at).toLocaleDateString(i18n.language === 'id' ? 'id-ID' : 'en-US', {
                         month: "long",
                         day: "numeric",
                         year: "numeric",
@@ -230,21 +232,21 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
 
             {/* Edit Name */}
             <div className="sidebar-panel-section">
-              <label className="sidebar-panel-label">Display Name</label>
+              <label className="sidebar-panel-label">{t('account.displayName')}</label>
               <div className="sidebar-panel-input-row">
                 <input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   className="sidebar-panel-input"
-                  placeholder="Your name"
+                  placeholder={t('account.yourName')}
                   disabled={saving}
                 />
                 <button
                   onClick={handleSaveName}
                   disabled={saving || !editName.trim() || editName.trim() === user?.name}
                   className="sidebar-panel-save-btn"
-                  title="Save name"
+                  title={t('account.saveName')}
                 >
                   {saving ? <Loader2 size={14} className="sidebar-spinner" /> : <Save size={14} />}
                 </button>
@@ -257,7 +259,7 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
             {/* Logout */}
             <button className="sidebar-panel-logout" onClick={handleLogout}>
               <LogOut size={16} />
-              <span>Logout</span>
+              <span>{t('account.logout')}</span>
             </button>
 
             {/* Delete Account */}
@@ -268,20 +270,18 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
                   onClick={() => setShowDeleteConfirm(true)}
                 >
                   <Trash2 size={14} />
-                  <span>Delete Account</span>
+                  <span>{t('account.deleteAccount')}</span>
                 </button>
               ) : (
                 <div className="sidebar-panel-delete-confirm">
-                  <p className="sidebar-panel-delete-warning">
-                    Type <strong>DELETE</strong> to permanently remove your account.
-                  </p>
+                  <p className="sidebar-panel-delete-warning" dangerouslySetInnerHTML={{ __html: t('account.deleteConfirmText') }} />
                   <div className="sidebar-panel-input-row">
                     <input
                       type="text"
                       value={deleteText}
                       onChange={(e) => setDeleteText(e.target.value)}
                       className="sidebar-panel-input sidebar-panel-input-danger"
-                      placeholder="Type DELETE"
+                      placeholder={t('account.typeDelete')}
                       disabled={deleting}
                     />
                     <button
@@ -303,7 +303,7 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
                       setDeleteText("");
                     }}
                   >
-                    Cancel
+                    {t('cancel')}
                   </button>
                 </div>
               )}
@@ -312,14 +312,14 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
         )}
 
         {/* Account Row (clickable) */}
-        <div className="sidebar-section-title">Akun</div>
+        <div className="sidebar-section-title">{t('sections.account')}</div>
         <button className="sidebar-account" onClick={togglePanel}>
           <div className="sidebar-account-avatar">{userInitial}</div>
           <div className="sidebar-account-info">
             <div className="sidebar-account-name">
-              {user?.name || "User"}
+              {user?.name || t('account.user')}
             </div>
-            <div className="sidebar-account-role">Level {user?.level || 1}</div>
+            <div className="sidebar-account-role">{t('level')} {user?.level || 1}</div>
           </div>
           <ChevronUp
             size={16}

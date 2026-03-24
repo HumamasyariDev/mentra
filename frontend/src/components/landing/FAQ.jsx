@@ -3,36 +3,10 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
-
-const FAQ_ITEMS = [
-  {
-    question: 'What is Mentra?',
-    answer: 'Mentra is a gamified productivity platform that turns your daily tasks into an epic journey. Complete tasks to earn XP, level up, maintain streaks, and grow a virtual forest — all while building better work habits.'
-  },
-  {
-    question: 'Is Mentra free to use?',
-    answer: 'Yes! Mentra is completely free. You get full access to task management, Pomodoro timer, mood tracking, AI assistant, scheduling, and the forest world at no cost.'
-  },
-  {
-    question: 'How does the gamification system work?',
-    answer: 'Every task you complete earns experience points (XP). As you accumulate XP, you level up and unlock new milestones. Maintaining daily streaks multiplies your rewards. Your progress directly fuels the growth of your virtual forest.'
-  },
-  {
-    question: 'What is the Forest World?',
-    answer: 'The Forest World is your personal virtual garden. As you complete tasks and maintain focus sessions, trees grow and evolve through multiple stages. It\'s a beautiful visual representation of your productivity journey.'
-  },
-  {
-    question: 'Does Mentra have an AI assistant?',
-    answer: 'Yes! Mentra includes an AI-powered productivity coach powered by Puter.js. It can help break down complex projects, provide motivation, create tasks from natural language, and even generate study materials.'
-  },
-  {
-    question: 'Can I use Mentra on mobile devices?',
-    answer: 'Mentra is built as a responsive web application that works beautifully across desktops, tablets, and mobile devices. Access it from any modern browser.'
-  },
-];
 
 function FAQItem({ item, index, isOpen, onToggle }) {
   const contentRef = useRef(null);
@@ -109,6 +83,9 @@ export default function FAQ() {
   const sectionRef = useRef(null);
   const [openIndex, setOpenIndex] = useState(-1);
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation(['landing']);
+
+  const faqItems = t('landing:faq.items', { returnObjects: true });
 
   const handleToggle = useCallback((index) => {
     setOpenIndex((prev) => (prev === index ? -1 : index));
@@ -146,7 +123,7 @@ export default function FAQ() {
     );
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
-  const headingWords = "Frequently Asked Questions".split(" ");
+  const headingWords = t('landing:faq.title').split(" ");
 
   return (
     <section ref={sectionRef} id="faq" className="faq-section">
@@ -163,7 +140,7 @@ export default function FAQ() {
         </h2>
         
         <div className="faq-list">
-          {FAQ_ITEMS.map((item, i) => (
+          {faqItems.map((item, i) => (
             <FAQItem
               key={i}
               item={item}

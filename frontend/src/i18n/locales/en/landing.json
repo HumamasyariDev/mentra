@@ -1,0 +1,109 @@
+{
+  "navbar": {
+    "howItWorks": "How It Works",
+    "features": "Features",
+    "forestWorld": "Forest World",
+    "faq": "FAQ",
+    "login": "Log in",
+    "getStarted": "Get Started"
+  },
+  "hero": {
+    "titleLine1": "Level Up",
+    "titleLine2": "Your Work.",
+    "subtitle": "Turn your daily tasks into an epic journey. Earn XP, stay focused with Pomodoro, and grow a living forest that reflects your productivity.",
+    "cta": "Start Your Journey",
+    "secondaryCta": "Explore Features",
+    "scrollText": "Scroll to explore"
+  },
+  "features": {
+    "title": "Everything you need.",
+    "items": [
+      {
+        "title": "Smart Tasks",
+        "desc": "List, calendar, or board views with smart prioritization. Upload study materials to auto-generate AI quizzes and earn XP."
+      },
+      {
+        "title": "Pomodoro Companion",
+        "desc": "Focus sessions with 7 immersive color themes. Earn watering cans to grow your Forest with every session."
+      },
+      {
+        "title": "Your Forest",
+        "desc": "Plant seeds, water them with cans earned from Pomodoro sessions, and watch trees grow through 5 stages into a thriving forest."
+      },
+      {
+        "title": "Schedules & Habits",
+        "desc": "Build lasting routines with daily, weekly, and monthly recurring schedules. Track progress across list, calendar, or board views."
+      },
+      {
+        "title": "AI Assistant",
+        "desc": "An AI agent that creates tasks from natural language, searches your knowledge base, and powers mind-map brainstorming in the Sandbox."
+      },
+      {
+        "title": "Community Forum",
+        "desc": "Connect with others. Share progress, ask questions, and stay accountable together."
+      }
+    ]
+  },
+  "gamification": {
+    "steps": [
+      {
+        "title": "Check it off",
+        "desc": "Manage your daily tasks with beautiful list, calendar, or board views. Simple on the surface, smart underneath."
+      },
+      {
+        "title": "Earn XP",
+        "desc": "Every completed task earns experience points. Your real-world productivity directly fuels your digital progress."
+      },
+      {
+        "title": "Level Up",
+        "desc": "Hit milestones, maintain daily streaks, and climb levels as you build better, more consistent habits."
+      },
+      {
+        "title": "Watch it Grow",
+        "desc": "Earn watering cans from Pomodoro sessions and nurture trees through five growth stages into a living, breathing forest."
+      }
+    ]
+  },
+  "forest": {
+    "title": "Grow Your World",
+    "subtitle": "Stay focused with Pomodoro. Earn watering cans. Nurture trees through five growth stages into a thriving forest."
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "question": "What is Mentra?",
+        "answer": "Mentra is a gamified productivity platform that turns your daily tasks into an epic journey. Complete tasks to earn XP and level up, stay focused with Pomodoro to earn watering cans, and grow a virtual forest — all while building better work habits."
+      },
+      {
+        "question": "Is Mentra free to use?",
+        "answer": "Yes! Mentra is completely free. You get full access to task management, Pomodoro timer, mood tracking, AI assistant, scheduling, and the forest world at no cost."
+      },
+      {
+        "question": "How does the gamification system work?",
+        "answer": "Every task you complete earns experience points (XP) based on difficulty — Easy, Medium, or Hard. As you accumulate XP, you level up. Maintaining daily streaks keeps your streak fire alive. Meanwhile, Pomodoro focus sessions earn watering cans that grow your virtual forest."
+      },
+      {
+        "question": "What is the Forest World?",
+        "answer": "The Forest World is your personal virtual garden. Use watering cans earned from Pomodoro focus sessions to nurture trees through five growth stages — from Baby to Adult. Fully grown trees are archived into a background forest that expands as you stay productive."
+      },
+      {
+        "question": "Does Mentra have an AI assistant?",
+        "answer": "Yes! Mentra includes multiple AI features powered by Puter.js. The AI Agent can create tasks from natural language and search your knowledge base. The Sandbox lets you brainstorm with AI and visualize conversations as infinite-canvas mind maps. You can also upload study materials to auto-generate quizzes."
+      },
+      {
+        "question": "Can I use Mentra on mobile devices?",
+        "answer": "Mentra is built as a responsive web application that works beautifully across desktops, tablets, and mobile devices. Access it from any modern browser."
+      }
+    ]
+  },
+  "cta": {
+    "tagline": "Your Productivity Universe Awaits",
+    "button": "Create Free Account",
+    "loginPrompt": "Already have an account? Log in →"
+  },
+  "footer": {
+    "terms": "Terms",
+    "privacy": "Privacy"
+  }
+}

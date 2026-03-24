@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Loader2 } from 'lucide-react';
 import '../../styles/components/schedules/ScheduleComponents.css';
 
-const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
 export default function ScheduleEditModal({ schedule, onSave, onClose, isPending }) {
+  const { t } = useTranslation(['schedules', 'common']);
   const [form, setForm] = useState({
     title: schedule.title || '',
     description: schedule.description || '',
@@ -40,7 +42,7 @@ export default function ScheduleEditModal({ schedule, onSave, onClose, isPending
       <div className="schedule-modal" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
         <div className="schedule-modal-header">
-          <h2 className="schedule-modal-title">Edit Schedule</h2>
+          <h2 className="schedule-modal-title">{t('schedules:editModal.title')}</h2>
           <button onClick={onClose} className="schedule-modal-close-btn">
             <X className="schedule-modal-close-icon" />
           </button>
@@ -51,7 +53,7 @@ export default function ScheduleEditModal({ schedule, onSave, onClose, isPending
           <div className="schedule-create-form-grid">
             {/* Title */}
             <div className="schedule-form-group">
-              <label className="schedule-form-label">Title</label>
+              <label className="schedule-form-label">{t('common:title')}</label>
               <input
                 type="text"
                 className="schedule-form-input"
@@ -63,7 +65,7 @@ export default function ScheduleEditModal({ schedule, onSave, onClose, isPending
 
             {/* Description */}
             <div className="schedule-form-group">
-              <label className="schedule-form-label">Description</label>
+              <label className="schedule-form-label">{t('common:description')}</label>
               <textarea
                 className="schedule-form-input schedule-form-textarea"
                 rows={2}
@@ -75,19 +77,19 @@ export default function ScheduleEditModal({ schedule, onSave, onClose, isPending
             {/* Type / Times */}
             <div className="schedule-create-form-row">
               <div className="schedule-form-group">
-                <label className="schedule-form-label">Type</label>
+                <label className="schedule-form-label">{t('common:type')}</label>
                 <select
                   className="schedule-form-input schedule-form-select"
                   value={form.type}
                   onChange={(e) => setForm({ ...form, type: e.target.value })}
                 >
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
+                  <option value="daily">{t('schedules:type.daily')}</option>
+                  <option value="weekly">{t('schedules:type.weekly')}</option>
+                  <option value="monthly">{t('schedules:type.monthly')}</option>
                 </select>
               </div>
               <div className="schedule-form-group">
-                <label className="schedule-form-label">Start Time</label>
+                <label className="schedule-form-label">{t('schedules:createForm.startTime')}</label>
                 <input
                   type="time"
                   className="schedule-form-input"
@@ -96,7 +98,7 @@ export default function ScheduleEditModal({ schedule, onSave, onClose, isPending
                 />
               </div>
               <div className="schedule-form-group">
-                <label className="schedule-form-label">End Time</label>
+                <label className="schedule-form-label">{t('schedules:createForm.endTime')}</label>
                 <input
                   type="time"
                   className="schedule-form-input"
@@ -109,16 +111,16 @@ export default function ScheduleEditModal({ schedule, onSave, onClose, isPending
             {/* Weekly: Days of Week */}
             {form.type === 'weekly' && (
               <div className="schedule-form-group">
-                <label className="schedule-form-label">Days of Week</label>
+                <label className="schedule-form-label">{t('schedules:createForm.daysOfWeek')}</label>
                 <div className="schedule-days-grid">
-                  {dayNames.map((name, i) => (
+                  {dayKeys.map((key, i) => (
                     <button
                       key={i}
                       type="button"
                       onClick={() => toggleDay(i)}
                       className={`schedule-day-btn ${form.days_of_week.includes(i) ? 'selected' : ''}`}
                     >
-                      {name}
+                      {t(`common:days.${key}`)}
                     </button>
                   ))}
                 </div>
@@ -128,7 +130,7 @@ export default function ScheduleEditModal({ schedule, onSave, onClose, isPending
             {/* Monthly: Day of Month */}
             {form.type === 'monthly' && (
               <div className="schedule-form-group">
-                <label className="schedule-form-label">Day of Month</label>
+                <label className="schedule-form-label">{t('schedules:createForm.dayOfMonth')}</label>
                 <input
                   type="number"
                   className="schedule-form-input schedule-day-input"
@@ -142,7 +144,7 @@ export default function ScheduleEditModal({ schedule, onSave, onClose, isPending
 
             {/* Active toggle switch */}
             <div className="schedule-form-group">
-              <label className="schedule-form-label">Status</label>
+              <label className="schedule-form-label">{t('schedules:editModal.statusLabel')}</label>
               <label className="schedule-toggle-switch">
                 <input
                   type="checkbox"
@@ -151,7 +153,7 @@ export default function ScheduleEditModal({ schedule, onSave, onClose, isPending
                 />
                 <span className="schedule-toggle-slider" />
                 <span className={`schedule-toggle-label ${form.is_active ? 'active' : 'paused'}`}>
-                  {form.is_active ? 'Active' : 'Paused'}
+                  {form.is_active ? t('common:status.active') : t('common:status.paused')}
                 </span>
               </label>
             </div>
@@ -164,7 +166,7 @@ export default function ScheduleEditModal({ schedule, onSave, onClose, isPending
               onClick={onClose}
               className="schedule-form-btn schedule-form-btn-secondary"
             >
-              Cancel
+              {t('common:cancel')}
             </button>
             <button
               type="submit"
@@ -172,7 +174,7 @@ export default function ScheduleEditModal({ schedule, onSave, onClose, isPending
               disabled={isPending}
             >
               {isPending && <Loader2 className="schedule-form-spinner" />}
-              Save Changes
+              {t('schedules:editModal.saveBtn')}
             </button>
           </div>
         </form>

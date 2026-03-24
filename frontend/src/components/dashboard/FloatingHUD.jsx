@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import '../../styles/components/dashboard/FloatingHUD.css';
 
 export const FloatingHUD = ({ onHamburgerClick }) => {
+  const { t } = useTranslation(['dashboard', 'common']);
   const [stats, setStats] = useState({
     level: 12,
     exp: 3200,
@@ -24,7 +26,7 @@ export const FloatingHUD = ({ onHamburgerClick }) => {
         <button
           className="hamburger-btn"
           onClick={onHamburgerClick}
-          aria-label="Toggle menu"
+          aria-label={t('dashboard:sidebar.toggleMenu')}
         >
           <span className="hamburger-line"></span>
           <span className="hamburger-line"></span>
@@ -39,7 +41,7 @@ export const FloatingHUD = ({ onHamburgerClick }) => {
         </div>
         <div className="exp-container">
           <div className="exp-label">
-            <span className="exp-text">EXP</span>
+            <span className="exp-text">{t('common:exp')}</span>
             <span className="exp-value">
               {stats.exp} / {stats.maxExp}
             </span>
@@ -56,7 +58,7 @@ export const FloatingHUD = ({ onHamburgerClick }) => {
           <span className="streak-flame">🔥</span>
           <span className="streak-number">{stats.streak}</span>
         </div>
-        <span className="streak-label">Day Streak</span>
+        <span className="streak-label">{t('dashboard:hud.dayStreak')}</span>
       </div>
     </div>
   );

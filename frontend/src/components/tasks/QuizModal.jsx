@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, CheckCircle2, XCircle, Loader2, Zap, ChevronLeft, ChevronRight, SkipForward, Trophy, Target, RotateCcw, BookOpen } from 'lucide-react';
 import '../../styles/components/tasks/QuizModal.css';
 
@@ -13,6 +14,7 @@ import '../../styles/components/tasks/QuizModal.css';
  *   flashcardMode: boolean — if true, shows flashcards instead of quiz
  */
 export default function QuizModal({ quizList, isLoading, onClose, onDone, flashcardMode = false }) {
+    const { t } = useTranslation(['tasks', 'common']);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState({});
     const [submitted, setSubmitted] = useState({});
@@ -98,7 +100,7 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                                 <Zap className="quiz-modal-title-icon" />
                             )}
                             <span className="quiz-modal-title-text">
-                                {flashcardMode ? 'Flashcards' : 'Challenge Quiz'}
+                                {flashcardMode ? t('tasks:quiz.flashcards') : t('tasks:quiz.challengeQuiz')}
                             </span>
                         </div>
                         <button onClick={handleClose} className="quiz-modal-close-btn">
@@ -115,7 +117,7 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                                 />
                             </div>
                             <span className="quiz-modal-progress-text">
-                                {currentIndex + 1} of {total}
+                                {t('tasks:quiz.questionOf', { current: currentIndex + 1, total })}
                             </span>
                         </div>
                     )}
@@ -127,7 +129,7 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                         <div className="quiz-modal-loading">
                             <Loader2 className="quiz-modal-loading-spinner" />
                             <p className="quiz-modal-loading-text">
-                                {flashcardMode ? 'Loading flashcards...' : 'Loading quiz questions...'}
+                                {flashcardMode ? t('tasks:quiz.loadingFlashcards') : t('tasks:quiz.loadingQuiz')}
                             </p>
                         </div>
                     )}
@@ -136,10 +138,10 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                     {!isLoading && !quizList && (
                         <div className="quiz-modal-error">
                             <XCircle className="quiz-modal-error-icon" />
-                            <p className="quiz-modal-error-title">Failed to load {flashcardMode ? 'flashcards' : 'quiz'}</p>
-                            <p className="quiz-modal-error-text">Something went wrong. Please try again later.</p>
+                            <p className="quiz-modal-error-title">{flashcardMode ? t('tasks:quiz.failedLoadFlashcards') : t('tasks:quiz.failedLoadQuiz')}</p>
+                            <p className="quiz-modal-error-text">{t('tasks:quiz.errorText')}</p>
                             <button onClick={onClose} className="quiz-modal-done-btn">
-                                Close
+                                {t('common:close')}
                             </button>
                         </div>
                     )}
@@ -148,7 +150,7 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                     {flashcardMode && !isLoading && quizList && (
                         <>
                             <p className="quiz-modal-question-number">
-                                Card {currentIndex + 1}
+                                {t('tasks:quiz.cardNumber', { number: currentIndex + 1 })}
                             </p>
 
                             <div
@@ -157,17 +159,17 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                             >
                                 <div className="flashcard-inner">
                                     <div className="flashcard-front">
-                                        <p className="flashcard-label">Question</p>
+                                        <p className="flashcard-label">{t('tasks:quiz.questionLabel')}</p>
                                         <p className="flashcard-text">{quiz?.question}</p>
-                                        <p className="flashcard-hint">Tap to flip</p>
+                                        <p className="flashcard-hint">{t('tasks:quiz.tapToFlip')}</p>
                                     </div>
                                     <div className="flashcard-back">
-                                        <p className="flashcard-label">Answer</p>
+                                        <p className="flashcard-label">{t('tasks:quiz.answerLabel')}</p>
                                         <p className="flashcard-answer">{quiz?.options?.[quiz?.correct_index]}</p>
                                         {quiz?.explanation && (
                                             <p className="flashcard-explanation">{quiz.explanation}</p>
                                         )}
-                                        <p className="flashcard-hint">Tap to flip back</p>
+                                        <p className="flashcard-hint">{t('tasks:quiz.tapToFlipBack')}</p>
                                     </div>
                                 </div>
                             </div>
@@ -180,7 +182,7 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                                         className="quiz-modal-nav-btn"
                                     >
                                         <ChevronLeft style={{ width: '1rem', height: '1rem' }} />
-                                        Back
+                                        {t('common:back')}
                                     </button>
                                 </div>
 
@@ -189,7 +191,7 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                                     className="quiz-modal-action-btn quiz-modal-skip-btn"
                                 >
                                     <RotateCcw style={{ width: '0.875rem', height: '0.875rem' }} />
-                                    Flip
+                                    {t('tasks:quiz.flip')}
                                 </button>
 
                                 <button
@@ -198,9 +200,9 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                                     style={{ flex: 1 }}
                                 >
                                     {currentIndex < total - 1 ? (
-                                        <>Next <ChevronRight style={{ width: '1rem', height: '1rem' }} /></>
+                                        <>{t('common:next')} <ChevronRight style={{ width: '1rem', height: '1rem' }} /></>
                                     ) : (
-                                        'Done'
+                                        t('common:done')
                                     )}
                                 </button>
                             </div>
@@ -224,21 +226,21 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                                 </svg>
                                 <div className="quiz-modal-score-label">
                                     <span className="quiz-modal-score-number">{correctCount}</span>
-                                    <span className="quiz-modal-score-of">of {total}</span>
+                                    <span className="quiz-modal-score-of">{t('tasks:quiz.scoreOf', { total })}</span>
                                 </div>
                             </div>
 
                             <h3 className="quiz-modal-done-title">
-                                {scorePercent >= 0.7 ? 'Excellent Work!' : scorePercent >= 0.4 ? 'Good Effort!' : 'Keep Practicing!'}
+                                {scorePercent >= 0.7 ? t('tasks:quiz.excellentWork') : scorePercent >= 0.4 ? t('tasks:quiz.goodEffort') : t('tasks:quiz.keepPracticing')}
                             </h3>
                             <p className="quiz-modal-done-subtitle">
-                                You answered {correctCount} out of {total} questions correctly.
+                                {t('tasks:quiz.scoreText', { correct: correctCount, total })}
                             </p>
 
                             {correctCount > 0 && (
                                 <div className={`quiz-modal-done-badge ${scoreLevel}`}>
                                     <Trophy style={{ width: '0.875rem', height: '0.875rem' }} />
-                                    +{correctCount} Log Earned
+                                    {t('tasks:quiz.logEarned', { count: correctCount })}
                                 </div>
                             )}
 
@@ -264,7 +266,7 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                             </div>
 
                             <button onClick={handleClose} className="quiz-modal-done-btn">
-                                Done
+                                {t('common:done')}
                             </button>
                         </div>
                     )}
@@ -273,7 +275,7 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                     {!flashcardMode && !isLoading && quiz && !isDone && (
                         <>
                             <p className="quiz-modal-question-number">
-                                Question {currentIndex + 1}
+                                {t('tasks:quiz.questionNumber', { number: currentIndex + 1 })}
                             </p>
                             <p className="quiz-modal-question">
                                 {quiz.question}
@@ -318,11 +320,11 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                                 <div className={`quiz-modal-explanation ${feedbackClass}`}>
                                     <div className="quiz-modal-explanation-title">
                                         {isCorrect ? (
-                                            <><CheckCircle2 className="quiz-modal-option-icon" />Correct!</>
+                                            <><CheckCircle2 className="quiz-modal-option-icon" />{t('tasks:quiz.correct')}</>
                                         ) : selectedOption === null ? (
-                                            <><SkipForward className="quiz-modal-option-icon" />Skipped</>
+                                            <><SkipForward className="quiz-modal-option-icon" />{t('tasks:quiz.skipped')}</>
                                         ) : (
-                                            <><XCircle className="quiz-modal-option-icon" />Incorrect</>
+                                            <><XCircle className="quiz-modal-option-icon" />{t('tasks:quiz.incorrect')}</>
                                         )}
                                     </div>
                                     <p className="quiz-modal-explanation-text">{quiz.explanation}</p>
@@ -338,7 +340,7 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                                         className="quiz-modal-nav-btn"
                                     >
                                         <ChevronLeft style={{ width: '1rem', height: '1rem' }} />
-                                        Back
+                                        {t('common:back')}
                                     </button>
                                 </div>
 
@@ -351,13 +353,13 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                                             style={{ flex: 1 }}
                                         >
                                             <Target style={{ width: '1rem', height: '1rem' }} />
-                                            Submit
+                                            {t('common:submit')}
                                         </button>
                                         <button
                                             onClick={handleSkip}
                                             className="quiz-modal-action-btn quiz-modal-skip-btn"
                                         >
-                                            Skip
+                                            {t('tasks:quiz.skip')}
                                             <SkipForward style={{ width: '0.875rem', height: '0.875rem' }} />
                                         </button>
                                     </div>
@@ -368,9 +370,9 @@ export default function QuizModal({ quizList, isLoading, onClose, onDone, flashc
                                         style={{ flex: 1 }}
                                     >
                                         {currentIndex < total - 1 ? (
-                                            <>Next <ChevronRight style={{ width: '1rem', height: '1rem' }} /></>
+                                            <>{t('common:next')} <ChevronRight style={{ width: '1rem', height: '1rem' }} /></>
                                         ) : (
-                                            <>See Results <ChevronRight style={{ width: '1rem', height: '1rem' }} /></>
+                                            <>{t('tasks:quiz.seeResults')} <ChevronRight style={{ width: '1rem', height: '1rem' }} /></>
                                         )}
                                     </button>
                                 )}

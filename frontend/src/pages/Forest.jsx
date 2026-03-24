@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { forestApi } from '../services/api';
@@ -29,24 +30,11 @@ const TREE_ASSETS = {
   },
 };
 
-const STAGES = [
-  { value: 1, label: 'Baby' },
-  { value: 2, label: 'Sapling' },
-  { value: 3, label: 'Young Tree' },
-  { value: 4, label: 'Teen Tree' },
-  { value: 5, label: 'Adult Tree' },
-];
-
-const STAGE_NAMES = {
-  1: 'Baby',
-  2: 'Sapling',
-  3: 'Young Tree',
-  4: 'Teen Tree',
-  5: 'Adult Tree',
-};
-
-function getDisplayStageName(stage) {
-  return STAGE_NAMES[stage] ?? 'Unknown';
+function getDisplayStageName(stage, t) {
+  const key = `forest:stage_${stage}`;
+  const translated = t(key);
+  // If i18next returns the key itself, the stage is unknown
+  return translated === key ? t('forest:unknown') : translated;
 }
 
 // Tree sizes grow with each stage - reflects actual growth
@@ -82,9 +70,9 @@ function getSeedAsset(typeName) {
   return TREE_ASSETS[typeName]?.['seed'] ?? TREE_ASSETS['pine_purple']?.['seed'];
 }
 
-function formatDuration(seconds) {
+function formatDuration(seconds, t) {
   if (!seconds || seconds <= 0) {
-    return 'Ready now';
+    return t('forest:ready_now');
   }
 
   const totalMinutes = Math.ceil(seconds / 60);
@@ -192,6 +180,7 @@ export default function Forest() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation(['forest', 'common']);
 
   const [timeTick, setTimeTick] = useState(Date.now());
   const [interactionLocked, setInteractionLocked] = useState(false);
@@ -609,7 +598,7 @@ export default function Forest() {
     return (
       <div className="forest-page forest-state-shell">
         <div className="forest-loading-mark"></div>
-        <p>Loading your forest...</p>
+        <p>{t('forest:loading')}</p>
       </div>
     );
   }
@@ -617,9 +606,9 @@ export default function Forest() {
   if (error) {
     return (
       <div className="forest-page forest-state-shell forest-state-shell--error">
-        <p>Forest view could not load right now.</p>
+        <p>{t('forest:error_load')}</p>
         <button className="forest-secondary-button" onClick={refreshForest}>
-          Try again
+          {t('forest:try_again')}
         </button>
       </div>
     );
@@ -632,19 +621,19 @@ export default function Forest() {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M15 18l-6-6 6-6" />
           </svg>
-          Back
+          {t('forest:back')}
         </button>
 
-        <div className="forest-can-pill" aria-label={`Watering cans: ${forest?.watering_cans ?? 0}`}>
+        <div className="forest-can-pill" aria-label={`${t('forest:watering_cans')}: ${forest?.watering_cans ?? 0}`}>
           <img src={wateringCanAsset} alt="" />
           <div>
-            <span>Watering cans</span>
+            <span>{t('forest:watering_cans')}</span>
             <strong>{forest?.watering_cans ?? 0}</strong>
           </div>
         </div>
 
-        <div className="forest-archive-count" aria-label={`Archived trees: ${archivedTrees.length}`}>
-          <span className="forest-archive-count-label">Forest</span>
+        <div className="forest-archive-count" aria-label={`${t('forest:forest_label')}: ${archivedTrees.length}`}>
+          <span className="forest-archive-count-label">{t('forest:forest_label')}</span>
           <strong>{Math.min(archivedTrees.length, MAX_BACKGROUND_TREES)}+ / {archivedTrees.length}</strong>
         </div>
       </header>
@@ -652,8 +641,8 @@ export default function Forest() {
       <button 
         className="forest-toggle-ui-btn" 
         onClick={() => setIsUiHidden(!isUiHidden)}
-        aria-label={isUiHidden ? "Show UI" : "Hide UI"}
-        title={isUiHidden ? "Show UI" : "Hide UI"}
+        aria-label={isUiHidden ? t('forest:show_ui') : t('forest:hide_ui')}
+        title={isUiHidden ? t('forest:show_ui') : t('forest:hide_ui')}
       >
         {isUiHidden ? (
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -698,7 +687,7 @@ export default function Forest() {
            <ForestTreeCard
              tree={activeTree}
              treeAsset={isPlanting ? (cutsceneImageMode === 'seed' ? getSeedAsset(plantingTreeType?.name) : getTreeAsset(plantingTreeType?.name, 1)) : activeTree ? getTreeAsset(activeTree.tree_type.name, activeTree.stage) : pinePurpleSeed}
-             stageName={activeTree ? getDisplayStageName(activeTree.stage) : ''}
+             stageName={activeTree ? getDisplayStageName(activeTree.stage, t) : ''}
              waterProgressPercent={growth.stagePercent}
              stageCost={growth.stageCost}
              waterProgress={growth.waterProgress}
@@ -714,7 +703,7 @@ export default function Forest() {
              treeImageRef={heroTreeRef}
              treeWidth={isPlanting ? (cutsceneImageMode === 'seed' ? HERO_WIDTHS[0] : HERO_WIDTHS[1]) : activeTree ? treeWidth : HERO_WIDTHS[0]}
              isPlanting={isPlanting}
-             plantingTitle={plantingTreeType ? `Planting ${plantingTreeType.display_name}...` : 'Planting...'}
+             plantingTitle={plantingTreeType ? t('forest:planting_name', { name: plantingTreeType.display_name }) : t('forest:planting')}
              cardRefOverride={cutsceneCardRef}
           />
        </main>

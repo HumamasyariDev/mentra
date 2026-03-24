@@ -1,0 +1,31 @@
+{
+  "pageTitle": "Sandbox",
+  "pageSubtitle": "Create and manage your AI chat experiments",
+  "newSandbox": "New Sandbox",
+  "emptyTitle": "No sandbox projects yet",
+  "emptySubtitle": "Create your first sandbox to start experimenting",
+  "deleteConfirm": "Delete this sandbox?",
+  "modalTitleNew": "New Sandbox",
+  "modalTitleEdit": "Edit Sandbox",
+  "formName": "Name",
+  "formNamePlaceholder": "e.g. Code Assistant",
+  "formDescription": "Description",
+  "formDescriptionPlaceholder": "What is this sandbox for?",
+  "formPurposeLabel": "Sandbox Purpose",
+  "purposes": {
+    "learning": "Learning",
+    "working": "Working",
+    "ideation": "Idea Exploration",
+    "business": "Business Research",
+    "entertainment": "Entertainment"
+  },
+  "chatTitle": "Chat Assistant",
+  "chatEmpty": "Start a conversation with AI",
+  "chatInputPlaceholder": "Type your message...",
+  "chatThinking": "AI is thinking...",
+  "loadingSandbox": "Loading sandbox...",
+  "puterUnavailable": "Puter.js not available",
+  "outputText": "Text",
+  "outputMindMap": "Mind Map",
+  "outputEmpty": "Text output will appear here"
+}

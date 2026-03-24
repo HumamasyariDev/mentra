@@ -1,0 +1,90 @@
+{
+  "pageTitle": "Tasks",
+  "pageSubtitle": "Manage your tasks and earn EXP",
+  "forest": "Forest",
+  "newTask": "New Task",
+
+  "createForm": {
+    "normalTask": "Normal Task",
+    "quizTask": "Quiz Task",
+    "titleLabel": "Title",
+    "titlePlaceholder": "What needs to be done?",
+    "descriptionLabel": "Description (optional)",
+    "descriptionPlaceholder": "Add details...",
+    "priorityLabel": "Priority",
+    "dueDateLabel": "Due Date (optional)",
+    "studyMaterialLabel": "Study Material",
+    "studyMaterialHint": "Paste your study notes or upload a file (.txt, .md, .pdf, .docx, .pptx). Key points will be extracted and a quiz generated automatically.",
+    "questionCountLabel": "Number of Questions: <strong>{{count}}</strong>",
+    "materialPlaceholder": "Paste your study material here...",
+    "uploadFile": "Upload File",
+    "readingFile": "Reading file...",
+    "createTask": "Create Task",
+    "generatingQuiz": "Generating Quiz\u2026",
+    "extractingKeyPoints": "Extracting key points...",
+    "generatingQuestions": "Generating quiz questions...",
+    "savingTask": "Saving task...",
+    "errorNoMaterial": "Please provide study material for the quiz.",
+    "errorFileParse": "Failed to read file.",
+    "errorQuizGeneration": "Failed to generate quiz. Please check your material and try again."
+  },
+
+  "item": {
+    "completeQuizFirst": "Complete the quiz first",
+    "quizBadge": "Quiz",
+    "quizTaskBadge": "Quiz Task",
+    "expReward": "+{{exp}} EXP",
+    "bonusLog": "+{{count}} Log",
+    "quizGateHint": "Complete the quiz to unlock this task",
+    "flashcardToggle": "Enable flashcard review mode",
+    "cards": "Cards",
+    "retake": "Retake",
+    "retakeQuiz": "Retake Quiz",
+    "takeQuiz": "Take Quiz"
+  },
+
+  "listView": {
+    "noTasksFound": "No tasks found",
+    "pageOf": "Page {{current}} of {{last}}"
+  },
+
+  "boardView": {
+    "dropHere": "Drop here",
+    "noTasks": "No tasks"
+  },
+
+  "calendarView": {
+    "taskCount": "{{count}} task",
+    "taskCount_other": "{{count}} tasks",
+    "noTasksForDay": "No tasks for this day"
+  },
+
+  "quiz": {
+    "flashcards": "Flashcards",
+    "challengeQuiz": "Challenge Quiz",
+    "questionOf": "{{current}} of {{total}}",
+    "loadingFlashcards": "Loading flashcards...",
+    "loadingQuiz": "Loading quiz questions...",
+    "failedLoadFlashcards": "Failed to load flashcards",
+    "failedLoadQuiz": "Failed to load quiz",
+    "errorText": "Something went wrong. Please try again later.",
+    "cardNumber": "Card {{number}}",
+    "questionLabel": "Question",
+    "answerLabel": "Answer",
+    "tapToFlip": "Tap to flip",
+    "tapToFlipBack": "Tap to flip back",
+    "flip": "Flip",
+    "skip": "Skip",
+    "skipped": "Skipped",
+    "correct": "Correct!",
+    "incorrect": "Incorrect",
+    "questionNumber": "Question {{number}}",
+    "seeResults": "See Results",
+    "excellentWork": "Excellent Work!",
+    "goodEffort": "Good Effort!",
+    "keepPracticing": "Keep Practicing!",
+    "scoreText": "You answered {{correct}} out of {{total}} questions correctly.",
+    "logEarned": "+{{count}} Log Earned",
+    "scoreOf": "of {{total}}"
+  }
+}

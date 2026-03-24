@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
 import '../../styles/components/schedules/ScheduleComponents.css';
 
-const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const dayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
 export default function ScheduleCreateForm({ onSubmit, isPending }) {
+  const { t } = useTranslation(['schedules', 'common']);
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -49,45 +51,45 @@ export default function ScheduleCreateForm({ onSubmit, isPending }) {
       <div className="schedule-create-form-grid">
         {/* Title */}
         <div className="schedule-form-group">
-          <label className="schedule-form-label">Title</label>
+          <label className="schedule-form-label">{t('common:title')}</label>
           <input
             type="text"
             className="schedule-form-input"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-            placeholder="e.g., Morning Exercise"
+            placeholder={t('schedules:createForm.titlePlaceholder')}
             required
           />
         </div>
 
         {/* Description */}
         <div className="schedule-form-group">
-          <label className="schedule-form-label">Description (optional)</label>
+          <label className="schedule-form-label">{t('schedules:createForm.descriptionLabel')}</label>
           <textarea
             className="schedule-form-input schedule-form-textarea"
             rows={2}
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-            placeholder="Brief description of this schedule..."
+            placeholder={t('schedules:createForm.descriptionPlaceholder')}
           />
         </div>
 
         {/* Type / Times row */}
         <div className="schedule-create-form-row">
           <div className="schedule-form-group">
-            <label className="schedule-form-label">Type</label>
+            <label className="schedule-form-label">{t('common:type')}</label>
             <select
               className="schedule-form-input schedule-form-select"
               value={form.type}
               onChange={(e) => setForm({ ...form, type: e.target.value })}
             >
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
+              <option value="daily">{t('schedules:type.daily')}</option>
+              <option value="weekly">{t('schedules:type.weekly')}</option>
+              <option value="monthly">{t('schedules:type.monthly')}</option>
             </select>
           </div>
           <div className="schedule-form-group">
-            <label className="schedule-form-label">Start Time</label>
+            <label className="schedule-form-label">{t('schedules:createForm.startTime')}</label>
             <input
               type="time"
               className="schedule-form-input"
@@ -96,7 +98,7 @@ export default function ScheduleCreateForm({ onSubmit, isPending }) {
             />
           </div>
           <div className="schedule-form-group">
-            <label className="schedule-form-label">End Time</label>
+            <label className="schedule-form-label">{t('schedules:createForm.endTime')}</label>
             <input
               type="time"
               className="schedule-form-input"
@@ -109,16 +111,16 @@ export default function ScheduleCreateForm({ onSubmit, isPending }) {
         {/* Weekly: Days of Week */}
         {form.type === 'weekly' && (
           <div className="schedule-form-group">
-            <label className="schedule-form-label">Days of Week</label>
+            <label className="schedule-form-label">{t('schedules:createForm.daysOfWeek')}</label>
             <div className="schedule-days-grid">
-              {dayNames.map((name, i) => (
+              {dayKeys.map((key, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={() => toggleDay(i)}
                   className={`schedule-day-btn ${form.days_of_week.includes(i) ? 'selected' : ''}`}
                 >
-                  {name}
+                  {t(`common:days.${key}`)}
                 </button>
               ))}
             </div>
@@ -128,7 +130,7 @@ export default function ScheduleCreateForm({ onSubmit, isPending }) {
         {/* Monthly: Day of Month */}
         {form.type === 'monthly' && (
           <div className="schedule-form-group">
-            <label className="schedule-form-label">Day of Month</label>
+            <label className="schedule-form-label">{t('schedules:createForm.dayOfMonth')}</label>
             <input
               type="number"
               className="schedule-form-input schedule-day-input"
@@ -136,7 +138,7 @@ export default function ScheduleCreateForm({ onSubmit, isPending }) {
               max={31}
               value={form.day_of_month}
               onChange={(e) => setForm({ ...form, day_of_month: e.target.value })}
-              placeholder="1-31"
+              placeholder={t('schedules:createForm.dayOfMonthPlaceholder')}
             />
           </div>
         )}
@@ -149,7 +151,7 @@ export default function ScheduleCreateForm({ onSubmit, isPending }) {
             disabled={isPending}
           >
             {isPending && <Loader2 className="schedule-form-spinner" />}
-            Create Schedule
+            {t('schedules:createForm.createBtn')}
           </button>
         </div>
       </div>

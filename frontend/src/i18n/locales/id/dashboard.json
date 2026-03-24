@@ -1,0 +1,81 @@
+{
+  "loadingGalaxy": "Memuat galaxy...",
+
+  "sidebar": {
+    "closeMenu": "Tutup menu",
+    "toggleMenu": "Toggle menu"
+  },
+
+  "floatingSidebar": {
+    "menu": "Menu"
+  },
+
+  "greeting": {
+    "explorer": "Penjelajah"
+  },
+
+  "level": {
+    "lvl": "Lvl",
+    "level": "Level",
+    "toNextLevel": "Ke Level Berikutnya"
+  },
+
+  "streak": {
+    "dayStreak": "Hari Streak",
+    "dayStreakCount": "{{count}} Hari Streak"
+  },
+
+  "quickActions": {
+    "focusSession": "Sesi Fokus",
+    "newTask": "Tugas Baru",
+    "scheduleEvent": "Jadwalkan Acara",
+    "startFocus": "Mulai Fokus"
+  },
+
+  "upNext": {
+    "title": "Selanjutnya",
+    "tasksCompletedToday": "{{count}} tugas selesai hari ini",
+    "noTasksYet": "Belum ada tugas — buat satu untuk memulai!"
+  },
+
+  "schedule": {
+    "todaysSchedule": "Jadwal Hari Ini",
+    "noEventsToday": "Tidak ada acara hari ini",
+    "untitled": "Tanpa Judul"
+  },
+
+  "pomodoro": {
+    "sessionsToday": "Sesi<br/>Hari Ini",
+    "startPomodoro": "Mulai Pomodoro"
+  },
+
+  "cards": {
+    "todaysTasks": "Tugas Hari Ini",
+    "active": "Aktif",
+    "overdue": "Terlambat",
+    "completed": "Selesai",
+    "addTask": "Tambah Tugas",
+    "pomodoroStats": "Statistik Pomodoro",
+    "today": "Hari ini",
+    "sessions": "{{count}} sesi",
+    "streak": "Streak",
+    "days": "{{count}} hari",
+    "weeklySummary": "Ringkasan Mingguan",
+    "completedThisWeek": "Selesai minggu ini",
+    "tasks": "{{count}} tugas",
+    "dayCount": "Hari {{number}}: {{count}}",
+    "forestHealth": "Kesehatan Hutan",
+    "waterTree": "Siram Pohon",
+    "quickActions": "Aksi Cepat",
+    "yourProgress": "Progres Anda",
+    "earnMoreXP": "Dapatkan Lebih Banyak XP"
+  },
+
+  "hud": {
+    "dayStreak": "Hari Streak"
+  },
+
+  "topbar": {
+    "profileTitle": "Profil - {{name}}"
+  }
+}

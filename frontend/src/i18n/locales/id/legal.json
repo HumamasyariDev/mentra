@@ -1,0 +1,170 @@
+{
+  "privacy": {
+    "title": "Privacy Policy",
+    "backToRegister": "Kembali ke Register",
+    "lastUpdated": "Terakhir diperbarui: {{date}}",
+    "sections": {
+      "introduction": {
+        "title": "1. Pendahuluan",
+        "content": "Mentra (\"kami\") menghargai privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi Anda saat Anda menggunakan layanan kami."
+      },
+      "dataCollection": {
+        "title": "2. Informasi yang Kami Kumpulkan",
+        "provided": {
+          "title": "2.1 Informasi yang Anda Berikan",
+          "accountData": "<strong>Data akun</strong> — nama, alamat email, kata sandi (terenkripsi)",
+          "profileData": "<strong>Data profil</strong> — avatar, preferensi pengaturan",
+          "userContent": "<strong>Konten pengguna</strong> — tugas, jadwal, catatan, pesan forum, data mood"
+        },
+        "automatic": {
+          "title": "2.2 Informasi yang Dikumpulkan Otomatis",
+          "usageData": "<strong>Data penggunaan</strong> — sesi Pomodoro, statistik produktivitas, level dan EXP",
+          "technicalData": "<strong>Data teknis</strong> — jenis browser, alamat IP, waktu akses"
+        },
+        "thirdParty": {
+          "title": "2.3 Informasi dari Pihak Ketiga",
+          "content": "Jika Anda login menggunakan Google atau Facebook, kami menerima nama, email, dan foto profil dari penyedia layanan tersebut sesuai izin yang Anda berikan."
+        }
+      },
+      "dataUsage": {
+        "title": "3. Penggunaan Informasi",
+        "intro": "Kami menggunakan informasi Anda untuk:",
+        "items": {
+          "provideService": "Menyediakan dan memelihara Layanan",
+          "manageAccount": "Mengelola akun dan autentikasi Anda",
+          "storeData": "Menyimpan tugas, jadwal, dan data produktivitas Anda",
+          "aiFeatures": "Menyediakan fitur AI chat dan rekomendasi",
+          "emailVerification": "Mengirim email verifikasi OTP dan reset kata sandi",
+          "gamification": "Menghitung statistik gamifikasi (level, EXP, streak)",
+          "improveService": "Meningkatkan dan mengembangkan Layanan"
+        }
+      },
+      "dataStorage": {
+        "title": "4. Penyimpanan Data",
+        "content": "Data Anda disimpan di server yang aman. Kata sandi dienkripsi menggunakan bcrypt hashing. Token autentikasi menggunakan Laravel Sanctum. Kami tidak menyimpan kata sandi dalam bentuk teks biasa."
+      },
+      "dataSharing": {
+        "title": "5. Berbagi Data",
+        "intro": "Kami <strong>tidak menjual</strong> data pribadi Anda. Data Anda hanya dibagikan dalam kondisi berikut:",
+        "items": {
+          "publicForum": "<strong>Forum publik</strong> — pesan yang Anda kirim di forum dapat dilihat pengguna lain",
+          "serviceProviders": "<strong>Penyedia layanan</strong> — kami menggunakan layanan pihak ketiga untuk email (Gmail SMTP) dan AI (OpenAI) yang memproses data sesuai kebutuhan",
+          "legalObligations": "<strong>Kewajiban hukum</strong> — jika diwajibkan oleh hukum yang berlaku"
+        }
+      },
+      "thirdPartyServices": {
+        "title": "6. Layanan Pihak Ketiga",
+        "intro": "Kami menggunakan layanan pihak ketiga berikut:",
+        "items": {
+          "googleOauth": "<strong>Google OAuth</strong> — untuk autentikasi login sosial",
+          "facebookOauth": "<strong>Facebook OAuth</strong> — untuk autentikasi login sosial",
+          "openaiApi": "<strong>OpenAI API</strong> — untuk fitur AI chat dan agen",
+          "gmailSmtp": "<strong>Gmail SMTP</strong> — untuk pengiriman email verifikasi dan notifikasi"
+        },
+        "note": "Masing-masing layanan ini memiliki kebijakan privasi sendiri yang mengatur pemrosesan data mereka."
+      },
+      "security": {
+        "title": "7. Keamanan",
+        "intro": "Kami menerapkan langkah-langkah keamanan untuk melindungi data Anda, termasuk:",
+        "items": {
+          "bcrypt": "Enkripsi kata sandi dengan bcrypt",
+          "sanctum": "Token-based authentication (Sanctum)",
+          "rateLimiting": "Rate limiting pada endpoint sensitif (OTP, reset password)",
+          "validation": "Validasi dan sanitasi input pada semua form"
+        },
+        "disclaimer": "Namun, tidak ada metode transmisi atau penyimpanan elektronik yang 100% aman. Kami tidak dapat menjamin keamanan absolut."
+      },
+      "yourRights": {
+        "title": "8. Hak Anda",
+        "intro": "Anda memiliki hak untuk:",
+        "items": {
+          "access": "<strong>Mengakses</strong> — melihat data pribadi yang kami simpan tentang Anda",
+          "correct": "<strong>Memperbaiki</strong> — memperbarui informasi yang tidak akurat",
+          "delete": "<strong>Menghapus</strong> — meminta penghapusan akun dan data Anda",
+          "export": "<strong>Mengekspor</strong> — meminta salinan data Anda"
+        },
+        "contact": "Untuk menggunakan hak ini, hubungi kami di <a href=\"mailto:humamozik@gmail.com\" class=\"legal-link\">humamozik@gmail.com</a>."
+      },
+      "cookies": {
+        "title": "9. Cookie",
+        "content": "Kami menggunakan localStorage browser untuk menyimpan token autentikasi dan preferensi pengguna. Kami tidak menggunakan cookie pelacakan pihak ketiga untuk tujuan iklan."
+      },
+      "minors": {
+        "title": "10. Anak di Bawah Umur",
+        "content": "Layanan kami tidak ditujukan untuk anak di bawah usia 13 tahun. Kami tidak secara sadar mengumpulkan data dari anak di bawah 13 tahun. Jika Anda mengetahui bahwa anak di bawah umur telah memberikan data kepada kami, silakan hubungi kami."
+      },
+      "policyChanges": {
+        "title": "11. Perubahan Kebijakan",
+        "content": "Kami dapat memperbarui Kebijakan Privasi ini dari waktu ke waktu. Perubahan akan dipublikasikan di halaman ini dengan tanggal pembaruan yang baru."
+      },
+      "contact": {
+        "title": "12. Kontak",
+        "content": "Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini, silakan hubungi kami di <a href=\"mailto:humamozik@gmail.com\" class=\"legal-link\">humamozik@gmail.com</a>."
+      }
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "backToRegister": "Kembali ke Register",
+    "lastUpdated": "Terakhir diperbarui: {{date}}",
+    "sections": {
+      "acceptance": {
+        "title": "1. Penerimaan Ketentuan",
+        "content": "Dengan mengakses dan menggunakan Mentra (\"Layanan\"), Anda menyetujui untuk terikat oleh Ketentuan Layanan ini. Jika Anda tidak menyetujui ketentuan ini, mohon untuk tidak menggunakan Layanan kami."
+      },
+      "serviceDescription": {
+        "title": "2. Deskripsi Layanan",
+        "content": "Mentra adalah platform produktivitas yang menyediakan fitur manajemen tugas, sesi Pomodoro, penjadwalan, pelacakan mood, chat AI, forum komunitas, dan gamifikasi berupa forest tree care. Layanan ini dirancang untuk membantu pengguna mengorganisir aktivitas dan meningkatkan produktivitas mereka."
+      },
+      "userAccount": {
+        "title": "3. Akun Pengguna",
+        "intro": "Untuk menggunakan Layanan, Anda harus membuat akun dengan memberikan informasi yang akurat dan lengkap. Anda bertanggung jawab untuk:",
+        "items": {
+          "password": "Menjaga kerahasiaan kata sandi akun Anda",
+          "activity": "Semua aktivitas yang terjadi di bawah akun Anda",
+          "notify": "Memberitahu kami segera jika ada penggunaan akun yang tidak sah",
+          "accurate": "Memastikan informasi akun Anda selalu akurat dan terkini"
+        }
+      },
+      "acceptableUse": {
+        "title": "4. Penggunaan yang Diperbolehkan",
+        "intro": "Anda setuju untuk menggunakan Layanan hanya untuk tujuan yang sah. Anda tidak diperbolehkan:",
+        "items": {
+          "illegal": "Menggunakan Layanan untuk tujuan ilegal atau tidak sah",
+          "disrupt": "Mengganggu atau merusak Layanan atau server yang terhubung",
+          "harmful": "Mengunggah konten yang bersifat berbahaya, menyinggung, atau melanggar hak orang lain",
+          "unauthorized": "Mencoba mengakses akun pengguna lain tanpa izin",
+          "bots": "Menggunakan bot, scraper, atau alat otomatis lainnya tanpa izin tertulis"
+        }
+      },
+      "userContent": {
+        "title": "5. Konten Pengguna",
+        "content": "Anda mempertahankan kepemilikan atas konten yang Anda buat melalui Layanan (tugas, catatan, pesan forum, dll). Dengan mengunggah konten, Anda memberikan Mentra lisensi non-eksklusif untuk menyimpan dan menampilkan konten tersebut dalam rangka menyediakan Layanan kepada Anda."
+      },
+      "aiFeatures": {
+        "title": "6. Fitur AI",
+        "content": "Mentra menyediakan fitur chat AI dan agen AI untuk membantu produktivitas. Respons AI bersifat informatif dan tidak boleh dianggap sebagai nasihat profesional. Kami tidak menjamin keakuratan atau kelengkapan respons yang dihasilkan AI."
+      },
+      "availability": {
+        "title": "7. Ketersediaan Layanan",
+        "content": "Kami berusaha menyediakan Layanan secara terus-menerus, namun tidak menjamin bahwa Layanan akan selalu tersedia tanpa gangguan. Kami berhak melakukan pemeliharaan, pembaruan, atau perubahan pada Layanan kapan saja."
+      },
+      "termination": {
+        "title": "8. Penghentian",
+        "content": "Kami berhak menangguhkan atau menghentikan akun Anda jika Anda melanggar Ketentuan Layanan ini. Anda juga dapat menghapus akun Anda kapan saja melalui pengaturan akun."
+      },
+      "liability": {
+        "title": "9. Batasan Tanggung Jawab",
+        "content": "Layanan disediakan \"sebagaimana adanya\" tanpa jaminan apapun. Mentra tidak bertanggung jawab atas kerugian langsung, tidak langsung, insidental, atau konsekuensial yang timbul dari penggunaan Layanan."
+      },
+      "changes": {
+        "title": "10. Perubahan Ketentuan",
+        "content": "Kami dapat memperbarui Ketentuan Layanan ini dari waktu ke waktu. Perubahan akan berlaku segera setelah dipublikasikan di halaman ini. Penggunaan Layanan yang berkelanjutan setelah perubahan merupakan penerimaan Anda terhadap ketentuan yang diperbarui."
+      },
+      "contact": {
+        "title": "11. Kontak",
+        "content": "Jika Anda memiliki pertanyaan tentang Ketentuan Layanan ini, silakan hubungi kami di <a href=\"mailto:humamozik@gmail.com\" class=\"legal-link\">humamozik@gmail.com</a>."
+      }
+    }
+  }
+}

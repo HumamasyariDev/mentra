@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Link, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { authApi } from '../services/api';
 import { Loader2, ArrowRight, ArrowLeft, Eye, EyeOff, Check } from 'lucide-react';
@@ -47,6 +48,7 @@ const RIGHT_PANEL_STARS = generateStars(35);
 const OTP_LENGTH = 6;
 
 export default function Register() {
+  const { t } = useTranslation(['auth', 'common']);
   const { user, loading: authLoading, register: authRegister } = useAuth();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({
@@ -127,12 +129,12 @@ export default function Register() {
       const data = err.response?.data;
       if (err.response?.status === 429) {
         setResendCooldown(data?.retry_after || 60);
-        setError(`Please wait ${data?.retry_after || 60}s before requesting a new code.`);
+        setError(t('auth:errors.rateLimitOtp', { seconds: data?.retry_after || 60 }));
       } else if (data?.errors) {
         setErrors(data.errors);
-        setError(data.message || 'Failed to send verification code.');
+        setError(data.message || t('auth:errors.failedSendOtp'));
       } else {
-        setError(data?.message || 'Failed to send verification code.');
+        setError(data?.message || t('auth:errors.failedSendOtp'));
       }
       return false;
     } finally {
@@ -153,15 +155,15 @@ export default function Register() {
   const handlePasswordContinue = async (e) => {
     e.preventDefault();
     if (!pwLengthOk) {
-      setError('Password must be between 8 and 64 characters.');
+      setError(t('auth:errors.passwordLength'));
       return;
     }
     if (!pwLetterAndNumber) {
-      setError('Password must contain at least 1 letter and 1 number.');
+      setError(t('auth:errors.passwordLetterNumber'));
       return;
     }
     if (form.password !== form.password_confirmation) {
-      setError('Passwords do not match.');
+      setError(t('auth:errors.passwordMismatch'));
       return;
     }
     const sent = await sendOtp();
@@ -239,11 +241,11 @@ export default function Register() {
         if (err.response.data.errors.otp_token) {
           setOtpToken('');
           setOtpCode(Array(OTP_LENGTH).fill(''));
-          setError('Email verification expired. Please verify again.');
+          setError(t('auth:errors.otpExpired'));
           return;
         }
       }
-      setError(err.response?.data?.message || 'Verification failed.');
+      setError(err.response?.data?.message || t('auth:errors.verificationFailed'));
     } finally {
       setOtpVerifying(false);
     }
@@ -270,7 +272,7 @@ export default function Register() {
       <div className="reg-left">
         <div className="reg-left-inner">
           <div className="reg-left-content">
-            <span className="sr-only">Sign up for Mentra, your productivity universe.</span>
+            <span className="sr-only">{t('auth:register.srText')}</span>
 
             {step === 1 ? (
               <>
@@ -278,10 +280,10 @@ export default function Register() {
                 <div className="reg-header">
                   <div className="reg-logo">M</div>
                   <div className="reg-heading-group">
-                    <p className="reg-title">Let&apos;s create your account</p>
+                    <p className="reg-title">{t('auth:register.title')}</p>
                     <div className="reg-subtitle">
-                      Already have an account?{' '}
-                      <Link to="/login" className="reg-link">Log in</Link>
+                      {t('auth:register.alreadyHaveAccount')}{' '}
+                      <Link to="/login" className="reg-link">{t('auth:register.logIn')}</Link>
                       <svg width="24" height="24" fill="none" viewBox="0 0 24 24" className="reg-arrow">
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m13.75 6.75 5.5 5.25-5.5 5.25M19 12H4.75" />
                       </svg>
@@ -298,11 +300,11 @@ export default function Register() {
                       {/* First name + Last name */}
                       <div className="reg-name-row">
                         <div className="reg-field reg-field--half">
-                          <p className="reg-label">First name</p>
+                          <p className="reg-label">{t('auth:register.firstName')}</p>
                           <input
                             type="text"
                             className={`reg-input${errors.name ? ' reg-input--error' : ''}`}
-                            placeholder="Your first name"
+                            placeholder={t('auth:register.firstNamePlaceholder')}
                             value={form.firstName}
                             onChange={(e) => setForm({ ...form, firstName: e.target.value })}
                             required
@@ -312,11 +314,11 @@ export default function Register() {
                           />
                         </div>
                         <div className="reg-field reg-field--half">
-                          <p className="reg-label">Last name</p>
+                          <p className="reg-label">{t('auth:register.lastName')}</p>
                           <input
                             type="text"
                             className={`reg-input${errors.name ? ' reg-input--error' : ''}`}
-                            placeholder="Your last name"
+                            placeholder={t('auth:register.lastNamePlaceholder')}
                             value={form.lastName}
                             onChange={(e) => setForm({ ...form, lastName: e.target.value })}
                             required
@@ -330,11 +332,11 @@ export default function Register() {
 
                       {/* Email */}
                       <div className="reg-field">
-                        <p className="reg-label">Email</p>
+                        <p className="reg-label">{t('common:email')}</p>
                         <input
                           type="email"
                           className={`reg-input${errors.email ? ' reg-input--error' : ''}`}
-                          placeholder="Enter your email address"
+                          placeholder={t('auth:register.emailPlaceholder')}
                           value={form.email}
                           onChange={(e) => setForm({ ...form, email: e.target.value })}
                           required
@@ -357,22 +359,22 @@ export default function Register() {
                           name="agreeTOS"
                         />
                         <label htmlFor="reg-tos" className="reg-terms-text">
-                          By signing up you agree to the{' '}
-                          <Link to="/terms-of-service" className="reg-terms-link">terms of service</Link>
-                          {' '}and the{' '}
-                          <Link to="/privacy-policy" className="reg-terms-link">privacy policy</Link>.
+                          {t('auth:register.termsText')}{' '}
+                          <Link to="/terms-of-service" className="reg-terms-link">{t('auth:register.termsOfService')}</Link>
+                          {' '}{t('auth:register.andThe')}{' '}
+                          <Link to="/privacy-policy" className="reg-terms-link">{t('auth:register.privacyPolicy')}</Link>.
                         </label>
                       </div>
 
                       {/* Continue button */}
                       <button type="submit" className="reg-submit" disabled={!isStep1Valid || otpSending}>
-                        {otpSending ? <Loader2 className="reg-submit-spinner" /> : 'Continue'}
+                        {otpSending ? <Loader2 className="reg-submit-spinner" /> : t('common:continue')}
                       </button>
 
                       {/* Divider */}
                       <div className="reg-divider">
                         <hr className="reg-divider-line" />
-                        <span className="reg-divider-text">or</span>
+                        <span className="reg-divider-text">{t('common:or')}</span>
                         <hr className="reg-divider-line" />
                       </div>
 
@@ -380,11 +382,11 @@ export default function Register() {
                       <div className="reg-social-group">
                         <button type="button" className="reg-social-btn" onClick={() => handleSocialLogin('google')}>
                           <GoogleIcon />
-                          Sign up with Google
+                          {t('auth:register.socialGoogle')}
                         </button>
                         <button type="button" className="reg-social-btn" onClick={() => handleSocialLogin('facebook')}>
                           <FacebookIcon />
-                          Sign up with Facebook
+                          {t('auth:register.socialFacebook')}
                         </button>
                       </div>
                     </form>
@@ -397,7 +399,7 @@ export default function Register() {
                 <div className="reg-header">
                   <div className="reg-logo">M</div>
                   <div className="reg-heading-group">
-                    <p className="reg-title">Let&apos;s create your account</p>
+                    <p className="reg-title">{t('auth:register.title')}</p>
                   </div>
                 </div>
 
@@ -408,18 +410,18 @@ export default function Register() {
                     <form onSubmit={handlePasswordContinue} className="reg-form">
                       {/* Email preview (read-only, like Windsurf) */}
                       <div className="reg-field">
-                        <p className="reg-label">Email</p>
+                        <p className="reg-label">{t('common:email')}</p>
                         <p className="reg-email-preview">{form.email}</p>
                       </div>
 
                       {/* Password */}
                       <div className="reg-field">
-                        <p className="reg-label">Password</p>
+                        <p className="reg-label">{t('common:password')}</p>
                         <div className="reg-password-wrap">
                           <input
                             type={showPassword ? 'text' : 'password'}
                             className={`reg-input${errors.password ? ' reg-input--error' : ''}`}
-                            placeholder="Enter your password"
+                            placeholder={t('auth:register.passwordPlaceholder')}
                             value={form.password}
                             onChange={(e) => setForm({ ...form, password: e.target.value })}
                             required
@@ -440,12 +442,12 @@ export default function Register() {
 
                       {/* Password confirmation */}
                       <div className="reg-field">
-                        <p className="reg-label">Password confirmation</p>
+                        <p className="reg-label">{t('auth:register.passwordConfirmation')}</p>
                         <div className="reg-password-wrap">
                           <input
                             type={showPassword ? 'text' : 'password'}
                             className="reg-input"
-                            placeholder="Confirm your password"
+                            placeholder={t('auth:register.confirmPasswordPlaceholder')}
                             value={form.password_confirmation}
                             onChange={(e) => setForm({ ...form, password_confirmation: e.target.value })}
                             required
@@ -456,22 +458,22 @@ export default function Register() {
 
                       {/* Password requirements checklist */}
                       <div className="reg-pw-requirements">
-                        <p className="reg-pw-requirements-title">Your password must contain:</p>
+                        <p className="reg-pw-requirements-title">{t('auth:register.pwRequirementsTitle')}</p>
                         <div className="reg-pw-requirements-list">
                           <div className={`reg-pw-req${pwLengthOk ? ' reg-pw-req--met' : ''}`}>
                             <Check size={14} strokeWidth={2.5} />
-                            <span>Between 8 and 64 characters</span>
+                            <span>{t('auth:register.pwLength')}</span>
                           </div>
                           <div className={`reg-pw-req${pwLetterAndNumber ? ' reg-pw-req--met' : ''}`}>
                             <Check size={14} strokeWidth={2.5} />
-                            <span>At least 1 letter and 1 number</span>
+                            <span>{t('auth:register.pwLetterAndNumber')}</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Continue button */}
                       <button type="submit" className="reg-submit" disabled={otpSending || !pwLengthOk || !pwLetterAndNumber || !form.password_confirmation}>
-                        {otpSending ? <Loader2 className="reg-submit-spinner" /> : 'Continue'}
+                        {otpSending ? <Loader2 className="reg-submit-spinner" /> : t('common:continue')}
                       </button>
 
                       {/* Back link — Windsurf style: ← Other Sign up options */}
@@ -481,7 +483,7 @@ export default function Register() {
                         onClick={() => { setStep(1); setError(''); }}
                       >
                         <ArrowLeft size={16} />
-                        Other Sign up options
+                        {t('auth:register.otherSignUpOptions')}
                       </button>
                     </form>
                   </div>
@@ -515,10 +517,8 @@ export default function Register() {
                     </svg>
                   </div>
                   <div className="reg-heading-group">
-                    <p className="reg-title">Check your email</p>
-                    <p className="reg-otp-subtitle">
-                      We sent a 6-digit code to <strong>{form.email}</strong>
-                    </p>
+                    <p className="reg-title">{t('auth:register.checkYourEmail')}</p>
+                    <p className="reg-otp-subtitle" dangerouslySetInnerHTML={{ __html: t('auth:register.otpSubtitle', { email: form.email }) }} />
                   </div>
                 </div>
 
@@ -548,12 +548,12 @@ export default function Register() {
 
                       {/* Verify & Create button */}
                       <button type="submit" className="reg-submit" disabled={!isOtpComplete || otpVerifying}>
-                        {otpVerifying ? <Loader2 className="reg-submit-spinner" /> : 'Verify & Create Account'}
+                        {otpVerifying ? <Loader2 className="reg-submit-spinner" /> : t('auth:register.verifyAndCreate')}
                       </button>
 
                       {/* Resend */}
                       <div className="reg-otp-footer">
-                        <span className="reg-otp-footer-text">Didn&apos;t receive the code?</span>
+                        <span className="reg-otp-footer-text">{t('auth:register.didntReceiveCode')}</span>
                         <button
                           type="button"
                           className="reg-otp-resend"
@@ -561,10 +561,10 @@ export default function Register() {
                           disabled={resendCooldown > 0 || otpSending}
                         >
                           {otpSending
-                            ? 'Sending...'
+                            ? t('auth:register.sendingOtp')
                             : resendCooldown > 0
-                              ? `Resend in ${resendCooldown}s`
-                              : 'Resend code'}
+                              ? t('auth:register.resendIn', { seconds: resendCooldown })
+                              : t('auth:register.resendCode')}
                         </button>
                       </div>
 
@@ -575,7 +575,7 @@ export default function Register() {
                         onClick={() => { setStep(2); setError(''); setOtpCode(Array(OTP_LENGTH).fill('')); }}
                       >
                         <ArrowLeft size={16} />
-                        Back to previous step
+                        {t('auth:register.backToPreviousStep')}
                       </button>
                     </form>
                   </div>
@@ -602,13 +602,13 @@ export default function Register() {
             <div className="reg-testimonial-blur" aria-hidden="true" />
             <div className="reg-testimonial-inner">
               <p className="reg-quote">
-                &quot;Organize your tasks, grow your focus forest, and let AI guide your productivity &mdash; all in one cosmic workspace.&quot;
+                {t('auth:register.testimonialQuote')}
               </p>
               <div className="reg-quote-author">
                 <div className="reg-quote-avatar">M</div>
                 <div className="reg-quote-info">
-                  <p className="reg-quote-name">Mentra Team</p>
-                  <p className="reg-quote-role">Your Productivity Universe</p>
+                  <p className="reg-quote-name">{t('auth:register.testimonialAuthor')}</p>
+                  <p className="reg-quote-role">{t('auth:register.testimonialRole')}</p>
                 </div>
               </div>
             </div>

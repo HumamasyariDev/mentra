@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2, FileText, Upload, X, Zap } from 'lucide-react';
 import { generateQuizFromMaterial, extractTextFromFile, extractKeyPoints } from '../../utils/quizHelpers';
 import { quizApi } from '../../services/api';
 import '../../styles/components/tasks/TaskComponents.css';
 
 export default function TaskCreateForm({ onSubmit, isPending }) {
+  const { t } = useTranslation(['tasks', 'common']);
   const [taskType, setTaskType] = useState('normal'); // 'normal' | 'quiz'
   const [form, setForm] = useState({
     title: '',
@@ -40,7 +42,7 @@ export default function TaskCreateForm({ onSubmit, isPending }) {
       setMaterial(text);
     } catch (err) {
       console.error('[TaskCreateForm] File parse error:', err);
-      setError(err.message || 'Failed to read file.');
+      setError(err.message || t('tasks:createForm.errorFileParse'));
       setFile(null);
     } finally {
       setFileLoading(false);
@@ -58,29 +60,29 @@ export default function TaskCreateForm({ onSubmit, isPending }) {
 
     if (taskType === 'quiz') {
       if (!material.trim()) {
-        setError('Please provide study material for the quiz.');
+        setError(t('tasks:createForm.errorNoMaterial'));
         return;
       }
 
       setGenerating(true);
       try {
         // 1. Extract key points from material via Puter.js
-        setGeneratingStatus('Extracting key points...');
+        setGeneratingStatus(t('tasks:createForm.extractingKeyPoints'));
         const keyPoints = await extractKeyPoints(material.trim());
 
         // 2. Generate quiz from key points via Puter.js
-        setGeneratingStatus('Generating quiz questions...');
+        setGeneratingStatus(t('tasks:createForm.generatingQuestions'));
         const questions = await generateQuizFromMaterial(keyPoints, questionCount);
 
         // 3. Create the task (with type: 'quiz'), then save quiz in afterCreate callback
-        setGeneratingStatus('Saving task...');
+        setGeneratingStatus(t('tasks:createForm.savingTask'));
         const taskPayload = { ...form, type: 'quiz' };
         onSubmit(taskPayload, resetForm, async (createdTask) => {
           await quizApi.save(createdTask.id, questions, material.trim());
         });
       } catch (err) {
         console.error('[TaskCreateForm] Quiz generation error:', err);
-        setError(err.message || 'Failed to generate quiz. Please check your material and try again.');
+        setError(err.message || t('tasks:createForm.errorQuizGeneration'));
         setGenerating(false);
         setGeneratingStatus('');
       }
@@ -102,7 +104,7 @@ export default function TaskCreateForm({ onSubmit, isPending }) {
           onClick={() => setTaskType('normal')}
         >
           <FileText style={{ width: '1rem', height: '1rem' }} />
-          Normal Task
+          {t('tasks:createForm.normalTask')}
         </button>
         <button
           type="button"
@@ -110,47 +112,47 @@ export default function TaskCreateForm({ onSubmit, isPending }) {
           onClick={() => setTaskType('quiz')}
         >
           <Zap style={{ width: '1rem', height: '1rem' }} />
-          Quiz Task
+          {t('tasks:createForm.quizTask')}
         </button>
       </div>
 
       <div className="task-create-form-grid">
         <div className="task-form-group">
-          <label className="task-form-label">Title</label>
+          <label className="task-form-label">{t('tasks:createForm.titleLabel')}</label>
           <input
             type="text"
             className="task-form-input"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
-            placeholder="What needs to be done?"
+            placeholder={t('tasks:createForm.titlePlaceholder')}
             required
           />
         </div>
         <div className="task-form-group">
-          <label className="task-form-label">Description (optional)</label>
+          <label className="task-form-label">{t('tasks:createForm.descriptionLabel')}</label>
           <textarea
             className="task-form-input task-form-textarea"
             rows={2}
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-            placeholder="Add details..."
+            placeholder={t('tasks:createForm.descriptionPlaceholder')}
           />
         </div>
         <div className="task-create-form-row">
           <div className="task-form-group">
-            <label className="task-form-label">Priority</label>
+            <label className="task-form-label">{t('tasks:createForm.priorityLabel')}</label>
             <select
               className="task-form-select"
               value={form.priority}
               onChange={(e) => setForm({ ...form, priority: e.target.value })}
             >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
+              <option value="low">{t('common:priority.low')}</option>
+              <option value="medium">{t('common:priority.medium')}</option>
+              <option value="high">{t('common:priority.high')}</option>
             </select>
           </div>
           <div className="task-form-group">
-            <label className="task-form-label">Due Date (optional)</label>
+            <label className="task-form-label">{t('tasks:createForm.dueDateLabel')}</label>
             <input
               type="date"
               className="task-form-input"
@@ -163,10 +165,10 @@ export default function TaskCreateForm({ onSubmit, isPending }) {
         {/* Quiz Material Section */}
         {taskType === 'quiz' && (
           <div className="task-form-group">
-            <label className="task-form-label">Study Material</label>
-            <p className="task-form-hint">Paste your study notes or upload a file (.txt, .md, .pdf, .docx, .pptx). Key points will be extracted and a quiz generated automatically.</p>
+            <label className="task-form-label">{t('tasks:createForm.studyMaterialLabel')}</label>
+            <p className="task-form-hint">{t('tasks:createForm.studyMaterialHint')}</p>
             <div className="task-form-question-count">
-              <label className="task-form-label">Number of Questions: <strong>{questionCount}</strong></label>
+              <label className="task-form-label" dangerouslySetInnerHTML={{ __html: t('tasks:createForm.questionCountLabel', { count: questionCount }) }} />
               <input
                 type="range"
                 min={5}
@@ -186,12 +188,12 @@ export default function TaskCreateForm({ onSubmit, isPending }) {
               rows={6}
               value={material}
               onChange={(e) => { setMaterial(e.target.value); setFile(null); }}
-              placeholder="Paste your study material here..."
+              placeholder={t('tasks:createForm.materialPlaceholder')}
             />
             <div className="task-form-file-row">
               <label className="task-form-file-btn">
                 <Upload style={{ width: '0.875rem', height: '0.875rem' }} />
-                Upload File
+                {t('tasks:createForm.uploadFile')}
                 <input
                   type="file"
                   accept=".txt,.md,.text,.pdf,.docx,.pptx"
@@ -202,7 +204,7 @@ export default function TaskCreateForm({ onSubmit, isPending }) {
               {fileLoading && (
                 <span className="task-form-file-name">
                   <Loader2 style={{ width: '0.75rem', height: '0.75rem', animation: 'task-spin 0.8s linear infinite' }} />
-                  Reading file...
+                  {t('tasks:createForm.readingFile')}
                 </span>
               )}
               {file && !fileLoading && (
@@ -228,7 +230,7 @@ export default function TaskCreateForm({ onSubmit, isPending }) {
           disabled={isSubmitting}
         >
           {isSubmitting && <Loader2 className="task-form-spinner" />}
-          {generating ? (generatingStatus || 'Generating Quiz…') : 'Create Task'}
+          {generating ? (generatingStatus || t('tasks:createForm.generatingQuiz')) : t('tasks:createForm.createTask')}
         </button>
       </div>
     </form>

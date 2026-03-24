@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { scheduleApi } from '../services/api';
 import { Plus, X, List, CalendarDays, Columns3, CheckCircle2 } from 'lucide-react';
@@ -9,12 +10,6 @@ import ScheduleBoardView from '../components/schedules/ScheduleBoardView';
 import ScheduleEditModal from '../components/schedules/ScheduleEditModal';
 import { isCompletedToday } from '../components/schedules/ScheduleItem';
 import '../styles/pages/Schedules.css';
-
-const views = [
-  { key: 'list', label: 'List', icon: List },
-  { key: 'calendar', label: 'Calendar', icon: CalendarDays },
-  { key: 'board', label: 'Board', icon: Columns3 },
-];
 
 const getSchedulesForToday = (schedules) => {
   const today = new Date();
@@ -30,10 +25,17 @@ const getSchedulesForToday = (schedules) => {
 };
 
 export default function Schedules() {
+  const { t } = useTranslation(['schedules', 'common']);
   const queryClient = useQueryClient();
   const [activeView, setActiveView] = useState('list');
   const [showForm, setShowForm] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(null);
+
+  const views = [
+    { key: 'list', label: t('common:list'), icon: List },
+    { key: 'calendar', label: t('common:calendar'), icon: CalendarDays },
+    { key: 'board', label: t('common:board'), icon: Columns3 },
+  ];
 
   const { data: schedules = [], isLoading } = useQuery({
     queryKey: ['schedules'],
@@ -146,7 +148,7 @@ export default function Schedules() {
   const handleUncomplete = (id) => uncompleteMutation.mutate(id);
 
   const handleDelete = (id) => {
-    if (window.confirm('Delete this schedule? This cannot be undone.')) {
+    if (window.confirm(t('schedules:deleteConfirm'))) {
       deleteMutation.mutate(id);
     }
   };
@@ -160,8 +162,8 @@ export default function Schedules() {
       {/* Header */}
       <div className="schedules-header">
         <div className="schedules-header-info">
-          <h1 className="schedules-title">Schedules</h1>
-          <p className="schedules-subtitle">Track your routines and build habits</p>
+          <h1 className="schedules-title">{t('schedules:pageTitle')}</h1>
+          <p className="schedules-subtitle">{t('schedules:pageSubtitle')}</p>
         </div>
         <div className="schedules-header-actions">
           <button
@@ -173,7 +175,7 @@ export default function Schedules() {
             ) : (
               <Plus className="schedules-new-icon" />
             )}
-            {showForm ? 'Cancel' : 'New Schedule'}
+            {showForm ? t('common:cancel') : t('schedules:newSchedule')}
           </button>
         </div>
       </div>
@@ -183,7 +185,7 @@ export default function Schedules() {
         <div className="schedules-progress">
           <div className="schedules-progress-info">
             <CheckCircle2 className="schedules-progress-icon" />
-            <span className="schedules-progress-label">Today</span>
+            <span className="schedules-progress-label">{t('common:today')}</span>
             <span className="schedules-progress-count">
               {todayStats.completed} / {todayStats.total}
             </span>

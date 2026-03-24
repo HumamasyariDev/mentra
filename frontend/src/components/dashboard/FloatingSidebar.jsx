@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { X } from 'lucide-react';
 import '../../styles/components/dashboard/FloatingSidebar.css';
 
 export const FloatingSidebar = ({ isOpen, onClose, onNavigate }) => {
+  const { t } = useTranslation(['dashboard', 'common']);
   const sidebarRef = React.useRef(null);
   const overlayRef = React.useRef(null);
 
@@ -83,11 +85,11 @@ export const FloatingSidebar = ({ isOpen, onClose, onNavigate }) => {
       <aside ref={sidebarRef} className="floating-sidebar">
         {/* Close button */}
         <div className="sidebar-header">
-          <h2 className="sidebar-title">Menu</h2>
+          <h2 className="sidebar-title">{t('dashboard:floatingSidebar.menu')}</h2>
           <button
             className="sidebar-close-btn"
             onClick={handleClose}
-            aria-label="Close menu"
+            aria-label={t('dashboard:sidebar.closeMenu')}
           >
             <X size={20} />
           </button>
@@ -106,7 +108,7 @@ export const FloatingSidebar = ({ isOpen, onClose, onNavigate }) => {
                 }}
               >
                 <span className="sidebar-link-icon">🏠</span>
-                <span>Dashboard</span>
+                <span>{t('common:nav.dashboard')}</span>
               </a>
             </li>
             <li>
@@ -119,7 +121,7 @@ export const FloatingSidebar = ({ isOpen, onClose, onNavigate }) => {
                 }}
               >
                 <span className="sidebar-link-icon">✓</span>
-                <span>Tasks</span>
+                <span>{t('common:nav.tasks')}</span>
               </a>
             </li>
             <li>
@@ -132,7 +134,7 @@ export const FloatingSidebar = ({ isOpen, onClose, onNavigate }) => {
                 }}
               >
                 <span className="sidebar-link-icon">🍅</span>
-                <span>Pomodoro</span>
+                <span>{t('common:nav.pomodoro')}</span>
               </a>
             </li>
             <li>
@@ -145,7 +147,7 @@ export const FloatingSidebar = ({ isOpen, onClose, onNavigate }) => {
                 }}
               >
                 <span className="sidebar-link-icon">🌳</span>
-                <span>Forest</span>
+                <span>{t('common:nav.forest')}</span>
               </a>
             </li>
             <li>
@@ -158,7 +160,7 @@ export const FloatingSidebar = ({ isOpen, onClose, onNavigate }) => {
                 }}
               >
                 <span className="sidebar-link-icon">📅</span>
-                <span>Schedules</span>
+                <span>{t('common:nav.schedules')}</span>
               </a>
             </li>
             <li>
@@ -171,7 +173,7 @@ export const FloatingSidebar = ({ isOpen, onClose, onNavigate }) => {
                 }}
               >
                 <span className="sidebar-link-icon">💬</span>
-                <span>AI & Chat</span>
+                <span>{t('common:sections.aiChat')}</span>
               </a>
             </li>
             <li>
@@ -184,7 +186,7 @@ export const FloatingSidebar = ({ isOpen, onClose, onNavigate }) => {
                 }}
               >
                 <span className="sidebar-link-icon">👥</span>
-                <span>Forum</span>
+                <span>{t('common:nav.forum')}</span>
               </a>
             </li>
           </ul>
@@ -201,7 +203,7 @@ export const FloatingSidebar = ({ isOpen, onClose, onNavigate }) => {
             }}
           >
             <span className="sidebar-link-icon">⚙️</span>
-            <span>Settings</span>
+            <span>{t('common:nav.settings')}</span>
           </a>
         </div>
       </aside>

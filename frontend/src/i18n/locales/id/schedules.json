@@ -1,0 +1,57 @@
+{
+  "pageTitle": "Jadwal",
+  "pageSubtitle": "Lacak rutinitas dan bangun kebiasaan",
+  "newSchedule": "Jadwal Baru",
+
+  "deleteConfirm": "Hapus jadwal ini? Tindakan ini tidak dapat dibatalkan.",
+
+  "timeTo": "sampai {{time}}",
+
+  "createForm": {
+    "titlePlaceholder": "contoh: Olahraga pagi",
+    "descriptionLabel": "Deskripsi (opsional)",
+    "descriptionPlaceholder": "Deskripsi singkat jadwal ini...",
+    "startTime": "Waktu Mulai",
+    "endTime": "Waktu Selesai",
+    "daysOfWeek": "Hari dalam Minggu",
+    "dayOfMonth": "Tanggal dalam Bulan",
+    "dayOfMonthPlaceholder": "1-31",
+    "createBtn": "Buat Jadwal"
+  },
+
+  "editModal": {
+    "title": "Edit Jadwal",
+    "statusLabel": "Status",
+    "saveBtn": "Simpan Perubahan"
+  },
+
+  "listView": {
+    "allTypes": "Semua Tipe",
+    "morning": "Pagi",
+    "afternoon": "Siang",
+    "evening": "Malam",
+    "anytime": "Kapan Saja",
+    "noSchedules": "Belum ada jadwal"
+  },
+
+  "calendarView": {
+    "scheduleCount": "{{count}} jadwal",
+    "noSchedulesForDay": "Tidak ada jadwal untuk hari ini",
+    "legend": {
+      "pending": "Tertunda",
+      "partial": "Sebagian",
+      "done": "Selesai"
+    }
+  },
+
+  "boardView": {
+    "dropHere": "Taruh di sini",
+    "noSchedules": "Tidak ada jadwal"
+  },
+
+  "type": {
+    "daily": "Harian",
+    "weekly": "Mingguan",
+    "monthly": "Bulanan"
+  }
+}

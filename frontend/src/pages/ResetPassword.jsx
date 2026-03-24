@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { authApi } from '../services/api';
 import { Loader2, ArrowLeft, Eye, EyeOff, Check } from 'lucide-react';
 import '../styles/pages/Auth.css';
 
 export default function ResetPassword() {
+  const { t } = useTranslation(['auth', 'common']);
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token') || '';
   const email = searchParams.get('email') || '';
@@ -23,15 +25,15 @@ export default function ResetPassword() {
     setError('');
 
     if (!pwLengthOk) {
-      setError('Password must be between 8 and 64 characters.');
+      setError(t('auth:errors.passwordLength'));
       return;
     }
     if (!pwLetterAndNumber) {
-      setError('Password must contain at least 1 letter and 1 number.');
+      setError(t('auth:errors.passwordLetterNumber'));
       return;
     }
     if (form.password !== form.password_confirmation) {
-      setError('Passwords do not match.');
+      setError(t('auth:errors.passwordMismatch'));
       return;
     }
 
@@ -45,7 +47,7 @@ export default function ResetPassword() {
       });
       setSuccess(true);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to reset password. The link may have expired.');
+      setError(err.response?.data?.message || t('auth:errors.resetPasswordFailed'));
     } finally {
       setLoading(false);
     }
@@ -55,13 +57,13 @@ export default function ResetPassword() {
   if (!token || !email) {
     return (
       <div className="auth-reset-sent">
-        <h2 className="auth-reset-sent-title">Invalid reset link</h2>
+        <h2 className="auth-reset-sent-title">{t('auth:resetPassword.invalidLinkTitle')}</h2>
         <p className="auth-reset-sent-desc">
-          This password reset link is invalid or has expired. Please request a new one.
+          {t('auth:resetPassword.invalidLinkDesc')}
         </p>
         <Link to="/login" className="auth-reset-back">
           <ArrowLeft size={16} />
-          Back to login
+          {t('auth:resetPassword.backToLogin')}
         </Link>
       </div>
     );
@@ -71,13 +73,13 @@ export default function ResetPassword() {
   if (success) {
     return (
       <div className="auth-reset-sent">
-        <h2 className="auth-reset-sent-title">Password reset successful</h2>
+        <h2 className="auth-reset-sent-title">{t('auth:resetPassword.successTitle')}</h2>
         <p className="auth-reset-sent-desc">
-          Your password has been updated. You can now log in with your new password.
+          {t('auth:resetPassword.successDesc')}
         </p>
         <Link to="/login" className="auth-reset-back">
           <ArrowLeft size={16} />
-          Back to login
+          {t('auth:resetPassword.backToLogin')}
         </Link>
       </div>
     );
@@ -85,7 +87,7 @@ export default function ResetPassword() {
 
   return (
     <>
-      <h2 className="auth-heading">Reset your password</h2>
+      <h2 className="auth-heading">{t('auth:resetPassword.heading')}</h2>
 
       <div className="auth-card">
         {error && <div className="auth-error">{error}</div>}
@@ -93,18 +95,18 @@ export default function ResetPassword() {
         <form onSubmit={handleSubmit} className="auth-form">
           {/* Email preview */}
           <div className="auth-field-group">
-            <label className="auth-label">Email</label>
+            <label className="auth-label">{t('common:email')}</label>
             <p className="auth-email-preview">{email}</p>
           </div>
 
           {/* Password */}
           <div className="auth-field-group">
-            <label className="auth-label">New password</label>
+            <label className="auth-label">{t('auth:resetPassword.newPassword')}</label>
             <div className="auth-input-wrapper">
               <input
                 type={showPassword ? 'text' : 'password'}
                 className="auth-input"
-                placeholder="Enter new password"
+                placeholder={t('auth:resetPassword.newPasswordPlaceholder')}
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 required
@@ -124,11 +126,11 @@ export default function ResetPassword() {
 
           {/* Confirm */}
           <div className="auth-field-group">
-            <label className="auth-label">Confirm new password</label>
+            <label className="auth-label">{t('auth:resetPassword.confirmNewPassword')}</label>
             <input
               type={showPassword ? 'text' : 'password'}
               className="auth-input"
-              placeholder="Confirm new password"
+              placeholder={t('auth:resetPassword.confirmNewPasswordPlaceholder')}
               value={form.password_confirmation}
               onChange={(e) => setForm({ ...form, password_confirmation: e.target.value })}
               required
@@ -138,15 +140,15 @@ export default function ResetPassword() {
 
           {/* Password requirements */}
           <div className="auth-pw-requirements">
-            <p className="auth-pw-requirements-title">Your password must contain:</p>
+            <p className="auth-pw-requirements-title">{t('auth:resetPassword.pwRequirementsTitle')}</p>
             <div className="auth-pw-requirements-list">
               <div className={`auth-pw-req${pwLengthOk ? ' auth-pw-req--met' : ''}`}>
                 <Check size={14} strokeWidth={2.5} />
-                <span>Between 8 and 64 characters</span>
+                <span>{t('auth:resetPassword.pwLength')}</span>
               </div>
               <div className={`auth-pw-req${pwLetterAndNumber ? ' auth-pw-req--met' : ''}`}>
                 <Check size={14} strokeWidth={2.5} />
-                <span>At least 1 letter and 1 number</span>
+                <span>{t('auth:resetPassword.pwLetterAndNumber')}</span>
               </div>
             </div>
           </div>
@@ -157,13 +159,13 @@ export default function ResetPassword() {
             className="auth-submit-btn"
             disabled={loading || !pwLengthOk || !pwLetterAndNumber || !form.password_confirmation}
           >
-            {loading ? <Loader2 className="auth-loading-spinner" /> : 'Reset password'}
+            {loading ? <Loader2 className="auth-loading-spinner" /> : t('auth:resetPassword.submitButton')}
           </button>
         </form>
 
         <Link to="/login" className="auth-reset-back" style={{ alignSelf: 'center', marginTop: '0.5rem' }}>
           <ArrowLeft size={16} />
-          Back to login
+          {t('auth:resetPassword.backToLogin')}
         </Link>
       </div>
     </>

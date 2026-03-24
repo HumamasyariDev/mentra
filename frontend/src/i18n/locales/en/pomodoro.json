@@ -1,0 +1,31 @@
+{
+  "title": "Pomodoro",
+  "subtitle": "Water your plants by staying focused",
+
+  "mood_idle": "Waiting for water...",
+  "mood_focusing": "Watering in progress...",
+  "mood_paused": "Tap is closed...",
+  "mood_completed": "Plant is happy & fully watered!",
+
+  "status_running": "Watering in progress...",
+  "status_paused": "Paused — tap is closed",
+  "status_idle": "Start to water your plants",
+
+  "or_custom": "or custom",
+  "min_unit": "min",
+  "no_task_linked": "No task linked",
+
+  "water_plants": "Water Plants",
+  "completed_msg": "Plant is happy! +EXP earned",
+  "cans_earned": "+{{count}} cans",
+  "pause": "Pause",
+  "resume": "Resume",
+  "stop": "Stop",
+
+  "todays_progress": "Today's Progress",
+  "today_sessions": "Today Sessions",
+  "total_focus": "Total Focus",
+
+  "recent_sessions": "Recent Sessions",
+  "no_task": "No task"
+}

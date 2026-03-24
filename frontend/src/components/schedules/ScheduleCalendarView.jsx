@@ -1,9 +1,8 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Loader2, Calendar } from 'lucide-react';
 import ScheduleItem, { isCompletedOnDate, formatTime } from './ScheduleItem';
 import '../../styles/components/schedules/ScheduleComponents.css';
-
-const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const formatDate = (d) => {
   const y = d.getFullYear();
@@ -12,7 +11,10 @@ const formatDate = (d) => {
   return `${y}-${m}-${day}`;
 };
 
+const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
 export default function ScheduleCalendarView({ schedules, isLoading, onComplete, onUncomplete, onDelete, onEdit }) {
+  const { t, i18n } = useTranslation(['schedules', 'common']);
   const todayStr = formatDate(new Date());
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(todayStr);
@@ -66,7 +68,9 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
     setSelectedDate(todayStr);
   };
 
-  const monthLabel = currentDate.toLocaleDateString('en-US', {
+  const locale = i18n.language === 'id' ? 'id-ID' : 'en-US';
+
+  const monthLabel = currentDate.toLocaleDateString(locale, {
     month: 'long',
     year: 'numeric',
   });
@@ -84,7 +88,7 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
   }, [selectedDate, schedules]);
 
   const selectedDateLabel = selectedDate
-    ? new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
+    ? new Date(selectedDate + 'T00:00:00').toLocaleDateString(locale, {
         weekday: 'long',
         month: 'long',
         day: 'numeric',
@@ -107,14 +111,14 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
       <div className="schedule-list-panel">
         <h4 className="schedule-list-title">{selectedDateLabel}</h4>
         <p className="schedule-list-count">
-          {selectedDaySchedules.length} schedule{selectedDaySchedules.length !== 1 ? 's' : ''}
+          {t('schedules:calendarView.scheduleCount', { count: selectedDaySchedules.length })}
         </p>
 
         <div className="schedule-cal-timeline">
           {selectedDaySchedules.length === 0 ? (
             <div className="schedule-list-empty">
               <Calendar style={{ width: '2.5rem', height: '2.5rem', opacity: 0.4 }} />
-              <p>No schedules for this day</p>
+              <p>{t('schedules:calendarView.noSchedulesForDay')}</p>
             </div>
           ) : (
             <div className="schedule-cal-timeline-inner">
@@ -144,7 +148,7 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
           <h3 className="schedule-calendar-month">{monthLabel}</h3>
           <div className="schedule-calendar-nav">
             <button onClick={goToday} className="schedule-today-btn">
-              Today
+              {t('common:today')}
             </button>
             <button onClick={prevMonth} className="schedule-nav-btn">
               <ChevronLeft style={{ width: '1rem', height: '1rem' }} />
@@ -157,9 +161,9 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
 
         {/* Day headers */}
         <div className="schedule-calendar-days-header">
-          {dayNames.map((d) => (
-            <div key={d} className="schedule-day-name">
-              {d}
+          {dayKeys.map((key) => (
+            <div key={key} className="schedule-day-name">
+              {t(`common:days.${key}`)}
             </div>
           ))}
         </div>
@@ -204,13 +208,13 @@ export default function ScheduleCalendarView({ schedules, isLoading, onComplete,
         {/* Legend */}
         <div className="schedule-calendar-legend">
           <span className="schedule-legend-item">
-            <span className="schedule-legend-dot pending" /> Pending
+            <span className="schedule-legend-dot pending" /> {t('schedules:calendarView.legend.pending')}
           </span>
           <span className="schedule-legend-item">
-            <span className="schedule-legend-dot partial" /> Partial
+            <span className="schedule-legend-dot partial" /> {t('schedules:calendarView.legend.partial')}
           </span>
           <span className="schedule-legend-item">
-            <span className="schedule-legend-dot completed" /> Done
+            <span className="schedule-legend-dot completed" /> {t('schedules:calendarView.legend.done')}
           </span>
         </div>
       </div>

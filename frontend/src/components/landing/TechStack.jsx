@@ -9,7 +9,7 @@ const TECH = [
   { label: 'Laravel 12', icon: Server },
   { label: 'Puter.js AI', icon: Bot },
   { label: 'GSAP', icon: Sparkles },
-  { label: 'Supabase', icon: Database },
+  { label: 'PostgreSQL', icon: Database },
   { label: 'TanStack Query', icon: BarChart3 },
   { label: 'Tailwind CSS', icon: Layers },
 ];

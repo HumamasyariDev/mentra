@@ -1,7 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, X } from 'lucide-react';
 import '../../styles/components/forum/ForumModals.css';
 
 export default function DeleteConfirmModal({ onClose, onConfirm, loading }) {
+  const { t } = useTranslation(['forum', 'common']);
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container modal-container-small" onClick={(e) => e.stopPropagation()}>
@@ -10,7 +13,7 @@ export default function DeleteConfirmModal({ onClose, onConfirm, loading }) {
             <div className="delete-modal-icon-circle">
               <AlertTriangle size={20} />
             </div>
-            <h3 className="modal-title">Delete Post</h3>
+            <h3 className="modal-title">{t('forum:deleteModal.title')}</h3>
           </div>
           <button onClick={onClose} className="modal-close-btn">
             <X size={20} />
@@ -19,10 +22,10 @@ export default function DeleteConfirmModal({ onClose, onConfirm, loading }) {
 
         <div className="modal-body">
           <p className="delete-modal-message">
-            Are you sure you want to delete this post?
+            {t('forum:deleteModal.message')}
           </p>
           <div className="delete-modal-warning">
-            This action cannot be undone. All replies to this post will also be deleted.
+            {t('forum:deleteModal.warning')}
           </div>
         </div>
 
@@ -34,7 +37,7 @@ export default function DeleteConfirmModal({ onClose, onConfirm, loading }) {
               className="btn btn-secondary"
               disabled={loading}
             >
-              Cancel
+              {t('common:cancel')}
             </button>
             <button 
               type="button"
@@ -42,7 +45,7 @@ export default function DeleteConfirmModal({ onClose, onConfirm, loading }) {
               disabled={loading}
               className="btn btn-danger"
             >
-              {loading ? 'Deleting...' : 'Delete Post'}
+              {loading ? t('common:deleting') : t('forum:deleteModal.deletePost')}
             </button>
           </div>
         </div>

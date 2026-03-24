@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Home,
   BookOpen,
@@ -24,25 +25,26 @@ import { profileApi } from "../../services/api";
 import "../../styles/components/dashboard/DashboardSidebar.css";
 
 const productivityItems = [
-  { to: "/dashboard", label: "Dashboard", icon: Home },
-  { to: "/tasks", label: "Tasks", icon: BookOpen },
-  { to: "/pomodoro", label: "Pomodoro", icon: FileText },
-  { to: "/forest", label: "Forest", icon: TreePine },
-  { to: "/schedules", label: "Schedules", icon: Calendar },
-  { to: "/mood", label: "Mood", icon: Folder },
+  { to: "/dashboard", labelKey: "nav.dashboard", icon: Home },
+  { to: "/tasks", labelKey: "nav.tasks", icon: BookOpen },
+  { to: "/pomodoro", labelKey: "nav.pomodoro", icon: FileText },
+  { to: "/forest", labelKey: "nav.forest", icon: TreePine },
+  { to: "/schedules", labelKey: "nav.schedules", icon: Calendar },
+  { to: "/mood", labelKey: "nav.mood", icon: Folder },
 ];
 
 const aiItems = [
-  { to: "/chat", label: "Chat", icon: MessageSquare },
-  { to: "/agent", label: "Agent", icon: Sparkles },
-  { to: "/sandbox", label: "Sandbox", icon: GraduationCap },
+  { to: "/chat", labelKey: "nav.chat", icon: MessageSquare },
+  { to: "/agent", labelKey: "nav.agent", icon: Sparkles },
+  { to: "/sandbox", labelKey: "nav.sandbox", icon: GraduationCap },
 ];
 
 const communityItems = [
-  { to: "/forum", label: "Forum", icon: MessageCircle },
+  { to: "/forum", labelKey: "nav.forum", icon: MessageCircle },
 ];
 
 export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => {
+  const { t, i18n } = useTranslation(['dashboard', 'common']);
   const { user, logout, refreshUser } = useAuth();
   const [showAccountPanel, setShowAccountPanel] = useState(false);
   const [editName, setEditName] = useState("");
@@ -97,7 +99,7 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
       await refreshUser();
       setError("");
     } catch (err) {
-      setError(err?.response?.data?.message || "Failed to update name");
+      setError(err?.response?.data?.message || t('common:account.failedUpdateName'));
     } finally {
       setSaving(false);
     }
@@ -113,7 +115,7 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
       localStorage.removeItem("mentra_user");
       window.location.href = "/login";
     } catch (err) {
-      setError(err?.response?.data?.message || "Failed to delete account");
+      setError(err?.response?.data?.message || t('common:account.failedDeleteAccount'));
       setDeleting(false);
     }
   };
@@ -144,7 +146,7 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
           <button
             className="dashboard-sidebar-close"
             onClick={onClose}
-            aria-label="Close menu"
+            aria-label={t('dashboard:sidebar.closeMenu')}
           >
             <X size={18} />
           </button>
@@ -153,9 +155,9 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
         {/* Sections identical to standard Sidebar */}
         <div className="dashboard-sidebar-sections">
           <div className="dashboard-sidebar-section">
-            <div className="dashboard-sidebar-section-title">Produktivitas</div>
+            <div className="dashboard-sidebar-section-title">{t('common:sections.productivity')}</div>
             <nav className="dashboard-sidebar-nav">
-              {productivityItems.map(({ to, label, icon: Icon }) => (
+              {productivityItems.map(({ to, labelKey, icon: Icon }) => (
                 <NavLink
                   key={to}
                   to={to}
@@ -165,16 +167,16 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
                   }
                 >
                   <Icon className="dashboard-sidebar-icon" />
-                  <span className="dashboard-sidebar-label">{label}</span>
+                  <span className="dashboard-sidebar-label">{t(`common:${labelKey}`)}</span>
                 </NavLink>
               ))}
             </nav>
           </div>
 
           <div className="dashboard-sidebar-section dashboard-sidebar-section-chat">
-            <div className="dashboard-sidebar-section-title">AI & Chat</div>
+            <div className="dashboard-sidebar-section-title">{t('common:sections.aiChat')}</div>
             <nav className="dashboard-sidebar-nav">
-              {aiItems.map(({ to, label, icon: Icon, highlight }) => (
+              {aiItems.map(({ to, labelKey, icon: Icon, highlight }) => (
                 <NavLink
                   key={to}
                   to={to}
@@ -184,16 +186,16 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
                   }
                 >
                   <Icon className="dashboard-sidebar-icon" />
-                  <span className="dashboard-sidebar-label">{label}</span>
+                  <span className="dashboard-sidebar-label">{t(`common:${labelKey}`)}</span>
                 </NavLink>
               ))}
             </nav>
           </div>
 
           <div className="dashboard-sidebar-section">
-            <div className="dashboard-sidebar-section-title">Komunitas</div>
+            <div className="dashboard-sidebar-section-title">{t('common:sections.community')}</div>
             <nav className="dashboard-sidebar-nav">
-              {communityItems.map(({ to, label, icon: Icon }) => (
+              {communityItems.map(({ to, labelKey, icon: Icon }) => (
                 <NavLink
                   key={to}
                   to={to}
@@ -203,14 +205,14 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
                   }
                 >
                   <Icon className="dashboard-sidebar-icon" />
-                  <span className="dashboard-sidebar-label">{label}</span>
+                  <span className="dashboard-sidebar-label">{t(`common:${labelKey}`)}</span>
                 </NavLink>
               ))}
             </nav>
           </div>
 
           <div className="dashboard-sidebar-section">
-            <div className="dashboard-sidebar-section-title">Pengaturan</div>
+            <div className="dashboard-sidebar-section-title">{t('common:sections.settings')}</div>
             <nav className="dashboard-sidebar-nav">
               <NavLink
                 to="/settings"
@@ -220,7 +222,7 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
                 }
               >
                 <Settings className="dashboard-sidebar-icon" />
-                <span className="dashboard-sidebar-label">Settings</span>
+                <span className="dashboard-sidebar-label">{t('common:nav.settings')}</span>
               </NavLink>
             </nav>
           </div>
@@ -235,12 +237,12 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
               <div className="dsb-panel-header">
                 <div className="dsb-panel-avatar">{userInitial}</div>
                 <div className="dsb-panel-info">
-                  <div className="dsb-panel-name">{user?.name || "User"}</div>
+                  <div className="dsb-panel-name">{user?.name || t('common:account.user')}</div>
                   <div className="dsb-panel-email">{user?.email}</div>
                   <div className="dsb-panel-meta">
-                    Member since{" "}
+                    {t('common:account.memberSince')}{" "}
                     {user?.created_at
-                      ? new Date(user.created_at).toLocaleDateString("en-US", {
+                      ? new Date(user.created_at).toLocaleDateString(i18n.language === 'id' ? 'id-ID' : 'en-US', {
                           month: "long",
                           day: "numeric",
                           year: "numeric",
@@ -252,21 +254,21 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
 
               {/* Edit Name */}
               <div className="dsb-panel-section">
-                <label className="dsb-panel-label">Display Name</label>
+                <label className="dsb-panel-label">{t('common:account.displayName')}</label>
                 <div className="dsb-panel-input-row">
                   <input
                     type="text"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
                     className="dsb-panel-input"
-                    placeholder="Your name"
+                    placeholder={t('common:account.yourName')}
                     disabled={saving}
                   />
                   <button
                     onClick={handleSaveName}
                     disabled={saving || !editName.trim() || editName.trim() === user?.name}
                     className="dsb-panel-save-btn"
-                    title="Save name"
+                    title={t('common:account.saveName')}
                   >
                     {saving ? <Loader2 size={14} className="dsb-spinner" /> : <Save size={14} />}
                   </button>
@@ -279,7 +281,7 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
               {/* Logout */}
               <button className="dsb-panel-logout" onClick={handleLogout}>
                 <LogOut size={16} />
-                <span>Logout</span>
+                <span>{t('common:account.logout')}</span>
               </button>
 
               {/* Delete Account */}
@@ -290,20 +292,21 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
                     onClick={() => setShowDeleteConfirm(true)}
                   >
                     <Trash2 size={14} />
-                    <span>Delete Account</span>
+                    <span>{t('common:account.deleteAccount')}</span>
                   </button>
                 ) : (
                   <div className="dsb-panel-delete-confirm">
-                    <p className="dsb-panel-delete-warning">
-                      Type <strong>DELETE</strong> to permanently remove your account.
-                    </p>
+                    <p
+                      className="dsb-panel-delete-warning"
+                      dangerouslySetInnerHTML={{ __html: t('common:account.deleteConfirmText') }}
+                    />
                     <div className="dsb-panel-input-row">
                       <input
                         type="text"
                         value={deleteText}
                         onChange={(e) => setDeleteText(e.target.value)}
                         className="dsb-panel-input dsb-panel-input-danger"
-                        placeholder="Type DELETE"
+                        placeholder={t('common:account.typeDelete')}
                         disabled={deleting}
                       />
                       <button
@@ -325,7 +328,7 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
                         setDeleteText("");
                       }}
                     >
-                      Cancel
+                      {t('common:cancel')}
                     </button>
                   </div>
                 )}
@@ -334,14 +337,14 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
           )}
 
           {/* Account Row (clickable) */}
-          <div className="dashboard-sidebar-section-title">Akun</div>
+          <div className="dashboard-sidebar-section-title">{t('common:sections.account')}</div>
           <button className="dashboard-sidebar-account" onClick={togglePanel}>
             <div className="dashboard-sidebar-account-avatar">{userInitial}</div>
             <div className="dashboard-sidebar-account-info">
               <div className="dashboard-sidebar-account-name">
-                {user?.name || "User"}
+                {user?.name || t('common:account.user')}
               </div>
-              <div className="dashboard-sidebar-account-role">Level {user?.level || 1}</div>
+              <div className="dashboard-sidebar-account-role">{t('common:level')} {user?.level || 1}</div>
             </div>
             <ChevronUp
               size={16}

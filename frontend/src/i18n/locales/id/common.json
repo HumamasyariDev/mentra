@@ -1,0 +1,151 @@
+{
+  "cancel": "Batal",
+  "save": "Simpan",
+  "saving": "Menyimpan...",
+  "delete": "Hapus",
+  "deleting": "Menghapus...",
+  "edit": "Ubah",
+  "create": "Buat",
+  "loading": "Memuat...",
+  "back": "Kembali",
+  "next": "Selanjutnya",
+  "prev": "Sebelumnya",
+  "continue": "Lanjutkan",
+  "confirm": "Konfirmasi",
+  "close": "Tutup",
+  "or": "atau",
+  "search": "Cari",
+  "searchPlaceholder": "Cari...",
+  "noResults": "Tidak ada hasil",
+  "error": "Terjadi kesalahan",
+  "retry": "Coba lagi",
+  "today": "Hari ini",
+  "page": "Halaman",
+  "of": "dari",
+  "all": "Semua",
+  "level": "Level",
+  "xp": "XP",
+  "exp": "EXP",
+  "send": "Kirim",
+  "submit": "Kirim",
+  "yes": "Ya",
+  "no": "Tidak",
+  "none": "Tidak ada",
+  "done": "Selesai",
+  "add": "Tambah",
+  "remove": "Hapus",
+  "reset": "Reset",
+  "filter": "Filter",
+  "sort": "Urutkan",
+  "view": "Tampilan",
+  "list": "List",
+  "calendar": "Kalender",
+  "board": "Board",
+  "title": "Judul",
+  "description": "Deskripsi",
+  "name": "Nama",
+  "email": "Email",
+  "password": "Kata Sandi",
+  "optional": "Opsional",
+  "required": "Wajib",
+  "type": "Tipe",
+  "selectPlaceholder": "Pilih...",
+
+  "days": {
+    "mon": "Sen",
+    "tue": "Sel",
+    "wed": "Rab",
+    "thu": "Kam",
+    "fri": "Jum",
+    "sat": "Sab",
+    "sun": "Min",
+    "monday": "Senin",
+    "tuesday": "Selasa",
+    "wednesday": "Rabu",
+    "thursday": "Kamis",
+    "friday": "Jumat",
+    "saturday": "Sabtu",
+    "sunday": "Minggu"
+  },
+
+  "months": {
+    "january": "Januari",
+    "february": "Februari",
+    "march": "Maret",
+    "april": "April",
+    "may": "Mei",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "Agustus",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "Desember"
+  },
+
+  "time": {
+    "justNow": "Baru saja",
+    "minutesAgo": "{{count}}m yang lalu",
+    "hoursAgo": "{{count}}j yang lalu",
+    "daysAgo": "{{count}}h yang lalu"
+  },
+
+  "priority": {
+    "low": "Rendah",
+    "medium": "Sedang",
+    "high": "Tinggi"
+  },
+
+  "status": {
+    "pending": "Tertunda",
+    "inProgress": "Sedang Dikerjakan",
+    "completed": "Selesai",
+    "active": "Aktif",
+    "paused": "Dijeda"
+  },
+
+  "nav": {
+    "dashboard": "Dashboard",
+    "tasks": "Tugas",
+    "pomodoro": "Pomodoro",
+    "forest": "Hutan",
+    "schedules": "Jadwal",
+    "mood": "Suasana Hati",
+    "chat": "Chat",
+    "agent": "Agen",
+    "sandbox": "Sandbox",
+    "forum": "Forum",
+    "settings": "Pengaturan"
+  },
+
+  "sections": {
+    "productivity": "Produktivitas",
+    "aiChat": "AI & Chat",
+    "community": "Komunitas",
+    "settings": "Pengaturan",
+    "account": "Akun"
+  },
+
+  "greeting": {
+    "morning": "Selamat pagi",
+    "afternoon": "Selamat siang",
+    "evening": "Selamat malam"
+  },
+
+  "account": {
+    "displayName": "Nama Tampilan",
+    "memberSince": "Anggota sejak",
+    "logout": "Keluar",
+    "deleteAccount": "Hapus Akun",
+    "deleteConfirmText": "Ketik <strong>DELETE</strong> untuk menghapus akun Anda secara permanen.",
+    "typeDelete": "Ketik DELETE",
+    "yourName": "Nama Anda",
+    "user": "Pengguna",
+    "saveName": "Simpan nama",
+    "failedUpdateName": "Gagal memperbarui nama",
+    "failedDeleteAccount": "Gagal menghapus akun",
+    "profile": "Profil",
+    "notifications": "Notifikasi",
+    "noNotifications": "Belum ada notifikasi"
+  }
+}

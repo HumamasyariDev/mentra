@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { authApi } from '../services/api';
 import { Loader2, ArrowLeft } from 'lucide-react';
@@ -22,6 +23,7 @@ const FacebookIcon = () => (
 );
 
 export default function Login() {
+  const { t } = useTranslation(['auth', 'common']);
   const { login } = useAuth();
   const [searchParams] = useSearchParams();
   const [form, setForm] = useState({ email: '', password: '' });
@@ -36,13 +38,13 @@ export default function Login() {
     const oauthError = searchParams.get('error');
     if (oauthError) {
       const messages = {
-        unsupported_provider: 'Provider tidak didukung.',
-        oauth_failed: 'Login dengan sosial gagal. Silakan coba lagi.',
-        no_email: 'Akun sosial tidak memiliki email. Gunakan akun dengan email yang valid.',
+        unsupported_provider: t('auth:errors.unsupportedProvider'),
+        oauth_failed: t('auth:errors.oauthFailed'),
+        no_email: t('auth:errors.noEmail'),
       };
-      setError(messages[oauthError] || 'Terjadi kesalahan saat login.');
+      setError(messages[oauthError] || t('auth:errors.genericLoginError'));
     }
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -61,7 +63,7 @@ export default function Login() {
 
   const handleEmailBlur = () => {
     if (form.email && !isValidEmail(form.email)) {
-      setEmailError('Please enter a valid email address.');
+      setEmailError(t('auth:errors.invalidEmail'));
     } else {
       setEmailError('');
     }
@@ -72,11 +74,11 @@ export default function Login() {
     setError('');
 
     if (!form.email) {
-      setEmailError('Please enter your email address.');
+      setEmailError(t('auth:errors.enterEmail'));
       return;
     }
     if (!isValidEmail(form.email)) {
-      setEmailError('Please enter a valid email address.');
+      setEmailError(t('auth:errors.invalidEmail'));
       return;
     }
     setEmailError('');
@@ -89,13 +91,13 @@ export default function Login() {
       const errorType = errorData?.error_type;
       
       if (errorType === 'email_not_found') {
-        setError('No account found with this email address. Please check your email or create a new account.');
+        setError(t('auth:errors.emailNotFound'));
       } else if (errorType === 'wrong_password') {
-        setError('Incorrect password. Please try again or reset your password.');
+        setError(t('auth:errors.wrongPassword'));
       } else if (errorType === 'social_only_account') {
-        setError(errorData.message); // "This account uses social login. Please sign in with Google/Facebook."
+        setError(errorData.message);
       } else {
-        setError(errorData?.message || 'Login failed. Please check your credentials.');
+        setError(errorData?.message || t('auth:errors.loginFailed'));
       }
     } finally {
       setLoading(false);
@@ -108,11 +110,11 @@ export default function Login() {
 
     // Must have a valid email first
     if (!form.email) {
-      setEmailError('Please input an email to send the verification code to.');
+      setEmailError(t('auth:errors.enterEmailForReset'));
       return;
     }
     if (!isValidEmail(form.email)) {
-      setEmailError('Please enter a valid email address.');
+      setEmailError(t('auth:errors.invalidEmail'));
       return;
     }
 
@@ -123,7 +125,7 @@ export default function Login() {
     } catch (err) {
       if (err.response?.status === 429) {
         const retryAfter = err.response.data?.retry_after || 60;
-        setError(`Please wait ${retryAfter}s before requesting a new reset link.`);
+        setError(t('auth:errors.rateLimitReset', { seconds: retryAfter }));
       } else {
         // Still show success to prevent email enumeration
         setResetSent(true);
@@ -144,9 +146,9 @@ export default function Login() {
   if (resetSent) {
     return (
       <div className="auth-reset-sent">
-        <h2 className="auth-reset-sent-title">Email sent to reset your password</h2>
+        <h2 className="auth-reset-sent-title">{t('auth:login.resetEmailSentTitle')}</h2>
         <p className="auth-reset-sent-desc">
-          Link with verification has been sent. Please check your email and follow the instructions to reset your password.
+          {t('auth:login.resetEmailSentDesc')}
         </p>
         <button
           type="button"
@@ -154,7 +156,7 @@ export default function Login() {
           onClick={() => { setResetSent(false); setError(''); }}
         >
           <ArrowLeft size={16} />
-          Back to login
+          {t('auth:login.backToLogin')}
         </button>
       </div>
     );
@@ -162,7 +164,7 @@ export default function Login() {
 
   return (
     <>
-      <h2 className="auth-heading">Log in</h2>
+      <h2 className="auth-heading">{t('auth:login.heading')}</h2>
 
       <div className="auth-card">
         {error && <div className="auth-error">{error}</div>}
@@ -170,11 +172,11 @@ export default function Login() {
         <form onSubmit={handleSubmit} className="auth-form">
           {/* Email */}
           <div className="auth-field-group">
-            <label className="auth-label">Email</label>
+            <label className="auth-label">{t('common:email')}</label>
             <input
               type="email"
               className={`auth-input${emailError ? ' has-error' : ''}`}
-              placeholder="Enter your email address"
+              placeholder={t('auth:login.emailPlaceholder')}
               value={form.email}
               onChange={handleEmailChange}
               onBlur={handleEmailBlur}
@@ -186,11 +188,11 @@ export default function Login() {
 
           {/* Password */}
           <div className="auth-field-group">
-            <label className="auth-label">Password</label>
+            <label className="auth-label">{t('common:password')}</label>
               <input
                 type="password"
                 className="auth-input"
-                placeholder="Enter your password"
+                placeholder={t('auth:login.passwordPlaceholder')}
                 value={form.password}
                 onChange={(e) => {
                   setForm({ ...form, password: e.target.value });
@@ -201,28 +203,28 @@ export default function Login() {
                 autoComplete="current-password"
               />
             <p className="auth-forgot-text">
-              Forgot password?{' '}
+              {t('auth:login.forgotPassword')}{' '}
               <button
                 type="button"
                 className="auth-inline-link"
                 onClick={handleForgotPassword}
                 disabled={resetSending}
               >
-                {resetSending ? 'Sending...' : 'Send reset code'}
+                {resetSending ? t('auth:login.sending') : t('auth:login.sendResetCode')}
               </button>
             </p>
           </div>
 
           {/* Submit */}
           <button type="submit" className="auth-submit-btn" disabled={loading}>
-            {loading ? <Loader2 className="auth-loading-spinner" /> : 'Log in'}
+            {loading ? <Loader2 className="auth-loading-spinner" /> : t('auth:login.submitButton')}
           </button>
         </form>
 
         {/* Divider */}
         <div className="auth-divider">
           <div className="auth-divider-line" />
-          <span className="auth-divider-text">or</span>
+          <span className="auth-divider-text">{t('common:or')}</span>
           <div className="auth-divider-line" />
         </div>
 
@@ -230,18 +232,18 @@ export default function Login() {
         <div className="auth-social-group">
           <button type="button" className="auth-social-btn" onClick={() => handleSocialLogin('google')}>
             <GoogleIcon />
-            Log in with Google
+            {t('auth:login.socialGoogle')}
           </button>
           <button type="button" className="auth-social-btn" onClick={() => handleSocialLogin('facebook')}>
             <FacebookIcon />
-            Log in with Facebook
+            {t('auth:login.socialFacebook')}
           </button>
         </div>
 
         {/* Footer */}
         <p className="auth-footer-text">
-          Don&apos;t have an account?{' '}
-          <Link to="/register" className="auth-inline-link">Sign up</Link>
+          {t('auth:login.noAccount')}{' '}
+          <Link to="/register" className="auth-inline-link">{t('auth:login.signUp')}</Link>
         </p>
       </div>
     </>

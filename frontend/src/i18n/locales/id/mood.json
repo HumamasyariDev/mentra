@@ -1,0 +1,42 @@
+{
+  "pageTitle": "Pelacak Suasana Hati",
+  "pageSubtitle": "Lacak perasaanmu setiap hari",
+
+  "moods": {
+    "great": "Sangat Baik",
+    "good": "Baik",
+    "okay": "Biasa",
+    "bad": "Buruk",
+    "terrible": "Sangat Buruk"
+  },
+
+  "todayMood": "Suasana Hati Hari Ini",
+  "energy": "Energi {{value}}/10",
+  "updateHint": "Kamu bisa memperbarui suasana hatimu kapan saja hari ini",
+
+  "selector": {
+    "updateTitle": "Perbarui Suasana Hatimu",
+    "howFeeling": "Bagaimana perasaanmu?"
+  },
+
+  "energyLevel": {
+    "title": "Tingkat Energi",
+    "low": "Rendah",
+    "high": "Tinggi"
+  },
+
+  "note": {
+    "label": "Catatan",
+    "placeholder": "Bagaimana harimu?"
+  },
+
+  "save": {
+    "saving": "Menyimpan...",
+    "updateMood": "Perbarui Suasana Hati",
+    "saveMood": "Simpan Suasana Hati"
+  },
+
+  "weekly": {
+    "title": "Minggu Ini"
+  }
+}

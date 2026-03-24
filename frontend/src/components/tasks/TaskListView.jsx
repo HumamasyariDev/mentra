@@ -1,11 +1,20 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import TaskItem from './TaskItem';
 import '../../styles/components/tasks/TaskComponents.css';
 
 const statusFilters = ['all', 'pending', 'in_progress', 'completed'];
 
+const statusKeyMap = {
+  all: 'all',
+  pending: 'status.pending',
+  in_progress: 'status.inProgress',
+  completed: 'status.completed',
+};
+
 export default function TaskListView({ tasks, isLoading, onComplete, onUncomplete, onDelete, pagination, onPageChange }) {
+  const { t } = useTranslation(['tasks', 'common']);
   const [filter, setFilter] = useState('all');
 
   const filtered = filter === 'all'
@@ -22,7 +31,7 @@ export default function TaskListView({ tasks, isLoading, onComplete, onUncomplet
             onClick={() => setFilter(s)}
             className={`task-filter-btn ${filter === s ? 'active' : ''}`}
           >
-            {s === 'all' ? 'All' : s.replace('_', ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+            {s === 'all' ? t('common:all') : t(`common:${statusKeyMap[s]}`)}
           </button>
         ))}
       </div>
@@ -35,7 +44,7 @@ export default function TaskListView({ tasks, isLoading, onComplete, onUncomplet
       ) : filtered?.length === 0 ? (
         <div className="task-list-empty">
           <CheckCircle2 style={{ width: '3rem', height: '3rem', margin: '0 auto', opacity: 0.4 }} />
-          <p>No tasks found</p>
+          <p>{t('tasks:listView.noTasksFound')}</p>
         </div>
       ) : (
         <div className="task-list-container">
@@ -60,17 +69,17 @@ export default function TaskListView({ tasks, isLoading, onComplete, onUncomplet
             onClick={() => onPageChange(pagination.current_page - 1)}
           >
             <ChevronLeft size={16} />
-            Prev
+            {t('common:prev')}
           </button>
           <div className="task-pagination-info">
-            Page {pagination.current_page} of {pagination.last_page}
+            {t('tasks:listView.pageOf', { current: pagination.current_page, last: pagination.last_page })}
           </div>
           <button 
             className="task-pagination-btn" 
             disabled={pagination.current_page === pagination.last_page}
             onClick={() => onPageChange(pagination.current_page + 1)}
           >
-            Next
+            {t('common:next')}
             <ChevronRight size={16} />
           </button>
         </div>

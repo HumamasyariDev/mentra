@@ -1,0 +1,42 @@
+{
+  "pageTitle": "Mood Tracker",
+  "pageSubtitle": "Track how you feel each day",
+
+  "moods": {
+    "great": "Great",
+    "good": "Good",
+    "okay": "Okay",
+    "bad": "Bad",
+    "terrible": "Terrible"
+  },
+
+  "todayMood": "Today's Mood",
+  "energy": "Energy {{value}}/10",
+  "updateHint": "You can update your mood anytime today",
+
+  "selector": {
+    "updateTitle": "Update Your Mood",
+    "howFeeling": "How are you feeling?"
+  },
+
+  "energyLevel": {
+    "title": "Energy Level",
+    "low": "Low",
+    "high": "High"
+  },
+
+  "note": {
+    "label": "Note",
+    "placeholder": "How's your day going?"
+  },
+
+  "save": {
+    "saving": "Saving...",
+    "updateMood": "Update Mood",
+    "saveMood": "Save Mood"
+  },
+
+  "weekly": {
+    "title": "This Week"
+  }
+}

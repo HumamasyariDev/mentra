@@ -1,0 +1,31 @@
+{
+  "title": "Pomodoro",
+  "subtitle": "Siram tanamanmu dengan tetap fokus",
+
+  "mood_idle": "Menunggu air...",
+  "mood_focusing": "Penyiraman berlangsung...",
+  "mood_paused": "Keran ditutup...",
+  "mood_completed": "Tanaman senang & tersiram penuh!",
+
+  "status_running": "Penyiraman berlangsung...",
+  "status_paused": "Dijeda — keran ditutup",
+  "status_idle": "Mulai untuk menyiram tanamanmu",
+
+  "or_custom": "atau kustom",
+  "min_unit": "menit",
+  "no_task_linked": "Tidak ada tugas terkait",
+
+  "water_plants": "Siram Tanaman",
+  "completed_msg": "Tanaman senang! +EXP diperoleh",
+  "cans_earned": "+{{count}} kaleng",
+  "pause": "Jeda",
+  "resume": "Lanjut",
+  "stop": "Berhenti",
+
+  "todays_progress": "Progres Hari Ini",
+  "today_sessions": "Sesi Hari Ini",
+  "total_focus": "Total Fokus",
+
+  "recent_sessions": "Sesi Terakhir",
+  "no_task": "Tanpa tugas"
+}

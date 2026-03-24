@@ -1,0 +1,38 @@
+{
+  "pageTitle": "Pengaturan",
+  "goBack": "Kembali",
+
+  "language": {
+    "title": "Bahasa",
+    "description": "Pilih bahasa tampilan",
+    "indonesian": "Bahasa Indonesia",
+    "english": "English"
+  },
+
+  "dashboardDisplay": {
+    "title": "Tampilan Dashboard",
+    "description": "Pilih cara menampilkan dashboard Anda",
+    "mapTitle": "Peta Kepulauan",
+    "mapDescription": "Jelajahi dashboard sebagai peta pulau interaktif dengan kontrol geser dan zoom",
+    "simplifiedTitle": "Dashboard Sederhana",
+    "simplifiedDescription": "Lihat progres dan aksi cepat dalam tata letak kartu yang bersih",
+    "mobileNote": "<strong>Catatan:</strong> Pada perangkat mobile, dashboard sederhana selalu digunakan untuk kemudahan penggunaan."
+  },
+
+  "appearance": {
+    "title": "Tampilan",
+    "description": "Sesuaikan tampilan antarmuka",
+    "darkMode": "Mode Gelap"
+  },
+
+  "about": {
+    "title": "Tentang",
+    "appName": "Mentra Dashboard v1.0",
+    "appDescription": "Pendamping produktivitas dan pembelajaran yang cerdas.",
+    "version": "Versi 1.0.0"
+  },
+
+  "footer": {
+    "copyright": "© 2025 Mentra. Hak cipta dilindungi."
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "loadingGalaxy": "Loading galaxy...",
+
+  "sidebar": {
+    "closeMenu": "Close menu",
+    "toggleMenu": "Toggle menu"
+  },
+
+  "floatingSidebar": {
+    "menu": "Menu"
+  },
+
+  "greeting": {
+    "explorer": "Explorer"
+  },
+
+  "level": {
+    "lvl": "Lvl",
+    "level": "Level",
+    "toNextLevel": "To Next Level"
+  },
+
+  "streak": {
+    "dayStreak": "Day Streak",
+    "dayStreakCount": "{{count}} Day Streak"
+  },
+
+  "quickActions": {
+    "focusSession": "Focus Session",
+    "newTask": "New Task",
+    "scheduleEvent": "Schedule Event",
+    "startFocus": "Start Focus"
+  },
+
+  "upNext": {
+    "title": "Up Next",
+    "tasksCompletedToday": "{{count}} task(s) completed today",
+    "noTasksYet": "No tasks yet — create one to get started!"
+  },
+
+  "schedule": {
+    "todaysSchedule": "Today's Schedule",
+    "noEventsToday": "No events scheduled today",
+    "untitled": "Untitled"
+  },
+
+  "pomodoro": {
+    "sessionsToday": "Sessions<br/>Today",
+    "startPomodoro": "Start Pomodoro"
+  },
+
+  "cards": {
+    "todaysTasks": "Today's Tasks",
+    "active": "Active",
+    "overdue": "Overdue",
+    "completed": "Completed",
+    "addTask": "Add Task",
+    "pomodoroStats": "Pomodoro Stats",
+    "today": "Today",
+    "sessions": "{{count}} sessions",
+    "streak": "Streak",
+    "days": "{{count}} days",
+    "weeklySummary": "Weekly Summary",
+    "completedThisWeek": "Completed this week",
+    "tasks": "{{count}} tasks",
+    "dayCount": "Day {{number}}: {{count}}",
+    "forestHealth": "Forest Health",
+    "waterTree": "Water Tree",
+    "quickActions": "Quick Actions",
+    "yourProgress": "Your Progress",
+    "earnMoreXP": "Earn More XP"
+  },
+
+  "hud": {
+    "dayStreak": "Day Streak"
+  },
+
+  "topbar": {
+    "profileTitle": "Profile - {{name}}"
+  }
+}

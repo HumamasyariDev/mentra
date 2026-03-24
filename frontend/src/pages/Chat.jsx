@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Send, Loader2, Trash2 } from 'lucide-react';
 import '../styles/pages/Chat.css';
 
@@ -9,6 +10,7 @@ Respond in the same language as the user (Indonesian or English).
 User says: `;
 
 export default function Chat() {
+  const { t } = useTranslation(['chat', 'common']);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +46,7 @@ export default function Chat() {
           : response?.message?.content?.[0]?.text ??
           response?.message?.content ??
           response?.content ??
-          'Maaf, tidak bisa membaca respons AI.';
+          t('chat:aiFallback');
 
       setMessages((prev) => [
         ...prev,
@@ -62,7 +64,7 @@ export default function Chat() {
         {
           id: Date.now() + 1,
           role: 'assistant',
-          content: 'Maaf, sistem AI sedang sibuk. Coba lagi nanti.',
+          content: t('chat:aiError'),
           created_at: new Date().toISOString(),
           isError: true,
         },
@@ -85,10 +87,10 @@ export default function Chat() {
   };
 
   const quickActions = [
-    { label: 'Say Hi', message: 'Halo! Apa yang bisa kamu bantu?' },
-    { label: 'Tips Produktivitas', message: 'Berikan saya tips produktivitas terbaik!' },
-    { label: 'Teknik Pomodoro', message: 'Jelaskan teknik Pomodoro' },
-    { label: 'Motivasi', message: 'Saya butuh motivasi untuk tetap fokus hari ini.' },
+    { label: t('chat:quickActions.sayHi'), message: t('chat:quickActions.sayHiMessage') },
+    { label: t('chat:quickActions.productivityTips'), message: t('chat:quickActions.productivityTipsMessage') },
+    { label: t('chat:quickActions.pomodoroTechnique'), message: t('chat:quickActions.pomodoroTechniqueMessage') },
+    { label: t('chat:quickActions.motivation'), message: t('chat:quickActions.motivationMessage') },
   ];
 
   return (
@@ -96,13 +98,13 @@ export default function Chat() {
       {/* Header */}
       <div className="chat-page-header">
         <div>
-          <h1 className="chat-page-title">Chat</h1>
-          <p className="chat-page-subtitle">Mentra AI Assistant</p>
+          <h1 className="chat-page-title">{t('chat:pageTitle')}</h1>
+          <p className="chat-page-subtitle">{t('chat:pageSubtitle')}</p>
         </div>
         {messages.length > 0 && (
           <button onClick={handleClear} className="chat-clear-btn">
             <Trash2 size={14} />
-            Clear
+            {t('chat:clear')}
           </button>
         )}
       </div>
@@ -111,12 +113,12 @@ export default function Chat() {
       <div className="chat-message-list">
         {messages.length === 0 ? (
           <div className="chat-empty-state">
-            <h3 className="chat-empty-title">Mulai percakapan</h3>
+            <h3 className="chat-empty-title">{t('chat:emptyTitle')}</h3>
             <p className="chat-empty-subtitle">
-              Tanyakan apa saja tentang produktivitas, teknik fokus, atau manajemen tugas.
+              {t('chat:emptySubtitle')}
             </p>
             <div className="chat-quick-actions">
-              <p className="chat-quick-actions-label">Suggestions</p>
+              <p className="chat-quick-actions-label">{t('chat:suggestions')}</p>
               <div className="chat-quick-actions-grid">
                 {quickActions.map((action, idx) => (
                   <button
@@ -170,7 +172,7 @@ export default function Chat() {
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Tulis pesan..."
+            placeholder={t('chat:inputPlaceholder')}
             disabled={isLoading}
             className="chat-input"
           />

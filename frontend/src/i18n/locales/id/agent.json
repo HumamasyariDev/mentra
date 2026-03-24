@@ -1,0 +1,26 @@
+{
+  "sidebarTitle": "Sesi Chat",
+  "newChat": "Chat Baru",
+  "sessionsLoading": "Memuat...",
+  "sessionsEmpty": "Belum ada sesi chat",
+  "sessionsEmptyHint": "Klik \"Chat Baru\" untuk memulai",
+  "pageTitle": "Mentra AI",
+  "pageSubtitle": "Asisten Produktivitas",
+  "statusOnline": "Online",
+  "statusOffline": "Offline",
+  "puterWarning": "Puter.js belum terdeteksi. Pastikan sudah login di puter.com.",
+  "inputPlaceholder": "Tulis pesan...",
+  "deleteSessionConfirm": "Hapus sesi chat ini?",
+  "viewTasks": "Lihat di halaman Tasks",
+  "statusThinking": "Sedang berpikir...",
+  "statusSavingTask": "Menyimpan task ke database...",
+  "statusSearching": "Mencari di knowledge base...",
+  "statusSummarizing": "Merangkum hasil pencarian...",
+  "quickPrompts": {
+    "createTask": "Buat Task",
+    "pomodoro": "Pomodoro",
+    "smartGoal": "SMART Goal",
+    "focusTips": "Tips Fokus",
+    "deepWork": "Deep Work"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "pageTitle": "Schedules",
+  "pageSubtitle": "Track your routines and build habits",
+  "newSchedule": "New Schedule",
+
+  "deleteConfirm": "Delete this schedule? This cannot be undone.",
+
+  "timeTo": "to {{time}}",
+
+  "createForm": {
+    "titlePlaceholder": "e.g., Morning Exercise",
+    "descriptionLabel": "Description (optional)",
+    "descriptionPlaceholder": "Brief description of this schedule...",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "daysOfWeek": "Days of Week",
+    "dayOfMonth": "Day of Month",
+    "dayOfMonthPlaceholder": "1-31",
+    "createBtn": "Create Schedule"
+  },
+
+  "editModal": {
+    "title": "Edit Schedule",
+    "statusLabel": "Status",
+    "saveBtn": "Save Changes"
+  },
+
+  "listView": {
+    "allTypes": "All Types",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening",
+    "anytime": "Anytime",
+    "noSchedules": "No schedules yet"
+  },
+
+  "calendarView": {
+    "scheduleCount": "{{count}} schedule",
+    "scheduleCount_other": "{{count}} schedules",
+    "noSchedulesForDay": "No schedules for this day",
+    "legend": {
+      "pending": "Pending",
+      "partial": "Partial",
+      "done": "Done"
+    }
+  },
+
+  "boardView": {
+    "dropHere": "Drop here",
+    "noSchedules": "No schedules"
+  },
+
+  "type": {
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly"
+  }
+}

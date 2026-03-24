@@ -3,21 +3,21 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CheckSquare, Sparkles, Trophy, TreePine } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const STEPS = [
-  { icon: CheckSquare, title: 'Check it off', desc: 'Manage your daily tasks with beautiful list, calendar, or board views. Simple on the surface, smart underneath.', color: '#818cf8' },
-  { icon: Sparkles, title: 'Earn XP', desc: 'Every completed task earns experience points. Your real-world productivity directly fuels your digital progress.', color: '#c084fc' },
-  { icon: Trophy, title: 'Level Up', desc: 'Hit milestones, maintain daily streaks, and climb levels as you build better, more consistent habits.', color: '#a78bfa' },
-  { icon: TreePine, title: 'Watch it Grow', desc: 'Your progress manifests as a living, breathing virtual forest that grows with you over time.', color: '#34d399' },
-];
+const STEP_ICONS = [CheckSquare, Sparkles, Trophy, TreePine];
+const STEP_COLORS = ['#818cf8', '#c084fc', '#a78bfa', '#34d399'];
 
 export default function GamificationLoop() {
   const sectionRef = useRef(null);
   const containerRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
+  const { t } = useTranslation(['landing']);
+
+  const steps = t('landing:gamification.steps', { returnObjects: true });
 
   useGSAP(() => {
     if (prefersReducedMotion) return;
@@ -81,17 +81,20 @@ export default function GamificationLoop() {
   return (
     <section ref={sectionRef} id="how-it-works" className="loop-horizontal-wrapper">
       <div ref={containerRef} className="loop-horizontal-container">
-        {STEPS.map((step, i) => (
-          <div key={i} className="loop-panel">
-            <div className="loop-panel-content">
-              <div className="loop-panel-icon" style={{ boxShadow: `0 20px 50px ${step.color}40` }}>
-                <step.icon size={56} />
+        {steps.map((step, i) => {
+          const Icon = STEP_ICONS[i];
+          return (
+            <div key={i} className="loop-panel">
+              <div className="loop-panel-content">
+                <div className="loop-panel-icon" style={{ boxShadow: `0 20px 50px ${STEP_COLORS[i]}40` }}>
+                  <Icon size={56} />
+                </div>
+                <h3>{step.title}</h3>
+                <p>{step.desc}</p>
               </div>
-              <h3>{step.title}</h3>
-              <p>{step.desc}</p>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="loop-progress-bar">

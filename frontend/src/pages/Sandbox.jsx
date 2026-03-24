@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { sandboxApi } from "../services/api";
 import { Plus, Trash2, MessageSquare, Pencil, Clock } from "lucide-react";
 import "../styles/pages/Sandbox.css";
 
 export default function Sandbox() {
+  const { t, i18n } = useTranslation(["sandbox", "common"]);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showModal, setShowModal] = useState(false);
@@ -17,11 +19,11 @@ export default function Sandbox() {
   });
 
   const PURPOSE_OPTIONS = [
-    { id: "learning", label: "Belajar" },
-    { id: "working", label: "Bekerja" },
-    { id: "ideation", label: "Eksplorasi Ide" },
-    { id: "business", label: "Riset Bisnis" },
-    { id: "entertainment", label: "Hiburan" },
+    { id: "learning", label: t("sandbox:purposes.learning") },
+    { id: "working", label: t("sandbox:purposes.working") },
+    { id: "ideation", label: t("sandbox:purposes.ideation") },
+    { id: "business", label: t("sandbox:purposes.business") },
+    { id: "entertainment", label: t("sandbox:purposes.entertainment") },
   ];
 
   const { data: sandboxes, isLoading } = useQuery({
@@ -86,29 +88,32 @@ export default function Sandbox() {
 
   const handleDelete = (e, id) => {
     e.stopPropagation();
-    if (confirm("Delete this sandbox?")) {
+    if (confirm(t("sandbox:deleteConfirm"))) {
       deleteMutation.mutate(id);
     }
   };
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
-    return new Date(dateStr).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
+    return new Date(dateStr).toLocaleDateString(
+      i18n.language === "id" ? "id-ID" : "en-US",
+      {
+        month: "short",
+        day: "numeric",
+      },
+    );
   };
 
   return (
     <div className="sandbox-page">
       <div className="sandbox-header">
         <div className="sandbox-header-text">
-          <h1>Sandbox</h1>
-          <p>Create and manage your AI chat experiments</p>
+          <h1>{t("sandbox:pageTitle")}</h1>
+          <p>{t("sandbox:pageSubtitle")}</p>
         </div>
         <button onClick={() => setShowModal(true)} className="sandbox-new-btn">
           <Plus />
-          New Sandbox
+          {t("sandbox:newSandbox")}
         </button>
       </div>
 
@@ -121,8 +126,8 @@ export default function Sandbox() {
           <div className="sandbox-empty-icon">
             <MessageSquare />
           </div>
-          <h3>No sandbox projects yet</h3>
-          <p>Create your first sandbox to start experimenting</p>
+          <h3>{t("sandbox:emptyTitle")}</h3>
+          <p>{t("sandbox:emptySubtitle")}</p>
         </div>
       ) : (
         <div className="sandbox-grid">
@@ -169,10 +174,14 @@ export default function Sandbox() {
       {(showModal || editingSandbox) && (
         <div className="sandbox-modal-overlay" onClick={closeModal}>
           <div className="sandbox-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>{editingSandbox ? "Edit Sandbox" : "New Sandbox"}</h2>
+            <h2>
+              {editingSandbox
+                ? t("sandbox:modalTitleEdit")
+                : t("sandbox:modalTitleNew")}
+            </h2>
             <form onSubmit={handleSubmit}>
               <div className="sandbox-form-group">
-                <label>Name</label>
+                <label>{t("sandbox:formName")}</label>
                 <input
                   type="text"
                   value={formData.name}
@@ -180,14 +189,15 @@ export default function Sandbox() {
                     setFormData({ ...formData, name: e.target.value })
                   }
                   className="sandbox-form-input"
-                  placeholder="e.g. Code Assistant"
+                  placeholder={t("sandbox:formNamePlaceholder")}
                   required
                   autoFocus
                 />
               </div>
               <div className="sandbox-form-group">
                 <label>
-                  Description <span>(optional)</span>
+                  {t("sandbox:formDescription")}{" "}
+                  <span>({t("common:optional")})</span>
                 </label>
                 <textarea
                   value={formData.description}
@@ -195,12 +205,12 @@ export default function Sandbox() {
                     setFormData({ ...formData, description: e.target.value })
                   }
                   className="sandbox-form-textarea"
-                  placeholder="What is this sandbox for?"
+                  placeholder={t("sandbox:formDescriptionPlaceholder")}
                   rows="3"
                 />
               </div>
               <div className="sandbox-form-group">
-                <label>Tujuan Sandbox</label>
+                <label>{t("sandbox:formPurposeLabel")}</label>
                 <div className="sandbox-purposes">
                   {PURPOSE_OPTIONS.map((purpose) => (
                     <label key={purpose.id} className="sandbox-purpose-item">
@@ -220,7 +230,7 @@ export default function Sandbox() {
                   onClick={closeModal}
                   className="sandbox-btn-cancel"
                 >
-                  Cancel
+                  {t("common:cancel")}
                 </button>
                 <button
                   type="submit"
@@ -230,8 +240,8 @@ export default function Sandbox() {
                   }
                 >
                   {createMutation.isPending || updateMutation.isPending
-                    ? "Saving..."
-                    : "Save"}
+                    ? t("common:saving")
+                    : t("common:save")}
                 </button>
               </div>
             </form>
