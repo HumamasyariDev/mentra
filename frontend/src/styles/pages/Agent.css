@@ -14,7 +14,11 @@
   height: 100%;
   min-height: 0;
   background: var(--bg-surface);
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   overflow: hidden;
   color: var(--text-primary);
   box-sizing: border-box;
@@ -33,7 +37,10 @@
   height: 100%;
   background: var(--bg-elevated);
   border-right: 1px solid var(--border-default);
-  transition: width 0.25s ease, min-width 0.25s ease, opacity 0.25s ease;
+  transition:
+    width 0.25s ease,
+    min-width 0.25s ease,
+    opacity 0.25s ease;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -89,6 +96,7 @@
 .agent-page-sessions {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0.75rem;
   display: flex;
   flex-direction: column;
@@ -105,7 +113,9 @@
   border: 1px solid transparent;
   border-radius: 10px;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .agent-page-session-item:hover {
@@ -179,10 +189,12 @@
   align-items: center;
   gap: 0.5rem;
   width: 100%;
+  padding: 0.75rem;
 }
 
 .agent-page-session-edit input {
   flex: 1;
+  min-width: 0;
   padding: 0.5rem 0.75rem;
   background: var(--bg-elevated);
   border: 1px solid var(--border-default);
@@ -462,7 +474,9 @@
 }
 
 @keyframes loadingPulse {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     opacity: 0.4;
   }
   40% {

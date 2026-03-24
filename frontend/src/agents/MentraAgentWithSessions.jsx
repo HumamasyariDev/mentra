@@ -136,7 +136,10 @@ const WELCOME_MSG = {
 };
 
 const QUICK_PROMPTS = [
-  { label: "Buat Task", text: "Buatkan task: belajar pgvector, deadline besok, prioritas sedang" },
+  {
+    label: "Buat Task",
+    text: "Buatkan task: belajar pgvector, deadline besok, prioritas sedang",
+  },
   { label: "Pomodoro", text: "Jelaskan teknik Pomodoro" },
   { label: "SMART Goal", text: "Apa itu SMART goals?" },
   { label: "Tips Fokus", text: "Tips agar lebih fokus belajar" },
@@ -247,7 +250,10 @@ export default function MentraAgentWithSessions() {
   // ── Handlers ──────────────────────────────────────────────────────────
 
   const handleCreateSession = () => {
-    createSessionMutation.mutate({ title: "New Chat" });
+    // Don't create session in DB yet, just reset to new chat state
+    setCurrentSessionId(null);
+    setMessages([WELCOME_MSG]);
+    puterHistory.current = [];
   };
 
   const handleSelectSession = (sessionId) => {
@@ -269,18 +275,6 @@ export default function MentraAgentWithSessions() {
       const text = String(userText ?? input).trim();
       if (!text || loading) return;
 
-      // Ensure we have a session
-      let sessionId = currentSessionId;
-      let isNewSession = false;
-      if (!sessionId) {
-        const newSession = await createSessionMutation.mutateAsync({
-          title: text.slice(0, 50) || "New Chat",
-        });
-        sessionId = newSession.data.id;
-        setCurrentSessionId(sessionId);
-        isNewSession = true;
-      }
-
       setInput("");
       setLoading(true);
       setStatusMsg("");
@@ -288,11 +282,9 @@ export default function MentraAgentWithSessions() {
       const userMsg = { role: "user", content: text, type: "text" };
       setMessages((prev) => [...prev, userMsg]);
 
-      // Store user message to DB
-      storeMessageMutation.mutate({
-        sessionId,
-        message: { role: "user", content: text, type: "text" },
-      });
+      // Track if we need to create session after AI responds
+      let sessionId = currentSessionId;
+      let isNewSession = false;
 
       const conversation = [
         { role: "system", content: systemPrompt.current },
@@ -332,19 +324,27 @@ export default function MentraAgentWithSessions() {
           };
           setMessages((prev) => [...prev, agentMsg]);
 
+          // Create session in DB only after first AI response
+          if (!sessionId) {
+            const newSession = await createSessionMutation.mutateAsync({
+              title: text.slice(0, 50) || "New Chat",
+            });
+            sessionId = newSession.data.id;
+            setCurrentSessionId(sessionId);
+            isNewSession = true;
+          }
+
+          // Store user message to DB (now that we have sessionId)
+          await storeMessageMutation.mutateAsync({
+            sessionId,
+            message: { role: "user", content: text, type: "text" },
+          });
+
           // Store agent message to DB
-          storeMessageMutation.mutate({
+          await storeMessageMutation.mutateAsync({
             sessionId,
             message: { role: "agent", content: rawText.trim(), type: "text" },
           });
-
-          // Update session title if this is a new session
-          if (isNewSession) {
-            updateSessionMutation.mutate({
-              id: sessionId,
-              data: { title: text.slice(0, 50) || "New Chat" },
-            });
-          }
 
           puterHistory.current = [
             ...puterHistory.current,
@@ -361,10 +361,13 @@ export default function MentraAgentWithSessions() {
         };
         setMessages((prev) => [...prev, errorMsg]);
 
-        storeMessageMutation.mutate({
-          sessionId,
-          message: errorMsg,
-        });
+        // Only store to DB if session exists
+        if (sessionId) {
+          await storeMessageMutation.mutateAsync({
+            sessionId,
+            message: errorMsg,
+          });
+        }
       } finally {
         setLoading(false);
         setStatusMsg("");
@@ -391,7 +394,23 @@ export default function MentraAgentWithSessions() {
           };
           setMessages((prev) => [...prev, successMsg]);
 
-          storeMessageMutation.mutate({
+          // Create session if not exists
+          if (!sessionId) {
+            const newSession = await createSessionMutation.mutateAsync({
+              title: originalUserText.slice(0, 50) || "New Chat",
+            });
+            sessionId = newSession.data.id;
+            setCurrentSessionId(sessionId);
+          }
+
+          // Store user message first
+          await storeMessageMutation.mutateAsync({
+            sessionId,
+            message: { role: "user", content: originalUserText, type: "text" },
+          });
+
+          // Store task creation message
+          await storeMessageMutation.mutateAsync({
             sessionId,
             message: {
               ...successMsg,
@@ -405,7 +424,13 @@ export default function MentraAgentWithSessions() {
             type: "error",
           };
           setMessages((prev) => [...prev, errorMsg]);
-          storeMessageMutation.mutate({ sessionId, message: errorMsg });
+
+          if (sessionId) {
+            await storeMessageMutation.mutateAsync({
+              sessionId,
+              message: errorMsg,
+            });
+          }
         }
       } else if (action.action === "search_knowledge") {
         setStatusMsg("🔍 Mencari di knowledge base…");
@@ -451,7 +476,27 @@ export default function MentraAgentWithSessions() {
             type: "text",
           };
           setMessages((prev) => [...prev, agentMsg]);
-          storeMessageMutation.mutate({ sessionId, message: agentMsg });
+
+          // Create session if not exists
+          if (!sessionId) {
+            const newSession = await createSessionMutation.mutateAsync({
+              title: originalUserText.slice(0, 50) || "New Chat",
+            });
+            sessionId = newSession.data.id;
+            setCurrentSessionId(sessionId);
+          }
+
+          // Store user message first
+          await storeMessageMutation.mutateAsync({
+            sessionId,
+            message: { role: "user", content: originalUserText, type: "text" },
+          });
+
+          // Store agent message
+          await storeMessageMutation.mutateAsync({
+            sessionId,
+            message: agentMsg,
+          });
         } catch {
           const fallbackMsg = {
             role: "agent",
@@ -459,7 +504,27 @@ export default function MentraAgentWithSessions() {
             type: "text",
           };
           setMessages((prev) => [...prev, fallbackMsg]);
-          storeMessageMutation.mutate({ sessionId, message: fallbackMsg });
+
+          // Create session if not exists
+          if (!sessionId) {
+            const newSession = await createSessionMutation.mutateAsync({
+              title: originalUserText.slice(0, 50) || "New Chat",
+            });
+            sessionId = newSession.data.id;
+            setCurrentSessionId(sessionId);
+          }
+
+          // Store user message first
+          await storeMessageMutation.mutateAsync({
+            sessionId,
+            message: { role: "user", content: originalUserText, type: "text" },
+          });
+
+          // Store agent message
+          await storeMessageMutation.mutateAsync({
+            sessionId,
+            message: fallbackMsg,
+          });
         }
       }
     },
@@ -533,8 +598,13 @@ export default function MentraAgentWithSessions() {
                   </div>
                 ) : (
                   <>
-                    <MessageSquare className="agent-page-session-icon" size={18} />
-                    <span className="agent-page-session-title">{session.title}</span>
+                    <MessageSquare
+                      className="agent-page-session-icon"
+                      size={18}
+                    />
+                    <span className="agent-page-session-title">
+                      {session.title}
+                    </span>
                     <div className="agent-page-session-actions">
                       <button
                         className="agent-page-btn-icon"
@@ -583,12 +653,12 @@ export default function MentraAgentWithSessions() {
             <div className="agent-page-avatar">M</div>
             <div>
               <h1 className="agent-page-title">Mentra AI</h1>
-              <p className="agent-page-subtitle">
-                Asisten Produktivitas
-              </p>
+              <p className="agent-page-subtitle">Asisten Produktivitas</p>
             </div>
           </div>
-          <div className={`agent-page-status ${puterAvailable ? "online" : "offline"}`}>
+          <div
+            className={`agent-page-status ${puterAvailable ? "online" : "offline"}`}
+          >
             <span className="agent-page-status-dot" />
             <span>{puterAvailable ? "Online" : "Offline"}</span>
           </div>
@@ -705,7 +775,10 @@ function MessageBubble({ msg, navigate }) {
           <FormattedText text={msg.content} />
         </div>
         {isTaskCreated && (
-          <button className="agent-page-goto-tasks" onClick={() => navigate("/tasks")}>
+          <button
+            className="agent-page-goto-tasks"
+            onClick={() => navigate("/tasks")}
+          >
             📋 Lihat di halaman Tasks →
           </button>
         )}
