@@ -23,6 +23,7 @@ class User extends Authenticatable
         'total_exp',
         'current_exp',
         'avatar',
+        'is_admin',
         'watering_cans',
     ];
 

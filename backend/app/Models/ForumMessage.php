@@ -12,7 +12,6 @@ class ForumMessage extends Model
     use HasFactory;
 
     protected $fillable = [
-        'channel_id',
         'user_id',
         'title',
         'content',
@@ -27,11 +26,6 @@ class ForumMessage extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function channel(): BelongsTo
-    {
-        return $this->belongsTo(Channel::class);
     }
 
     public function replyTo(): BelongsTo

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Channel;
 use App\Models\ForumMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,33 +13,22 @@ class ForumMessageController extends Controller
     {
         $messages = ForumMessage::query()
             ->with(['user', 'replyTo.user'])
+            ->withCount('replies')
             ->orderBy('created_at', 'desc')
             ->paginate(50);
 
         return response()->json($messages);
     }
 
-    public function channels(Request $request): JsonResponse
-    {
-        $channels = Channel::query()
-            ->with('forum')
-            ->orderBy('order')
-            ->get();
-
-        return response()->json($channels);
-    }
-
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'channel_id' => 'required|exists:channels,id',
             'title' => 'nullable|string|max:255',
             'content' => 'required|string|max:2000',
             'reply_to_id' => 'nullable|exists:forum_messages,id',
         ]);
 
         $message = ForumMessage::create([
-            'channel_id' => $validated['channel_id'],
             'user_id' => $request->user()->id,
             'title' => $validated['title'] ?? null,
             'content' => $validated['content'],
@@ -48,6 +36,7 @@ class ForumMessageController extends Controller
         ]);
 
         $message->load(['user', 'replyTo.user']);
+        $message->loadCount('replies');
 
         return response()->json($message, 201);
     }
@@ -70,16 +59,22 @@ class ForumMessageController extends Controller
         ]);
 
         $message->load(['user', 'replyTo.user']);
+        $message->loadCount('replies');
 
         return response()->json($message);
     }
 
     public function destroy(Request $request, ForumMessage $message): JsonResponse
     {
-        if ($message->user_id !== $request->user()->id) {
+        $isOwner = $message->user_id === $request->user()->id;
+        $isAdmin = (bool) $request->user()->is_admin;
+
+        if (!$isOwner && !$isAdmin) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        // Cascade-delete all replies to this message
+        ForumMessage::where('reply_to_id', $message->id)->delete();
         $message->delete();
 
         return response()->json(['message' => 'Message deleted successfully']);
