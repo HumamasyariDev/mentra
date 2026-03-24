@@ -325,4 +325,50 @@ class AuthController extends Controller
             'exp_to_next_level' => $user->exp_to_next_level,
         ]);
     }
+
+    /**
+     * Update the authenticated user's profile (name).
+     */
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $user = $request->user();
+        $user->update(['name' => $validated['name']]);
+
+        return response()->json([
+            'user' => $user->fresh()->load('streak'),
+            'message' => 'Profile updated successfully.',
+        ]);
+    }
+
+    /**
+     * Delete the authenticated user's account.
+     */
+    public function deleteAccount(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'confirm' => ['required', 'string'],
+        ]);
+
+        if ($validated['confirm'] !== 'DELETE') {
+            return response()->json([
+                'message' => 'Please type DELETE to confirm account deletion.',
+            ], 422);
+        }
+
+        $user = $request->user();
+
+        // Revoke all tokens
+        $user->tokens()->delete();
+
+        // Delete user
+        $user->delete();
+
+        return response()->json([
+            'message' => 'Account deleted successfully.',
+        ]);
+    }
 }

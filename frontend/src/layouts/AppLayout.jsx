@@ -76,7 +76,6 @@ function AppLayoutContent() {
       {/* Sidebar - hidden on dashboard map mode, shown everywhere else */}
       {!isMapMode && (
         <Sidebar
-          user={user}
           sidebarOpen={currentSidebarOpen}
           onClose={() => setCurrentSidebarOpen(false)}
           onLogout={logout}

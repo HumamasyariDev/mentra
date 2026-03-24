@@ -155,6 +155,12 @@ export const forumPostApi = {
   delete: (id) => api.delete(`/posts/${id}`),
 };
 
+// User Profile API
+export const profileApi = {
+  update: (data) => api.put("/user/profile", data),
+  deleteAccount: (confirm) => api.delete("/user/account", { data: { confirm } }),
+};
+
 // Forest API (Tree Care)
 export const forestApi = {
   getForest: () => api.get("/forest"),
