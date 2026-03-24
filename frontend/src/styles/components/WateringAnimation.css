@@ -58,9 +58,9 @@
   left: 15px;
   width: 60px;
   height: 50px;
-  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  background: var(--success);
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
 .can-body::before {
@@ -71,7 +71,7 @@
   transform: translateX(-50%);
   width: 50px;
   height: 12px;
-  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  background: var(--success);
   border-radius: 6px 6px 0 0;
 }
 
@@ -81,9 +81,9 @@
   left: 0;
   width: 35px;
   height: 10px;
-  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  background: var(--success);
   border-radius: 5px 0 0 5px;
-  box-shadow: 0 2px 6px rgba(74, 222, 128, 0.3);
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
 }
 
 .can-spout::after {
@@ -94,7 +94,7 @@
   transform: translateY(-50%);
   width: 12px;
   height: 12px;
-  background: #22c55e;
+  background: var(--success);
   border-radius: 50%;
 }
 
@@ -104,7 +104,7 @@
   right: 12px;
   width: 32px;
   height: 38px;
-  border: 4px solid #4ade80;
+  border: 4px solid var(--success);
   border-left: none;
   border-radius: 0 16px 16px 0;
 }
@@ -126,7 +126,7 @@
 .water-drops .drop {
   width: 7px;
   height: 14px;
-  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  background: var(--info);
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
   animation: dropFalling 1.8s ease-in infinite;
   opacity: 0;
@@ -200,10 +200,10 @@
   transform: translateX(-50%);
   width: 90px;
   height: 70px;
-  background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+  background: var(--orange);
   border-radius: 0 0 10px 10px;
   clip-path: polygon(18% 0%, 82% 0%, 100% 100%, 0% 100%);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-md);
 }
 
 .pot-body::before {
@@ -214,7 +214,7 @@
   transform: translateX(-50%);
   width: 95px;
   height: 8px;
-  background: linear-gradient(180deg, #ea580c 0%, #d97706 100%);
+  background: var(--orange);
   border-radius: 4px;
 }
 
@@ -229,7 +229,7 @@
   transform: translateX(-50%);
   width: 75px;
   height: 0;
-  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+  background: var(--info);
   border-radius: 6px;
   transition: height 0.3s ease;
   opacity: 0.85;
@@ -304,7 +304,7 @@
 .stem {
   width: 4px;
   height: 35px;
-  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+  background: var(--success);
   border-radius: 2px;
   margin: 0 auto;
 }
@@ -313,9 +313,9 @@
   position: absolute;
   width: 18px;
   height: 12px;
-  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+  background: var(--success);
   border-radius: 50% 0;
-  box-shadow: 0 2px 6px rgba(74, 222, 128, 0.3);
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
 }
 
 .leaf.left {
@@ -367,7 +367,7 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-primary);
   animation: textPulse 2s ease-in-out infinite;
 }
 
@@ -381,7 +381,7 @@
 }
 
 .status-text.success {
-  color: #22c55e;
+  color: var(--success);
   animation: successBounce 0.6s ease-out;
 }
 
@@ -410,7 +410,7 @@
 .status-dots span {
   width: 8px;
   height: 8px;
-  background: #4ade80;
+  background: var(--success);
   border-radius: 50%;
   animation: dotBounce 1.4s ease-in-out infinite;
 }
