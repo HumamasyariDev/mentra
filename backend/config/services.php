@@ -58,4 +58,10 @@ return [
         'api_url' => 'https://api-inference.huggingface.co/models',
     ],
 
+    'nvidia' => [
+        'api_key' => env('NVIDIA_API_KEY'),
+        'base_url' => env('NVIDIA_BASE_URL', 'https://integrate.api.nvidia.com/v1'),
+        'model' => env('NVIDIA_MODEL', 'meta/llama-3.1-8b-instruct'),
+    ],
+
 ];

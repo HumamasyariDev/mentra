@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { sandboxApi } from "../services/api";
+import { sandboxApi, aiApi } from "../services/api";
 import { Send, ArrowLeft, FileText, Network, Loader2 } from "lucide-react";
 import InfiniteCanvasMindMap from "../components/sandbox/InfiniteCanvasMindMap.jsx";
 import { parseMarkdownToReact } from "../utils/markdownParser.jsx";
@@ -25,12 +25,10 @@ export default function SandboxChat() {
     queryFn: () => sandboxApi.get(id).then((res) => res.data),
   });
 
-  const puterAvailable = typeof window !== "undefined" && !!window.puter?.ai;
-
   const handleSend = useCallback(
     async (e) => {
       e.preventDefault();
-      if (!input.trim() || loading || !puterAvailable) return;
+      if (!input.trim() || loading) return;
 
       const userMessage = { role: "user", content: input.trim() };
       setMessages((prev) => [...prev, userMessage]);
@@ -51,23 +49,8 @@ export default function SandboxChat() {
           { role: "user", content: input.trim() },
         ];
 
-        const response = await window.puter.ai.chat(conversation, {
-          model: "claude-sonnet-4-5",
-        });
-
-        let aiText = "";
-        if (typeof response === "string") {
-          aiText = response;
-        } else if (response?.message?.content) {
-          const c = response.message.content;
-          aiText = Array.isArray(c)
-            ? c.map((x) => x.text ?? "").join("")
-            : String(c);
-        } else if (response?.text) {
-          aiText = response.text;
-        } else {
-          aiText = String(response);
-        }
+        const response = await aiApi.sandboxChat(conversation);
+        const aiText = response.data?.message || "";
 
         const aiMessage = { role: "assistant", content: aiText.trim() };
         setMessages((prev) => [...prev, aiMessage]);
@@ -80,7 +63,7 @@ export default function SandboxChat() {
         setLoading(false);
       }
     },
-    [input, loading, messages, puterAvailable],
+    [input, loading, messages],
   );
 
   useEffect(() => {
@@ -112,9 +95,6 @@ export default function SandboxChat() {
           <h2>{sandbox?.name || t("sandbox:pageTitle")}</h2>
           {sandbox?.description && <p>{sandbox.description}</p>}
         </div>
-        {!puterAvailable && (
-          <div className="sandbox-warning">{t("sandbox:puterUnavailable")}</div>
-        )}
       </div>
 
       {/* 2-Column Layout */}
@@ -156,12 +136,12 @@ export default function SandboxChat() {
               onChange={(e) => setInput(e.target.value)}
               placeholder={t("sandbox:chatInputPlaceholder")}
               className="sandbox-chat-input"
-              disabled={loading || !puterAvailable}
+              disabled={loading}
             />
             <button
               type="submit"
               className="sandbox-chat-send"
-              disabled={loading || !input.trim() || !puterAvailable}
+              disabled={loading || !input.trim()}
             >
               <Send size={18} />
             </button>

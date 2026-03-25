@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AgentController;
+use App\Http\Controllers\Api\AIController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\DashboardController;
@@ -119,5 +120,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/water/{tree}', [ForestController::class, 'water']);
         Route::get('/tree-types', [ForestController::class, 'treeTypes']);
         Route::post('/debug/skip-stage/{tree}', [ForestController::class, 'debugSkipStage']);
+    });
+
+    // AI Routes (NVIDIA API)
+    Route::prefix('ai')->group(function () {
+        Route::post('/chat', [AIController::class, 'chat']);
+        Route::post('/agent', [AIController::class, 'agentChat']);
+        Route::post('/sandbox', [AIController::class, 'sandboxChat']);
+        Route::post('/quiz/generate', [AIController::class, 'generateQuiz']);
+        Route::post('/extract-key-points', [AIController::class, 'extractKeyPoints']);
+        Route::post('/mindmap', [AIController::class, 'generateMindMap']);
     });
 });

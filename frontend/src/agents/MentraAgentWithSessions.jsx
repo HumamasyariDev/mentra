@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { chatSessionApi } from "../services/api";
+import { chatSessionApi, aiApi } from "../services/api";
 import { createTaskTool, searchKnowledgeTool } from "./MentraTools.js";
 import {
   MessageSquare,
@@ -154,7 +154,7 @@ export default function MentraAgentWithSessions() {
   const [editingSessionId, setEditingSessionId] = useState(null);
   const [editingTitle, setEditingTitle] = useState("");
 
-  const puterHistory = useRef([]);
+  const chatHistory = useRef([]);
   const endRef = useRef(null);
   const inputRef = useRef(null);
   const systemPrompt = useRef(buildSystemPrompt(buildUserContext()));
@@ -183,7 +183,7 @@ export default function MentraAgentWithSessions() {
       queryClient.invalidateQueries({ queryKey: ["chat-sessions"] });
       setCurrentSessionId(response.data.id);
       setMessages([WELCOME_MSG]);
-      puterHistory.current = [];
+      chatHistory.current = [];
     },
   });
 
@@ -204,7 +204,7 @@ export default function MentraAgentWithSessions() {
       if (currentSessionId === deleteSessionMutation.variables) {
         setCurrentSessionId(null);
         setMessages([WELCOME_MSG]);
-        puterHistory.current = [];
+        chatHistory.current = [];
       }
     },
   });
@@ -226,6 +226,14 @@ export default function MentraAgentWithSessions() {
           task: msg.metadata?.task,
         }));
         setMessages(dbMessages.length > 0 ? dbMessages : [WELCOME_MSG]);
+        // Build chat history from stored messages for API context
+        chatHistory.current = dbMessages
+          .filter((m) => m.role === "user" || m.role === "agent")
+          .map((m) => ({
+            role: m.role === "agent" ? "assistant" : "user",
+            content: m.content,
+          }))
+          .slice(-20);
       });
     }
   }, [currentSessionId]);
@@ -286,34 +294,18 @@ export default function MentraAgentWithSessions() {
 
       // Track if we need to create session after AI responds
       let sessionId = currentSessionId;
-      let isNewSession = false;
-
-      const conversation = [
-        { role: "system", content: systemPrompt.current },
-        ...puterHistory.current,
-        { role: "user", content: text },
-      ];
 
       try {
         setStatusMsg("🤔 " + t("agent:statusThinking"));
-        const puterResponse = await window.puter.ai.chat(conversation, {
-          model: "claude-sonnet-4-5",
-        });
+        
+        // Call backend AI API
+        const response = await aiApi.agentChat(
+          text,
+          chatHistory.current,
+          systemPrompt.current
+        );
 
-        let rawText = "";
-        if (typeof puterResponse === "string") {
-          rawText = puterResponse;
-        } else if (puterResponse?.message?.content) {
-          const c = puterResponse.message.content;
-          rawText = Array.isArray(c)
-            ? c.map((x) => x.text ?? "").join("")
-            : String(c);
-        } else if (puterResponse?.text) {
-          rawText = puterResponse.text;
-        } else {
-          rawText = String(puterResponse);
-        }
-
+        const rawText = response.data?.message || "";
         const action = parseActionFromResponse(rawText);
 
         if (action) {
@@ -333,7 +325,6 @@ export default function MentraAgentWithSessions() {
             });
             sessionId = newSession.data.id;
             setCurrentSessionId(sessionId);
-            isNewSession = true;
           }
 
           // Store user message to DB (now that we have sessionId)
@@ -348,8 +339,9 @@ export default function MentraAgentWithSessions() {
             message: { role: "agent", content: rawText.trim(), type: "text" },
           });
 
-          puterHistory.current = [
-            ...puterHistory.current,
+          // Update chat history for context
+          chatHistory.current = [
+            ...chatHistory.current,
             { role: "user", content: text },
             { role: "assistant", content: rawText.trim() },
           ].slice(-20);
@@ -450,9 +442,7 @@ export default function MentraAgentWithSessions() {
           { role: "user", content: originalUserText },
           {
             role: "assistant",
-            content: baseContext
-              ? `Saya temukan info ini:\n${baseContext}`
-              : "Maaf, tidak ada informasi relevan.",
+            content: `Saya menemukan informasi berikut:\n${baseContext}`,
           },
           {
             role: "user",
@@ -462,15 +452,8 @@ export default function MentraAgentWithSessions() {
         ];
 
         try {
-          const summary = await window.puter.ai.chat(followUp, {
-            model: "claude-sonnet-4-5",
-          });
-          let summaryText =
-            typeof summary === "string"
-              ? summary
-              : (summary?.message?.content?.[0]?.text ??
-                summary?.text ??
-                String(summary));
+          const summaryResponse = await aiApi.sandboxChat(followUp);
+          const summaryText = summaryResponse.data?.message || "";
 
           const agentMsg = {
             role: "agent",
@@ -532,8 +515,6 @@ export default function MentraAgentWithSessions() {
     },
     [t],
   );
-
-  const puterAvailable = typeof window !== "undefined" && !!window.puter?.ai;
 
   // ── Render ─────────────────────────────────────────────────────────────
 
@@ -658,19 +639,11 @@ export default function MentraAgentWithSessions() {
               <p className="agent-page-subtitle">{t("agent:pageSubtitle")}</p>
             </div>
           </div>
-          <div
-            className={`agent-page-status ${puterAvailable ? "online" : "offline"}`}
-          >
+          <div className="agent-page-status online">
             <span className="agent-page-status-dot" />
-            <span>{puterAvailable ? t("agent:statusOnline") : t("agent:statusOffline")}</span>
+            <span>{t("agent:statusOnline")}</span>
           </div>
         </div>
-
-        {!puterAvailable && (
-          <div className="agent-page-warning">
-            {t("agent:puterWarning")}
-          </div>
-        )}
 
         <div className="agent-page-messages">
           {messages.map((msg, i) => (

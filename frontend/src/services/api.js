@@ -170,4 +170,31 @@ export const forestApi = {
   debugSkipStage: (treeId) => api.post(`/forest/debug/skip-stage/${treeId}`),
 };
 
+// AI API (NVIDIA)
+export const aiApi = {
+  // Simple chat (Chat.jsx)
+  chat: (message, systemPrompt = null) =>
+    api.post("/ai/chat", { message, system_prompt: systemPrompt }),
+
+  // Agent chat with history (MentraAgent)
+  agentChat: (message, history = [], systemPrompt = null) =>
+    api.post("/ai/agent", { message, history, system_prompt: systemPrompt }),
+
+  // Sandbox chat (SandboxChat.jsx)
+  sandboxChat: (messages) =>
+    api.post("/ai/sandbox", { messages }),
+
+  // Quiz generation
+  generateQuiz: (material, questionCount = 5) =>
+    api.post("/ai/quiz/generate", { material, question_count: questionCount }),
+
+  // Extract key points from material
+  extractKeyPoints: (material) =>
+    api.post("/ai/extract-key-points", { material }),
+
+  // Generate mind map from conversation
+  generateMindMap: (messages) =>
+    api.post("/ai/mindmap", { messages }),
+};
+
 export default api;

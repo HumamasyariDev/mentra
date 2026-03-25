@@ -1,6 +1,7 @@
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
 import JSZip from 'jszip';
+import { aiApi } from '../services/api';
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -101,39 +102,28 @@ async function extractTextFromPPTX(file) {
 /* ─── Key Point Extraction ──────────────────────────────────── */
 
 /**
- * Uses Puter.js to extract and summarize key points from raw material.
+ * Uses backend AI API to extract and summarize key points from raw material.
  * Returns a condensed version that is better suited for quiz generation.
  */
 export async function extractKeyPoints(rawText) {
-    if (!window.puter?.ai?.chat) {
-        throw new Error('Puter.js is not available. Please make sure you are logged in.');
-    }
-
     // Truncate very long texts to avoid token limits (keep ~12k chars)
     const truncated = rawText.length > 12000
         ? rawText.slice(0, 12000) + '\n\n[...truncated for length]'
         : rawText;
 
-    const response = await window.puter.ai.chat([
-        {
-            role: 'system',
-            content: 'You are an expert study assistant. Extract and organize the key concepts, facts, definitions, and important details from the provided material. Output a clear, structured summary with bullet points. This summary will be used to generate quiz questions, so be thorough and precise.'
-        },
-        {
-            role: 'user',
-            content: `Extract the key points and important concepts from the following study material:\n\n${truncated}`
-        },
-    ], { model: 'claude-sonnet-4-5' });
-
-    const summary = extractText(response).trim();
-    if (!summary) throw new Error('Failed to extract key points from material.');
-    return summary;
+    const response = await aiApi.extractKeyPoints(truncated);
+    
+    if (!response.data?.success) {
+        throw new Error('Failed to extract key points from material.');
+    }
+    
+    return response.data.key_points;
 }
 
 /* ─── Quiz Generation ───────────────────────────────────────── */
 
 /**
- * Generates quiz questions from study material via Puter.js.
+ * Generates quiz questions from study material via backend AI API.
  * Returns a parsed array of quiz objects.
  *
  * Each quiz shape:
@@ -145,63 +135,31 @@ export async function extractKeyPoints(rawText) {
  * }
  */
 export async function generateQuizFromMaterial(material, count = 5) {
-    if (!window.puter?.ai?.chat) {
-        throw new Error('Puter.js is not available. Please make sure you are logged in.');
+    const response = await aiApi.generateQuiz(material, count);
+    
+    if (!response.data?.success || !response.data?.questions) {
+        throw new Error(response.data?.error || 'Failed to generate quiz');
     }
 
-    const prompt = `Based on the following study material, generate ${count} different multiple-choice quiz questions.
-Return ONLY raw JSON — no markdown backticks, no explanation, no extra text.
-Return a JSON array with exactly ${count} items using this exact structure:
-[{"question":"...","options":["...","...","...","..."],"correct_index":0,"explanation":"..."}]
-Rules:
-- Each "options" must have exactly 4 items
-- "correct_index" is the 0-based index of the correct answer
-- "explanation" is a short 1-2 sentence explanation
-- All ${count} questions must be distinct and cover different aspects of the material
-- Questions should test understanding, not just memorization
-
-STUDY MATERIAL:
-${material}`;
-
-    const raw = await window.puter.ai.chat([
-        { role: 'system', content: 'You are a quiz generator. Output ONLY raw JSON, no other text.' },
-        { role: 'user', content: prompt },
-    ], { model: 'claude-sonnet-4-5' });
-
-    const text = extractText(raw).trim();
-
-    // Strip potential markdown fences
-    const cleaned = text
-        .replace(/^```(?:json)?/i, '')
-        .replace(/```$/i, '')
-        .trim();
-
-    const quizArray = JSON.parse(cleaned);
+    const quizArray = response.data.questions;
 
     if (!Array.isArray(quizArray)) throw new Error('Expected array');
 
-    // Validate and filter each item
-    const valid = quizArray.filter(
+    // Validate and normalize each item
+    const valid = quizArray.map((q) => ({
+        question: q.question,
+        options: q.options,
+        correct_index: q.correct ?? q.correct_index ?? 0,
+        explanation: q.explanation || '',
+    })).filter(
         (q) =>
             typeof q.question === 'string' &&
             Array.isArray(q.options) &&
             q.options.length === 4 &&
-            typeof q.correct_index === 'number' &&
-            typeof q.explanation === 'string'
+            typeof q.correct_index === 'number'
     );
 
     if (valid.length === 0) throw new Error('No valid quiz items');
 
     return valid;
-}
-
-/** Extracts plain text from various Puter response shapes */
-function extractText(response) {
-    if (typeof response === 'string') return response;
-    return (
-        response?.message?.content?.[0]?.text ??
-        response?.message?.content ??
-        response?.content ??
-        ''
-    );
 }

@@ -1,13 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Send, Loader2, Trash2 } from 'lucide-react';
+import { aiApi } from '../services/api';
 import '../styles/pages/Chat.css';
-
-const SYSTEM_PROMPT = `You are Mentra AI, a helpful and friendly productivity assistant built into the Mentra app. 
-You help users manage their tasks, focus sessions (Pomodoro), schedules, mood tracking, and streaks. 
-Keep responses concise, motivating, and actionable. Use friendly, supportive language.
-Respond in the same language as the user (Indonesian or English).
-User says: `;
 
 export default function Chat() {
   const { t } = useTranslation(['chat', 'common']);
@@ -38,15 +33,8 @@ export default function Chat() {
     setIsLoading(true);
 
     try {
-      const response = await window.puter.ai.chat(SYSTEM_PROMPT + content);
-
-      const aiContent =
-        typeof response === 'string'
-          ? response
-          : response?.message?.content?.[0]?.text ??
-          response?.message?.content ??
-          response?.content ??
-          t('chat:aiFallback');
+      const response = await aiApi.chat(content);
+      const aiContent = response.data?.message ?? t('chat:aiFallback');
 
       setMessages((prev) => [
         ...prev,
@@ -58,7 +46,7 @@ export default function Chat() {
         },
       ]);
     } catch (err) {
-      console.error('Puter AI error:', err);
+      console.error('AI API error:', err);
       setMessages((prev) => [
         ...prev,
         {

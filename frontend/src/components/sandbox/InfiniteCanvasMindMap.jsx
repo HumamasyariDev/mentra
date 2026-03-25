@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { ChevronRight, Sparkles } from "lucide-react";
+import { aiApi } from "../../services/api";
 import WateringAnimation from "./WateringAnimation";
 import "../../styles/components/InfiniteCanvasMindMap.css";
 
@@ -15,78 +16,31 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
 
   // Generate Mind Map from AI with proper prompting
   const generateMindMapFromAI = useCallback(async () => {
-    if (!window.puter?.ai || chatMessages.length === 0) {
+    if (chatMessages.length === 0) {
       return;
     }
 
     setIsGenerating(true);
 
     try {
-      // Create context from chat messages
-      const chatContext = chatMessages
-        .slice(-5) // Last 5 messages for context
-        .map((m) => `${m.role}: ${m.content}`)
-        .join("\n");
-
-      // AI Prompt for Mind Map Generation
-      const prompt = `Berdasarkan konteks chat berikut, buatkan struktur mind map dalam format JSON.
-
-Konteks Chat:
-${chatContext}
-
-Instruksi:
-1. Ringkas topik utama dari chat menjadi 1 judul singkat (max 50 karakter)
-2. Buat 3-5 sub-topik penting sebagai children
-3. Setiap sub-topik bisa memiliki 1-3 detail sebagai children-nya
-4. Format WAJIB JSON murni tanpa teks tambahan:
-
-{
-  "title": "Topik Utama",
-  "caption": "Ringkasan 1 kalimat",
-  "children": [
-    {
-      "title": "Sub-topik 1",
-      "caption": "Detail singkat",
-      "children": [
-        { "title": "Detail A", "caption": "Penjelasan" }
-      ]
-    }
-  ]
-}
-
-Contoh: Jika chat membahas strategi marketing onde-onde, buat mind map dengan topik "Strategi Promo Onde-Onde Ketawa", sub-topik "Diskon Takjil Ramadan", "Social Media Campaign", dll.
-
-Hanya kembalikan JSON, tanpa penjelasan lain.`;
-
-      const response = await window.puter.ai.chat(
-        [{ role: "user", content: prompt }],
-        {
-          model: "claude-sonnet-4-5",
-        },
-      );
-
-      let responseText = "";
-      if (typeof response === "string") {
-        responseText = response;
-      } else if (response?.message?.content) {
-        const c = response.message.content;
-        responseText = Array.isArray(c)
-          ? c.map((x) => x.text ?? "").join("")
-          : String(c);
-      } else {
-        responseText = String(response);
-      }
-
-      // Extract JSON from response
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const mindMapData = JSON.parse(jsonMatch[0]);
-        // Add IDs to nodes
-        const nodesWithIds = addIdsToNodes(mindMapData);
-        setNodes(nodesWithIds);
+      // Call backend AI API to generate mindmap
+      const response = await aiApi.generateMindMap(chatMessages);
+      
+      if (response.data?.success && response.data?.mindmap) {
+        const mindMapData = response.data.mindmap;
+        // If mindmap has nodes array format, convert to tree format
+        if (mindMapData.nodes && Array.isArray(mindMapData.nodes)) {
+          // Convert nodes/edges format to tree format
+          const nodesWithIds = convertToTreeFormat(mindMapData);
+          setNodes(nodesWithIds);
+        } else {
+          // Assume it's already in tree format
+          const nodesWithIds = addIdsToNodes(mindMapData);
+          setNodes(nodesWithIds);
+        }
         setExpandedNodes(new Set(["root"]));
       } else {
-        throw new Error("Invalid JSON response from AI");
+        throw new Error("Invalid response from AI");
       }
     } catch (error) {
       console.error("Mind map generation error:", error);
@@ -339,6 +293,39 @@ function addIdsToNodes(node, parentId = "root", index = 0) {
       ? node.children.map((child, idx) => addIdsToNodes(child, id, idx))
       : [],
   };
+}
+
+// Convert nodes/edges format to tree format
+function convertToTreeFormat(data) {
+  if (!data.nodes || data.nodes.length === 0) {
+    return {
+      id: "root",
+      title: "Mind Map",
+      caption: "",
+      children: [],
+    };
+  }
+
+  // Find root node (first node or node with no incoming edges)
+  const rootNode = data.nodes[0];
+  
+  // Build tree from nodes
+  const buildTree = (node) => ({
+    id: node.id || "root",
+    title: node.label || node.title || "Node",
+    caption: node.caption || "",
+    children: data.edges
+      ? data.edges
+          .filter((e) => e.source === node.id)
+          .map((e) => {
+            const childNode = data.nodes.find((n) => n.id === e.target);
+            return childNode ? buildTree(childNode) : null;
+          })
+          .filter(Boolean)
+      : [],
+  });
+
+  return buildTree(rootNode);
 }
 
 // Fallback: Generate simple mind map from content
