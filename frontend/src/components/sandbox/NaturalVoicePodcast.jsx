@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from "react-i18next";
 import { Play, Pause, RotateCcw } from 'lucide-react';
 import '../../styles/components/NaturalVoicePodcast.css';
 
@@ -9,6 +10,7 @@ export default function NaturalVoicePodcast({ content, title = "AI Podcast" }) {
     const [currentTime, setCurrentTime] = useState(0);
     const utteranceRef = useRef(null);
     const intervalRef = useRef(null);
+  const { t } = useTranslation(["sandbox"]);
 
     // Optimized Natural Voice Selection
     const getOptimizedVoice = useCallback(() => {
@@ -168,8 +170,8 @@ export default function NaturalVoicePodcast({ content, title = "AI Podcast" }) {
         return (
             <div className="podcast-player-empty">
                 <div className="podcast-empty-icon">🎙️</div>
-                <p>Belum ada konten untuk podcast</p>
-                <p className="podcast-empty-hint">Chat dengan AI untuk generate konten</p>
+                <p>{t("sandbox:podcastEmptyTitle")}</p>
+                <p className="podcast-empty-hint">{t("sandbox:podcastEmptySubtitle")}</p>
             </div>
         );
     }

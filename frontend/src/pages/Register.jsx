@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +28,7 @@ const FacebookIcon = () => (
 /** Pre-generate star positions for right panel */
 function generateStars(count) {
   const seededRandom = (i, offset = 0) => {
+
     const x = Math.sin(i * 127.1 + offset * 311.7) * 43758.5453;
     return x - Math.floor(x);
   };
@@ -48,6 +50,8 @@ const RIGHT_PANEL_STARS = generateStars(35);
 const OTP_LENGTH = 6;
 
 export default function Register() {
+  usePageTitle('register:pageTitle');
+
   const { t } = useTranslation(['auth', 'common']);
   const { user, loading: authLoading, register: authRegister } = useAuth();
   const [step, setStep] = useState(1);

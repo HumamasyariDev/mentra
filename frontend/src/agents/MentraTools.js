@@ -2,7 +2,7 @@
  * MentraTools.js
  *
  * Direct API executors for Manual Tool Calling.
- * Called by MentraAgent.jsx when Puter.js returns a JSON action.
+ * Called by MentraAgent.jsx when NVIDIA API returns a JSON action.
  *
  * Uses the same axios instance as the rest of the app (includes
  * Authorization: Bearer <token> interceptor automatically).
@@ -13,7 +13,7 @@ import { taskApi, agentApi, taskApi as tApi } from '../services/api.js';
 // ─────────────────────────────────────────────────────────────────────────────
 // Tool: create_task
 //
-// Called when Puter returns: { "action": "create_task", "payload": {...} }
+// Called when NVIDIA returns: { "action": "create_task", "payload": {...} }
 // Uses POST /api/tasks — the exact endpoint Tasks page uses (proven to work).
 // ─────────────────────────────────────────────────────────────────────────────
 

@@ -246,8 +246,6 @@ export const MapViewport = ({ onIslandClick, dashboardData }) => {
     const viewBoxCenter = point.matrixTransform(screenCTM.inverse());
     
     // Island position (island.x, island.y) is already the center of the planet circle
-    console.log('Screen center in viewBox coords:', viewBoxCenter);
-    console.log('Island center coords:', { x: island.x, y: island.y });
     
     // To center island on screen after zooming:
     // With transform: translate(x, y) scale(s)
@@ -257,7 +255,6 @@ export const MapViewport = ({ onIslandClick, dashboardData }) => {
     const targetX = viewBoxCenter.x - (island.x * targetScale);
     const targetY = viewBoxCenter.y - (island.y * targetScale);
 
-    console.log('Target pan/scale:', { targetX, targetY, targetScale });
 
     gsap.to(panZoomState.current, {
       x: targetX,
@@ -273,11 +270,6 @@ export const MapViewport = ({ onIslandClick, dashboardData }) => {
       },
       onComplete: () => {
         // Log final state after zoom completes
-        console.log('Zoom complete - final state:', {
-          x: panZoomState.current.x,
-          y: panZoomState.current.y,
-          scale: panZoomState.current.scale,
-        });
         if (onIslandClick) {
           onIslandClick(island);
         }

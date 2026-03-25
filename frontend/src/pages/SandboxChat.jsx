@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +11,9 @@ import "../styles/pages/SandboxChat.css";
 import "../styles/utils/markdown.css";
 
 export default function SandboxChat() {
+  usePageTitle('sandbox:pageTitle');
+
+
   const { t } = useTranslation(["sandbox", "common"]);
   const { id } = useParams();
   const navigate = useNavigate();

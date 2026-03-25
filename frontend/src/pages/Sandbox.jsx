@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +8,8 @@ import { Plus, Trash2, MessageSquare, Pencil, Clock } from "lucide-react";
 import "../styles/pages/Sandbox.css";
 
 export default function Sandbox() {
+  usePageTitle('sandbox:pageTitle');
+
   const { t, i18n } = useTranslation(["sandbox", "common"]);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -53,6 +56,7 @@ export default function Sandbox() {
   });
 
   const closeModal = () => {
+
     setShowModal(false);
     setEditingSandbox(null);
     setFormData({ name: "", description: "", purposes: [] });

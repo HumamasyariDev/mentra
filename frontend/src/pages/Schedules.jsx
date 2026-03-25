@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -12,6 +13,7 @@ import { isCompletedToday } from '../components/schedules/ScheduleItem';
 import '../styles/pages/Schedules.css';
 
 const getSchedulesForToday = (schedules) => {
+
   const today = new Date();
   const dow = today.getDay();
   const dom = today.getDate();
@@ -25,6 +27,8 @@ const getSchedulesForToday = (schedules) => {
 };
 
 export default function Schedules() {
+  usePageTitle('schedules:pageTitle');
+
   const { t } = useTranslation(['schedules', 'common']);
   const queryClient = useQueryClient();
   const [activeView, setActiveView] = useState('list');

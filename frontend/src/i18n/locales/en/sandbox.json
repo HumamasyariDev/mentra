@@ -24,8 +24,12 @@
   "chatInputPlaceholder": "Type your message...",
   "chatThinking": "AI is thinking...",
   "loadingSandbox": "Loading sandbox...",
-  "puterUnavailable": "Puter.js not available",
+  "puterUnavailable": "AI service not available",
   "outputText": "Text",
   "outputMindMap": "Mind Map",
-  "outputEmpty": "Text output will appear here"
+  "outputEmpty": "Text output will appear here",
+  "mindmapEmptyTitle": "No content yet",
+  "mindmapEmptySubtitle": "Start a chat to generate mind map",
+  "podcastEmptyTitle": "No podcast content",
+  "podcastEmptySubtitle": "Chat with AI to generate content"
 }

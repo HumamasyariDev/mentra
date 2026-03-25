@@ -8,7 +8,7 @@
   "pageSubtitle": "Productivity Assistant",
   "statusOnline": "Online",
   "statusOffline": "Offline",
-  "puterWarning": "Puter.js not detected. Make sure you're logged in at puter.com.",
+  "aiWarning": "AI service not detected. Please check your connection.",
   "inputPlaceholder": "Type a message...",
   "deleteSessionConfirm": "Delete this chat session?",
   "viewTasks": "View in Tasks page",

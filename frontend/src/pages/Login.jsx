@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +24,8 @@ const FacebookIcon = () => (
 );
 
 export default function Login() {
+  usePageTitle('login:pageTitle');
+
   const { t } = useTranslation(['auth', 'common']);
   const { login } = useAuth();
   const [searchParams] = useSearchParams();
@@ -49,6 +52,7 @@ export default function Login() {
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleEmailChange = (e) => {
+
     const val = e.target.value;
     setForm({ ...form, email: val });
     

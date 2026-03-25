@@ -28,12 +28,19 @@ class ForumMessageController extends Controller
             'reply_to_id' => 'nullable|exists:forum_messages,id',
         ]);
 
-        $message = ForumMessage::create([
+        $messageData = [
             'user_id' => $request->user()->id,
             'title' => $validated['title'] ?? null,
             'content' => $validated['content'],
             'reply_to_id' => $validated['reply_to_id'] ?? null,
-        ]);
+        ];
+
+        // Safeguard for unmigrated production DBs
+        if (\Illuminate\Support\Facades\Schema::hasColumn('forum_messages', 'channel_id')) {
+            $messageData['channel_id'] = 1; // Default fallback
+        }
+
+        $message = ForumMessage::create($messageData);
 
         $message->load(['user', 'replyTo.user']);
         $message->loadCount('replies');

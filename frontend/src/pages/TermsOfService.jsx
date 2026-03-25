@@ -1,9 +1,13 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import '../styles/pages/Legal.css';
 
 export default function TermsOfService() {
+  usePageTitle('legal:terms.title');
+
+
   const { t } = useTranslation(['legal', 'common']);
 
   return (

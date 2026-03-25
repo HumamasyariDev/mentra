@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { aiApi } from "../../services/api";
 import WateringAnimation from "./WateringAnimation";
@@ -12,6 +13,7 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [isGenerating, setIsGenerating] = useState(false);
   const canvasRef = useRef(null);
+  const { t } = useTranslation(["sandbox"]);
   const isDraggingRef = useRef(false);
 
   // Generate Mind Map from AI with proper prompting
@@ -333,8 +335,8 @@ function generateFallbackMindMap(content) {
   if (!content) {
     return {
       id: "root",
-      title: "Belum ada konten",
-      caption: "Mulai chat untuk generate mind map",
+      title: t("sandbox:mindmapEmptyTitle"),
+      caption: t("sandbox:mindmapEmptySubtitle"),
       children: [],
     };
   }

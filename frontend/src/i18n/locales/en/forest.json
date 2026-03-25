@@ -31,5 +31,6 @@
   "ready_to_water": "Ready to water",
   "next_in": "Next in {{time}}",
   "alt_planting": "Planting",
-  "alt_seed": "Seed"
+  "alt_seed": "Seed",
+  "pageTitle": "Forest"
 }

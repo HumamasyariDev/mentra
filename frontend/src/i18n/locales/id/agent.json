@@ -8,7 +8,7 @@
   "pageSubtitle": "Asisten Produktivitas",
   "statusOnline": "Online",
   "statusOffline": "Offline",
-  "puterWarning": "Puter.js belum terdeteksi. Pastikan sudah login di puter.com.",
+  "aiWarning": "Layanan AI belum terdeteksi. Pastikan koneksi Anda stabil.",
   "inputPlaceholder": "Tulis pesan...",
   "deleteSessionConfirm": "Hapus sesi chat ini?",
   "viewTasks": "Lihat di halaman Tasks",

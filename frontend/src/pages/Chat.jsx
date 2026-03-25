@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Send, Loader2, Trash2 } from 'lucide-react';
@@ -5,6 +6,8 @@ import { aiApi } from '../services/api';
 import '../styles/pages/Chat.css';
 
 export default function Chat() {
+  usePageTitle('chat:pageTitle');
+
   const { t } = useTranslation(['chat', 'common']);
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -64,6 +67,7 @@ export default function Chat() {
   };
 
   const handleSubmit = (e) => {
+
     e.preventDefault();
     handleSend();
   };

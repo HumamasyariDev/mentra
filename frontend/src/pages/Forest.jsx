@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -177,6 +178,9 @@ function getBackgroundTreeLayout(index) {
 }
 
 export default function Forest() {
+  usePageTitle('forest:pageTitle');
+
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const prefersReducedMotion = useReducedMotion();
@@ -661,7 +665,7 @@ export default function Forest() {
         {archivedForest.map((tree) => (
           <div
             key={tree.id}
-            className={`forest-background-tree ${tree.is_withered ? 'is-withered' : ''}`}
+            className={'forest-background-tree'}
             style={{
               '--tree-left': tree.layout.left,
               '--tree-bottom': tree.layout.bottom,

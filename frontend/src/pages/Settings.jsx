@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Moon, Sun, Map, LayoutGrid, Globe } from 'lucide-react';
@@ -9,6 +10,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import '../styles/pages/Settings.css';
 
 export default function Settings() {
+  usePageTitle('settings:pageTitle');
+
   const navigate = useNavigate();
   const { t, i18n } = useTranslation(['settings', 'common']);
   const { dashboardMode, setDashboardMode } = useDashboardUI();
@@ -38,6 +41,7 @@ export default function Settings() {
   );
 
   const handleModeChange = (newMode) => {
+
     setDashboardMode(newMode);
   };
 

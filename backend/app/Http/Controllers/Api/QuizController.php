@@ -21,7 +21,7 @@ class QuizController extends Controller
      * GET /api/tasks/{taskId}/quiz
      *
      * Returns the quiz for this task if one exists, 404 otherwise.
-     * Frontend checks this FIRST before calling Puter.js to generate.
+     * Frontend checks this FIRST before calling NVIDIA API to generate.
      */
     public function show(Request $request, int $taskId): JsonResponse
     {
@@ -54,7 +54,7 @@ class QuizController extends Controller
      * POST /api/tasks/{taskId}/quiz
      *
      * Saves AI-generated questions. If a quiz already exists for this task,
-     * it is overwritten (updateOrCreate). Frontend calls this after Puter
+     * it is overwritten (updateOrCreate). Frontend calls this after NVIDIA
      * generates the quiz, and also on "Regenerate".
      *
      * Body: { "questions": [...] }

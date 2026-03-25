@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -263,7 +264,7 @@ export default function MentraAgentWithSessions() {
     // Don't create session in DB yet, just reset to new chat state
     setCurrentSessionId(null);
     setMessages([WELCOME_MSG]);
-    puterHistory.current = [];
+    chatHistory.current = [];
   };
 
   const handleSelectSession = (sessionId) => {

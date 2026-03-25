@@ -3,11 +3,8 @@ import mammoth from 'mammoth';
 import JSZip from 'jszip';
 import { aiApi } from '../services/api';
 
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.mjs',
-    import.meta.url
-).toString();
+// Configure PDF.js worker via CDN to avoid Vite build asset issues in production
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 /* ─── File Parsing ──────────────────────────────────────────── */
 

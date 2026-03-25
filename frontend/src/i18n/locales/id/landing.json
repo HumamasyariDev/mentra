@@ -89,7 +89,7 @@
       },
       {
         "question": "Apakah Mentra punya AI assistant?",
-        "answer": "Ya! Mentra dilengkapi berbagai fitur AI yang didukung Puter.js. AI Agent bisa membuat task dari bahasa sehari-hari dan mencari di knowledge base-mu. Sandbox memungkinkanmu brainstorming dengan AI dan memvisualisasikan percakapan sebagai mind map di kanvas tak terbatas. Kamu juga bisa mengunggah materi belajar untuk auto-generate kuis."
+        "answer": "Ya! Mentra dilengkapi berbagai fitur AI yang didukung NVIDIA API. AI Agent bisa membuat task dari bahasa sehari-hari dan mencari di knowledge base-mu. Sandbox memungkinkanmu brainstorming dengan AI dan memvisualisasikan percakapan sebagai mind map di kanvas tak terbatas. Kamu juga bisa mengunggah materi belajar untuk auto-generate kuis."
       },
       {
         "question": "Bisa dipakai di perangkat mobile?",

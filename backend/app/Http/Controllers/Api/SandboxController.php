@@ -74,10 +74,10 @@ class SandboxController extends Controller
             'content' => $validated['content'],
         ]);
 
-        // Mock AI response (placeholder for puter.com integration)
+        // Mock AI response (placeholder for NVIDIA API integration)
         $aiResponse = $sandbox->messages()->create([
             'role' => 'assistant',
-            'content' => 'This is a placeholder AI response. Real AI integration with puter.com will be added soon!',
+            'content' => 'This is a mocked response. Use the AI endpoint directly for real AI features.',
         ]);
 
         return response()->json([

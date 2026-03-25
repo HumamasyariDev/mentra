@@ -66,11 +66,11 @@ export default function TaskCreateForm({ onSubmit, isPending }) {
 
       setGenerating(true);
       try {
-        // 1. Extract key points from material via Puter.js
+        // 1. Extract key points from material via NVIDIA API
         setGeneratingStatus(t('tasks:createForm.extractingKeyPoints'));
         const keyPoints = await extractKeyPoints(material.trim());
 
-        // 2. Generate quiz from key points via Puter.js
+        // 2. Generate quiz from key points via NVIDIA API
         setGeneratingStatus(t('tasks:createForm.generatingQuestions'));
         const questions = await generateQuizFromMaterial(keyPoints, questionCount);
 

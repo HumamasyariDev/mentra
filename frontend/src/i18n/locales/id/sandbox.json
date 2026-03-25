@@ -24,8 +24,12 @@
   "chatInputPlaceholder": "Ketik pesan kamu...",
   "chatThinking": "AI sedang berpikir...",
   "loadingSandbox": "Memuat sandbox...",
-  "puterUnavailable": "Puter.js tidak tersedia",
+  "puterUnavailable": "Layanan AI tidak tersedia",
   "outputText": "Teks",
   "outputMindMap": "Mind Map",
-  "outputEmpty": "Output teks akan muncul di sini"
+  "outputEmpty": "Output teks akan muncul di sini",
+  "mindmapEmptyTitle": "Belum ada konten",
+  "mindmapEmptySubtitle": "Mulai chat untuk generate mind map",
+  "podcastEmptyTitle": "Belum ada konten untuk podcast",
+  "podcastEmptySubtitle": "Chat dengan AI untuk generate konten"
 }

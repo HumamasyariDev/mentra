@@ -17,6 +17,7 @@ class ForumMessage extends Model
         'content',
         'reply_to_id',
         'is_edited',
+        'channel_id', // safeguard fallback
     ];
 
     protected $casts = [

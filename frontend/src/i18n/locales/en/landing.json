@@ -89,7 +89,7 @@
       },
       {
         "question": "Does Mentra have an AI assistant?",
-        "answer": "Yes! Mentra includes multiple AI features powered by Puter.js. The AI Agent can create tasks from natural language and search your knowledge base. The Sandbox lets you brainstorm with AI and visualize conversations as infinite-canvas mind maps. You can also upload study materials to auto-generate quizzes."
+        "answer": "Yes! Mentra includes multiple AI features powered by NVIDIA API. The AI Agent can create tasks from natural language and search your knowledge base. The Sandbox lets you brainstorm with AI and visualize conversations as infinite-canvas mind maps. You can also upload study materials to auto-generate quizzes."
       },
       {
         "question": "Can I use Mentra on mobile devices?",

@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 /**
  * Tasks.jsx
  * ----------
@@ -17,6 +18,10 @@ import TaskBoardView from '../components/tasks/TaskBoardView';
 import GameWorld from '../components/gameworld/GameWorld';
 import '../styles/pages/Tasks.css';
 
+import fireSad from '../assets/streak_fire/streak_fire_state_sad.png';
+import fireHappy from '../assets/streak_fire/streak_fire_state_happy.png';
+import fireNormal from '../assets/streak_fire/streak_fire_state_normal.png';
+
 const viewKeys = [
   { key: 'list', icon: List },
   { key: 'calendar', icon: CalendarDays },
@@ -24,11 +29,20 @@ const viewKeys = [
 ];
 
 export default function Tasks() {
+  usePageTitle('tasks:pageTitle');
+
   const { t } = useTranslation(['tasks', 'common']);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState('list');
   const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => {
+    [fireSad, fireHappy, fireNormal].forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   /* ===== Listen for Agent task events (from MentraAgent) ===== */
   useEffect(() => {

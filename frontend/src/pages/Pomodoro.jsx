@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -23,6 +24,7 @@ import "../styles/pages/Pomodoro.css";
 
 /** Inline SVG water drop — no image load, renders immediately */
 const WaterDropSvg = ({ className, style, idSuffix = "0", colors }) => {
+
   const c = colors || { light: '#93c5fd', mid: '#60a5fa', dark: '#3b82f6' };
   return (
     <svg
@@ -59,6 +61,8 @@ const plantMoodKeys = {
 };
 
 export default function Pomodoro() {
+  usePageTitle('pomodoro:title');
+
   const queryClient = useQueryClient();
   const { t, i18n } = useTranslation(['pomodoro', 'common']);
   const { theme, setTheme, backgrounds } = usePomodoroTheme();

@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import React, { Suspense, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +28,8 @@ function MapLoadingFallback() {
 }
 
 export default function Dashboard() {
+  usePageTitle('dashboard:pageTitle');
+
   const navigate = useNavigate();
   const { dashboardMode } = useDashboardUI();
   const { sidebarOpen, setSidebarOpen } = useDashboardUI();
@@ -75,6 +78,7 @@ export default function Dashboard() {
   );
 
   const handleIslandClick = (island) => {
+
     // Trigger fade-out of floating UI
     setIslandClicked(true);
     

@@ -10,7 +10,7 @@ export default function Footer() {
       <div className="footer-minimal-links">
         <Link to="/terms-of-service">{t('landing:footer.terms')}</Link>
         <Link to="/privacy-policy">{t('landing:footer.privacy')}</Link>
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <a href="https://github.com/HumamasyariDev/mentra" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
           GitHub
         </a>
       </div>

@@ -11,13 +11,13 @@ use App\Models\User;
  * BEFORE: Called OpenAI API to generate AI responses.
  * AFTER:  Acts as a pure message store service.
  *
- * The LLM (Puter.js / Claude) now runs entirely in the browser via
+ * The LLM (NVIDIA API / Claude) now runs entirely in the browser via
  * the LangChain.js agent on the frontend. The backend's only job is
  * to persist chat messages for history purposes.
  *
  * If you need a server-side AI fallback in the future, re-add the
  * HuggingFace or another provider here. For now, the frontend agent
- * handles all AI reasoning via PuterChatModel.
+ * handles all AI reasoning via NVIDIAChatModel.
  */
 class AiChatService
 {
@@ -25,7 +25,7 @@ class AiChatService
      * Store a user message and return a neutral acknowledgment.
      *
      * This is used by the legacy /api/chat/send endpoint.
-     * The frontend Chat page (/chat) handles AI responses itself via Puter.js.
+     * The frontend Chat page (/chat) handles AI responses itself via NVIDIA API.
      * This endpoint now just persists the message and returns a basic response.
      *
      * @param User   $user    The authenticated user.
@@ -42,7 +42,7 @@ class AiChatService
         ]);
 
         // 2. Build a minimal context response
-        //    Real AI is now handled by Puter.js in the browser (MentraAgent.jsx)
+        //    Real AI is now handled by NVIDIA API in the browser (MentraAgent.jsx)
         $responseContent = $this->buildServerSideContext($user, $message);
 
         // 3. Persist and return the assistant message
@@ -58,7 +58,7 @@ class AiChatService
      * This replaces the old OpenAI call — it provides useful data
      * without making any external API calls.
      *
-     * For richer AI responses, use the /agent page which uses Puter.js.
+     * For richer AI responses, use the /agent page which uses NVIDIA API.
      */
     private function buildServerSideContext(User $user, string $message): string
     {

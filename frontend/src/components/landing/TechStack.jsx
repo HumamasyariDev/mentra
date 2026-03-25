@@ -7,7 +7,7 @@ import { useReducedMotion } from '../../hooks/useReducedMotion';
 const TECH = [
   { label: 'React 19', icon: Code },
   { label: 'Laravel 12', icon: Server },
-  { label: 'Puter.js AI', icon: Bot },
+  { label: 'NVIDIA AI', icon: Bot },
   { label: 'GSAP', icon: Sparkles },
   { label: 'PostgreSQL', icon: Database },
   { label: 'TanStack Query', icon: BarChart3 },

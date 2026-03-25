@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +16,8 @@ const moodEmojis = {
 };
 
 export default function MoodPage() {
+  usePageTitle('mood:pageTitle');
+
     const { t } = useTranslation(['mood', 'common']);
     const queryClient = useQueryClient();
     const [selectedMood, setSelectedMood] = useState('');
@@ -45,6 +48,7 @@ export default function MoodPage() {
     });
 
     const handleSave = () => {
+
         if (!selectedMood) return;
         saveMutation.mutate({
             mood: selectedMood,

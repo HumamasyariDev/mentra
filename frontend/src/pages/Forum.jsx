@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +16,8 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Forum() {
+  usePageTitle('forum:pageTitle');
+
   const { t, i18n } = useTranslation(['forum', 'common']);
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreatePost, setShowCreatePost] = useState(false);
@@ -131,6 +134,7 @@ export default function Forum() {
 
   // ─── Handlers ───
   const handleEditPost = (post) => {
+
     setPostToEdit(post);
     setShowEditPost(true);
   };

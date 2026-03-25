@@ -1,3 +1,4 @@
+import { usePageTitle } from "../hooks/usePageTitle";
 import { useMemo, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
@@ -36,6 +37,7 @@ const PLANETS = [
 /** Pre-generate star positions deterministically */
 function generateStars(count) {
   const seededRandom = (i, offset = 0) => {
+
     const x = Math.sin(i * 127.1 + offset * 311.7) * 43758.5453;
     return x - Math.floor(x);
   };
@@ -56,6 +58,8 @@ function generateStars(count) {
 const STARS = generateStars(80);
 
 export default function LandingPage() {
+  usePageTitle(null);
+
   const pageRef = useRef(null);
 
   const starElements = useMemo(() => (
