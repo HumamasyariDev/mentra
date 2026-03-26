@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { scheduleApi } from '../services/api';
 import { Plus, X, List, CalendarDays, Columns3, CheckCircle2 } from 'lucide-react';
+import { useToast } from '../contexts/ToastContext';
 import ScheduleCreateForm from '../components/schedules/ScheduleCreateForm';
 import ScheduleListView from '../components/schedules/ScheduleListView';
 import ScheduleCalendarView from '../components/schedules/ScheduleCalendarView';
@@ -31,6 +32,7 @@ export default function Schedules() {
 
   const { t } = useTranslation(['schedules', 'common']);
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [activeView, setActiveView] = useState('list');
   const [showForm, setShowForm] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(null);
@@ -87,6 +89,7 @@ export default function Schedules() {
       if (context?.previous) {
         queryClient.setQueryData(['schedules'], context.previous);
       }
+      toast.error(t('schedules:toast_complete_error'));
     },
     onSettled: invalidate,
   });
@@ -114,13 +117,20 @@ export default function Schedules() {
       if (context?.previous) {
         queryClient.setQueryData(['schedules'], context.previous);
       }
+      toast.error(t('schedules:toast_complete_error'));
     },
     onSettled: invalidate,
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => scheduleApi.delete(id),
-    onSuccess: invalidate,
+    onSuccess: () => {
+      invalidate();
+      toast.success(t('schedules:toast_deleted'));
+    },
+    onError: () => {
+      toast.error(t('schedules:toast_delete_error'));
+    },
   });
 
   const updateMutation = useMutation({
@@ -128,6 +138,10 @@ export default function Schedules() {
     onSuccess: () => {
       invalidate();
       setEditingSchedule(null);
+      toast.success(t('schedules:toast_updated'));
+    },
+    onError: () => {
+      toast.error(t('schedules:toast_update_error'));
     },
   });
 
@@ -144,6 +158,10 @@ export default function Schedules() {
         resetForm();
         invalidate();
         setShowForm(false);
+        toast.success(t('schedules:toast_created'));
+      },
+      onError: () => {
+        toast.error(t('schedules:toast_create_error'));
       },
     });
   };

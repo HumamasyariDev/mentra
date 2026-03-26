@@ -27,5 +27,10 @@
   "total_focus": "Total Fokus",
 
   "recent_sessions": "Sesi Terakhir",
-  "no_task": "Tanpa tugas"
+  "no_task": "Tanpa tugas",
+
+  "toast_start_error": "Gagal memulai sesi Pomodoro. Silakan coba lagi.",
+  "toast_completed": "Sesi selesai! Kamu mendapatkan +{{count}} kaleng penyiram.",
+  "toast_completed_no_cans": "Sesi selesai! Fokus yang hebat.",
+  "toast_complete_error": "Gagal menyelesaikan sesi. Silakan coba lagi."
 }

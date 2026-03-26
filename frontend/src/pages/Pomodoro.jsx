@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { pomodoroApi, taskApi } from "../services/api";
+import { useToast } from "../contexts/ToastContext";
 import {
   Play,
   Pause,
@@ -60,6 +61,7 @@ export default function Pomodoro() {
 
   const queryClient = useQueryClient();
   const { t, i18n } = useTranslation(['pomodoro', 'common']);
+  const toast = useToast();
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [sessionId, setSessionId] = useState(null);
@@ -94,6 +96,9 @@ export default function Pomodoro() {
       setIsRunning(true);
       setWaterState("focusing");
     },
+    onError: () => {
+      toast.error(t('pomodoro:toast_start_error'));
+    },
   });
 
   const completeMutation = useMutation({
@@ -106,12 +111,18 @@ export default function Pomodoro() {
       setWaterState("completed");
       if (res.data?.cans_awarded) {
         setCansEarned(res.data.cans_awarded);
+        toast.success(t('pomodoro:toast_completed', { count: res.data.cans_awarded }));
+      } else {
+        toast.success(t('pomodoro:toast_completed_no_cans'));
       }
       setTimeout(() => {
         resetTimer();
         setWaterState("idle");
         setCansEarned(null);
       }, 3000);
+    },
+    onError: () => {
+      toast.error(t('pomodoro:toast_complete_error'));
     },
   });
 

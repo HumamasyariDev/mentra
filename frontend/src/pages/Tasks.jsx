@@ -11,6 +11,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { taskApi } from '../services/api';
 import { Plus, X, List, CalendarDays, Columns3, TreePine } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../contexts/ToastContext';
 import TaskCreateForm from '../components/tasks/TaskCreateForm';
 import TaskListView from '../components/tasks/TaskListView';
 import TaskCalendarView from '../components/tasks/TaskCalendarView';
@@ -34,6 +35,7 @@ export default function Tasks() {
   const { t } = useTranslation(['tasks', 'common']);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const toast = useToast();
   const [activeView, setActiveView] = useState('list');
   const [showForm, setShowForm] = useState(false);
 
@@ -91,6 +93,7 @@ export default function Tasks() {
     },
     onError: (_err, _id, context) => {
       if (context?.previous) queryClient.setQueryData(['tasks', 'all', page], context.previous);
+      toast.error(t('tasks:toast_complete_error'));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -103,6 +106,10 @@ export default function Tasks() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      toast.success(t('tasks:toast_deleted'));
+    },
+    onError: () => {
+      toast.error(t('tasks:toast_delete_error'));
     },
   });
 
@@ -128,6 +135,10 @@ export default function Tasks() {
         queryClient.invalidateQueries({ queryKey: ['tasks'] });
         queryClient.invalidateQueries({ queryKey: ['dashboard'] });
         setShowForm(false);
+        toast.success(t('tasks:toast_created'));
+      },
+      onError: () => {
+        toast.error(t('tasks:toast_create_error'));
       },
     });
   };
@@ -150,6 +161,7 @@ export default function Tasks() {
     },
     onError: (_err, _id, context) => {
       if (context?.previous) queryClient.setQueryData(['tasks', 'all', page], context.previous);
+      toast.error(t('tasks:toast_complete_error'));
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });

@@ -51,5 +51,8 @@
     "tired": "Lelah",
     "frustrated": "Frustasi",
     "grateful": "Bersyukur"
-  }
+  },
+
+  "toast_saved": "Catatan jurnal berhasil disimpan!",
+  "toast_save_error": "Gagal menyimpan catatan jurnal. Silakan coba lagi."
 }

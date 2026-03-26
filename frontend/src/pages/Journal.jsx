@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { journalApi } from '../services/api';
+import { useToast } from '../contexts/ToastContext';
 import {
   PenLine,
   Sparkles,
@@ -40,6 +41,7 @@ export default function JournalPage() {
 
   const { t, i18n } = useTranslation(['journal', 'common']);
   const queryClient = useQueryClient();
+  const toast = useToast();
   const textareaRef = useRef(null);
   const [content, setContent] = useState('');
   const [selectedDate, setSelectedDate] = useState(todayISO());
@@ -81,6 +83,10 @@ export default function JournalPage() {
       queryClient.invalidateQueries({ queryKey: ['journal-entry', selectedDate] });
       queryClient.invalidateQueries({ queryKey: ['journal-recent'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      toast.success(t('journal:toast_saved'));
+    },
+    onError: () => {
+      toast.error(t('journal:toast_save_error'));
     },
   });
 

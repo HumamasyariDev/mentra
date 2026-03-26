@@ -22,5 +22,8 @@
     "smartGoal": "SMART Goal",
     "focusTips": "Tips Fokus",
     "deepWork": "Deep Work"
-  }
+  },
+
+  "toast_error": "Gagal mendapatkan respons. Silakan coba lagi.",
+  "toast_session_deleted": "Sesi chat dihapus."
 }

@@ -51,5 +51,8 @@
     "tired": "Tired",
     "frustrated": "Frustrated",
     "grateful": "Grateful"
-  }
+  },
+
+  "toast_saved": "Journal entry saved!",
+  "toast_save_error": "Failed to save journal entry. Please try again."
 }

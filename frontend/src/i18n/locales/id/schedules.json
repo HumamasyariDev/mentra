@@ -53,5 +53,13 @@
     "daily": "Harian",
     "weekly": "Mingguan",
     "monthly": "Bulanan"
-  }
+  },
+
+  "toast_created": "Jadwal berhasil dibuat!",
+  "toast_create_error": "Gagal membuat jadwal. Silakan coba lagi.",
+  "toast_updated": "Jadwal berhasil diperbarui!",
+  "toast_update_error": "Gagal memperbarui jadwal. Silakan coba lagi.",
+  "toast_deleted": "Jadwal dihapus.",
+  "toast_delete_error": "Gagal menghapus jadwal. Silakan coba lagi.",
+  "toast_complete_error": "Gagal memperbarui penyelesaian. Silakan coba lagi."
 }

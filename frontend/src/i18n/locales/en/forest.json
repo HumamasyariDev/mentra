@@ -32,5 +32,15 @@
   "next_in": "Next in {{time}}",
   "alt_planting": "Planting",
   "alt_seed": "Seed",
-  "pageTitle": "Forest"
+  "pageTitle": "Forest",
+
+  "toast_no_cans": "You don't have enough watering cans. Complete a Pomodoro session to earn more!",
+  "toast_cooldown": "Your tree isn't ready yet. Come back later to water it.",
+  "toast_water_success": "Tree watered successfully!",
+  "toast_stage_up": "Your tree grew to a new stage!",
+  "toast_archived": "Your tree has been archived into the forest!",
+  "toast_rescued": "Your tree has been rescued!",
+  "toast_planted": "A new seed has been planted!",
+  "toast_plant_error": "Failed to plant the seed. Please try again.",
+  "toast_water_error": "Failed to water the tree. Please try again."
 }

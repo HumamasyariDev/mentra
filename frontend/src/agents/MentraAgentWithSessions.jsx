@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { chatSessionApi, aiApi } from "../services/api";
+import { useToast } from "../contexts/ToastContext";
 import { createTaskTool, searchKnowledgeTool } from "./MentraTools.js";
 import {
   MessageSquare,
@@ -145,6 +146,7 @@ export default function MentraAgentWithSessions() {
   const { t } = useTranslation(["agent", "common"]);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [currentSessionId, setCurrentSessionId] = useState(null);
   const [messages, setMessages] = useState([WELCOME_MSG]);
@@ -208,6 +210,7 @@ export default function MentraAgentWithSessions() {
         setMessages([WELCOME_MSG]);
         chatHistory.current = [];
       }
+      toast.success(t('agent:toast_session_deleted'));
     },
   });
 
@@ -356,6 +359,7 @@ export default function MentraAgentWithSessions() {
         }
       } catch (err) {
         console.error("[MentraAgent] Error:", err);
+        toast.error(t('agent:toast_error'));
         const errorMsg = {
           role: "error",
           content: `Error: ${err.message}`,

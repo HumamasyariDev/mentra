@@ -27,5 +27,10 @@
   "total_focus": "Total Focus",
 
   "recent_sessions": "Recent Sessions",
-  "no_task": "No task"
+  "no_task": "No task",
+
+  "toast_start_error": "Failed to start Pomodoro session. Please try again.",
+  "toast_completed": "Session complete! You earned +{{count}} watering cans.",
+  "toast_completed_no_cans": "Session complete! Great focus.",
+  "toast_complete_error": "Failed to complete session. Please try again."
 }

@@ -8,6 +8,7 @@ import gsap from 'gsap';
 import { forestApi } from '../services/api';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { usePlantAnimation } from '../hooks/usePlantAnimation';
+import { useToast } from '../contexts/ToastContext';
 import ForestTreeCard from '../components/ForestTreeCard';
 import './Forest.css';
 
@@ -185,6 +186,7 @@ export default function Forest() {
   const queryClient = useQueryClient();
   const prefersReducedMotion = useReducedMotion();
   const { t } = useTranslation(['forest', 'common']);
+  const toast = useToast();
 
   const [timeTick, setTimeTick] = useState(Date.now());
   const [interactionLocked, setInteractionLocked] = useState(false);
@@ -398,7 +400,10 @@ export default function Forest() {
             );
           }, 50);
         },
-        onError: () => setInteractionLocked(false),
+        onError: () => {
+          setInteractionLocked(false);
+          toast.error(t('forest:toast_plant_error'));
+        },
       });
 
   const waterMutation = useMutation({
@@ -412,9 +417,23 @@ export default function Forest() {
             ? 'rescue'
             : 'water';
 
+      // Show relevant toast
+      if (data.archived) {
+        toast.success(t('forest:toast_archived'));
+      } else if (data.advanced) {
+        toast.success(t('forest:toast_stage_up'));
+      } else if (data.rescued) {
+        toast.success(t('forest:toast_rescued'));
+      } else {
+        toast.success(t('forest:toast_water_success'));
+      }
+
       runWaterSequence(lastActionRef.current === 'archive' ? 'archive' : lastActionRef.current === 'advance' ? 'advance' : 'water', refreshForest);
     },
-    onError: () => setInteractionLocked(false),
+    onError: () => {
+      setInteractionLocked(false);
+      toast.error(t('forest:toast_water_error'));
+    },
   });
 
   const skipStageMutation = useMutation({
@@ -450,7 +469,10 @@ export default function Forest() {
           ease: data.archived ? 'power2.inOut' : 'back.out(1.4)',
         });
     },
-    onError: () => setInteractionLocked(false),
+    onError: () => {
+      setInteractionLocked(false);
+      toast.error(t('forest:toast_water_error'));
+    },
   });
 
    useGSAP(() => {
@@ -581,13 +603,23 @@ export default function Forest() {
    }, [treeTypes, plantMutation]);
 
   const handleWaterActive = useCallback(() => {
-    if (!activeTree || !canWaterActive || forest?.watering_cans < 1 || waterMutation.isPending || interactionLocked) {
+    if (!activeTree || waterMutation.isPending || interactionLocked) {
+      return;
+    }
+
+    if (forest?.watering_cans < 1) {
+      toast.warning(t('forest:toast_no_cans'));
+      return;
+    }
+
+    if (!canWaterActive) {
+      toast.info(t('forest:toast_cooldown'));
       return;
     }
 
     setInteractionLocked(true);
     waterMutation.mutate(activeTree.id);
-  }, [activeTree, canWaterActive, forest?.watering_cans, interactionLocked, waterMutation]);
+  }, [activeTree, canWaterActive, forest?.watering_cans, interactionLocked, waterMutation, toast, t]);
 
   const handleSkipStage = useCallback(() => {
     if (!activeTree || skipStageMutation.isPending || interactionLocked) {

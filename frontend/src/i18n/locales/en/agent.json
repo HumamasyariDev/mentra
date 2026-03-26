@@ -22,5 +22,8 @@
     "smartGoal": "SMART Goal",
     "focusTips": "Focus Tips",
     "deepWork": "Deep Work"
-  }
+  },
+
+  "toast_error": "Failed to get a response. Please try again.",
+  "toast_session_deleted": "Chat session deleted."
 }

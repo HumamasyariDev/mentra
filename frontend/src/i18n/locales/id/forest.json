@@ -32,5 +32,15 @@
   "next_in": "Selanjutnya dalam {{time}}",
   "alt_planting": "Menanam",
   "alt_seed": "Benih",
-  "pageTitle": "Hutan"
+  "pageTitle": "Hutan",
+
+  "toast_no_cans": "Kaleng penyiram kamu tidak cukup. Selesaikan sesi Pomodoro untuk mendapatkan lebih banyak!",
+  "toast_cooldown": "Pohonmu belum siap disiram. Kembali lagi nanti ya.",
+  "toast_water_success": "Pohon berhasil disiram!",
+  "toast_stage_up": "Pohonmu tumbuh ke tahap baru!",
+  "toast_archived": "Pohonmu telah diarsipkan ke hutan!",
+  "toast_rescued": "Pohonmu telah diselamatkan!",
+  "toast_planted": "Benih baru telah ditanam!",
+  "toast_plant_error": "Gagal menanam benih. Silakan coba lagi.",
+  "toast_water_error": "Gagal menyiram pohon. Silakan coba lagi."
 }

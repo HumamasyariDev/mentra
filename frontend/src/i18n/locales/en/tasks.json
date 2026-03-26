@@ -86,5 +86,11 @@
     "scoreText": "You answered {{correct}} out of {{total}} questions correctly.",
     "logEarned": "+{{count}} Log Earned",
     "scoreOf": "of {{total}}"
-  }
+  },
+
+  "toast_created": "Task created successfully!",
+  "toast_create_error": "Failed to create task. Please try again.",
+  "toast_deleted": "Task deleted.",
+  "toast_delete_error": "Failed to delete task. Please try again.",
+  "toast_complete_error": "Failed to update task status. Please try again."
 }

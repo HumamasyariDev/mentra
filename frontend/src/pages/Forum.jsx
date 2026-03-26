@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import '../styles/pages/Forum.css';
 import { forumPostApi } from '../services/api';
+import { useToast } from '../contexts/ToastContext';
 import CreatePostModal from '../components/forum/CreatePostModal';
 import EditPostModal from '../components/forum/EditPostModal';
 import DeleteConfirmModal from '../components/forum/DeleteConfirmModal';
@@ -19,6 +20,7 @@ export default function Forum() {
   usePageTitle('forum:pageTitle');
 
   const { t, i18n } = useTranslation(['forum', 'common']);
+  const toast = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showEditPost, setShowEditPost] = useState(false);
@@ -33,7 +35,6 @@ export default function Forum() {
   const [panelReady, setPanelReady] = useState(false);
   const panelTimerRef = useRef(null);
   const [replyContent, setReplyContent] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -59,13 +60,6 @@ export default function Forum() {
   useEffect(() => {
     return () => clearTimeout(panelTimerRef.current);
   }, []);
-
-  // Clear errors after 5 seconds
-  useEffect(() => {
-    if (!errorMessage) return;
-    const timer = setTimeout(() => setErrorMessage(''), 5000);
-    return () => clearTimeout(timer);
-  }, [errorMessage]);
 
   // ─── Queries ───
   const { data: posts, isLoading: postsLoading } = useQuery({
@@ -100,13 +94,13 @@ export default function Forum() {
   const createPostMutation = useMutation({
     mutationFn: (data) => forumPostApi.create(data).then((r) => r.data),
     onSuccess: invalidate,
-    onError: (err) => setErrorMessage(err?.response?.data?.message || t('forum:errors.createFailed')),
+    onError: (err) => toast.error(err?.response?.data?.message || t('forum:errors.createFailed')),
   });
 
   const updatePostMutation = useMutation({
     mutationFn: ({ id, data }) => forumPostApi.update(id, data).then((r) => r.data),
     onSuccess: invalidate,
-    onError: (err) => setErrorMessage(err?.response?.data?.message || t('forum:errors.updateFailed')),
+    onError: (err) => toast.error(err?.response?.data?.message || t('forum:errors.updateFailed')),
   });
 
   const deletePostMutation = useMutation({
@@ -120,7 +114,7 @@ export default function Forum() {
                 closePanel();
               }
     },
-    onError: (err) => setErrorMessage(err?.response?.data?.message || t('forum:errors.deleteFailed')),
+    onError: (err) => toast.error(err?.response?.data?.message || t('forum:errors.deleteFailed')),
   });
 
   const replyMutation = useMutation({
@@ -129,7 +123,7 @@ export default function Forum() {
       invalidate();
       setReplyContent('');
     },
-    onError: (err) => setErrorMessage(err?.response?.data?.message || t('forum:errors.replyFailed')),
+    onError: (err) => toast.error(err?.response?.data?.message || t('forum:errors.replyFailed')),
   });
 
   // ─── Handlers ───
@@ -373,16 +367,6 @@ export default function Forum() {
             </div>
           </div>
         </div>
-
-        {/* Error Toast */}
-        {errorMessage && (
-          <div className="forum-error-toast">
-            <span>{errorMessage}</span>
-            <button onClick={() => setErrorMessage('')} className="forum-error-close">
-              <X size={14} />
-            </button>
-          </div>
-        )}
 
         {/* Posts List */}
         <div className="forum-posts-container">

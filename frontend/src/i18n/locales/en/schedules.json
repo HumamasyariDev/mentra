@@ -54,5 +54,13 @@
     "daily": "Daily",
     "weekly": "Weekly",
     "monthly": "Monthly"
-  }
+  },
+
+  "toast_created": "Schedule created!",
+  "toast_create_error": "Failed to create schedule. Please try again.",
+  "toast_updated": "Schedule updated!",
+  "toast_update_error": "Failed to update schedule. Please try again.",
+  "toast_deleted": "Schedule deleted.",
+  "toast_delete_error": "Failed to delete schedule. Please try again.",
+  "toast_complete_error": "Failed to update completion. Please try again."
 }
