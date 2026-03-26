@@ -12,6 +12,11 @@ class Sandbox extends Model
         'user_id',
         'name',
         'description',
+        'purposes',
+    ];
+
+    protected $casts = [
+        'purposes' => 'array',
     ];
 
     public function user(): BelongsTo

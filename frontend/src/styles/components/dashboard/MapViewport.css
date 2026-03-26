@@ -85,3 +85,11 @@
     font-size: 10px;
   }
 }
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .stars circle {
+    animation: none;
+    opacity: 0.4;
+  }
+}

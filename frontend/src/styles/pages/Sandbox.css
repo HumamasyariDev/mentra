@@ -1,59 +1,180 @@
-/* Sandbox Page — Elegant & Clean */
+/* ============================================
+   SANDBOX PAGE — Premium Glass-morphism Layout
+   Inter font, ambient orbs, refined typography
+   ============================================ */
 
-/* ── Layout ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+
+/* ── Page Container ──────────────────────── */
+
 .sandbox-page {
-  padding: 32px 40px;
-  max-width: 100%;
+  position: relative;
+  width: 100%;
   min-height: 100%;
+  background: var(--bg-base);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-/* ── Header ── */
-.sandbox-header {
+
+/* ── Ambient Background Orbs ─────────────── */
+
+.sandbox-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.sandbox-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0;
+}
+
+.sandbox-orb--1 {
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.14) 0%, transparent 70%);
+  top: -12%;
+  left: -8%;
+}
+
+.sandbox-orb--2 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+  bottom: -8%;
+  right: -6%;
+}
+
+.sandbox-orb--3 {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+  top: 50%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+}
+
+[data-theme="light"] .sandbox-orb--1 {
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.07) 0%, transparent 70%);
+}
+
+[data-theme="light"] .sandbox-orb--2 {
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+}
+
+[data-theme="light"] .sandbox-orb--3 {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 70%);
+}
+
+
+/* ── Scrollable Content Area ─────────────── */
+
+.sandbox-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  z-index: 1;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+.sandbox-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sandbox-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sandbox-scroll::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+.sandbox-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+.sandbox-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px 48px;
+}
+
+
+/* ── Hero / Page Title ───────────────────── */
+
+.sandbox-hero {
+  padding: 16px 0 40px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 40px;
+  gap: 24px;
 }
 
-.sandbox-header-text h1 {
-  font-size: 28px;
-  font-weight: 700;
+.sandbox-hero-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.sandbox-hero-title {
+  font-size: 2.25rem;
+  font-weight: 900;
   color: var(--text-primary);
-  letter-spacing: -0.5px;
-  margin: 0 0 6px 0;
+  margin: 0;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
 }
 
-.sandbox-header-text p {
-  font-size: 15px;
-  color: var(--text-secondary);
-  margin: 0;
+.sandbox-hero-subtitle {
+  font-size: 1rem;
   font-weight: 400;
+  color: var(--text-tertiary);
+  margin: 10px 0 0 0;
+  letter-spacing: -0.01em;
+  line-height: 1.5;
 }
 
 .sandbox-new-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
-  background-color: var(--accent);
+  padding: 12px 24px;
+  background: var(--accent);
   color: var(--text-on-accent);
   border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: -0.01em;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.15s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.25);
 }
 
 .sandbox-new-btn:hover {
-  background-color: var(--accent-dark);
+  background: var(--accent-dark);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+  transform: translateY(-1px);
 }
 
 .sandbox-new-btn:active {
-  transform: scale(0.97);
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
 }
 
 .sandbox-new-btn svg {
@@ -61,19 +182,159 @@
   height: 16px;
 }
 
-/* ── Loading ── */
+
+/* ── Stats Bar ───────────────────────────── */
+
+.sandbox-stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding: 16px 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+}
+
+.sandbox-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sandbox-stat-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.sandbox-stat-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  letter-spacing: -0.005em;
+}
+
+
+/* ── Category Filter Cards ───────────────── */
+
+.sandbox-categories {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  flex-wrap: nowrap;
+}
+
+.sandbox-categories::-webkit-scrollbar {
+  display: none;
+}
+
+.sandbox-category-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 0;
+  font-family: inherit;
+}
+
+.sandbox-category-card:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+  transform: translateY(-1px);
+}
+
+.sandbox-category-card.active {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.sandbox-category-card.active .sandbox-category-icon {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.sandbox-category-card.active .sandbox-category-count {
+  color: var(--accent-light);
+}
+
+.sandbox-category-card.active .sandbox-category-label {
+  color: var(--accent-light);
+}
+
+.sandbox-category-card.empty {
+  opacity: 0.55;
+}
+
+.sandbox-category-card.empty:hover {
+  opacity: 0.8;
+}
+
+.sandbox-category-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--bg-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.sandbox-category-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sandbox-category-count {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.sandbox-category-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+}
+
+
+/* ── Loading ─────────────────────────────── */
+
 .sandbox-loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 80px 0;
+  padding: 100px 0;
 }
 
 .sandbox-spinner {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border: 2.5px solid var(--border-default);
-  border-top-color: var(--text-primary);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: sandbox-spin 0.7s linear infinite;
 }
@@ -84,7 +345,9 @@
   }
 }
 
-/* ── Empty State ── */
+
+/* ── Empty State ─────────────────────────── */
+
 .sandbox-empty {
   display: flex;
   flex-direction: column;
@@ -95,67 +358,102 @@
 }
 
 .sandbox-empty-icon {
-  width: 64px;
-  height: 64px;
-  background-color: var(--bg-surface);
-  border-radius: 16px;
+  width: 80px;
+  height: 80px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.sandbox-empty-icon::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
 }
 
 .sandbox-empty-icon svg {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   color: var(--text-secondary);
 }
 
 .sandbox-empty h3 {
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 1.125rem;
+  font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 6px 0;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.025em;
 }
 
 .sandbox-empty p {
-  font-size: 14px;
-  color: var(--text-secondary);
+  font-size: 0.875rem;
+  color: var(--text-tertiary);
   margin: 0;
   font-weight: 400;
+  line-height: 1.6;
+  max-width: 360px;
 }
 
-/* ── Card Grid ── */
+
+/* ── Card Grid ───────────────────────────── */
+
 .sandbox-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 16px;
 }
 
-/* ── Card ── */
+
+/* ── Glass Card ──────────────────────────── */
+
 .sandbox-card {
-  background: var(--bg-elevated);
+  background: var(--bg-surface);
   border: 1px solid var(--border-default);
-  border-radius: 14px;
+  border-radius: 20px;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.15s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sandbox-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+[data-theme="light"] .sandbox-card::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, transparent 60%);
 }
 
 .sandbox-card:hover {
-  border-color: var(--border-default);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .sandbox-card:active {
-  transform: scale(0.99);
+  transform: translateY(0) scale(0.99);
 }
+
+
+/* ── Card Top Row ────────────────────────── */
 
 .sandbox-card-top {
   display: flex;
@@ -165,27 +463,38 @@
 }
 
 .sandbox-card-icon {
-  width: 40px;
-  height: 40px;
-  background-color: var(--bg-surface);
-  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  background: var(--accent-bg);
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.sandbox-card:hover .sandbox-card-icon {
+  background: var(--accent);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
 }
 
 .sandbox-card-icon svg {
-  width: 18px;
-  height: 18px;
-  color: var(--text-primary);
+  width: 20px;
+  height: 20px;
+  color: var(--accent-light);
+  transition: color 0.2s ease;
+}
+
+.sandbox-card:hover .sandbox-card-icon svg {
+  color: var(--text-on-accent);
 }
 
 .sandbox-card-actions {
   display: flex;
   gap: 4px;
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.2s ease;
 }
 
 .sandbox-card:hover .sandbox-card-actions {
@@ -197,23 +506,23 @@
   height: 32px;
   background: transparent;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.15s ease;
+  transition: all 0.15s ease;
   color: var(--text-secondary);
   padding: 0;
 }
 
 .sandbox-card-action-btn:hover {
-  background-color: var(--bg-surface);
+  background: var(--bg-hover);
   color: var(--text-primary);
 }
 
 .sandbox-card-action-btn.danger:hover {
-  background-color: var(--danger-bg);
+  background: var(--danger-bg);
   color: var(--danger);
 }
 
@@ -222,23 +531,28 @@
   height: 15px;
 }
 
+
+/* ── Card Body ───────────────────────────── */
+
 .sandbox-card-body {
   flex: 1;
 }
 
 .sandbox-card-body h3 {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 4px 0;
-  letter-spacing: -0.1px;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.025em;
+  line-height: 1.3;
 }
 
 .sandbox-card-body p {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--text-secondary);
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.6;
+  letter-spacing: -0.005em;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -246,32 +560,83 @@
   overflow: hidden;
 }
 
+
+/* ── Card Meta & Tags ────────────────────── */
+
+.sandbox-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sandbox-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sandbox-card-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: var(--accent-bg);
+  border-radius: 8px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--accent-light);
+  letter-spacing: -0.005em;
+}
+
+.sandbox-card-tag svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.8;
+}
+
+
+/* ── Card Footer ─────────────────────────── */
+
 .sandbox-card-footer {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  font-weight: 400;
+  font-size: 0.6875rem;
+  color: var(--text-tertiary);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
 }
 
 .sandbox-card-footer svg {
   width: 13px;
   height: 13px;
+  opacity: 0.7;
 }
 
-/* ── Modal Overlay ── */
+.sandbox-card-msg-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  color: var(--text-tertiary);
+}
+
+
+/* ── Modal Overlay ───────────────────────── */
+
 .sandbox-modal-overlay {
   position: fixed;
   inset: 0;
   background: var(--bg-overlay);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 20px;
-  animation: sandbox-fade-in 0.15s ease;
+  animation: sandbox-fade-in 0.2s ease;
 }
 
 @keyframes sandbox-fade-in {
@@ -285,18 +650,34 @@
 
 .sandbox-modal {
   background: var(--bg-elevated);
-  border-radius: 16px;
+  border: 1px solid var(--border-default);
+  border-radius: 24px;
   width: 100%;
-  max-width: 440px;
-  padding: 28px;
-  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.18);
-  animation: sandbox-modal-in 0.2s ease;
+  max-width: 480px;
+  padding: 32px;
+  box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.24);
+  animation: sandbox-modal-in 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.sandbox-modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+[data-theme="light"] .sandbox-modal::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, transparent 60%);
 }
 
 @keyframes sandbox-modal-in {
   from {
     opacity: 0;
-    transform: scale(0.96) translateY(8px);
+    transform: scale(0.95) translateY(10px);
   }
   to {
     opacity: 1;
@@ -305,64 +686,71 @@
 }
 
 .sandbox-modal h2 {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 1.375rem;
+  font-weight: 800;
   color: var(--text-primary);
-  letter-spacing: -0.3px;
-  margin: 0 0 24px 0;
+  letter-spacing: -0.03em;
+  margin: 0 0 28px 0;
+  line-height: 1.2;
 }
 
+
+/* ── Form Styles ─────────────────────────── */
+
 .sandbox-form-group {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .sandbox-form-group label {
   display: block;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 0.8125rem;
+  font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
 }
 
 .sandbox-form-group label span {
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   font-weight: 400;
 }
 
 .sandbox-form-input,
 .sandbox-form-textarea {
   width: 100%;
-  padding: 10px 14px;
+  padding: 12px 16px;
   background: var(--bg-surface);
-  border: 1.5px solid transparent;
-  border-radius: 10px;
-  font-size: 14px;
+  border: 1.5px solid var(--border-default);
+  border-radius: 14px;
+  font-size: 0.875rem;
   font-family: inherit;
   color: var(--text-primary);
   outline: none;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease;
+  transition: all 0.2s ease;
   box-sizing: border-box;
+  letter-spacing: -0.005em;
 }
 
 .sandbox-form-input::placeholder,
 .sandbox-form-textarea::placeholder {
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
 }
 
 .sandbox-form-input:focus,
 .sandbox-form-textarea:focus {
   background: var(--bg-elevated);
-  border-color: var(--text-primary);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
 }
 
 .sandbox-form-textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 88px;
 }
 
-/* Purpose Checkboxes */
+
+/* ── Purpose Checkboxes ──────────────────── */
+
 .sandbox-purposes {
   display: flex;
   flex-wrap: wrap;
@@ -374,21 +762,23 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 14px;
-  background: var(--bg-hover);
-  border: 1.5px solid transparent;
-  border-radius: 10px;
-  font-size: 13px;
+  padding: 10px 16px;
+  background: var(--bg-inset);
+  border: 1.5px solid var(--border-default);
+  border-radius: 12px;
+  font-size: 0.8125rem;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
+  letter-spacing: -0.005em;
 }
 
 .sandbox-purpose-item:hover {
-  background: var(--bg-active);
-  border-color: var(--border-strong);
+  background: var(--bg-hover);
+  border-color: var(--border-hover);
+  color: var(--text-primary);
 }
 
 .sandbox-purpose-item input[type="checkbox"] {
@@ -400,313 +790,196 @@
 
 .sandbox-purpose-item input[type="checkbox"]:checked + span {
   font-weight: 600;
+  color: var(--accent-light);
 }
+
+.sandbox-purpose-item.custom {
+  border-style: dashed;
+}
+
+.sandbox-purpose-item.custom svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+
+/* ── Add Custom Purpose ─────────────────── */
+
+.sandbox-purpose-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background: var(--bg-inset);
+  border: 1.5px dashed var(--border-default);
+  border-radius: 12px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.sandbox-purpose-add-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+  color: var(--accent-light);
+}
+
+.sandbox-purpose-add-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 12px;
+  background: var(--bg-inset);
+  border: 1.5px solid var(--accent);
+  border-radius: 12px;
+  box-shadow: 0 0 0 3px var(--accent-bg);
+  animation: sandbox-fade-in 0.15s ease;
+}
+
+.sandbox-purpose-add-input input {
+  width: 120px;
+  padding: 6px 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+
+.sandbox-purpose-add-input input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.sandbox-purpose-confirm,
+.sandbox-purpose-cancel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.sandbox-purpose-confirm {
+  background: var(--accent);
+  color: var(--text-on-accent);
+}
+
+.sandbox-purpose-confirm:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+.sandbox-purpose-confirm:disabled {
+  background: var(--border-default);
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+}
+
+.sandbox-purpose-cancel {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.sandbox-purpose-cancel:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+
+/* ── Modal Actions ───────────────────────── */
 
 .sandbox-modal-actions {
   display: flex;
   gap: 10px;
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
 .sandbox-btn-cancel {
   flex: 1;
-  padding: 10px 16px;
+  padding: 12px 16px;
   background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   color: var(--text-primary);
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: all 0.2s ease;
   font-family: inherit;
+  letter-spacing: -0.01em;
 }
 
 .sandbox-btn-cancel:hover {
-  background-color: var(--border-default);
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
 }
 
 .sandbox-btn-save {
   flex: 1;
-  padding: 10px 16px;
+  padding: 12px 16px;
   background: var(--accent);
   color: var(--text-on-accent);
   border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: inherit;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 }
 
 .sandbox-btn-save:hover:not(:disabled) {
-  background-color: var(--accent-dark);
+  background: var(--accent-dark);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+  transform: translateY(-1px);
 }
 
 .sandbox-btn-save:disabled {
-  background-color: var(--border-default);
+  background: var(--border-default);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
-/* ── Chat Page ── */
-.sandbox-chat-page {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: var(--bg-elevated);
-}
 
-.sandbox-chat-top {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border-default);
-}
+/* (Removed old chat page CSS - now in SandboxChat.css) */
 
-.sandbox-back-button {
-  width: 36px;
-  height: 36px;
-  background: var(--bg-surface);
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.15s ease;
-  color: var(--text-primary);
-  padding: 0;
-  flex-shrink: 0;
-}
 
-.sandbox-back-button:hover {
-  background-color: var(--border-default);
-}
-
-.sandbox-back-button svg {
-  width: 18px;
-  height: 18px;
-}
-
-.sandbox-chat-info h2 {
-  font-size: 17px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
-  letter-spacing: -0.2px;
-}
-
-.sandbox-chat-info p {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin: 3px 0 0 0;
-}
-
-/* Messages Area */
-.sandbox-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-  background: var(--bg-surface);
-}
-
-.sandbox-messages-inner {
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.sandbox-chat-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 20px;
-  text-align: center;
-}
-
-.sandbox-chat-empty-icon {
-  width: 56px;
-  height: 56px;
-  background-color: var(--border-default);
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
-.sandbox-chat-empty-icon svg {
-  width: 24px;
-  height: 24px;
-  color: var(--text-secondary);
-}
-
-.sandbox-chat-empty h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 4px 0;
-}
-
-.sandbox-chat-empty p {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-/* Message Bubbles */
-.sandbox-msg-row {
-  display: flex;
-}
-
-.sandbox-msg-row.user {
-  justify-content: flex-end;
-}
-
-.sandbox-msg-row.assistant {
-  justify-content: flex-start;
-}
-
-.sandbox-msg-bubble {
-  max-width: 75%;
-  padding: 12px 16px;
-  border-radius: 16px;
-  font-size: 14px;
-  line-height: 1.55;
-  word-break: break-word;
-  white-space: pre-wrap;
-}
-
-.sandbox-msg-row.user .sandbox-msg-bubble {
-  background-color: var(--accent);
-  color: var(--text-on-accent);
-  border-bottom-right-radius: 6px;
-}
-
-.sandbox-msg-row.assistant .sandbox-msg-bubble {
-  background-color: var(--bg-elevated);
-  color: var(--text-primary);
-  border: 1px solid var(--border-default);
-  border-bottom-left-radius: 6px;
-}
-
-.sandbox-msg-time {
-  font-size: 11px;
-  margin-top: 4px;
-  opacity: 0.55;
-}
-
-.sandbox-msg-row.user .sandbox-msg-time {
-  text-align: right;
-  color: var(--text-on-accent);
-}
-
-.sandbox-msg-row.assistant .sandbox-msg-time {
-  color: var(--text-secondary);
-}
-
-/* Input Area */
-.sandbox-input-area {
-  padding: 16px 24px 20px;
-  border-top: 1px solid var(--border-default);
-  background: var(--bg-elevated);
-}
-
-.sandbox-input-form {
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  gap: 10px;
-}
-
-.sandbox-chat-input {
-  flex: 1;
-  padding: 12px 16px;
-  background: var(--bg-surface);
-  border: 1.5px solid transparent;
-  border-radius: 12px;
-  font-size: 14px;
-  font-family: inherit;
-  color: var(--text-primary);
-  outline: none;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease;
-}
-
-.sandbox-chat-input::placeholder {
-  color: var(--text-secondary);
-}
-
-.sandbox-chat-input:focus {
-  background: var(--bg-elevated);
-  border-color: var(--text-primary);
-}
-
-.sandbox-chat-input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.sandbox-send-btn {
-  width: 44px;
-  height: 44px;
-  background: var(--accent);
-  color: var(--text-on-accent);
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background-color 0.2s ease,
-    transform 0.1s ease;
-  flex-shrink: 0;
-  padding: 0;
-}
-
-.sandbox-send-btn:hover:not(:disabled) {
-  background-color: var(--accent-dark);
-}
-
-.sandbox-send-btn:active:not(:disabled) {
-  transform: scale(0.95);
-}
-
-.sandbox-send-btn:disabled {
-  background-color: var(--border-default);
-  cursor: not-allowed;
-}
-
-.sandbox-send-btn svg {
-  width: 18px;
-  height: 18px;
-}
-
-.sandbox-input-hint {
-  max-width: 720px;
-  margin: 8px auto 0;
-  font-size: 11px;
-  color: var(--text-secondary);
-  text-align: center;
-}
-
-/* ── Responsive ── */
+/* ============================================
+   RESPONSIVE — Tablet
+   ============================================ */
 @media (max-width: 768px) {
-  .sandbox-page {
-    padding: 24px 20px;
+  .sandbox-inner {
+    max-width: 100%;
+    padding: 0 20px 40px;
   }
 
-  .sandbox-header {
+  .sandbox-hero {
     flex-direction: column;
     gap: 16px;
-    margin-bottom: 28px;
+    padding: 12px 0 28px;
+  }
+
+  .sandbox-hero-title {
+    font-size: 1.75rem;
+  }
+
+  .sandbox-hero-subtitle {
+    font-size: 0.9rem;
   }
 
   .sandbox-new-btn {
@@ -717,46 +990,112 @@
     grid-template-columns: 1fr;
   }
 
+  .sandbox-card {
+    border-radius: 16px;
+    padding: 20px;
+  }
+
   .sandbox-card-actions {
     opacity: 1;
   }
 
-  .sandbox-chat-top {
+  .sandbox-categories {
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .sandbox-category-card {
+    padding: 12px 14px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+
+  .sandbox-category-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .sandbox-stats {
+    gap: 16px;
     padding: 14px 16px;
-  }
-
-  .sandbox-messages {
-    padding: 16px;
-  }
-
-  .sandbox-input-area {
-    padding: 14px 16px 16px;
-  }
-
-  .sandbox-msg-bubble {
-    max-width: 85%;
+    border-radius: 14px;
   }
 }
 
+
+/* ============================================
+   RESPONSIVE — Mobile
+   ============================================ */
 @media (max-width: 480px) {
-  .sandbox-page {
-    padding: 16px 12px;
+  .sandbox-inner {
+    padding: 0 16px 32px;
   }
 
-  .sandbox-header-text h1 {
-    font-size: 22px;
+  .sandbox-hero {
+    padding: 8px 0 24px;
+  }
+
+  .sandbox-hero-title {
+    font-size: 1.5rem;
+    letter-spacing: -0.035em;
+  }
+
+  .sandbox-hero-subtitle {
+    font-size: 0.8125rem;
+    margin-top: 6px;
   }
 
   .sandbox-card {
     padding: 18px;
+    border-radius: 14px;
+  }
+
+  .sandbox-card-icon {
+    width: 38px;
+    height: 38px;
     border-radius: 12px;
   }
 
-  .sandbox-messages {
-    padding: 12px;
+  .sandbox-empty-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
   }
 
-  .sandbox-input-area {
-    padding: 12px;
+  .sandbox-empty-icon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sandbox-stats {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* Modal */
+  .sandbox-modal {
+    padding: 24px;
+    border-radius: 20px;
+  }
+
+  .sandbox-modal h2 {
+    font-size: 1.125rem;
+  }
+
+  /* Orbs smaller on mobile */
+  .sandbox-orb--1 {
+    width: 280px;
+    height: 280px;
+  }
+
+  .sandbox-orb--2 {
+    width: 220px;
+    height: 220px;
+  }
+
+  .sandbox-orb--3 {
+    width: 180px;
+    height: 180px;
   }
 }

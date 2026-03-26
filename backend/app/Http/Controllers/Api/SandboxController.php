@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Services\NvidiaAIService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -11,6 +12,7 @@ class SandboxController extends Controller
     public function index(Request $request): JsonResponse
     {
         $sandboxes = $request->user()->sandboxes()
+            ->withCount('messages')
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 15);
 
@@ -22,6 +24,8 @@ class SandboxController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
+            'purposes' => ['nullable', 'array'],
+            'purposes.*' => ['string', 'max:50'],
         ]);
 
         $sandbox = $request->user()->sandboxes()->create($validated);
@@ -32,7 +36,9 @@ class SandboxController extends Controller
     public function show(Request $request, int $id): JsonResponse
     {
         $sandbox = $request->user()->sandboxes()
-            ->with('messages')
+            ->with(['messages' => function ($q) {
+                $q->orderBy('created_at', 'asc');
+            }])
             ->findOrFail($id);
 
         return response()->json($sandbox);
@@ -45,6 +51,8 @@ class SandboxController extends Controller
         $validated = $request->validate([
             'name' => ['sometimes', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
+            'purposes' => ['nullable', 'array'],
+            'purposes.*' => ['string', 'max:50'],
         ]);
 
         $sandbox->update($validated);
@@ -60,29 +68,35 @@ class SandboxController extends Controller
         return response()->json(['message' => 'Sandbox deleted.']);
     }
 
-    public function sendMessage(Request $request, int $id): JsonResponse
+    /**
+     * Store a message in the sandbox (user or assistant).
+     * Used by frontend to persist chat messages.
+     */
+    public function storeMessage(Request $request, int $id): JsonResponse
     {
         $sandbox = $request->user()->sandboxes()->findOrFail($id);
 
         $validated = $request->validate([
+            'role' => ['required', 'string', 'in:user,assistant'],
             'content' => ['required', 'string'],
         ]);
 
-        // Create user message
-        $userMessage = $sandbox->messages()->create([
-            'role' => 'user',
-            'content' => $validated['content'],
-        ]);
+        $message = $sandbox->messages()->create($validated);
 
-        // Mock AI response (placeholder for NVIDIA API integration)
-        $aiResponse = $sandbox->messages()->create([
-            'role' => 'assistant',
-            'content' => 'This is a mocked response. Use the AI endpoint directly for real AI features.',
-        ]);
+        return response()->json($message, 201);
+    }
 
-        return response()->json([
-            'user_message' => $userMessage,
-            'ai_response' => $aiResponse,
-        ]);
+    /**
+     * Get all messages for a sandbox.
+     */
+    public function getMessages(Request $request, int $id): JsonResponse
+    {
+        $sandbox = $request->user()->sandboxes()->findOrFail($id);
+
+        $messages = $sandbox->messages()
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json($messages);
     }
 }

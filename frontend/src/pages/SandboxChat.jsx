@@ -4,15 +4,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { sandboxApi, aiApi } from "../services/api";
-import { Send, ArrowLeft, FileText, Network, Loader2 } from "lucide-react";
+import { Send, ArrowLeft, Loader2 } from "lucide-react";
 import InfiniteCanvasMindMap from "../components/sandbox/InfiniteCanvasMindMap.jsx";
 import { parseMarkdownToReact } from "../utils/markdownParser.jsx";
 import "../styles/pages/SandboxChat.css";
 import "../styles/utils/markdown.css";
 
 export default function SandboxChat() {
-  usePageTitle('sandbox:pageTitle');
-
+  usePageTitle("sandbox:pageTitle");
 
   const { t } = useTranslation(["sandbox", "common"]);
   const { id } = useParams();
@@ -20,26 +19,65 @@ export default function SandboxChat() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [outputType, setOutputType] = useState("text"); // text, mindmap
+  const [messagesLoaded, setMessagesLoaded] = useState(false);
   const [outputContent, setOutputContent] = useState("");
   const messagesEndRef = useRef(null);
 
+  // Fetch sandbox metadata
   const { data: sandbox, isLoading } = useQuery({
     queryKey: ["sandbox", id],
     queryFn: () => sandboxApi.get(id).then((res) => res.data),
   });
+
+  // Load persisted messages on mount
+  useEffect(() => {
+    if (!id) return;
+
+    const loadMessages = async () => {
+      try {
+        const res = await sandboxApi.getMessages(id);
+        const dbMessages = res.data || [];
+        if (dbMessages.length > 0) {
+          setMessages(
+            dbMessages.map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
+          );
+          // Set the last assistant message as output content
+          const lastAssistant = [...dbMessages]
+            .reverse()
+            .find((m) => m.role === "assistant");
+          if (lastAssistant) {
+            setOutputContent(lastAssistant.content);
+          }
+        }
+      } catch (err) {
+        console.error("[SandboxChat] Failed to load messages:", err);
+      } finally {
+        setMessagesLoaded(true);
+      }
+    };
+
+    loadMessages();
+  }, [id]);
 
   const handleSend = useCallback(
     async (e) => {
       e.preventDefault();
       if (!input.trim() || loading) return;
 
-      const userMessage = { role: "user", content: input.trim() };
+      const userContent = input.trim();
+      const userMessage = { role: "user", content: userContent };
       setMessages((prev) => [...prev, userMessage]);
       setInput("");
       setLoading(true);
 
       try {
+        // Save user message to DB
+        await sandboxApi.storeMessage(id, "user", userContent);
+
+        // Build conversation for AI
         const conversation = [
           {
             role: "system",
@@ -50,15 +88,18 @@ export default function SandboxChat() {
             role: m.role === "user" ? "user" : "assistant",
             content: m.content,
           })),
-          { role: "user", content: input.trim() },
+          { role: "user", content: userContent },
         ];
 
         const response = await aiApi.sandboxChat(conversation);
-        const aiText = response.data?.message || "";
+        const aiText = (response.data?.message || "").trim();
 
-        const aiMessage = { role: "assistant", content: aiText.trim() };
+        // Save AI response to DB
+        await sandboxApi.storeMessage(id, "assistant", aiText);
+
+        const aiMessage = { role: "assistant", content: aiText };
         setMessages((prev) => [...prev, aiMessage]);
-        setOutputContent(aiText.trim());
+        setOutputContent(aiText);
       } catch (err) {
         console.error("[SandboxChat] Error:", err);
         const errorMsg = { role: "error", content: `Error: ${err.message}` };
@@ -67,14 +108,14 @@ export default function SandboxChat() {
         setLoading(false);
       }
     },
-    [input, loading, messages],
+    [input, loading, messages, id],
   );
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  if (isLoading) {
+  if (isLoading || !messagesLoaded) {
     return (
       <div className="sandbox-workspace">
         <div className="sandbox-loading-container">
@@ -118,7 +159,15 @@ export default function SandboxChat() {
             ) : (
               messages.map((msg, idx) => (
                 <div key={idx} className={`sandbox-message ${msg.role}`}>
-                  <div className="sandbox-message-bubble">{msg.content}</div>
+                  <div className="sandbox-message-bubble">
+                    {msg.role === "assistant" ? (
+                      <div className="markdown-content">
+                        {parseMarkdownToReact(msg.content)}
+                      </div>
+                    ) : (
+                      msg.content
+                    )}
+                  </div>
                 </div>
               ))
             )}
@@ -152,47 +201,13 @@ export default function SandboxChat() {
           </form>
         </div>
 
-        {/* Right Column: Dynamic Output */}
+        {/* Right Column: Mind Map Output */}
         <div className="sandbox-output-column">
-          <div className="sandbox-output-header">
-            <button
-              className={`sandbox-output-tab ${outputType === "text" ? "active" : ""}`}
-              onClick={() => setOutputType("text")}
-            >
-              <FileText size={18} />
-              <span>{t("sandbox:outputText")}</span>
-            </button>
-            <button
-              className={`sandbox-output-tab ${outputType === "mindmap" ? "active" : ""}`}
-              onClick={() => setOutputType("mindmap")}
-            >
-              <Network size={18} />
-              <span>{t("sandbox:outputMindMap")}</span>
-            </button>
-          </div>
-
-          <div className="sandbox-output-content">
-            {outputType === "text" && (
-              <div className="sandbox-output-text">
-                {outputContent ? (
-                  <div className="sandbox-text-display markdown-content">
-                    {parseMarkdownToReact(outputContent)}
-                  </div>
-                ) : (
-                  <div className="sandbox-output-empty">
-                    <FileText size={48} />
-                    <p>{t("sandbox:outputEmpty")}</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {outputType === "mindmap" && (
-              <InfiniteCanvasMindMap
-                content={outputContent}
-                chatMessages={messages}
-              />
-            )}
+          <div className="sandbox-output-content mindmap-mode">
+            <InfiniteCanvasMindMap
+              content={outputContent}
+              chatMessages={messages}
+            />
           </div>
         </div>
       </div>

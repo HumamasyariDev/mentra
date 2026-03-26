@@ -1,6 +1,13 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronRight, Sparkles } from "lucide-react";
+import {
+  ChevronRight,
+  Sparkles,
+  Maximize2,
+  Minimize2,
+  Info,
+  X,
+} from "lucide-react";
 import { aiApi } from "../../services/api";
 import WateringAnimation from "./WateringAnimation";
 import "../../styles/components/InfiniteCanvasMindMap.css";
@@ -8,13 +15,16 @@ import "../../styles/components/InfiniteCanvasMindMap.css";
 export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
   const [nodes, setNodes] = useState(null);
   const [expandedNodes, setExpandedNodes] = useState(new Set(["root"]));
+  const [detailNodes, setDetailNodes] = useState(new Set());
   const [transform, setTransform] = useState({ x: 100, y: 100, scale: 1 });
   const [isPanning, setIsPanning] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const canvasRef = useRef(null);
   const { t } = useTranslation(["sandbox"]);
   const isDraggingRef = useRef(false);
+  const lastTouchDistRef = useRef(null);
 
   // Generate Mind Map from AI with proper prompting
   const generateMindMapFromAI = useCallback(async () => {
@@ -27,50 +37,57 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
     try {
       // Call backend AI API to generate mindmap
       const response = await aiApi.generateMindMap(chatMessages);
-      
+
       if (response.data?.success && response.data?.mindmap) {
         const mindMapData = response.data.mindmap;
         // If mindmap has nodes array format, convert to tree format
         if (mindMapData.nodes && Array.isArray(mindMapData.nodes)) {
-          // Convert nodes/edges format to tree format
           const nodesWithIds = convertToTreeFormat(mindMapData);
           setNodes(nodesWithIds);
         } else {
-          // Assume it's already in tree format
           const nodesWithIds = addIdsToNodes(mindMapData);
           setNodes(nodesWithIds);
         }
         setExpandedNodes(new Set(["root"]));
+        setDetailNodes(new Set());
       } else {
         throw new Error("Invalid response from AI");
       }
     } catch (error) {
       console.error("Mind map generation error:", error);
-      // Fallback to simple generation
       setNodes(generateFallbackMindMap(content));
     } finally {
       setIsGenerating(false);
     }
   }, [chatMessages, content]);
 
-  // Fixed Pan & Zoom Event Handlers (Bug Fix)
+  // Wheel zoom
   const handleWheel = useCallback(
     (e) => {
       e.preventDefault();
+      e.stopPropagation();
       const delta = e.deltaY * -0.001;
-      const newScale = Math.min(Math.max(0.3, transform.scale + delta), 3);
+      const newScale = Math.min(Math.max(0.2, transform.scale + delta), 4);
+
+      // Zoom towards cursor position
+      const rect = canvasRef.current.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      const scaleChange = newScale / transform.scale;
 
       setTransform((prev) => ({
-        ...prev,
+        x: mouseX - (mouseX - prev.x) * scaleChange,
+        y: mouseY - (mouseY - prev.y) * scaleChange,
         scale: newScale,
       }));
     },
-    [transform.scale],
+    [transform.scale, transform.x, transform.y],
   );
 
+  // Pointer pan
   const handlePointerDown = useCallback(
     (e) => {
-      // Only start panning if clicking on canvas background, not on cards
       if (
         e.target.classList.contains("infinite-canvas-container") ||
         e.target.classList.contains("infinite-canvas-board")
@@ -104,11 +121,63 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
   const handlePointerUp = useCallback(() => {
     isDraggingRef.current = false;
     setIsPanning(false);
+    lastTouchDistRef.current = null;
   }, []);
+
+  // Touch pinch-to-zoom
+  const handleTouchMove = useCallback(
+    (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const dist = Math.hypot(
+          touch2.clientX - touch1.clientX,
+          touch2.clientY - touch1.clientY,
+        );
+
+        if (lastTouchDistRef.current !== null) {
+          const delta = (dist - lastTouchDistRef.current) * 0.005;
+          const newScale = Math.min(Math.max(0.2, transform.scale + delta), 4);
+          setTransform((prev) => ({ ...prev, scale: newScale }));
+        }
+        lastTouchDistRef.current = dist;
+      }
+    },
+    [transform.scale],
+  );
+
+  const handleTouchEnd = useCallback(() => {
+    lastTouchDistRef.current = null;
+  }, []);
+
+  // Attach wheel listener with passive:false for preventDefault
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (!el) return;
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    el.addEventListener("touchmove", handleTouchMove, { passive: false });
+    el.addEventListener("touchend", handleTouchEnd);
+    return () => {
+      el.removeEventListener("wheel", handleWheel);
+      el.removeEventListener("touchmove", handleTouchMove);
+      el.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [handleWheel, handleTouchMove, handleTouchEnd]);
+
+  // Escape key exits fullscreen
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setIsFullscreen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isFullscreen]);
 
   // Toggle Node Expansion
   const toggleNode = useCallback((nodeId, e) => {
-    e.stopPropagation(); // Prevent triggering pan
+    e.stopPropagation();
     setExpandedNodes((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(nodeId)) {
@@ -118,6 +187,26 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
       }
       return newSet;
     });
+  }, []);
+
+  // Toggle Detail
+  const toggleDetail = useCallback((nodeId, e) => {
+    e.stopPropagation();
+    setDetailNodes((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  // Toggle Fullscreen
+  const toggleFullscreen = useCallback((e) => {
+    e.stopPropagation();
+    setIsFullscreen((prev) => !prev);
   }, []);
 
   // Show loading animation while generating
@@ -136,19 +225,19 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
         <div className="mindmap-empty-icon">
           <Sparkles size={48} />
         </div>
-        <h3>Generate Mind Map</h3>
-        <p>Klik tombol di bawah untuk membuat mind map dari konteks chat</p>
+        <h3>{t("sandbox:mindmapGenerateTitle")}</h3>
+        <p>{t("sandbox:mindmapGenerateDesc")}</p>
         <button
           className="mindmap-generate-btn"
           onClick={generateMindMapFromAI}
           disabled={chatMessages.length === 0}
         >
           <Sparkles size={20} />
-          Generate Mind Map
+          {t("sandbox:mindmapGenerateBtn")}
         </button>
         {chatMessages.length === 0 && (
           <p className="mindmap-hint">
-            Mulai chat terlebih dahulu untuk generate mind map
+            {t("sandbox:mindmapChatFirst")}
           </p>
         )}
       </div>
@@ -157,9 +246,8 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
 
   return (
     <div
-      className="infinite-canvas-container"
+      className={`infinite-canvas-container ${isFullscreen ? "mindmap-fullscreen" : ""}`}
       ref={canvasRef}
-      onWheel={handleWheel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -178,6 +266,9 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
           isExpanded={expandedNodes.has(nodes.id)}
           onToggle={toggleNode}
           expandedNodes={expandedNodes}
+          detailNodes={detailNodes}
+          onToggleDetail={toggleDetail}
+          t={t}
         />
       </div>
 
@@ -185,14 +276,21 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
       <div className="canvas-controls">
         <button
           className="canvas-control-btn"
+          onClick={toggleFullscreen}
+          title={isFullscreen ? t("sandbox:mindmapExitFullscreen") : t("sandbox:mindmapFullscreen")}
+        >
+          {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+        </button>
+        <button
+          className="canvas-control-btn"
           onClick={(e) => {
             e.stopPropagation();
             setTransform((prev) => ({
               ...prev,
-              scale: Math.min(3, prev.scale + 0.2),
+              scale: Math.min(4, prev.scale + 0.2),
             }));
           }}
-          title="Zoom In"
+          title={t("sandbox:mindmapZoomIn")}
         >
           +
         </button>
@@ -202,10 +300,10 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
             e.stopPropagation();
             setTransform((prev) => ({
               ...prev,
-              scale: Math.max(0.3, prev.scale - 0.2),
+              scale: Math.max(0.2, prev.scale - 0.2),
             }));
           }}
-          title="Zoom Out"
+          title={t("sandbox:mindmapZoomOut")}
         >
           −
         </button>
@@ -215,7 +313,7 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
             e.stopPropagation();
             setTransform({ x: 100, y: 100, scale: 1 });
           }}
-          title="Reset View"
+          title={t("sandbox:mindmapResetView")}
         >
           ⟲
         </button>
@@ -225,7 +323,7 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
             e.stopPropagation();
             generateMindMapFromAI();
           }}
-          title="Regenerate"
+          title={t("sandbox:mindmapRegenerate")}
         >
           <Sparkles size={16} />
         </button>
@@ -235,37 +333,73 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
       <div className="canvas-zoom-indicator">
         {Math.round(transform.scale * 100)}%
       </div>
+
+      {/* Fullscreen hint */}
+      {isFullscreen && (
+        <div className="canvas-fullscreen-hint">{t("sandbox:mindmapEscHint")}</div>
+      )}
     </div>
   );
 }
 
 // Mind Map Node Component (Recursive)
-function MindMapNode({ node, level, isExpanded, onToggle, expandedNodes }) {
+function MindMapNode({
+  node,
+  level,
+  isExpanded,
+  onToggle,
+  expandedNodes,
+  detailNodes,
+  onToggleDetail,
+  t,
+}) {
   const hasChildren = node.children && node.children.length > 0;
+  const showDetail = detailNodes.has(node.id);
+  const hasCaption = !!node.caption;
+  const isRoot = level === 0;
 
   return (
     <div className="mindmap-node-wrapper" data-level={level}>
       <div
-        className={`mindmap-card ${isExpanded ? "expanded" : ""} ${level === 0 ? "root" : ""}`}
+        className={`mindmap-card ${isExpanded ? "expanded" : ""} ${isRoot ? "root" : ""} ${showDetail ? "show-detail" : ""}`}
         onClick={(e) => hasChildren && onToggle(node.id, e)}
         style={{ cursor: hasChildren ? "pointer" : "default" }}
       >
         <div className="mindmap-card-header">
           <h4 className="mindmap-card-title">{node.title}</h4>
-          {hasChildren && (
-            <div
-              className={`mindmap-expand-icon ${isExpanded ? "expanded" : ""}`}
-            >
-              <ChevronRight size={18} />
-            </div>
-          )}
+          <div className="mindmap-card-header-actions">
+            {hasCaption && !isRoot && (
+              <button
+                className={`mindmap-detail-btn ${showDetail ? "active" : ""}`}
+                onClick={(e) => onToggleDetail(node.id, e)}
+                title={showDetail ? t("sandbox:mindmapHideDetail") : t("sandbox:mindmapShowDetail")}
+              >
+                {showDetail ? <X size={14} /> : <Info size={14} />}
+              </button>
+            )}
+            {hasChildren && (
+              <div
+                className={`mindmap-expand-icon ${isExpanded ? "expanded" : ""}`}
+              >
+                <ChevronRight size={18} />
+              </div>
+            )}
+          </div>
         </div>
-        {node.caption && <p className="mindmap-card-caption">{node.caption}</p>}
+
+        {/* Caption: truncated by default, full when detail is open */}
+        {hasCaption && (
+          <p
+            className={`mindmap-card-caption ${showDetail ? "full" : ""}`}
+          >
+            {node.caption}
+          </p>
+        )}
       </div>
 
       {hasChildren && isExpanded && (
         <div className="mindmap-children">
-          {node.children.map((child, idx) => (
+          {node.children.map((child) => (
             <div key={child.id} className="mindmap-child-container">
               {/* Connecting Line */}
               <div className="mindmap-connector-line" />
@@ -276,6 +410,9 @@ function MindMapNode({ node, level, isExpanded, onToggle, expandedNodes }) {
                 isExpanded={expandedNodes.has(child.id)}
                 onToggle={onToggle}
                 expandedNodes={expandedNodes}
+                detailNodes={detailNodes}
+                onToggleDetail={onToggleDetail}
+                t={t}
               />
             </div>
           ))}
@@ -310,7 +447,7 @@ function convertToTreeFormat(data) {
 
   // Find root node (first node or node with no incoming edges)
   const rootNode = data.nodes[0];
-  
+
   // Build tree from nodes
   const buildTree = (node) => ({
     id: node.id || "root",
@@ -335,8 +472,8 @@ function generateFallbackMindMap(content) {
   if (!content) {
     return {
       id: "root",
-      title: t("sandbox:mindmapEmptyTitle"),
-      caption: t("sandbox:mindmapEmptySubtitle"),
+      title: "Mind Map",
+      caption: "No content yet",
       children: [],
     };
   }

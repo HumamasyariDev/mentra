@@ -6,6 +6,10 @@ import GalaxyCanvas from './GalaxyCanvas';
 import useParticleTrail from '../../hooks/useParticleTrail';
 import '../../styles/components/dashboard/MapViewport.css';
 
+/** Check if user prefers reduced motion */
+const prefersReducedMotion = () =>
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
 export const MapViewport = ({ onIslandClick, dashboardData }) => {
   const svgRef = useRef(null);
   const groupRef = useRef(null);
@@ -16,6 +20,9 @@ export const MapViewport = ({ onIslandClick, dashboardData }) => {
   const rafThrottleRef = useRef(null);
   const pendingMouseMoveRef = useRef(null);
 
+  // Disable particle trail on reduced motion
+  const enableParticles = !prefersReducedMotion();
+
   // Pan and zoom state
   const panZoomState = useRef({
     x: 0,
@@ -23,16 +30,16 @@ export const MapViewport = ({ onIslandClick, dashboardData }) => {
     scale: 1,
   });
 
-  // Initialize particle trail hook
+  // Initialize particle trail hook (ref-based, no React re-renders)
   const {
-    particles,
+    particleGroupRef,
     updateParticles,
     handleMouseMove,
   } = useParticleTrail({
-    enabled: true,
+    enabled: enableParticles,
     panZoomRef: panZoomState,
     containerRef: svgRef,
-    maxParticles: 80,
+    maxParticles: 50, // reduced from 80
   });
 
   // Initialize GSAP context
@@ -204,12 +211,19 @@ export const MapViewport = ({ onIslandClick, dashboardData }) => {
     { scope: containerRef }
   );
 
-  // Animation loop for debris and particles physics
+  // Single animation loop for particle physics (ref-based, no React re-renders)
   useEffect(() => {
-    const animate = () => {
-      // Update particles: fade and cleanup
-      updateParticles(Date.now());
-      
+    if (!enableParticles) return;
+
+    let lastTime = 0;
+    const interval = 1000 / 30; // 30fps is enough for trail particles
+
+    const animate = (timestamp) => {
+      const elapsed = timestamp - lastTime;
+      if (elapsed >= interval) {
+        lastTime = timestamp - (elapsed % interval);
+        updateParticles(Date.now());
+      }
       animationFrameRef.current = requestAnimationFrame(animate);
     };
 
@@ -220,7 +234,7 @@ export const MapViewport = ({ onIslandClick, dashboardData }) => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [updateParticles]);
+  }, [updateParticles, enableParticles]);
 
   const handleIslandClick = (island) => {
     if (isZooming.current) return;
@@ -303,19 +317,8 @@ export const MapViewport = ({ onIslandClick, dashboardData }) => {
 
         {/* Transform group for pan/zoom */}
         <g ref={groupRef}>
-          {/* Particles group - moved inside transform group so it stays on map when panning */}
-          <g id="particles-layer" style={{ pointerEvents: 'none' }}>
-            {particles.map((particle) => (
-              <circle
-                key={`particle-${particle.id}`}
-                cx={particle.x}
-                cy={particle.y}
-                r={particle.size || 1.5}
-                fill={particle.color || '#a78bfa'}
-                opacity={particle.opacity}
-              />
-            ))}
-          </g>
+          {/* Particles group — direct DOM mutation, no React reconciliation */}
+          <g ref={particleGroupRef} style={{ pointerEvents: 'none' }} />
 
           {/* Islands */}
           {ISLANDS.map((island) => (

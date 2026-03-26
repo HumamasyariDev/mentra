@@ -1,19 +1,22 @@
 import { usePageTitle } from "../hooks/usePageTitle";
-import { useMemo, useRef } from 'react';
+import React, { Suspense, useMemo, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import '../styles/pages/LandingPage.css';
 
+/* ── Above-the-fold: eager ── */
 import Navbar from '../components/landing/Navbar';
 import Hero from '../components/landing/Hero';
-import GamificationLoop from '../components/landing/GamificationLoop';
-import FeatureShowcase from '../components/landing/FeatureShowcase';
-import ForestShowcase from '../components/landing/ForestShowcase';
-import TechStack from '../components/landing/TechStack';
-import FAQ from '../components/landing/FAQ';
-import CTAFooter from '../components/landing/CTAFooter';
-import Footer from '../components/landing/Footer';
+
+/* ── Below-the-fold: lazy ── */
+const GamificationLoop = React.lazy(() => import('../components/landing/GamificationLoop'));
+const FeatureShowcase = React.lazy(() => import('../components/landing/FeatureShowcase'));
+const ForestShowcase = React.lazy(() => import('../components/landing/ForestShowcase'));
+const TechStack = React.lazy(() => import('../components/landing/TechStack'));
+const FAQ = React.lazy(() => import('../components/landing/FAQ'));
+const CTAFooter = React.lazy(() => import('../components/landing/CTAFooter'));
+const Footer = React.lazy(() => import('../components/landing/Footer'));
 
 // Planet assets — reused from the auth/dashboard cosmos
 import planetTasks from '../assets/dashboard_planets/planet_tasks.svg';
@@ -133,15 +136,17 @@ export default function LandingPage() {
       {/* ── Page content ── */}
       <Navbar />
       <Hero />
-      <GamificationLoop />
-      <FeatureShowcase />
-      <ForestShowcase />
-      {/* Section separator overlay */}
-      <div className="lp-section-divider" aria-hidden="true" />
-      <TechStack />
-      <FAQ />
-      <CTAFooter />
-      <Footer />
+      <Suspense fallback={<div style={{ minHeight: '100vh' }} />}>
+        <GamificationLoop />
+        <FeatureShowcase />
+        <ForestShowcase />
+        {/* Section separator overlay */}
+        <div className="lp-section-divider" aria-hidden="true" />
+        <TechStack />
+        <FAQ />
+        <CTAFooter />
+        <Footer />
+      </Suspense>
     </div>
   );
 }

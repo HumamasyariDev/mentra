@@ -1,122 +1,111 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 
 const DEFAULT_COSMIC_COLORS = ['#ffffff', '#f0f9ff', '#bae6fd', '#c084fc', '#818cf8', '#fdf4ff'];
 const DEFAULT_MAX_PARTICLES = 150;
-const DEFAULT_SPAWN_INTERVAL = 12; // spawn slightly faster for a denser tail
-const DEFAULT_LIFETIME_DURATION = 1200; // longer lifetime to see the drift
+const DEFAULT_SPAWN_INTERVAL = 12;
+const DEFAULT_LIFETIME_DURATION = 1200;
 const DEFAULT_PARTICLE_MIN_SIZE = 1.0;
 const DEFAULT_PARTICLE_MAX_SIZE = 3.5;
 const DEFAULT_INITIAL_OPACITY_MIN = 0.6;
 const DEFAULT_INITIAL_OPACITY_MAX = 1.0;
 const MIN_SPAWN_DISTANCE = 1;
 
+/**
+ * Optimized particle trail hook.
+ * Uses refs instead of useState to avoid React re-renders on every animation frame.
+ * The SVG <g> element is mutated directly via DOM for zero-cost rendering.
+ */
 const useParticleTrail = ({
   enabled = true,
-  viewportState = null, // legacy
-  panZoomRef = null,    // use this for live updates during drag
+  viewportState = null,
+  panZoomRef = null,
   containerRef = null,
   maxParticles = DEFAULT_MAX_PARTICLES,
   spawnInterval = DEFAULT_SPAWN_INTERVAL,
   lifetimeDuration = DEFAULT_LIFETIME_DURATION,
   cosmicColors = DEFAULT_COSMIC_COLORS,
 } = {}) => {
-  const [particles, setParticles] = useState([]);
-  const [isEnabled, setEnabled] = useState(enabled);
-
-  // Refs for tracking state without triggering re-renders
+  // All particle data lives in refs — no React re-renders
+  const particlesRef = useRef([]);
+  const isEnabledRef = useRef(enabled);
   const lastSpawnTimeRef = useRef(0);
   const lastMousePosRef = useRef({ x: 0, y: 0 });
   const particleIdRef = useRef(0);
   const listenerAttachedRef = useRef(false);
-
-  /**
-   * Calculate opacity for a particle based on its age
-   */
-  const getParticleOpacity = useCallback((particle, currentTime = Date.now()) => {
-    const age = currentTime - particle.createdAt;
-    // Exponential fade out looks more natural (like glowing embers fading)
-    const progress = age / lifetimeDuration;
-    const opacity = Math.max(0, 1 - Math.pow(progress, 1.5));
-    return opacity;
-  }, [lifetimeDuration]);
-
-  /**
-   * Calculate distance between two points
-   */
-  const calculateDistance = useCallback((p1, p2) => {
-    const dx = p1.x - p2.x;
-    const dy = p1.y - p2.y;
-    return Math.sqrt(dx * dx + dy * dy);
-  }, []);
-
-  /**
-   * Get random color from cosmic palette
-   */
-  const getRandomColor = useCallback(() => {
-    return cosmicColors[Math.floor(Math.random() * cosmicColors.length)];
-  }, [cosmicColors]);
+  // Reference to the SVG <g> element for direct DOM mutation
+  const particleGroupRef = useRef(null);
 
   /**
    * Spawn a new particle at cursor position
    */
   const spawnParticle = useCallback((x, y, currentTime = Date.now()) => {
-    // Add random drift velocity so they spread out like magical dust
     const vx = (Math.random() - 0.5) * 1.5;
-    const vy = (Math.random() - 0.5) * 1.5 - 0.5; // slight upward drift tendency
+    const vy = (Math.random() - 0.5) * 1.5 - 0.5;
 
-    const newParticle = {
+    return {
       id: particleIdRef.current++,
       x,
       y,
       vx,
       vy,
       opacity: DEFAULT_INITIAL_OPACITY_MIN + Math.random() * (DEFAULT_INITIAL_OPACITY_MAX - DEFAULT_INITIAL_OPACITY_MIN),
-      color: getRandomColor(),
+      color: cosmicColors[Math.floor(Math.random() * cosmicColors.length)],
       createdAt: currentTime,
-      lifetimeMs: lifetimeDuration + (Math.random() * 500 - 250), // vary lifetime slightly
+      lifetimeMs: lifetimeDuration + (Math.random() * 500 - 250),
       size: DEFAULT_PARTICLE_MIN_SIZE + Math.random() * (DEFAULT_PARTICLE_MAX_SIZE - DEFAULT_PARTICLE_MIN_SIZE),
+      element: null, // will hold the SVG circle DOM node
     };
-    return newParticle;
-  }, [getRandomColor, lifetimeDuration]);
+  }, [cosmicColors, lifetimeDuration]);
 
   /**
-   * Update particles: cleanup expired, adjust opacities, update positions
+   * Update particles: fade, move, cleanup expired — all via direct DOM mutation.
+   * Called from requestAnimationFrame in MapViewport.
    */
   const updateParticles = useCallback((currentTime = Date.now()) => {
-    setParticles((prevParticles) => {
-      // Filter out expired particles
-      const activeParticles = prevParticles.filter((particle) => {
-        const age = currentTime - particle.createdAt;
-        return age <= particle.lifetimeMs;
-      });
+    const particles = particlesRef.current;
+    const group = particleGroupRef.current;
+    if (!group) return;
 
-      // Update opacities and positions for remaining particles
-      const updatedParticles = activeParticles.map((particle) => {
-        const opacity = getParticleOpacity(particle, currentTime);
-        // Apply velocity (drift)
-        const newX = particle.x + particle.vx;
-        const newY = particle.y + particle.vy;
-        
-        return { 
-          ...particle, 
-          opacity, 
-          x: newX, 
-          y: newY,
-          // Add a tiny bit of drag/friction
-          vx: particle.vx * 0.98,
-          vy: particle.vy * 0.98,
-        };
-      });
+    let writeIdx = 0;
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const age = currentTime - p.createdAt;
 
-      return updatedParticles;
-    });
-  }, [getParticleOpacity]);
+      if (age > p.lifetimeMs) {
+        // Remove expired particle from DOM
+        if (p.element && p.element.parentNode) {
+          p.element.parentNode.removeChild(p.element);
+        }
+        continue;
+      }
+
+      // Update opacity (exponential fade)
+      const progress = age / p.lifetimeMs;
+      p.opacity = Math.max(0, 1 - Math.pow(progress, 1.5));
+
+      // Apply velocity (drift with friction)
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vx *= 0.98;
+      p.vy *= 0.98;
+
+      // Update the DOM element directly (no React reconciliation)
+      if (p.element) {
+        p.element.setAttribute('cx', p.x);
+        p.element.setAttribute('cy', p.y);
+        p.element.setAttribute('opacity', p.opacity);
+      }
+
+      particles[writeIdx++] = p;
+    }
+    particles.length = writeIdx;
+  }, []);
 
   /**
-   * Handle mouse move event
+   * Handle mouse move event — spawns particles
    */
   const handleMouseMove = useCallback((e) => {
-    if (!isEnabled) return;
+    if (!isEnabledRef.current) return;
 
     const currentTime = Date.now();
     let x = e.clientX;
@@ -133,7 +122,6 @@ const useParticleTrail = ({
       if (screenCTM) {
         const svgP = point.matrixTransform(screenCTM.inverse());
         
-        // Use live pan/zoom from ref if available, otherwise use viewportState prop
         if (panZoomRef && panZoomRef.current) {
           x = (svgP.x - panZoomRef.current.x) / panZoomRef.current.scale;
           y = (svgP.y - panZoomRef.current.y) / panZoomRef.current.scale;
@@ -153,36 +141,47 @@ const useParticleTrail = ({
       y = (y - viewportState.pan.y) / viewportState.zoom;
     }
 
-    // Check if enough time has passed and cursor moved far enough
+    // Check spawn conditions
     const timeSinceLastSpawn = currentTime - lastSpawnTimeRef.current;
-    const distance = calculateDistance({ x, y }, lastMousePosRef.current);
+    const dx = x - lastMousePosRef.current.x;
+    const dy = y - lastMousePosRef.current.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
 
     if (timeSinceLastSpawn >= spawnInterval && distance >= MIN_SPAWN_DISTANCE) {
-      // Spawn new particle
-      setParticles((prevParticles) => {
-        const newParticles = [...prevParticles, spawnParticle(x, y, currentTime)];
+      const group = particleGroupRef.current;
+      if (group) {
+        const newParticle = spawnParticle(x, y, currentTime);
+
+        // Create SVG circle element directly in DOM (no React)
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', newParticle.x);
+        circle.setAttribute('cy', newParticle.y);
+        circle.setAttribute('r', newParticle.size);
+        circle.setAttribute('fill', newParticle.color);
+        circle.setAttribute('opacity', newParticle.opacity);
+        group.appendChild(circle);
+        newParticle.element = circle;
+
+        particlesRef.current.push(newParticle);
 
         // Enforce max particles limit
-        if (newParticles.length > maxParticles) {
-          // Remove oldest particles
-          const excess = newParticles.length - maxParticles;
-          return newParticles.slice(excess);
+        while (particlesRef.current.length > maxParticles) {
+          const oldest = particlesRef.current.shift();
+          if (oldest.element && oldest.element.parentNode) {
+            oldest.element.parentNode.removeChild(oldest.element);
+          }
         }
-
-        return newParticles;
-      });
+      }
 
       lastSpawnTimeRef.current = currentTime;
       lastMousePosRef.current = { x, y };
     }
-  }, [isEnabled, panZoomRef, viewportState, spawnInterval, calculateDistance, spawnParticle, maxParticles, containerRef]);
+  }, [panZoomRef, viewportState, spawnInterval, spawnParticle, maxParticles, containerRef]);
 
   /**
-   * We now attach to the SVG via onMouseMove prop directly or window as fallback
+   * Attach to document if no containerRef
    */
   useEffect(() => {
-    // If containerRef is provided, we expect the component to use the returned handleMouseMove
-    // Otherwise, attach to document
     if (!containerRef?.current && !listenerAttachedRef.current) {
       document.addEventListener('mousemove', handleMouseMove);
       listenerAttachedRef.current = true;
@@ -195,20 +194,32 @@ const useParticleTrail = ({
   }, [handleMouseMove, containerRef]);
 
   /**
+   * Sync enabled prop to ref
+   */
+  useEffect(() => {
+    isEnabledRef.current = enabled;
+  }, [enabled]);
+
+  /**
    * Clear all particles
    */
   const clearParticles = useCallback(() => {
-    setParticles([]);
+    const group = particleGroupRef.current;
+    if (group) {
+      while (group.firstChild) {
+        group.removeChild(group.firstChild);
+      }
+    }
+    particlesRef.current = [];
   }, []);
 
   return {
-    particles,
-    setParticles,
+    particleGroupRef,  // Attach this to a <g> element
     updateParticles,
-    isEnabled,
-    setEnabled,
+    isEnabled: enabled,
+    setEnabled: (val) => { isEnabledRef.current = val; },
     clearParticles,
-    handleMouseMove, // Expose for direct attachment
+    handleMouseMove,
   };
 };
 

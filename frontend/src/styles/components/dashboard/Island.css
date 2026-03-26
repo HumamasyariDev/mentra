@@ -3,6 +3,7 @@
 .island {
   cursor: pointer;
   transition: filter 0.3s ease;
+  will-change: transform, filter;
 }
 
 .island:hover {
@@ -308,4 +309,36 @@
 @keyframes connectorDraw {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .island {
+    transition: none;
+    will-change: auto;
+  }
+
+  .island:hover {
+    animation: none;
+  }
+
+  .planet-atmosphere {
+    animation: none;
+  }
+
+  .island:hover .planet-atmosphere {
+    animation: none;
+  }
+
+  .island:hover .island-ring {
+    animation: none;
+  }
+
+  .tooltip-connector-dot {
+    animation: none;
+  }
+
+  .planet-tooltip {
+    animation: none;
+  }
 }

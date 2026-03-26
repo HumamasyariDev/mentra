@@ -453,7 +453,7 @@ export default function Pomodoro() {
             )}
 
             {/* Debug button - dev only */}
-            {import.meta.env.DEV && sessionId && waterState !== "completed" && (
+            {/* {import.meta.env.DEV && sessionId && waterState !== "completed" && (
               <button
                 onClick={() => completeMutation.mutate(sessionId)}
                 className="pom-dev-btn"
@@ -461,7 +461,7 @@ export default function Pomodoro() {
               >
                 [DEV] Complete
               </button>
-            )}
+            )} */}
           </div>
         </div>
 

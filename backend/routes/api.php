@@ -87,7 +87,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/sandboxes/{sandbox}', [SandboxController::class, 'show']);
     Route::put('/sandboxes/{sandbox}', [SandboxController::class, 'update']);
     Route::delete('/sandboxes/{sandbox}', [SandboxController::class, 'destroy']);
-    Route::post('/sandboxes/{sandbox}/messages', [SandboxController::class, 'sendMessage']);
+    Route::post('/sandboxes/{sandbox}/messages', [SandboxController::class, 'storeMessage']);
+    Route::get('/sandboxes/{sandbox}/messages', [SandboxController::class, 'getMessages']);
 
 
     // Agent API (LangChain.js Tools)

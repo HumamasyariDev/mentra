@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, memo } from 'react';
 import planetTasksSvg from '../../assets/dashboard_planets/planet_tasks.svg';
 import planetPomodoroSvg from '../../assets/dashboard_planets/planet_pomodoro.svg';
 import planetForestSvg from '../../assets/dashboard_planets/planet_forest.svg';
@@ -17,6 +17,16 @@ const PLANET_COLORS = {
   schedules: { accent: '#4ade80', glow: 'rgba(74, 222, 128, 0.4)' },
   chat: { accent: '#22d3ee', glow: 'rgba(34, 211, 238, 0.4)' },
   forum: { accent: '#fbbf24', glow: 'rgba(251, 191, 36, 0.4)' },
+};
+
+/** Map of planet IDs to their SVG assets (stable, defined once) */
+const PLANET_SVGS = {
+  tasks: planetTasksSvg,
+  pomodoro: planetPomodoroSvg,
+  forest: planetForestSvg,
+  schedules: planetScheduleSvg,
+  chat: planetChatSvg,
+  forum: planetForumSvg,
 };
 
 /**
@@ -82,7 +92,7 @@ function getTooltipContent(id, dashboardData) {
   }
 }
 
-export function Island({ island, dashboardData, isZooming }) {
+export const Island = memo(function Island({ island, dashboardData, isZooming }) {
   const { id, x, y, label, size = 200 } = island;
   const [hovered, setHovered] = useState(false);
 
@@ -90,18 +100,8 @@ export function Island({ island, dashboardData, isZooming }) {
   const colors = PLANET_COLORS[id] || PLANET_COLORS.tasks;
   const tooltipPos = TOOLTIP_POSITIONS[id] || { dx: 140, dy: -70 };
 
-  // Map of planet IDs to their SVG assets
-  const planetSvgs = {
-    tasks: planetTasksSvg,
-    pomodoro: planetPomodoroSvg,
-    forest: planetForestSvg,
-    schedules: planetScheduleSvg,
-    chat: planetChatSvg,
-    forum: planetForumSvg,
-  };
-
-  const svgImage = planetSvgs[id];
-  const svgSize = size; // Use individual size from island config
+  const svgImage = PLANET_SVGS[id];
+  const svgSize = size;
 
   const handleMouseEnter = () => {
     if (!isZooming) setHovered(true);
@@ -268,7 +268,7 @@ export function Island({ island, dashboardData, isZooming }) {
 
   // Fallback for planets without SVG (shouldn't happen now)
   return null;
-}
+});
 
 /**
  * Island configuration with positions, sizes, and routes

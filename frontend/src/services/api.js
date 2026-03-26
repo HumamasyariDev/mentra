@@ -123,8 +123,9 @@ export const sandboxApi = {
   get: (id) => api.get(`/sandboxes/${id}`),
   update: (id, data) => api.put(`/sandboxes/${id}`, data),
   delete: (id) => api.delete(`/sandboxes/${id}`),
-  sendMessage: (id, content) =>
-    api.post(`/sandboxes/${id}/messages`, { content }),
+  storeMessage: (id, role, content) =>
+    api.post(`/sandboxes/${id}/messages`, { role, content }),
+  getMessages: (id) => api.get(`/sandboxes/${id}/messages`),
 };
 
 // Agent API (LangChain Tools)
