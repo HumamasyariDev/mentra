@@ -428,6 +428,13 @@
   text-decoration: none;
 }
 
+.landing-nav-logo-img {
+  height: 28px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.3));
+}
+
 .landing-nav-logo-icon {
   display: inline-flex;
   align-items: center;

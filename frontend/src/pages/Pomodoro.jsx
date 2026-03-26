@@ -8,24 +8,19 @@ import {
   Pause,
   Square,
   Loader2,
-  Palette,
-  ChevronDown,
   Droplets,
   Clock,
   CheckCircle,
   Sprout,
-  Check,
 } from "lucide-react";
-import { usePomodoroTheme } from "../contexts/PomodoroThemeContext";
 
 import kranAirImg from "../assets/gameworld/kran_air-2.png";
 import wateringCanImg from "../assets/gameworld/watering_can.png";
 import "../styles/pages/Pomodoro.css";
 
 /** Inline SVG water drop — no image load, renders immediately */
-const WaterDropSvg = ({ className, style, idSuffix = "0", colors }) => {
-
-  const c = colors || { light: '#93c5fd', mid: '#60a5fa', dark: '#3b82f6' };
+const WaterDropSvg = ({ className, style, idSuffix = "0" }) => {
+  const c = { light: '#93c5fd', mid: '#60a5fa', dark: '#3b82f6' };
   return (
     <svg
       className={className}
@@ -65,34 +60,16 @@ export default function Pomodoro() {
 
   const queryClient = useQueryClient();
   const { t, i18n } = useTranslation(['pomodoro', 'common']);
-  const { theme, setTheme, backgrounds } = usePomodoroTheme();
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [sessionId, setSessionId] = useState(null);
   const [duration, setDuration] = useState(25);
   const [selectedTask, setSelectedTask] = useState("");
-  const [showBgPicker, setShowBgPicker] = useState(false);
   const [waterState, setWaterState] = useState("idle");
   const [cansEarned, setCansEarned] = useState(null);
   const [animState, setAnimState] = useState(null);
   const [skipSceneMorph, setSkipSceneMorph] = useState(false);
   const intervalRef = useRef(null);
-
-  // Theme accent CSS custom properties — applied at page level so all cards inherit
-  const pageThemeStyle = theme.accent
-    ? {
-        '--pom-accent': theme.accent,
-        '--pom-accent-light': theme.accentLight,
-        '--pom-accent-dark': theme.accentDark,
-        '--pom-accent-bg': theme.accentBg,
-        '--pom-glow': theme.glow,
-      }
-    : {};
-
-  // Water drop colors — use theme accent shades or default blues
-  const dropColors = theme.accent
-    ? { light: theme.accentLight, mid: theme.accent, dark: theme.accentDark }
-    : { light: '#93c5fd', mid: '#60a5fa', dark: '#3b82f6' };
 
   const { data: stats } = useQuery({
     queryKey: ["pomodoro-stats"],
@@ -116,8 +93,6 @@ export default function Pomodoro() {
       setSessionId(res.data.id);
       setIsRunning(true);
       setWaterState("focusing");
-      // Dispatch event for focus mode sidebar auto-hide
-      window.dispatchEvent(new CustomEvent('pomodoro:started'));
     },
   });
 
@@ -132,8 +107,6 @@ export default function Pomodoro() {
       if (res.data?.cans_awarded) {
         setCansEarned(res.data.cans_awarded);
       }
-      // Dispatch event for sidebar restore
-      window.dispatchEvent(new CustomEvent('pomodoro:completed'));
       setTimeout(() => {
         resetTimer();
         setWaterState("idle");
@@ -184,11 +157,15 @@ export default function Pomodoro() {
           const running = active.status === "running";
           setIsRunning(running);
           setWaterState(running ? "focusing" : "paused");
+          // Skip the scene morph animation on initial render so it doesn't
+          // play the circle→rectangle transition. Re-enable transitions
+          // shortly after so pause/stop still animate smoothly.
           setSkipSceneMorph(true);
-          // If session is running, trigger focus mode
-          if (running) {
-            window.dispatchEvent(new CustomEvent('pomodoro:started'));
-          }
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              setSkipSceneMorph(false);
+            });
+          });
         }
       })
       .catch(() => {});
@@ -235,11 +212,6 @@ export default function Pomodoro() {
     }
   }, [duration, isRunning, sessionId]);
 
-  const handleBgChange = (key) => {
-    setTheme(key);
-    setShowBgPicker(false);
-  };
-
   const handleStart = () => {
     startMutation.mutate({
       duration_minutes: duration,
@@ -249,7 +221,6 @@ export default function Pomodoro() {
 
   const handleStop = () => {
     if (sessionId) {
-      window.dispatchEvent(new CustomEvent('pomodoro:stopped'));
       setAnimState("stopped");
       const animData = { type: 'stopped', timestamp: Date.now() };
       localStorage.setItem('pom-pending-anim', JSON.stringify(animData));
@@ -261,7 +232,6 @@ export default function Pomodoro() {
   const handlePauseResume = () => {
     const next = !isRunning;
     const animType = next ? "resumed" : "paused";
-    window.dispatchEvent(new CustomEvent(`pomodoro:${animType}`));
     setAnimState(animType);
     const animData = { type: animType, timestamp: Date.now() };
     localStorage.setItem('pom-pending-anim', JSON.stringify(animData));
@@ -279,47 +249,12 @@ export default function Pomodoro() {
   const waterProgress = Math.min(100, progress);
 
   return (
-    <div className="pomodoro-page" style={pageThemeStyle}>
+    <div className="pomodoro-page">
       {/* Header */}
       <div className="pomodoro-header">
         <div className="pomodoro-header-info">
           <h1 className="pomodoro-title">{t('pomodoro:title')}</h1>
           <p className="pomodoro-subtitle">{t('pomodoro:subtitle')}</p>
-        </div>
-        {/* Theme picker */}
-        <div className="pomodoro-theme-picker">
-          <button
-            onClick={() => setShowBgPicker(!showBgPicker)}
-            className="pomodoro-theme-btn"
-          >
-            <Palette style={{ width: "1rem", height: "1rem" }} />
-            <span>{theme.label}</span>
-            <ChevronDown style={{ width: "0.75rem", height: "0.75rem" }} />
-          </button>
-          {showBgPicker && (
-            <div className="pomodoro-theme-dropdown">
-              {backgrounds.map((b) => (
-                <button
-                  key={b.key}
-                  onClick={() => handleBgChange(b.key)}
-                  className={`pomodoro-theme-option ${theme.key === b.key ? "active" : ""}`}
-                  style={theme.key === b.key && b.accent ? {
-                    background: b.accentBg,
-                    color: b.accent,
-                  } : undefined}
-                >
-                  <span
-                    className="pomodoro-theme-swatch"
-                    style={{ background: b.accent || 'var(--accent)' }}
-                  />
-                  {b.label}
-                  {theme.key === b.key && (
-                    <Check className="pomodoro-theme-check" />
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
@@ -359,19 +294,19 @@ export default function Pomodoro() {
                   className="pom-drop-single pom-drop-z1"
                   style={{ animationDelay: `${-((elapsedSeconds % 3) * 1000)}ms` }}
                 >
-                  <WaterDropSvg idSuffix="1" colors={dropColors} />
+                  <WaterDropSvg idSuffix="1" />
                 </div>
                 <div
                   className="pom-drop-single pom-drop-z2"
                   style={{ animationDelay: `${-(((elapsedSeconds - 1 + 3) % 3) * 1000)}ms` }}
                 >
-                  <WaterDropSvg idSuffix="2" colors={dropColors} />
+                  <WaterDropSvg idSuffix="2" />
                 </div>
                 <div
                   className="pom-drop-single pom-drop-z3"
                   style={{ animationDelay: `${-(((elapsedSeconds - 2 + 3) % 3) * 1000)}ms` }}
                 >
-                  <WaterDropSvg idSuffix="3" colors={dropColors} />
+                  <WaterDropSvg idSuffix="3" />
                 </div>
               </div>
             )}

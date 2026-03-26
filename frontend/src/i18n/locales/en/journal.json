@@ -1,0 +1,55 @@
+{
+  "pageTitle": "Journal",
+  "pageSubtitle": "Write about your day, let AI find the patterns",
+
+  "today": {
+    "title": "Today's Paper",
+    "placeholder": "What happened today? How did you feel? Write freely...",
+    "saved": "Saved",
+    "lastSaved": "Last saved at {{time}}",
+    "wordCount": "{{count}} words",
+    "save": "Save Entry",
+    "saving": "Saving...",
+    "update": "Update Entry"
+  },
+
+  "datePicker": {
+    "today": "Today",
+    "title": "Entry for {{date}}"
+  },
+
+  "insights": {
+    "title": "AI Insights",
+    "generate": "Generate Insights",
+    "generating": "Analyzing your entries...",
+    "refresh": "Refresh Insights",
+    "noData": "Write a few journal entries first, then AI will analyze your patterns.",
+    "noDataShort": "Need more entries",
+    "moodTrend": "Mood Trend",
+    "patterns": "Patterns",
+    "summary": "Summary",
+    "suggestion": "Suggestion",
+    "basedOn": "Based on {{count}} entries",
+    "error": "Failed to generate insights. Try again later."
+  },
+
+  "recent": {
+    "title": "Past Entries",
+    "empty": "No entries yet. Start writing today!",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+
+  "moodLabels": {
+    "happy": "Happy",
+    "good": "Good",
+    "neutral": "Neutral",
+    "stressed": "Stressed",
+    "sad": "Sad",
+    "anxious": "Anxious",
+    "energetic": "Energetic",
+    "tired": "Tired",
+    "frustrated": "Frustrated",
+    "grateful": "Grateful"
+  }
+}

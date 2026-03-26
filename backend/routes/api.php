@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ChatController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ForestController;
 use App\Http\Controllers\Api\ForumMessageController;
+use App\Http\Controllers\Api\JournalController;
 use App\Http\Controllers\Api\MoodController;
 use App\Http\Controllers\Api\PomodoroController;
 use App\Http\Controllers\Api\QuizController;
@@ -60,12 +61,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/schedules/{schedule}/complete', [ScheduleController::class, 'complete']);
     Route::post('/schedules/{schedule}/uncomplete', [ScheduleController::class, 'uncomplete']);
 
-    // Moods
+    // Moods (legacy)
     Route::get('/moods', [MoodController::class, 'index']);
     Route::post('/moods', [MoodController::class, 'store']);
     Route::get('/moods/today', [MoodController::class, 'today']);
     Route::get('/moods/weekly', [MoodController::class, 'weekly']);
     Route::get('/moods/{mood}', [MoodController::class, 'show']);
+
+    // Journals
+    Route::get('/journals', [JournalController::class, 'index']);
+    Route::post('/journals', [JournalController::class, 'store']);
+    Route::get('/journals/today', [JournalController::class, 'today']);
+    Route::get('/journals/by-date', [JournalController::class, 'byDate']);
+    Route::get('/journals/recent', [JournalController::class, 'recent']);
+    Route::get('/journals/insights', [JournalController::class, 'insights']);
 
     // AI Chat
     Route::post('/chat/send', [ChatController::class, 'send']);

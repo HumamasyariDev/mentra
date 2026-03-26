@@ -5,12 +5,11 @@ import {
   Home,
   BookOpen,
   FileText,
-  Folder,
+  PenLine,
   Calendar,
   GraduationCap,
   MessageCircle,
   TreePine,
-  MessageSquare,
   Sparkles,
   Settings,
   X,
@@ -30,11 +29,10 @@ const productivityItems = [
   { to: "/pomodoro", labelKey: "nav.pomodoro", icon: FileText },
   { to: "/forest", labelKey: "nav.forest", icon: TreePine },
   { to: "/schedules", labelKey: "nav.schedules", icon: Calendar },
-  { to: "/mood", labelKey: "nav.mood", icon: Folder },
+  { to: "/journal", labelKey: "nav.journal", icon: PenLine },
 ];
 
 const aiItems = [
-  { to: "/chat", labelKey: "nav.chat", icon: MessageSquare },
   { to: "/agent", labelKey: "nav.agent", icon: Sparkles },
   { to: "/sandbox", labelKey: "nav.sandbox", icon: GraduationCap },
 ];
@@ -140,7 +138,7 @@ export const DashboardSidebar = ({ isOpen, onClose, shouldFadeOut = false }) => 
         {/* Header with close button */}
         <div className="dashboard-sidebar-header">
           <div className="dashboard-sidebar-logo">
-            <div className="sidebar-logo-icon">M</div>
+            <img src="/mentra_title_logo.svg" alt="Mentra" className="sidebar-logo-img" />
             <span className="sidebar-logo-text">Mentra</span>
           </div>
           <button

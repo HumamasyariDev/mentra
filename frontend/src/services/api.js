@@ -91,12 +91,22 @@ export const scheduleApi = {
   uncomplete: (id) => api.post(`/schedules/${id}/uncomplete`),
 };
 
-// Moods
+// Moods (legacy)
 export const moodApi = {
   list: (params) => api.get("/moods", { params }),
   create: (data) => api.post("/moods", data),
   today: () => api.get("/moods/today"),
   weekly: () => api.get("/moods/weekly"),
+};
+
+// Journals
+export const journalApi = {
+  list: (params) => api.get("/journals", { params }),
+  save: (data) => api.post("/journals", data),
+  today: () => api.get("/journals/today"),
+  byDate: (date) => api.get("/journals/by-date", { params: { date } }),
+  recent: (days) => api.get("/journals/recent", { params: { days } }),
+  insights: () => api.get("/journals/insights"),
 };
 
 // AI Chat

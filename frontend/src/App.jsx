@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AuthLayout from "./layouts/AuthLayout";
 import AppLayout from "./layouts/AppLayout";
 import ForestLayout from "./layouts/ForestLayout";
+
 import { TransitionWrapper } from "./components/TransitionWrapper";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -15,7 +16,8 @@ import Tasks from "./pages/Tasks";
 import Pomodoro from "./pages/Pomodoro";
 import Schedules from "./pages/Schedules";
 import Mood from "./pages/Mood";
-import Chat from "./pages/Chat";
+import Journal from "./pages/Journal";
+
 import Sandbox from "./pages/Sandbox";
 import SandboxChat from "./pages/SandboxChat";
 import Forum from "./pages/Forum";
@@ -62,9 +64,9 @@ export default function App() {
                 <Route path="/pomodoro" element={<Pomodoro />} />
                 <Route path="/schedules" element={<Schedules />} />
                 <Route path="/mood" element={<Mood />} />
+                <Route path="/journal" element={<Journal />} />
                 <Route path="/sandbox" element={<Sandbox />} />
                 <Route path="/sandbox/:id" element={<SandboxChat />} />
-                <Route path="/chat" element={<Chat />} />
                 <Route path="/agent" element={<MentraAgentWithSessions />} />
                 <Route path="/forum" element={<Forum />} />
               </Route>

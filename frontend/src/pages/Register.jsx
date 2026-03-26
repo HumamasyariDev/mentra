@@ -281,8 +281,8 @@ export default function Register() {
             {step === 1 ? (
               <>
                 {/* Header: logo + heading + subtitle */}
-                <div className="reg-header">
-                  <div className="reg-logo">M</div>
+                 <div className="reg-header">
+                  <div className="reg-logo"><img src="/mentra_title_logo.svg" alt="Mentra" className="reg-logo-img" /></div>
                   <div className="reg-heading-group">
                     <p className="reg-title">{t('auth:register.title')}</p>
                     <div className="reg-subtitle">
@@ -401,7 +401,7 @@ export default function Register() {
               /* ── Step 2: Password setup (Windsurf-identical layout) ── */
               <div className="reg-step" key="step2-password">
                 <div className="reg-header">
-                  <div className="reg-logo">M</div>
+                  <div className="reg-logo"><img src="/mentra_title_logo.svg" alt="Mentra" className="reg-logo-img" /></div>
                   <div className="reg-heading-group">
                     <p className="reg-title">{t('auth:register.title')}</p>
                   </div>

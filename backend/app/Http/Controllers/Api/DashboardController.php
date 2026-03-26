@@ -45,6 +45,7 @@ class DashboardController extends Controller
         $streak = $this->streakService->getStreak($user);
 
         $todayMood = $user->moods()->where('date', today())->first();
+        $todayJournal = $user->journals()->where('date', today())->first();
 
         $recentExp = $user->expLogs()
             ->orderBy('created_at', 'desc')
@@ -68,6 +69,7 @@ class DashboardController extends Controller
             'pomodoro' => $pomodoroStats,
             'streak' => $streak,
             'today_mood' => $todayMood,
+            'today_journal' => $todayJournal,
             'recent_exp' => $recentExp,
             'today_schedules' => $todaySchedules,
         ]);

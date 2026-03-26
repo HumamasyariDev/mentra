@@ -60,6 +60,11 @@ class User extends Authenticatable
         return $this->hasMany(Mood::class);
     }
 
+    public function journals(): HasMany
+    {
+        return $this->hasMany(Journal::class);
+    }
+
     public function expLogs(): HasMany
     {
         return $this->hasMany(ExpLog::class);

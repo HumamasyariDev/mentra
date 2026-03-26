@@ -50,6 +50,10 @@ import enForum from './locales/en/forum.json';
 import idMood from './locales/id/mood.json';
 import enMood from './locales/en/mood.json';
 
+// ── Locale imports: journal ──
+import idJournal from './locales/id/journal.json';
+import enJournal from './locales/en/journal.json';
+
 // ── Locale imports: settings ──
 import idSettings from './locales/id/settings.json';
 import enSettings from './locales/en/settings.json';
@@ -76,6 +80,7 @@ const resources = {
     sandbox: idSandbox,
     forum: idForum,
     mood: idMood,
+    journal: idJournal,
     settings: idSettings,
     landing: idLanding,
     legal: idLegal,
@@ -93,6 +98,7 @@ const resources = {
     sandbox: enSandbox,
     forum: enForum,
     mood: enMood,
+    journal: enJournal,
     settings: enSettings,
     landing: enLanding,
     legal: enLegal,

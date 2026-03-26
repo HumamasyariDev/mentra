@@ -1,7 +1,6 @@
 import { usePageTitle } from "../hooks/usePageTitle";
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Moon, Sun, Map, LayoutGrid, Globe } from 'lucide-react';
+import { Moon, Sun, Map, LayoutGrid, Globe, Palette, Monitor, Info, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -12,10 +11,10 @@ import '../styles/pages/Settings.css';
 export default function Settings() {
   usePageTitle('settings:pageTitle');
 
-  const navigate = useNavigate();
   const { t, i18n } = useTranslation(['settings', 'common']);
   const { dashboardMode, setDashboardMode } = useDashboardUI();
   const { theme, toggleTheme } = useTheme();
+  const pageRef = React.useRef(null);
   const contentRef = React.useRef(null);
   
   const isDarkMode = theme === 'dark';
@@ -24,37 +23,34 @@ export default function Settings() {
   // Animate on mount
   useGSAP(
     () => {
-      if (contentRef.current) {
-        gsap.fromTo(
-          contentRef.current,
-          { opacity: 0, y: 20 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.4,
-            ease: 'power2.out',
-          }
-        );
-      }
+      if (!pageRef.current) return;
+
+      // Background gradient orbs
+      gsap.fromTo(
+        '.settings-orb',
+        { opacity: 0, scale: 0.5 },
+        { opacity: 1, scale: 1, duration: 1.2, ease: 'power2.out', stagger: 0.2 }
+      );
+
+      // Content cards stagger
+      gsap.fromTo(
+        '.settings-card',
+        { opacity: 0, y: 30, scale: 0.97 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: 'power3.out', stagger: 0.1, delay: 0.25 }
+      );
+
+      // Footer fade
+      gsap.fromTo(
+        '.settings-footer',
+        { opacity: 0 },
+        { opacity: 1, duration: 0.6, delay: 0.7 }
+      );
     },
-    { scope: contentRef }
+    { scope: pageRef }
   );
 
   const handleModeChange = (newMode) => {
-
     setDashboardMode(newMode);
-  };
-
-  const handleBackClick = () => {
-    gsap.to(contentRef.current, {
-      opacity: 0,
-      y: 20,
-      duration: 0.3,
-      ease: 'power2.in',
-      onComplete: () => {
-        navigate(-1);
-      },
-    });
   };
 
   const handleLanguageChange = (lang) => {
@@ -62,154 +58,191 @@ export default function Settings() {
   };
 
   return (
-    <div className="settings-page">
-      <div ref={contentRef} className="settings-container">
-        {/* Header */}
-        <header className="settings-header">
-          <button
-            className="settings-back-btn"
-            onClick={handleBackClick}
-            aria-label={t('settings:goBack')}
-          >
-            <ChevronLeft size={24} />
-          </button>
-          <h1 className="settings-title">{t('settings:pageTitle')}</h1>
-          <div className="settings-spacer"></div>
-        </header>
+    <div ref={pageRef} className="settings-fullscreen">
+      {/* Ambient background orbs */}
+      <div className="settings-bg">
+        <div className="settings-orb settings-orb--1" />
+        <div className="settings-orb settings-orb--2" />
+        <div className="settings-orb settings-orb--3" />
+      </div>
 
-        {/* Settings Sections */}
-        <main className="settings-main">
-          {/* Language Switcher */}
-          <section className="settings-section">
-            <div className="section-title-row">
-              <Globe size={18} className="section-title-icon" />
-              <h2 className="section-title">{t('settings:language.title')}</h2>
-            </div>
-            <p className="section-description">
-              {t('settings:language.description')}
-            </p>
+      {/* Scrollable content area */}
+      <div className="settings-scroll" ref={contentRef}>
+        <div className="settings-inner">
+          {/* Page title */}
+          <div className="settings-hero">
+            <h1 className="settings-hero-title">{t('settings:pageTitle')}</h1>
+            <p className="settings-hero-subtitle">Customize your Mentra experience</p>
+          </div>
 
-            <div className="language-switcher">
-              <button
-                className={`language-btn ${currentLang === 'id' ? 'language-btn--active' : ''}`}
-                onClick={() => handleLanguageChange('id')}
-              >
-                {t('settings:language.indonesian')}
-              </button>
-              <button
-                className={`language-btn ${currentLang === 'en' ? 'language-btn--active' : ''}`}
-                onClick={() => handleLanguageChange('en')}
-              >
-                {t('settings:language.english')}
-              </button>
-            </div>
-          </section>
-
-          {/* Dashboard Display Mode */}
-          <section className="settings-section">
-            <h2 className="section-title">{t('settings:dashboardDisplay.title')}</h2>
-            <p className="section-description">
-              {t('settings:dashboardDisplay.description')}
-            </p>
-
-            <div className="settings-options">
-              {/* Map Mode */}
-              <label className="settings-option">
-                <input
-                  type="radio"
-                  name="dashboard-mode"
-                  value="map"
-                  checked={dashboardMode === 'map'}
-                  onChange={() => handleModeChange('map')}
-                  className="option-radio"
-                />
-                <div className="option-content">
-                  <div className="option-header">
-                    <Map size={20} className="option-icon" />
-                    <span className="option-title">{t('settings:dashboardDisplay.mapTitle')}</span>
-                  </div>
-                  <p className="option-description">
-                    {t('settings:dashboardDisplay.mapDescription')}
-                  </p>
+          {/* Two-column grid on desktop, single on mobile */}
+          <div className="settings-grid">
+            {/* Language Switcher */}
+            <section className="settings-card">
+              <div className="card-header">
+                <div className="card-icon">
+                  <Globe size={20} />
                 </div>
-                <div className="option-checkmark"></div>
-              </label>
-
-              {/* Simplified Mode */}
-              <label className="settings-option">
-                <input
-                  type="radio"
-                  name="dashboard-mode"
-                  value="simplified"
-                  checked={dashboardMode === 'simplified'}
-                  onChange={() => handleModeChange('simplified')}
-                  className="option-radio"
-                />
-                <div className="option-content">
-                  <div className="option-header">
-                    <LayoutGrid size={20} className="option-icon" />
-                    <span className="option-title">{t('settings:dashboardDisplay.simplifiedTitle')}</span>
-                  </div>
-                  <p className="option-description">
-                    {t('settings:dashboardDisplay.simplifiedDescription')}
-                  </p>
+                <div className="card-header-text">
+                  <h2 className="card-title">{t('settings:language.title')}</h2>
+                  <p className="card-desc">{t('settings:language.description')}</p>
                 </div>
-                <div className="option-checkmark"></div>
-              </label>
-            </div>
-
-            <div className="mode-note">
-              <p
-                dangerouslySetInnerHTML={{
-                  __html: `💡 ${t('settings:dashboardDisplay.mobileNote')}`,
-                }}
-              />
-            </div>
-          </section>
-
-          {/* Theme Settings */}
-          <section className="settings-section">
-            <h2 className="section-title">{t('settings:appearance.title')}</h2>
-            <p className="section-description">
-              {t('settings:appearance.description')}
-            </p>
-
-            <label className="settings-toggle">
-              <input
-                type="checkbox"
-                checked={isDarkMode}
-                onChange={toggleTheme}
-                className="toggle-input"
-              />
-              <div className="toggle-track">
-                <div className="toggle-thumb"></div>
-                {isDarkMode ? (
-                  <Moon size={14} className="toggle-icon" />
-                ) : (
-                  <Sun size={14} className="toggle-icon" />
-                )}
               </div>
-              <span className="toggle-label">{t('settings:appearance.darkMode')}</span>
-            </label>
-          </section>
 
-          {/* About */}
-          <section className="settings-section">
-            <h2 className="section-title">{t('settings:about.title')}</h2>
-            <div className="about-content">
-              <p>
-                <strong>{t('settings:about.appName')}</strong>
-              </p>
-              <p>{t('settings:about.appDescription')}</p>
-              <p className="version-info">{t('settings:about.version')}</p>
-            </div>
-          </section>
-        </main>
+              <div className="language-switcher">
+                <button
+                  className={`lang-card ${currentLang === 'id' ? 'lang-card--active' : ''}`}
+                  onClick={() => handleLanguageChange('id')}
+                >
+                  <span className="lang-flag">🇮🇩</span>
+                  <span className="lang-name">{t('settings:language.indonesian')}</span>
+                  {currentLang === 'id' && <div className="lang-check" />}
+                </button>
+                <button
+                  className={`lang-card ${currentLang === 'en' ? 'lang-card--active' : ''}`}
+                  onClick={() => handleLanguageChange('en')}
+                >
+                  <span className="lang-flag">🇬🇧</span>
+                  <span className="lang-name">{t('settings:language.english')}</span>
+                  {currentLang === 'en' && <div className="lang-check" />}
+                </button>
+              </div>
+            </section>
 
-        {/* Footer */}
-        <footer className="settings-footer">
-          <p>{t('settings:footer.copyright')}</p>
-        </footer>
+            {/* Appearance / Theme */}
+            <section className="settings-card">
+              <div className="card-header">
+                <div className="card-icon">
+                  <Palette size={20} />
+                </div>
+                <div className="card-header-text">
+                  <h2 className="card-title">{t('settings:appearance.title')}</h2>
+                  <p className="card-desc">{t('settings:appearance.description')}</p>
+                </div>
+              </div>
+
+              <label className="theme-toggle-row">
+                <div className="theme-toggle-info">
+                  <div className="theme-icon-wrap">
+                    {isDarkMode ? <Moon size={18} /> : <Sun size={18} />}
+                  </div>
+                  <div className="theme-toggle-text">
+                    <span className="theme-toggle-label">{t('settings:appearance.darkMode')}</span>
+                    <span className="theme-toggle-hint">
+                      {isDarkMode ? 'Dark theme is active' : 'Light theme is active'}
+                    </span>
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={isDarkMode}
+                  onChange={toggleTheme}
+                  className="theme-toggle-input"
+                />
+                <div className="theme-toggle-track">
+                  <div className="theme-toggle-thumb">
+                    {isDarkMode
+                      ? <Moon size={10} className="theme-thumb-icon" />
+                      : <Sun size={10} className="theme-thumb-icon" />
+                    }
+                  </div>
+                </div>
+              </label>
+            </section>
+
+            {/* Dashboard Display Mode — spans full width */}
+            <section className="settings-card settings-card--wide">
+              <div className="card-header">
+                <div className="card-icon">
+                  <Monitor size={20} />
+                </div>
+                <div className="card-header-text">
+                  <h2 className="card-title">{t('settings:dashboardDisplay.title')}</h2>
+                  <p className="card-desc">{t('settings:dashboardDisplay.description')}</p>
+                </div>
+              </div>
+
+              <div className="mode-options">
+                {/* Map Mode */}
+                <label className={`mode-card ${dashboardMode === 'map' ? 'mode-card--active' : ''}`}>
+                  <input
+                    type="radio"
+                    name="dashboard-mode"
+                    value="map"
+                    checked={dashboardMode === 'map'}
+                    onChange={() => handleModeChange('map')}
+                    className="mode-radio-hidden"
+                  />
+                  <div className="mode-card-icon">
+                    <Map size={20} />
+                  </div>
+                  <div className="mode-card-content">
+                    <span className="mode-card-title">{t('settings:dashboardDisplay.mapTitle')}</span>
+                    <p className="mode-card-desc">{t('settings:dashboardDisplay.mapDescription')}</p>
+                  </div>
+                  <div className="mode-indicator" />
+                </label>
+
+                {/* Simplified Mode */}
+                <label className={`mode-card ${dashboardMode === 'simplified' ? 'mode-card--active' : ''}`}>
+                  <input
+                    type="radio"
+                    name="dashboard-mode"
+                    value="simplified"
+                    checked={dashboardMode === 'simplified'}
+                    onChange={() => handleModeChange('simplified')}
+                    className="mode-radio-hidden"
+                  />
+                  <div className="mode-card-icon">
+                    <LayoutGrid size={20} />
+                  </div>
+                  <div className="mode-card-content">
+                    <span className="mode-card-title">{t('settings:dashboardDisplay.simplifiedTitle')}</span>
+                    <p className="mode-card-desc">{t('settings:dashboardDisplay.simplifiedDescription')}</p>
+                  </div>
+                  <div className="mode-indicator" />
+                </label>
+              </div>
+
+              <div className="mode-note">
+                <Sparkles size={14} className="mode-note-icon" />
+                <p dangerouslySetInnerHTML={{ __html: t('settings:dashboardDisplay.mobileNote') }} />
+              </div>
+            </section>
+
+            {/* About — spans full width */}
+            <section className="settings-card settings-card--wide settings-card--about">
+              <div className="card-header">
+                <div className="card-icon">
+                  <Info size={20} />
+                </div>
+                <div className="card-header-text">
+                  <h2 className="card-title">{t('settings:about.title')}</h2>
+                </div>
+              </div>
+              <div className="about-body">
+                <div className="about-brand">
+                  <img src="/mentra_title_logo.svg" alt="Mentra" className="about-logo" />
+                  <div className="about-info">
+                    <p className="about-name">{t('settings:about.appName')}</p>
+                    <p className="about-desc">{t('settings:about.appDescription')}</p>
+                  </div>
+                </div>
+                <div className="about-meta">
+                  <div className="about-version-badge">
+                    <span className="version-label">Version</span>
+                    <code className="version-value">{t('settings:about.version')}</code>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Footer */}
+          <footer className="settings-footer">
+            <p>{t('settings:footer.copyright')}</p>
+          </footer>
+        </div>
       </div>
     </div>
   );

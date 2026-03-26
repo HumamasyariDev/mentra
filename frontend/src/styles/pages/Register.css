@@ -108,10 +108,10 @@
 
 /* Windsurf logo: h-auto w-16 */
 .reg-logo {
-  width: 4rem;
-  height: 4rem;
-  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%);
-  border-radius: 14px;
+  width: auto;
+  height: auto;
+  background: none;
+  border-radius: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,10 +119,15 @@
   font-weight: 800;
   color: #fff;
   letter-spacing: -0.02em;
-  box-shadow:
-    0 0 24px rgba(167, 139, 250, 0.3),
-    0 0 48px rgba(124, 58, 237, 0.15);
+  box-shadow: none;
   flex-shrink: 0;
+}
+
+.reg-logo-img {
+  height: 48px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 0 20px rgba(167, 139, 250, 0.3)) drop-shadow(0 0 40px rgba(124, 58, 237, 0.15));
 }
 
 /* Windsurf: flex flex-col gap-4 */
@@ -1051,10 +1056,10 @@
   }
 
   .reg-logo {
-    width: 3rem;
-    height: 3rem;
+    width: auto;
+    height: auto;
     font-size: 1.125rem;
-    border-radius: 10px;
+    border-radius: 0;
   }
 
   .reg-title {

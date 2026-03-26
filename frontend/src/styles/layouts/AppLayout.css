@@ -171,57 +171,6 @@
   animation: fadeInFromBlack 1s ease-in-out forwards;
 }
 
-/* ── Focus Mode (Pomodoro Sidebar Auto-Hide) ── */
-
-/* On desktop, slide sidebar off-screen when focus mode is active */
-@media (min-width: 1024px) {
-  .app-layout-focus-hidden .sidebar {
-    transform: translateX(-100%);
-    margin-left: -260px;
-  }
-}
-
-.focus-sidebar-toggle {
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  .focus-sidebar-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 45;
-    width: 1.5rem;
-    height: 3rem;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-default);
-    border-left: none;
-    border-radius: 0 8px 8px 0;
-    color: var(--text-tertiary);
-    cursor: pointer;
-    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                background 0.2s ease,
-                color 0.2s ease,
-                width 0.2s ease;
-    padding: 0;
-  }
-
-  .focus-sidebar-toggle:hover {
-    background: var(--bg-hover);
-    color: var(--text-primary);
-    width: 2rem;
-  }
-
-  /* When sidebar is visible in focus mode, shift toggle to the right */
-  .app-layout-container:not(.app-layout-focus-hidden) .focus-sidebar-toggle {
-    left: 260px;
-  }
-}
-
 /* ── Mobile Content Padding Adjustment ── */
 @media (max-width: 640px) {
   .app-layout-content {

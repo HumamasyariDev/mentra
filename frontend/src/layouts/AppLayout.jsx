@@ -1,10 +1,9 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useDashboardUI } from '../contexts/DashboardUIContext';
-import { Loader2, Menu, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Loader2, Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
-import { PomodoroThemeProvider } from '../contexts/PomodoroThemeContext';
 import '../styles/layouts/AppLayout.css';
 
 function AppLayoutContent() {
@@ -12,9 +11,6 @@ function AppLayoutContent() {
   const { sidebarOpen, setSidebarOpen, dashboardMode } = useDashboardUI();
   const location = useLocation();
   const [localSidebarOpen, setLocalSidebarOpen] = useState(false);
-  const [focusMode, setFocusMode] = useState(false);
-  const [focusSidebarOpen, setFocusSidebarOpen] = useState(false);
-  const isPomodoroPage = location.pathname === "/pomodoro";
   const isAgentPage = location.pathname === "/agent";
   const isChatPage = location.pathname === "/chat";
   const isDashboardPage = location.pathname === "/dashboard";
@@ -39,28 +35,6 @@ function AppLayoutContent() {
     };
   }, [currentSidebarOpen]);
 
-  // Listen for Pomodoro focus mode events
-  useEffect(() => {
-    const handleStarted = () => {
-      setFocusMode(true);
-      setFocusSidebarOpen(false);
-    };
-    const handleStopped = () => {
-      setFocusMode(false);
-      setFocusSidebarOpen(false);
-    };
-
-    window.addEventListener('pomodoro:started', handleStarted);
-    window.addEventListener('pomodoro:stopped', handleStopped);
-    window.addEventListener('pomodoro:completed', handleStopped);
-
-    return () => {
-      window.removeEventListener('pomodoro:started', handleStarted);
-      window.removeEventListener('pomodoro:stopped', handleStopped);
-      window.removeEventListener('pomodoro:completed', handleStopped);
-    };
-  }, []);
-
   if (loading) {
     return (
       <div className="app-layout-loading">
@@ -73,11 +47,8 @@ function AppLayoutContent() {
     return <Navigate to="/login" replace />;
   }
 
-  // Sidebar hidden on desktop due to focus mode (only on Pomodoro page)
-  const sidebarFocusHidden = focusMode && isPomodoroPage && !focusSidebarOpen;
-
   return (
-    <div className={`app-layout-container ${sidebarFocusHidden ? "app-layout-focus-hidden" : ""}`}>
+    <div className="app-layout-container">
       {/* Mobile overlay */}
       {currentSidebarOpen && !isMapMode && (
         <div
@@ -93,21 +64,6 @@ function AppLayoutContent() {
           onClose={() => setCurrentSidebarOpen(false)}
           onLogout={logout}
         />
-      )}
-
-      {/* Focus mode toggle button (desktop only, Pomodoro page only) */}
-      {focusMode && isPomodoroPage && !isMapMode && (
-        <button
-          className="focus-sidebar-toggle"
-          onClick={() => setFocusSidebarOpen(!focusSidebarOpen)}
-          aria-label={focusSidebarOpen ? "Hide sidebar" : "Show sidebar"}
-        >
-          {focusSidebarOpen ? (
-            <ChevronLeft style={{ width: "1rem", height: "1rem" }} />
-          ) : (
-            <ChevronRight style={{ width: "1rem", height: "1rem" }} />
-          )}
-        </button>
       )}
 
       {/* Main content */}
@@ -129,9 +85,5 @@ function AppLayoutContent() {
 }
 
 export default function AppLayout() {
-  return (
-    <PomodoroThemeProvider>
-      <AppLayoutContent />
-    </PomodoroThemeProvider>
-  );
+  return <AppLayoutContent />;
 }

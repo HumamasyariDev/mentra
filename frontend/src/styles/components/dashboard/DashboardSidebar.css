@@ -71,6 +71,13 @@
   gap: 10px;
 }
 
+.dashboard-sidebar-logo .sidebar-logo-img {
+  height: 28px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.3));
+}
+
 .sidebar-logo-icon {
   width: 36px;
   height: 36px;

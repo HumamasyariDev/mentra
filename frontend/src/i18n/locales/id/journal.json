@@ -1,0 +1,55 @@
+{
+  "pageTitle": "Jurnal",
+  "pageSubtitle": "Tulis tentang harimu, biarkan AI menemukan polanya",
+
+  "today": {
+    "title": "Catatan Hari Ini",
+    "placeholder": "Apa yang terjadi hari ini? Bagaimana perasaanmu? Tulis dengan bebas...",
+    "saved": "Tersimpan",
+    "lastSaved": "Terakhir disimpan pukul {{time}}",
+    "wordCount": "{{count}} kata",
+    "save": "Simpan Catatan",
+    "saving": "Menyimpan...",
+    "update": "Perbarui Catatan"
+  },
+
+  "datePicker": {
+    "today": "Hari Ini",
+    "title": "Catatan untuk {{date}}"
+  },
+
+  "insights": {
+    "title": "AI Insights",
+    "generate": "Buat Insights",
+    "generating": "Menganalisis catatanmu...",
+    "refresh": "Refresh Insights",
+    "noData": "Tulis beberapa catatan jurnal dulu, lalu AI akan menganalisis polamu.",
+    "noDataShort": "Butuh lebih banyak catatan",
+    "moodTrend": "Tren Suasana Hati",
+    "patterns": "Pola",
+    "summary": "Ringkasan",
+    "suggestion": "Saran",
+    "basedOn": "Berdasarkan {{count}} catatan",
+    "error": "Gagal membuat insights. Coba lagi nanti."
+  },
+
+  "recent": {
+    "title": "Catatan Sebelumnya",
+    "empty": "Belum ada catatan. Mulai menulis hari ini!",
+    "today": "Hari Ini",
+    "yesterday": "Kemarin"
+  },
+
+  "moodLabels": {
+    "happy": "Senang",
+    "good": "Baik",
+    "neutral": "Biasa",
+    "stressed": "Stres",
+    "sad": "Sedih",
+    "anxious": "Cemas",
+    "energetic": "Berenergi",
+    "tired": "Lelah",
+    "frustrated": "Frustasi",
+    "grateful": "Bersyukur"
+  }
+}

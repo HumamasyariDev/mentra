@@ -111,7 +111,7 @@ export default function AuthLayout() {
       <div className="auth-content">
         {/* Logo mark */}
         <div className="auth-logo-section">
-          <div className="auth-logo-icon">M</div>
+          <img src="/mentra_title_logo.svg" alt="Mentra" className="auth-logo-img" />
         </div>
 
         {/* Page content (heading + card) comes from Login/Register via Outlet */}
