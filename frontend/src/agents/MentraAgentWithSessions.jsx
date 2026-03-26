@@ -648,7 +648,9 @@ export default function MentraAgentWithSessions() {
 
         <div className="agent-page-header">
           <div className="agent-page-header-info">
-            <div className="agent-page-avatar">M</div>
+            <div className="agent-page-avatar">
+              <img src="/mentra_title_logo.svg" alt="Mentra AI" className="agent-avatar-logo" />
+            </div>
             <div>
               <h1 className="agent-page-title">{t("agent:pageTitle")}</h1>
               <p className="agent-page-subtitle">{t("agent:pageSubtitle")}</p>

@@ -124,6 +124,7 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
       <div className="sidebar-header">
         <div className="sidebar-logo">
           <img src="/mentra_title_logo.svg" alt="Mentra" className="sidebar-logo-img" />
+          <span className="sidebar-logo-text">Mentra</span>
         </div>
         <button className="sidebar-toggle" onClick={onClose}>
           <span className="sidebar-toggle-icon"></span>

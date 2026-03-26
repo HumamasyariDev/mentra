@@ -312,6 +312,14 @@
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+  padding: 8px;
+}
+
+.agent-avatar-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 
 .agent-page-title {

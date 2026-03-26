@@ -58,6 +58,13 @@
   filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.3));
 }
 
+.sidebar-logo-text {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ff6b4a;
+  letter-spacing: -0.02em;
+}
+
 .sidebar-logo-icon {
   width: 36px;
   height: 36px;

@@ -32,6 +32,7 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetSending, setResetSending] = useState(false);
   const [resetSent, setResetSent] = useState(false);
@@ -75,7 +76,11 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Clear all errors at the start
     setError('');
+    setEmailError('');
+    setPasswordError('');
 
     if (!form.email) {
       setEmailError(t('auth:errors.enterEmail'));
@@ -85,7 +90,15 @@ export default function Login() {
       setEmailError(t('auth:errors.invalidEmail'));
       return;
     }
-    setEmailError('');
+
+    if (!form.password) {
+      setPasswordError(t('auth:errors.enterPassword'));
+      return;
+    }
+    if (form.password.length < 6) {
+      setPasswordError(t('auth:errors.passwordTooShort'));
+      return;
+    }
 
     setLoading(true);
     try {
@@ -95,9 +108,9 @@ export default function Login() {
       const errorType = errorData?.error_type;
       
       if (errorType === 'email_not_found') {
-        setError(t('auth:errors.emailNotFound'));
+        setEmailError(t('auth:errors.emailNotFound'));
       } else if (errorType === 'wrong_password') {
-        setError(t('auth:errors.wrongPassword'));
+        setPasswordError(t('auth:errors.wrongPassword'));
       } else if (errorType === 'social_only_account') {
         setError(errorData.message);
       } else {
@@ -195,17 +208,19 @@ export default function Login() {
             <label className="auth-label">{t('common:password')}</label>
               <input
                 type="password"
-                className="auth-input"
+                className={`auth-input${passwordError ? ' has-error' : ''}`}
                 placeholder={t('auth:login.passwordPlaceholder')}
                 value={form.password}
                 onChange={(e) => {
                   setForm({ ...form, password: e.target.value });
-                  // Clear error when typing password
+                  // Clear errors when typing password
                   if (error) setError('');
+                  if (passwordError) setPasswordError('');
                 }}
                 required
                 autoComplete="current-password"
               />
+            {passwordError && <p className="auth-field-error">{passwordError}</p>}
             <p className="auth-forgot-text">
               {t('auth:login.forgotPassword')}{' '}
               <button

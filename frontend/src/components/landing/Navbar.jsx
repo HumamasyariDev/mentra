@@ -83,6 +83,7 @@ export default function Navbar() {
         <div className="landing-nav-inner">
           <Link to="/" ref={logoRef} className="landing-nav-logo">
             <img src="/mentra_title_logo.svg" alt="Mentra" className="landing-nav-logo-img" />
+            <span className="landing-nav-logo-text">Mentra</span>
           </Link>
 
           <div className="landing-nav-links">
