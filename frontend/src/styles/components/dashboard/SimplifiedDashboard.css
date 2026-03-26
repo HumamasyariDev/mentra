@@ -78,6 +78,65 @@
   background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-inset) 100%);
   color: var(--text-primary);
   border: 1px solid var(--border-default);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== PROFILE FOREST LAYER ===== */
+.profile-forest-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.profile-forest-tree {
+  position: absolute;
+  left: var(--tree-left);
+  bottom: var(--tree-bottom);
+  transform: scale(var(--tree-scale, 1));
+  transform-origin: bottom center;
+  opacity: 0;
+  animation: forest-tree-enter 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  line-height: 0;
+}
+
+.profile-forest-tree.active {
+  filter: drop-shadow(0 0 12px rgba(167, 139, 250, 0.35));
+}
+
+@keyframes forest-tree-enter {
+  from {
+    opacity: 0;
+    transform: scale(var(--tree-scale, 1)) translateY(20px);
+  }
+  to {
+    opacity: var(--tree-opacity, 0.8);
+    transform: scale(var(--tree-scale, 1)) translateY(0);
+  }
+}
+
+.profile-forest-tree-img {
+  display: block;
+  width: clamp(100px, 12vw, 160px);
+  height: auto;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+  animation: profile-forest-sway 5s ease-in-out infinite;
+  animation-delay: var(--sway-delay, 0s);
+}
+
+@keyframes profile-forest-sway {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(0.8deg); }
+  70% { transform: rotate(-0.5deg); }
+}
+
+/* Ensure text content stays above the trees */
+.card-profile .profile-header,
+.card-profile .level-overview {
+  position: relative;
+  z-index: 2;
 }
 
 .profile-header {
@@ -569,6 +628,10 @@
   .card-pomodoro {
     grid-column: span 1;
   }
+
+  .profile-forest-tree-img {
+    width: clamp(80px, 11vw, 130px);
+  }
 }
 
 @media (max-width: 768px) {
@@ -592,6 +655,10 @@
 
   .card-actions {
     flex-direction: column;
+  }
+
+  .profile-forest-tree-img {
+    width: clamp(65px, 14vw, 110px);
   }
 }
 
@@ -633,5 +700,15 @@
     padding: 1rem;
     gap: 1rem;
     border-radius: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-forest-tree-img {
+    animation: none;
+  }
+  .profile-forest-tree {
+    animation: none;
+    opacity: 1;
   }
 }

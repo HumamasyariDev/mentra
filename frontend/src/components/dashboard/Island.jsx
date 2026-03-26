@@ -74,7 +74,7 @@ function getTooltipContent(id, dashboardData) {
     case 'forest':
       return { title: 'Forest', lines: [{ label: 'Grow your forest', value: '' }] };
     case 'chat':
-      return { title: 'AI Chat', lines: [{ label: 'Chat with AI', value: '' }] };
+      return { title: 'AI Agent', lines: [{ label: 'Your AI assistant', value: '' }] };
     case 'forum':
       return { title: 'Forum', lines: [{ label: 'Community hub', value: '' }] };
     default:
@@ -311,11 +311,11 @@ export const ISLANDS = [
   },
   {
     id: 'chat',
-    label: 'AI & Chat',
+    label: 'AI Agent',
     x: 1200,
     y: 550,
-    size: 300, // Individual size for AI & Chat
-    route: '/chat',
+    size: 300, // Individual size for AI Agent
+    route: '/agent',
   },
   {
     id: 'forest',

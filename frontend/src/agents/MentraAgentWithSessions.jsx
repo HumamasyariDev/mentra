@@ -159,6 +159,7 @@ export default function MentraAgentWithSessions() {
   const endRef = useRef(null);
   const inputRef = useRef(null);
   const systemPrompt = useRef(buildSystemPrompt(buildUserContext()));
+  const skipSessionLoadRef = useRef(false);
 
   const QUICK_PROMPTS = [
     {
@@ -182,9 +183,9 @@ export default function MentraAgentWithSessions() {
     mutationFn: (data) => chatSessionApi.create(data),
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["chat-sessions"] });
-      setCurrentSessionId(response.data.id);
-      setMessages([WELCOME_MSG]);
-      chatHistory.current = [];
+      // NOTE: Do NOT reset messages/history here!
+      // When called from handleSend, messages already contain the conversation.
+      // Resetting here would wipe the AI response that was just added.
     },
   });
 
@@ -216,9 +217,14 @@ export default function MentraAgentWithSessions() {
       chatSessionApi.storeMessage(sessionId, message),
   });
 
-  // Load messages when session changes
+  // Load messages when session changes (user clicks sidebar session)
   useEffect(() => {
     if (currentSessionId) {
+      // Skip loading from DB if we just created the session during a send
+      if (skipSessionLoadRef.current) {
+        skipSessionLoadRef.current = false;
+        return;
+      }
       chatSessionApi.getMessages(currentSessionId).then((response) => {
         const dbMessages = response.data.map((msg) => ({
           role: msg.role,
@@ -325,6 +331,7 @@ export default function MentraAgentWithSessions() {
               title: text.slice(0, 50) || "New Chat",
             });
             sessionId = newSession.data.id;
+            skipSessionLoadRef.current = true;
             setCurrentSessionId(sessionId);
           }
 
@@ -395,6 +402,7 @@ export default function MentraAgentWithSessions() {
               title: originalUserText.slice(0, 50) || "New Chat",
             });
             sessionId = newSession.data.id;
+            skipSessionLoadRef.current = true;
             setCurrentSessionId(sessionId);
           }
 
@@ -469,6 +477,7 @@ export default function MentraAgentWithSessions() {
               title: originalUserText.slice(0, 50) || "New Chat",
             });
             sessionId = newSession.data.id;
+            skipSessionLoadRef.current = true;
             setCurrentSessionId(sessionId);
           }
 
@@ -497,6 +506,7 @@ export default function MentraAgentWithSessions() {
               title: originalUserText.slice(0, 50) || "New Chat",
             });
             sessionId = newSession.data.id;
+            skipSessionLoadRef.current = true;
             setCurrentSessionId(sessionId);
           }
 

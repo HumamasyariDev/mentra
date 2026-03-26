@@ -1,12 +1,30 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import { Play, Plus, Calendar, CheckCircle2, Circle, Clock, ArrowRight, MoreHorizontal } from 'lucide-react';
+import { forestApi } from '../../services/api';
 import streakHappy from '../../assets/streak_fire/streak_fire_state_happy.png';
 import streakSad from '../../assets/streak_fire/streak_fire_state_sad.png';
 import streakNormal from '../../assets/streak_fire/streak_fire_state_normal.png';
 import streakSleep from '../../assets/streak_fire/streak_fire_state_sleep.png';
+
+import pinePurpleSeed from '../../assets/pine_purple/pine_purple_seed.png';
+import pinePurpleStage1 from '../../assets/pine_purple/pine_purple_stage_1.png';
+import pinePurpleStage2 from '../../assets/pine_purple/pine_purple_stage_2.png';
+import pinePurpleStage3 from '../../assets/pine_purple/pine_purple_stage_3.png';
+import pinePurpleStage4 from '../../assets/pine_purple/pine_purple_stage_4.png';
+import pinePurpleFinal from '../../assets/pine_purple/pine_purple_stage_final.png';
+
 import '../../styles/components/dashboard/SimplifiedDashboard.css';
+
+const TREE_STAGES = [pinePurpleSeed, pinePurpleStage1, pinePurpleStage2, pinePurpleStage3, pinePurpleStage4, pinePurpleFinal];
+
+function getTreeImage(stage) {
+  if (stage == null || stage < 0) return pinePurpleSeed;
+  if (stage >= 5) return pinePurpleFinal;
+  return TREE_STAGES[stage] ?? pinePurpleSeed;
+}
 
 function getStreakState(streak, todayCompleted) {
   if (!streak?.last_activity_date || (streak?.current_streak ?? 0) === 0) return 'sleep';
@@ -41,6 +59,72 @@ export function SimplifiedDashboard({ dashboardData, loading }) {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation(['dashboard', 'common']);
   const greeting = useGreeting();
+
+  // Fetch forest data for the tree decoration
+  const { data: forestData } = useQuery({
+    queryKey: ['forest'],
+    queryFn: () => forestApi.getForest().then((res) => res.data),
+    staleTime: 60000,
+  });
+
+  const activeTree = forestData?.active_tree ?? null;
+  const archivedTrees = forestData?.archived_trees ?? [];
+
+  // Build forest row: archived trees (final stage) + active tree, max 15
+  // Layout inspired by Forest page's getBackgroundTreeLayout
+  const forestRow = useMemo(() => {
+    const trees = [];
+
+    // Add archived trees first (all at final stage)
+    for (const tree of archivedTrees) {
+      if (trees.length >= 15) break;
+      trees.push({ id: tree.id, stage: 5, type: 'archived' });
+    }
+
+    // Add active tree if exists and still room
+    if (activeTree && trees.length < 15) {
+      trees.push({ id: `active-${activeTree.id}`, stage: activeTree.stage, type: 'active' });
+    }
+
+    const total = trees.length;
+    if (total === 0) return [];
+
+    // Layout each tree with organic positioning (left-to-right, varied sizes)
+    return trees.slice(0, 15).map((tree, i) => {
+      const seed = ((i * 73856093) ^ 19349663) >>> 0;
+
+      // Horizontal: packed tighter, shifted left (-8% to 62%)
+      // This creates a dense forest cluster on the left-center of the card
+      const baseLeft = -8 + (i / Math.max(1, total - 1)) * 70;
+      const jitterX = (Math.sin(seed) * 2.5); // +-2.5% jitter
+      const left = Math.max(-10, Math.min(65, baseLeft + jitterX));
+
+      // Scale: vary between 0.7 and 1.3 — bigger overall
+      const centerFactor = 1 - Math.abs((i / Math.max(1, total - 1)) - 0.45) * 0.35;
+      const randomVariance = 0.9 + (Math.abs(Math.sin(seed * 3)) * 0.4); // 0.9-1.3
+      const scale = centerFactor * randomVariance;
+
+      // Bottom offset: slight variance for uneven ground (-2% to 2%)
+      const bottomShift = (Math.sin(seed * 2) * 2);
+
+      // Sway animation delay
+      const swayDelay = (seed % 50) / 10; // 0-5s
+
+      return {
+        ...tree,
+        layout: {
+          left: `${left}%`,
+          bottom: `${bottomShift}%`,
+          scale: Math.max(0.55, Math.min(1.15, scale)),
+          opacity: 0.7 + (Math.abs(Math.sin(seed * 5)) * 0.3), // 0.7-1.0
+          swayDelay: `${swayDelay}s`,
+          enterDelay: `${i * 0.05}s`,
+        },
+      };
+    });
+  }, [archivedTrees, activeTree]);
+
+  const hasForest = forestRow.length > 0;
 
   // Build display data from API response, with sensible fallbacks
   const data = useMemo(() => {
@@ -101,6 +185,33 @@ export function SimplifiedDashboard({ dashboardData, loading }) {
         
         {/* Profile / Overview (Span 2x1) */}
         <div className="bento-card card-profile">
+          {/* Forest tree row decoration */}
+          {hasForest && (
+            <div className="profile-forest-layer">
+              {forestRow.map((tree) => (
+                <div
+                  key={tree.id}
+                  className={`profile-forest-tree ${tree.type}`}
+                  style={{
+                    '--tree-left': tree.layout.left,
+                    '--tree-bottom': tree.layout.bottom,
+                    '--tree-scale': tree.layout.scale,
+                    '--tree-opacity': tree.layout.opacity,
+                    '--sway-delay': tree.layout.swayDelay,
+                    animationDelay: tree.layout.enterDelay,
+                  }}
+                >
+                  <img
+                    src={getTreeImage(tree.stage)}
+                    alt=""
+                    className="profile-forest-tree-img"
+                    draggable={false}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="profile-header">
             <div>
               <p className="greeting">{greeting}</p>

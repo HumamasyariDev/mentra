@@ -124,7 +124,7 @@
 }
 
 .reg-logo-img {
-  height: 48px;
+  height: 56px;
   width: auto;
   display: block;
   filter: drop-shadow(0 0 20px rgba(167, 139, 250, 0.3)) drop-shadow(0 0 40px rgba(124, 58, 237, 0.15));
@@ -923,13 +923,10 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  padding: 2rem 2.5rem;
   margin-top: 0;
 }
 
-/* Windsurf: absolute inset-0 -m-8 opacity-90 blur-[100px]
-   background: linear-gradient(180deg, #FFF 0%, #FFF 100%) */
 .reg-testimonial-blur {
   position: absolute;
   inset: -2rem;
@@ -940,67 +937,72 @@
   pointer-events: none;
 }
 
-/* Windsurf: relative z-10 pl-10 */
 .reg-testimonial-inner {
   position: relative;
   z-index: 10;
-  padding-left: 2.5rem;
+  padding-left: 2rem;
+  border-left: 2px solid rgba(167, 139, 250, 0.25);
 }
 
-/* Windsurf: body1 font-medium leading-relaxed text-sk-black/50 */
 .reg-quote {
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.625;
-  color: rgba(148, 163, 184, 0.5);
+  font-size: 1.125rem;
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.75;
+  color: rgba(203, 213, 225, 0.7);
   margin: 0;
+  letter-spacing: 0.01em;
 }
 
-/* Windsurf: mt-6 flex items-center gap-3 */
 .reg-quote-author {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+  gap: 1rem;
+  margin-top: 1.75rem;
 }
 
-/* Windsurf: h-12 w-12 rounded-full */
 .reg-quote-avatar {
-  width: 3rem;
-  height: 3rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+  background: rgba(167, 139, 250, 0.1);
+  border: 1.5px solid rgba(167, 139, 250, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #fff;
   flex-shrink: 0;
+  overflow: hidden;
+  padding: 0.5rem;
 }
 
-/* Windsurf: flex flex-col gap-1 */
+.reg-quote-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0.85;
+}
+
 .reg-quote-info {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
-/* Windsurf: body3 font-medium text-sk-black/40 */
 .reg-quote-name {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: rgba(148, 163, 184, 0.4);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(226, 232, 240, 0.75);
   margin: 0;
+  letter-spacing: 0.02em;
 }
 
 .reg-quote-role {
-  font-size: 0.75rem;
-  font-weight: 400;
-  color: rgba(148, 163, 184, 0.25);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(167, 139, 250, 0.5);
   margin: 0;
   font-family: 'Space Grotesk', 'DM Sans', sans-serif;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 

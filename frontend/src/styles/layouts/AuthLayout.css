@@ -445,6 +445,19 @@
   margin-bottom: 0.75rem;
 }
 
+.auth-logo-img {
+  height: 52px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 0 16px rgba(167, 139, 250, 0.3)) drop-shadow(0 0 32px rgba(124, 58, 237, 0.15));
+  animation: logo-breathe-img 4s ease-in-out infinite;
+}
+
+@keyframes logo-breathe-img {
+  0%, 100% { filter: drop-shadow(0 0 16px rgba(167, 139, 250, 0.3)) drop-shadow(0 0 32px rgba(124, 58, 237, 0.15)); }
+  50%      { filter: drop-shadow(0 0 24px rgba(167, 139, 250, 0.45)) drop-shadow(0 0 48px rgba(124, 58, 237, 0.22)); }
+}
+
 .auth-logo-icon {
   width: 36px;
   height: 36px;
@@ -478,6 +491,7 @@
   .planet-group,
   .planet-glow,
   .auth-logo-icon,
+  .auth-logo-img,
   .auth-content {
     animation: none !important;
   }
@@ -497,20 +511,11 @@
     padding-top: 3rem;
   }
 
-.auth-logo-img {
-  height: 40px;
-  width: auto;
-  display: block;
-  filter: drop-shadow(0 0 16px rgba(167, 139, 250, 0.3)) drop-shadow(0 0 32px rgba(124, 58, 237, 0.15));
-  animation: logo-breathe-img 4s ease-in-out infinite;
-}
+  .auth-logo-img {
+    height: 40px;
+  }
 
-@keyframes logo-breathe-img {
-  0%, 100% { filter: drop-shadow(0 0 16px rgba(167, 139, 250, 0.3)) drop-shadow(0 0 32px rgba(124, 58, 237, 0.15)); }
-  50%      { filter: drop-shadow(0 0 24px rgba(167, 139, 250, 0.45)) drop-shadow(0 0 48px rgba(124, 58, 237, 0.22)); }
-}
-
-.auth-logo-icon {
+  .auth-logo-icon {
     width: 32px;
     height: 32px;
     font-size: 0.875rem;

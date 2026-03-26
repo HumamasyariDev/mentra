@@ -609,7 +609,9 @@ export default function Register() {
                 {t('auth:register.testimonialQuote')}
               </p>
               <div className="reg-quote-author">
-                <div className="reg-quote-avatar">M</div>
+                <div className="reg-quote-avatar">
+                  <img src="/mentra_title_logo.svg" alt="Mentra" className="reg-quote-avatar-img" />
+                </div>
                 <div className="reg-quote-info">
                   <p className="reg-quote-name">{t('auth:register.testimonialAuthor')}</p>
                   <p className="reg-quote-role">{t('auth:register.testimonialRole')}</p>
