@@ -2,123 +2,175 @@ import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { CheckSquare, Sparkles, Trophy, TreePine } from 'lucide-react';
+import { BookOpen, Sparkles, FileText, TreePine } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const STEP_ICONS = [CheckSquare, Sparkles, Trophy, TreePine];
-const STEP_COLORS = ['#818cf8', '#c084fc', '#a78bfa', '#34d399'];
+const STEP_ICONS = [BookOpen, Sparkles, FileText, TreePine];
 
 export default function GamificationLoop() {
   const sectionRef = useRef(null);
-  const containerRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
   const { t } = useTranslation(['landing']);
 
   const steps = t('landing:gamification.steps', { returnObjects: true });
+  const headingWords = t('landing:gamification.title').split(' ');
 
   useGSAP(() => {
     if (prefersReducedMotion) return;
 
-    let mm = gsap.matchMedia();
-
-    mm.add("(min-width: 1024px)", () => {
-      const panels = gsap.utils.toArray('.loop-panel');
-      const totalWidth = (panels.length - 1) * window.innerWidth;
-      
-      const scrollTween = gsap.to(containerRef.current, {
-        x: () => -totalWidth,
-        ease: "none",
+    /* ── Section heading reveal ── */
+    gsap.fromTo('.loop-heading-word',
+      { y: 60, opacity: 0, rotateX: -40 },
+      {
+        y: 0, opacity: 1, rotateX: 0,
+        duration: 1, stagger: 0.08, ease: 'power3.out',
         scrollTrigger: {
-          trigger: sectionRef.current,
-          pin: true,
-          scrub: 1,
-          snap: 1 / (panels.length - 1),
-          end: () => "+=" + totalWidth,
+          trigger: '.loop-header',
+          start: 'top 82%',
+          toggleActions: 'play none none none',
         }
-      });
+      }
+    );
 
-      gsap.to('.loop-progress-fill', {
-        width: '100%',
-        ease: "none",
+    gsap.fromTo('.loop-subtitle',
+      { y: 20, opacity: 0 },
+      {
+        y: 0, opacity: 1,
+        duration: 0.8, ease: 'power2.out',
         scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: () => "+=" + totalWidth,
-          scrub: 1,
+          trigger: '.loop-header',
+          start: 'top 75%',
+          toggleActions: 'play none none none',
         }
-      });
+      }
+    );
 
-      panels.forEach((panel, i) => {
-        if (i === 0) return;
-        
-        const content = panel.querySelector('.loop-panel-content');
-        
-        gsap.fromTo(content, 
-          { opacity: 0, scale: 0.8, filter: 'blur(10px)' },
-          {
-            opacity: 1,
-            scale: 1,
-            filter: 'blur(0px)',
-            duration: 1,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: panel,
-              containerAnimation: scrollTween,
-              start: "left center+=300",
-              toggleActions: "play none none reverse"
-            }
+    /* ── Timeline line draw (scrub) ── */
+    const lineFill = sectionRef.current.querySelector('.loop-line-fill');
+    if (lineFill) {
+      gsap.fromTo(lineFill,
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.loop-timeline',
+            start: 'top 65%',
+            end: 'bottom 40%',
+            scrub: 0.8,
           }
-        );
-      });
-    });
+        }
+      );
+    }
 
-    // Mobile & tablet: vertical layout, simple scroll reveal
-    mm.add("(max-width: 1023px)", () => {
-      gsap.utils.toArray('.loop-panel').forEach((panel) => {
-        const content = panel.querySelector('.loop-panel-content');
-        gsap.fromTo(content,
-          { y: 40, opacity: 0 },
+    /* ── Step cards + nodes ── */
+    gsap.utils.toArray('.loop-step').forEach((step, i) => {
+      const card = step.querySelector('.loop-card');
+      const node = step.querySelector('.loop-node');
+      const isLeft = i % 2 === 0;
+
+      // Card slides in from its side
+      gsap.fromTo(card,
+        { x: isLeft ? -80 : 80, opacity: 0, scale: 0.95 },
+        {
+          x: 0, opacity: 1, scale: 1,
+          duration: 0.9,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: step,
+            start: 'top 82%',
+            toggleActions: 'play none none none',
+          }
+        }
+      );
+
+      // Node pops in
+      if (node) {
+        gsap.fromTo(node,
+          { scale: 0, opacity: 0 },
           {
-            y: 0, opacity: 1,
-            duration: 0.8,
-            ease: 'power3.out',
+            scale: 1, opacity: 1,
+            duration: 0.5,
+            delay: 0.15,
+            ease: 'back.out(2.5)',
             scrollTrigger: {
-              trigger: panel,
-              start: 'top 85%',
+              trigger: step,
+              start: 'top 80%',
               toggleActions: 'play none none none',
             }
           }
         );
-      });
+      }
     });
 
-    return () => mm.revert();
   }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
 
   return (
-    <section ref={sectionRef} id="how-it-works" className="loop-horizontal-wrapper">
-      <div ref={containerRef} className="loop-horizontal-container">
+    <section ref={sectionRef} id="how-it-works" className="loop-section">
+      {/* Section header */}
+      <div className="loop-header">
+        <span className="loop-label">{t('landing:gamification.label')}</span>
+        <h2 className="loop-heading">
+          {headingWords.map((word, i) => (
+            <span key={i} className="loop-heading-word">
+              <span className={i === headingWords.length - 1 ? 'hero-title-highlight' : 'loop-heading-default'}>
+                {word}
+              </span>
+              {i < headingWords.length - 1 ? '\u00A0' : ''}
+            </span>
+          ))}
+        </h2>
+        <p className="loop-subtitle">
+          {t('landing:gamification.subtitle')}
+        </p>
+      </div>
+
+      {/* Timeline */}
+      <div className="loop-timeline">
+        {/* Vertical connecting line */}
+        <div className="loop-line" aria-hidden="true">
+          <div className="loop-line-fill" />
+        </div>
+
         {steps.map((step, i) => {
           const Icon = STEP_ICONS[i];
+          const isLeft = i % 2 === 0;
+
           return (
-            <div key={i} className="loop-panel">
-              <div className="loop-panel-content">
-                <div className="loop-panel-icon" style={{ boxShadow: `0 20px 50px ${STEP_COLORS[i]}40` }}>
-                  <Icon size={56} />
+            <div
+              key={i}
+              className={`loop-step ${isLeft ? 'loop-step--left' : 'loop-step--right'}`}
+            >
+              {/* Card */}
+              <div className="loop-card">
+                <div className="loop-card-accent" />
+                <span className="loop-card-num">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div className="loop-card-body">
+                  <div className="loop-card-icon">
+                    <Icon size={26} strokeWidth={2} />
+                  </div>
+                  <div className="loop-card-text">
+                    <h3>{step.title}</h3>
+                    <p>{step.desc}</p>
+                  </div>
                 </div>
-                <h3>{step.title}</h3>
-                <p>{step.desc}</p>
               </div>
+
+              {/* Timeline node */}
+              <div className="loop-node">
+                <span>{i + 1}</span>
+              </div>
+
+              {/* Spacer for the empty side */}
+              <div className="loop-step-spacer" aria-hidden="true" />
             </div>
           );
         })}
-      </div>
-
-      <div className="loop-progress-bar">
-        <div className="loop-progress-fill"></div>
       </div>
     </section>
   );

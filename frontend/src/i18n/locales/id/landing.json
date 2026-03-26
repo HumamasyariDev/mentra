@@ -45,6 +45,9 @@
     ]
   },
   "gamification": {
+    "label": "CARA KERJA",
+    "title": "Loop Produktivitasmu",
+    "subtitle": "Empat langkah sederhana yang mengubah tugas sehari-hari jadi pertumbuhan nyata — siklus yang terus mendorongmu maju.",
     "steps": [
       {
         "title": "Selesaikan",

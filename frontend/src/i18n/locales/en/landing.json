@@ -45,6 +45,9 @@
     ]
   },
   "gamification": {
+    "label": "HOW IT WORKS",
+    "title": "Your Productivity Loop",
+    "subtitle": "Four simple steps that turn everyday tasks into real growth — a cycle that keeps you moving forward.",
     "steps": [
       {
         "title": "Check it off",

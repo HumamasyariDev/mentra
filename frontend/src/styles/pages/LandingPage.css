@@ -819,83 +819,228 @@
 }
 
 /* ============================================
-   HORIZONTAL GAMIFICATION LOOP
+   GAMIFICATION LOOP — Vertical Timeline
    ============================================ */
-.loop-horizontal-wrapper {
-  width: 100%;
-  height: 100vh;
+.loop-section {
   position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-}
-
-.loop-horizontal-container {
-  display: flex;
-  width: 400vw;
-  height: 100%;
-  will-change: transform;
-}
-
-.loop-panel {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  flex-shrink: 0;
-}
-
-.loop-panel-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  max-width: 800px;
-  padding: 0 2rem;
+  padding: 8rem 2rem;
   z-index: 10;
 }
 
-.loop-panel-icon {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: #fff;
-  padding: 2rem;
-  border-radius: 32px;
-  margin-bottom: 3rem;
-  box-shadow: 0 20px 50px rgba(99, 102, 241, 0.4);
+/* ── Section header ── */
+.loop-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 5rem;
 }
 
-.loop-panel h3 {
-  font-size: clamp(3rem, 6vw, 5rem);
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  color: #fff;
+.loop-label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #818cf8;
+  margin-bottom: 1.25rem;
+  padding: 0.4rem 1.2rem;
+  background: rgba(129, 140, 248, 0.08);
+  border: 1px solid rgba(129, 140, 248, 0.15);
+  border-radius: 100px;
+}
+
+.loop-heading {
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
   margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.2em;
+  perspective: 800px;
 }
 
-.loop-panel p {
-  font-size: clamp(1.2rem, 2vw, 1.5rem);
+.loop-heading-word {
+  display: inline-block;
+  will-change: transform, opacity;
+  transform-origin: bottom center;
+}
+
+.loop-heading-default {
+  background: linear-gradient(180deg, #ffffff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.loop-subtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
   color: var(--lp-text-muted);
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
-.loop-progress-bar {
+/* ── Timeline container ── */
+.loop-timeline {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Vertical connecting line */
+.loop-line {
   position: absolute;
-  bottom: 10vh;
-  left: 10vw;
-  width: 80vw;
-  height: 4px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 2px;
-  z-index: 20;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(-50%);
+  z-index: 1;
 }
 
-.loop-progress-fill {
+.loop-line-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
-  border-radius: 2px;
+  background: linear-gradient(180deg, #a78bfa, #7c3aed, #6d28d9, #4f46e5);
+  transform-origin: top center;
+  will-change: transform;
+}
+
+/* ── Step row (3-column grid) ── */
+.loop-step {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  align-items: center;
+  gap: 0 2rem;
+  margin-bottom: 3.5rem;
+  position: relative;
+}
+
+.loop-step:last-child {
+  margin-bottom: 0;
+}
+
+/* Left-aligned steps */
+.loop-step--left .loop-card       { grid-column: 1; grid-row: 1; justify-self: end; }
+.loop-step--left .loop-node       { grid-column: 2; grid-row: 1; justify-self: center; }
+.loop-step--left .loop-step-spacer { grid-column: 3; grid-row: 1; }
+
+/* Right-aligned steps */
+.loop-step--right .loop-step-spacer { grid-column: 1; grid-row: 1; }
+.loop-step--right .loop-node        { grid-column: 2; grid-row: 1; justify-self: center; }
+.loop-step--right .loop-card         { grid-column: 3; grid-row: 1; justify-self: start; }
+
+/* ── Card ── */
+.loop-card {
+  position: relative;
+  max-width: 420px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  padding: 2rem 2rem 1.75rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  will-change: transform, opacity;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.loop-card:hover {
+  border-color: rgba(129, 140, 248, 0.25);
+  box-shadow: 0 0 40px rgba(129, 140, 248, 0.08);
+}
+
+/* Bottom accent line */
+.loop-card-accent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #a78bfa, transparent);
+  opacity: 0.5;
+}
+
+/* Watermark step number */
+.loop-card-num {
+  position: absolute;
+  top: -0.75rem;
+  right: 0.75rem;
+  font-size: 7rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  pointer-events: none;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+  color: rgba(129, 140, 248, 0.06);
+}
+
+/* Card body: icon + text */
+.loop-card-body {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
+
+.loop-card-icon {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #6d28d9 100%);
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.35);
+}
+
+.loop-card-text h3 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.loop-card-text p {
+  font-size: 0.95rem;
+  color: var(--lp-text-muted);
+  line-height: 1.65;
+}
+
+/* ── Timeline node ── */
+.loop-node {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--lp-bg-base, #020617);
+  border: 2px solid #a78bfa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+  will-change: transform, opacity;
+}
+
+.loop-node span {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #a78bfa;
+}
+
+/* Spacer (empty column) */
+.loop-step-spacer {
+  min-height: 1px;
 }
 
 
@@ -1506,55 +1651,40 @@
 
 
 /* ============================================
-   RESPONSIVE — Tablet: Gamification Loop vertical stack
-   GSAP horizontal scroll only runs at ≥1024px,
-   so below that the panels must stack vertically.
+   RESPONSIVE — Tablet: Gamification Loop
    ============================================ */
 @media (max-width: 1023px) {
-  .loop-horizontal-wrapper {
-    height: auto;
-    overflow: visible;
-    align-items: stretch;
+  .loop-section {
+    padding: 6rem 1.5rem;
   }
 
-  .loop-horizontal-container {
-    width: 100%;
-    flex-direction: column;
+  .loop-header {
+    margin-bottom: 3.5rem;
   }
 
-  .loop-panel {
-    width: 100%;
-    height: auto;
-    min-height: auto;
-    padding: 4rem 1.5rem;
+  .loop-timeline {
+    max-width: 700px;
   }
 
-  .loop-panel-content {
-    max-width: 600px;
+  .loop-step {
+    grid-template-columns: 1fr 48px 1fr;
+    gap: 0 1.5rem;
+    margin-bottom: 2.5rem;
   }
 
-  .loop-panel-icon {
+  .loop-card {
+    max-width: 300px;
     padding: 1.5rem;
-    border-radius: 24px;
-    margin-bottom: 2rem;
   }
 
-  .loop-panel-icon svg {
-    width: 40px;
-    height: 40px;
+  .loop-card-num {
+    font-size: 5rem;
   }
 
-  .loop-panel h3 {
-    font-size: clamp(1.75rem, 5vw, 2.5rem);
-    margin-bottom: 1rem;
-  }
-
-  .loop-panel p {
-    font-size: clamp(1rem, 2.5vw, 1.2rem);
-  }
-
-  .loop-progress-bar {
-    display: none;
+  .loop-node {
+    width: 36px;
+    height: 36px;
+    font-size: 0.75rem;
   }
 }
 
@@ -1600,20 +1730,51 @@
     margin-top: 2.5rem;
   }
 
-  /* Gamification — tighten further on phone */
-  .loop-panel {
-    padding: 3rem 1rem;
+  /* Gamification — mobile: stack vertically, hide timeline line/nodes */
+  .loop-section {
+    padding: 5rem 1.5rem;
   }
 
-  .loop-panel-icon {
-    padding: 1.25rem;
-    border-radius: 20px;
-    margin-bottom: 1.5rem;
+  .loop-header {
+    margin-bottom: 3rem;
   }
 
-  .loop-panel-icon svg {
-    width: 32px;
-    height: 32px;
+  .loop-heading {
+    font-size: clamp(1.75rem, 7vw, 2.5rem);
+    margin-bottom: 1rem;
+  }
+
+  .loop-step {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    margin-bottom: 2rem;
+  }
+
+  .loop-step--left .loop-card,
+  .loop-step--right .loop-card {
+    grid-column: unset;
+    justify-self: unset;
+  }
+
+  .loop-line,
+  .loop-node,
+  .loop-step-spacer {
+    display: none;
+  }
+
+  .loop-card {
+    max-width: 100%;
+  }
+
+  .loop-card-num {
+    font-size: 5rem;
+  }
+
+  .loop-card-body {
+    flex-direction: column;
+    gap: 1rem;
   }
 
   /* Forest */

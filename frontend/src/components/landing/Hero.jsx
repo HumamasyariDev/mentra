@@ -52,7 +52,6 @@ export default function Hero() {
       y: -150,
       opacity: 0,
       scale: 0.95,
-      filter: 'blur(10px)',
       scrollTrigger: {
         trigger: containerRef.current,
         start: 'top top',
