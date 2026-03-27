@@ -7,9 +7,9 @@ import {
   Minimize2,
   Info,
   X,
+  Loader2,
 } from "lucide-react";
 import { aiApi } from "../../services/api";
-import WateringAnimation from "./WateringAnimation";
 import "../../styles/components/InfiniteCanvasMindMap.css";
 
 export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
@@ -209,11 +209,15 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
     setIsFullscreen((prev) => !prev);
   }, []);
 
-  // Show loading animation while generating
+  // Show loading state while generating
   if (isGenerating) {
     return (
       <div className="mindmap-generating">
-        <WateringAnimation isGenerating={true} />
+        <Loader2 size={48} className="mindmap-loading-spinner" />
+        <p className="mindmap-loading-text">AI Thinking...</p>
+        <p className="mindmap-loading-subtext">
+          Generating mind map from conversation
+        </p>
       </div>
     );
   }
@@ -236,9 +240,7 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
           {t("sandbox:mindmapGenerateBtn")}
         </button>
         {chatMessages.length === 0 && (
-          <p className="mindmap-hint">
-            {t("sandbox:mindmapChatFirst")}
-          </p>
+          <p className="mindmap-hint">{t("sandbox:mindmapChatFirst")}</p>
         )}
       </div>
     );
@@ -277,7 +279,11 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
         <button
           className="canvas-control-btn"
           onClick={toggleFullscreen}
-          title={isFullscreen ? t("sandbox:mindmapExitFullscreen") : t("sandbox:mindmapFullscreen")}
+          title={
+            isFullscreen
+              ? t("sandbox:mindmapExitFullscreen")
+              : t("sandbox:mindmapFullscreen")
+          }
         >
           {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
         </button>
@@ -336,7 +342,9 @@ export default function InfiniteCanvasMindMap({ content, chatMessages = [] }) {
 
       {/* Fullscreen hint */}
       {isFullscreen && (
-        <div className="canvas-fullscreen-hint">{t("sandbox:mindmapEscHint")}</div>
+        <div className="canvas-fullscreen-hint">
+          {t("sandbox:mindmapEscHint")}
+        </div>
       )}
     </div>
   );
@@ -372,7 +380,11 @@ function MindMapNode({
               <button
                 className={`mindmap-detail-btn ${showDetail ? "active" : ""}`}
                 onClick={(e) => onToggleDetail(node.id, e)}
-                title={showDetail ? t("sandbox:mindmapHideDetail") : t("sandbox:mindmapShowDetail")}
+                title={
+                  showDetail
+                    ? t("sandbox:mindmapHideDetail")
+                    : t("sandbox:mindmapShowDetail")
+                }
               >
                 {showDetail ? <X size={14} /> : <Info size={14} />}
               </button>
@@ -389,9 +401,7 @@ function MindMapNode({
 
         {/* Caption: truncated by default, full when detail is open */}
         {hasCaption && (
-          <p
-            className={`mindmap-card-caption ${showDetail ? "full" : ""}`}
-          >
+          <p className={`mindmap-card-caption ${showDetail ? "full" : ""}`}>
             {node.caption}
           </p>
         )}

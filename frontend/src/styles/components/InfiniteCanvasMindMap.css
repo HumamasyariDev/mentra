@@ -32,7 +32,6 @@
   user-select: none;
 }
 
-
 /* ─────────────────────────────────────────────────────────────────────────
    FULLSCREEN MODE
    ───────────────────────────────────────────────────────────────────────── */
@@ -62,10 +61,14 @@
 }
 
 @keyframes hintFadeOut {
-  0%, 60% { opacity: 1; }
-  100% { opacity: 0; }
+  0%,
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
-
 
 /* ─────────────────────────────────────────────────────────────────────────
    EMPTY STATE & GENERATING STATE
@@ -141,12 +144,40 @@
 
 .mindmap-generating {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
   width: 100%;
   height: 100%;
 }
 
+.mindmap-loading-spinner {
+  animation: spin 1s linear infinite;
+  color: var(--accent);
+}
+
+.mindmap-loading-text {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mindmap-loading-subtext {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* ─────────────────────────────────────────────────────────────────────────
    CANVAS CONTROLS
@@ -201,7 +232,6 @@
   z-index: 10;
 }
 
-
 /* ─────────────────────────────────────────────────────────────────────────
    MIND MAP NODE STRUCTURE
    ───────────────────────────────────────────────────────────────────────── */
@@ -217,7 +247,6 @@
 .mindmap-node-wrapper[data-level="0"] {
   margin: 2rem;
 }
-
 
 /* ─────────────────────────────────────────────────────────────────────────
    MIND MAP CARDS
@@ -282,7 +311,6 @@
   border-color: var(--accent);
 }
 
-
 /* ── Card Header ──────────────────────────── */
 
 .mindmap-card-header {
@@ -309,7 +337,6 @@
   gap: 4px;
   flex-shrink: 0;
 }
-
 
 /* ── Detail Toggle Button ─────────────────── */
 
@@ -340,7 +367,6 @@
   border-color: var(--accent);
   color: var(--text-on-accent);
 }
-
 
 /* ── Expand Icon ──────────────────────────── */
 
@@ -387,7 +413,6 @@
   color: var(--text-on-accent);
 }
 
-
 /* ── Card Caption ─────────────────────────── */
 
 .mindmap-card-caption {
@@ -412,7 +437,6 @@
   border-top: 1px solid var(--border-subtle);
   margin-top: 0.5rem;
 }
-
 
 /* ─────────────────────────────────────────────────────────────────────────
    CHILDREN CONTAINER & CONNECTING LINES (L-shaped with border-radius)
@@ -478,7 +502,6 @@
 .mindmap-child-container:last-child .mindmap-connector-line {
   border-bottom-left-radius: 14px;
 }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════
    RESPONSIVE DESIGN

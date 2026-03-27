@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\SandboxController;
 use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\ChatSessionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 //  Public Routes ──
@@ -141,4 +142,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/extract-key-points', [AIController::class, 'extractKeyPoints']);
         Route::post('/mindmap', [AIController::class, 'generateMindMap']);
     });
+
+    // Users Management (Admin Only)
+    Route::apiResource('users', UserController::class);
 });

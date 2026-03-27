@@ -20,13 +20,22 @@ api.interceptors.response.use(
   (response) => {
     // Detect Pomodoro animation triggers
     const url = response.config.url;
-    if (url?.includes('/pomodoro/') && response.config.method === 'post') {
-      if (url.includes('/pause')) {
-        localStorage.setItem('pom-pending-anim', JSON.stringify({ type: 'paused', timestamp: Date.now() }));
-      } else if (url.includes('/resume')) {
-        localStorage.setItem('pom-pending-anim', JSON.stringify({ type: 'resumed', timestamp: Date.now() }));
-      } else if (url.includes('/cancel')) {
-        localStorage.setItem('pom-pending-anim', JSON.stringify({ type: 'stopped', timestamp: Date.now() }));
+    if (url?.includes("/pomodoro/") && response.config.method === "post") {
+      if (url.includes("/pause")) {
+        localStorage.setItem(
+          "pom-pending-anim",
+          JSON.stringify({ type: "paused", timestamp: Date.now() }),
+        );
+      } else if (url.includes("/resume")) {
+        localStorage.setItem(
+          "pom-pending-anim",
+          JSON.stringify({ type: "resumed", timestamp: Date.now() }),
+        );
+      } else if (url.includes("/cancel")) {
+        localStorage.setItem(
+          "pom-pending-anim",
+          JSON.stringify({ type: "stopped", timestamp: Date.now() }),
+        );
       }
     }
     return response;
@@ -169,13 +178,15 @@ export const forumPostApi = {
 // User Profile API
 export const profileApi = {
   update: (data) => api.put("/user/profile", data),
-  deleteAccount: (confirm) => api.delete("/user/account", { data: { confirm } }),
+  deleteAccount: (confirm) =>
+    api.delete("/user/account", { data: { confirm } }),
 };
 
 // Forest API (Tree Care)
 export const forestApi = {
   getForest: () => api.get("/forest"),
-  plantTree: (treeTypeId) => api.post("/forest/plant", { tree_type_id: treeTypeId }),
+  plantTree: (treeTypeId) =>
+    api.post("/forest/plant", { tree_type_id: treeTypeId }),
   waterTree: (treeId) => api.post(`/forest/water/${treeId}`),
   getTreeTypes: () => api.get("/forest/tree-types"),
   debugSkipStage: (treeId) => api.post(`/forest/debug/skip-stage/${treeId}`),
@@ -192,8 +203,7 @@ export const aiApi = {
     api.post("/ai/agent", { message, history, system_prompt: systemPrompt }),
 
   // Sandbox chat (SandboxChat.jsx)
-  sandboxChat: (messages) =>
-    api.post("/ai/sandbox", { messages }),
+  sandboxChat: (messages) => api.post("/ai/sandbox", { messages }),
 
   // Quiz generation
   generateQuiz: (material, questionCount = 5) =>
@@ -204,8 +214,16 @@ export const aiApi = {
     api.post("/ai/extract-key-points", { material }),
 
   // Generate mind map from conversation
-  generateMindMap: (messages) =>
-    api.post("/ai/mindmap", { messages }),
+  generateMindMap: (messages) => api.post("/ai/mindmap", { messages }),
+};
+
+// Users Management (Admin)
+export const usersApi = {
+  getAll: () => api.get("/users"),
+  getById: (id) => api.get(`/users/${id}`),
+  create: (data) => api.post("/users", data),
+  update: (id, data) => api.put(`/users/${id}`, data),
+  delete: (id) => api.delete(`/users/${id}`),
 };
 
 export default api;

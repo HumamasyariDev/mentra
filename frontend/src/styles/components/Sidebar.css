@@ -11,8 +11,9 @@
   flex-direction: column;
   background: var(--sidebar-bg);
   border-right: 1px solid var(--sidebar-border);
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -68,7 +69,11 @@
 .sidebar-logo-icon {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--accent) 0%,
+    var(--accent-light) 100%
+  );
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -142,6 +147,24 @@
   font-weight: 600;
 }
 
+/* Admin section — special styling */
+.sidebar-section-admin {
+  border-top: 1px solid var(--sidebar-border);
+  padding-top: 12px;
+  margin-top: 8px;
+}
+
+.sidebar-section-admin .sidebar-section-title {
+  display: flex;
+  align-items: center;
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+[data-theme="light"] .sidebar-section-admin .sidebar-section-title {
+  color: #d97706;
+}
+
 /* ── Navigation ─────────────────────────────────────────────────── */
 
 .sidebar-nav {
@@ -160,7 +183,9 @@
   font-weight: 450;
   color: var(--text-primary);
   text-decoration: none;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
   position: relative;
   letter-spacing: -0.02em;
 }
@@ -184,7 +209,11 @@
 }
 
 .sidebar-nav-link-highlight.active {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--accent) 0%,
+    var(--accent-light) 100%
+  );
   color: var(--text-on-accent);
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
 }
@@ -411,7 +440,9 @@
   color: var(--text-primary);
   outline: none;
   font-family: inherit;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .sidebar-panel-input::placeholder {
@@ -444,7 +475,9 @@
   border-radius: 8px;
   cursor: pointer;
   flex-shrink: 0;
-  transition: background-color 0.15s ease, opacity 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    opacity 0.15s ease;
 }
 
 .sidebar-panel-save-btn:hover:not(:disabled) {
@@ -461,7 +494,9 @@
 }
 
 @keyframes sidebar-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Panel Error */

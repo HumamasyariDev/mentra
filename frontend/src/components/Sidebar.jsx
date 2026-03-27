@@ -18,6 +18,8 @@ import {
   Loader2,
   Trash2,
   X,
+  Users,
+  Shield,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { profileApi } from "../services/api";
@@ -42,7 +44,7 @@ const communityItems = [
 ];
 
 export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
-  const { t, i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation("common");
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [showAccountPanel, setShowAccountPanel] = useState(false);
@@ -88,7 +90,7 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
       await refreshUser();
       setError("");
     } catch (err) {
-      setError(err?.response?.data?.message || t('account.failedUpdateName'));
+      setError(err?.response?.data?.message || t("account.failedUpdateName"));
     } finally {
       setSaving(false);
     }
@@ -105,7 +107,9 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
       localStorage.removeItem("mentra_user");
       window.location.href = "/login";
     } catch (err) {
-      setError(err?.response?.data?.message || t('account.failedDeleteAccount'));
+      setError(
+        err?.response?.data?.message || t("account.failedDeleteAccount"),
+      );
       setDeleting(false);
     }
   };
@@ -123,7 +127,11 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
     >
       <div className="sidebar-header">
         <div className="sidebar-logo">
-          <img src="/mentra_title_logo.svg" alt="Mentra" className="sidebar-logo-img" />
+          <img
+            src="/mentra_title_logo.svg"
+            alt="Mentra"
+            className="sidebar-logo-img"
+          />
           <span className="sidebar-logo-text">Mentra</span>
         </div>
         <button className="sidebar-toggle" onClick={onClose}>
@@ -133,7 +141,9 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
 
       <div className="sidebar-sections">
         <div className="sidebar-section">
-          <div className="sidebar-section-title">{t('sections.productivity')}</div>
+          <div className="sidebar-section-title">
+            {t("sections.productivity")}
+          </div>
           <nav className="sidebar-nav">
             {productivityItems.map(({ to, labelKey, icon: Icon }) => (
               <NavLink
@@ -152,7 +162,7 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
         </div>
 
         <div className="sidebar-section sidebar-section-chat">
-          <div className="sidebar-section-title">{t('sections.aiChat')}</div>
+          <div className="sidebar-section-title">{t("sections.aiChat")}</div>
           <nav className="sidebar-nav">
             {aiItems.map(({ to, labelKey, icon: Icon, highlight }) => (
               <NavLink
@@ -171,7 +181,7 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
         </div>
 
         <div className="sidebar-section">
-          <div className="sidebar-section-title">{t('sections.community')}</div>
+          <div className="sidebar-section-title">{t("sections.community")}</div>
           <nav className="sidebar-nav">
             {communityItems.map(({ to, labelKey, icon: Icon }) => (
               <NavLink
@@ -190,7 +200,7 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
         </div>
 
         <div className="sidebar-section">
-          <div className="sidebar-section-title">{t('sections.settings')}</div>
+          <div className="sidebar-section-title">{t("sections.settings")}</div>
           <nav className="sidebar-nav">
             <NavLink
               to="/settings"
@@ -200,10 +210,32 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
               }
             >
               <Settings className="sidebar-nav-icon" />
-              <span className="sidebar-nav-label">{t('nav.settings')}</span>
+              <span className="sidebar-nav-label">{t("nav.settings")}</span>
             </NavLink>
           </nav>
         </div>
+
+        {/* Admin Only Section */}
+        {user?.is_admin && (
+          <div className="sidebar-section sidebar-section-admin">
+            <div className="sidebar-section-title">
+              <Shield size={14} style={{ marginRight: "0.375rem" }} />
+              Admin Only
+            </div>
+            <nav className="sidebar-nav">
+              <NavLink
+                to="/users"
+                onClick={onClose}
+                className={({ isActive }) =>
+                  `sidebar-nav-link ${isActive ? "active" : ""}`
+                }
+              >
+                <Users className="sidebar-nav-icon" />
+                <span className="sidebar-nav-label">Users</span>
+              </NavLink>
+            </nav>
+          </div>
+        )}
       </div>
 
       <div className="sidebar-footer" ref={panelRef}>
@@ -214,16 +246,21 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
             <div className="sidebar-panel-header">
               <div className="sidebar-panel-avatar">{userInitial}</div>
               <div className="sidebar-panel-info">
-                <div className="sidebar-panel-name">{user?.name || t('account.user')}</div>
+                <div className="sidebar-panel-name">
+                  {user?.name || t("account.user")}
+                </div>
                 <div className="sidebar-panel-email">{user?.email}</div>
                 <div className="sidebar-panel-meta">
-                  {t('account.memberSince')}{" "}
+                  {t("account.memberSince")}{" "}
                   {user?.created_at
-                    ? new Date(user.created_at).toLocaleDateString(i18n.language === 'id' ? 'id-ID' : 'en-US', {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })
+                    ? new Date(user.created_at).toLocaleDateString(
+                        i18n.language === "id" ? "id-ID" : "en-US",
+                        {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        },
+                      )
                     : "N/A"}
                 </div>
               </div>
@@ -231,23 +268,31 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
 
             {/* Edit Name */}
             <div className="sidebar-panel-section">
-              <label className="sidebar-panel-label">{t('account.displayName')}</label>
+              <label className="sidebar-panel-label">
+                {t("account.displayName")}
+              </label>
               <div className="sidebar-panel-input-row">
                 <input
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   className="sidebar-panel-input"
-                  placeholder={t('account.yourName')}
+                  placeholder={t("account.yourName")}
                   disabled={saving}
                 />
                 <button
                   onClick={handleSaveName}
-                  disabled={saving || !editName.trim() || editName.trim() === user?.name}
+                  disabled={
+                    saving || !editName.trim() || editName.trim() === user?.name
+                  }
                   className="sidebar-panel-save-btn"
-                  title={t('account.saveName')}
+                  title={t("account.saveName")}
                 >
-                  {saving ? <Loader2 size={14} className="sidebar-spinner" /> : <Save size={14} />}
+                  {saving ? (
+                    <Loader2 size={14} className="sidebar-spinner" />
+                  ) : (
+                    <Save size={14} />
+                  )}
                 </button>
               </div>
             </div>
@@ -258,7 +303,7 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
             {/* Logout */}
             <button className="sidebar-panel-logout" onClick={handleLogout}>
               <LogOut size={16} />
-              <span>{t('account.logout')}</span>
+              <span>{t("account.logout")}</span>
             </button>
 
             {/* Delete Account */}
@@ -269,18 +314,23 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
                   onClick={() => setShowDeleteConfirm(true)}
                 >
                   <Trash2 size={14} />
-                  <span>{t('account.deleteAccount')}</span>
+                  <span>{t("account.deleteAccount")}</span>
                 </button>
               ) : (
                 <div className="sidebar-panel-delete-confirm">
-                  <p className="sidebar-panel-delete-warning" dangerouslySetInnerHTML={{ __html: t('account.deleteConfirmText') }} />
+                  <p
+                    className="sidebar-panel-delete-warning"
+                    dangerouslySetInnerHTML={{
+                      __html: t("account.deleteConfirmText"),
+                    }}
+                  />
                   <div className="sidebar-panel-input-row">
                     <input
                       type="text"
                       value={deleteText}
                       onChange={(e) => setDeleteText(e.target.value)}
                       className="sidebar-panel-input sidebar-panel-input-danger"
-                      placeholder={t('account.typeDelete')}
+                      placeholder={t("account.typeDelete")}
                       disabled={deleting}
                     />
                     <button
@@ -302,7 +352,7 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
                       setDeleteText("");
                     }}
                   >
-                    {t('cancel')}
+                    {t("cancel")}
                   </button>
                 </div>
               )}
@@ -311,14 +361,16 @@ export default function Sidebar({ sidebarOpen, onClose, onLogout }) {
         )}
 
         {/* Account Row (clickable) */}
-        <div className="sidebar-section-title">{t('sections.account')}</div>
+        <div className="sidebar-section-title">{t("sections.account")}</div>
         <button className="sidebar-account" onClick={togglePanel}>
           <div className="sidebar-account-avatar">{userInitial}</div>
           <div className="sidebar-account-info">
             <div className="sidebar-account-name">
-              {user?.name || t('account.user')}
+              {user?.name || t("account.user")}
             </div>
-            <div className="sidebar-account-role">{t('level')} {user?.level || 1}</div>
+            <div className="sidebar-account-role">
+              {t("level")} {user?.level || 1}
+            </div>
           </div>
           <ChevronUp
             size={16}

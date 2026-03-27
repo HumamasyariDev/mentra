@@ -3,8 +3,7 @@
    Inter font, ambient orbs, refined typography
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
 
 /* ── Page Container ──────────────────────── */
 
@@ -13,14 +12,18 @@
   width: 100%;
   min-height: 100%;
   background: var(--bg-base);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
-
 
 /* ── Ambient Background Orbs ─────────────── */
 
@@ -42,7 +45,11 @@
 .sandbox-orb--1 {
   width: 550px;
   height: 550px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.14) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(99, 102, 241, 0.14) 0%,
+    transparent 70%
+  );
   top: -12%;
   left: -8%;
 }
@@ -50,7 +57,11 @@
 .sandbox-orb--2 {
   width: 450px;
   height: 450px;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.1) 0%,
+    transparent 70%
+  );
   bottom: -8%;
   right: -6%;
 }
@@ -58,24 +69,39 @@
 .sandbox-orb--3 {
   width: 380px;
   height: 380px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.08) 0%,
+    transparent 70%
+  );
   top: 50%;
   left: 55%;
   transform: translate(-50%, -50%);
 }
 
 [data-theme="light"] .sandbox-orb--1 {
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.07) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(99, 102, 241, 0.07) 0%,
+    transparent 70%
+  );
 }
 
 [data-theme="light"] .sandbox-orb--2 {
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.05) 0%,
+    transparent 70%
+  );
 }
 
 [data-theme="light"] .sandbox-orb--3 {
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.04) 0%,
+    transparent 70%
+  );
 }
-
 
 /* ── Scrollable Content Area ─────────────── */
 
@@ -112,7 +138,6 @@
   margin: 0 auto;
   padding: 0 32px 48px;
 }
-
 
 /* ── Hero / Page Title ───────────────────── */
 
@@ -182,7 +207,6 @@
   height: 16px;
 }
 
-
 /* ── Stats Bar ───────────────────────────── */
 
 .sandbox-stats {
@@ -216,7 +240,6 @@
   color: var(--text-tertiary);
   letter-spacing: -0.005em;
 }
-
 
 /* ── Category Filter Cards ───────────────── */
 
@@ -320,7 +343,6 @@
   text-transform: uppercase;
 }
 
-
 /* ── Loading ─────────────────────────────── */
 
 .sandbox-loading {
@@ -344,7 +366,6 @@
     transform: rotate(360deg);
   }
 }
-
 
 /* ── Empty State ─────────────────────────── */
 
@@ -371,11 +392,15 @@
 }
 
 .sandbox-empty-icon::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -1px;
   border-radius: 24px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, transparent 50%);
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.2) 0%,
+    transparent 50%
+  );
   pointer-events: none;
   z-index: -1;
 }
@@ -403,7 +428,6 @@
   max-width: 360px;
 }
 
-
 /* ── Card Grid ───────────────────────────── */
 
 .sandbox-grid {
@@ -411,7 +435,6 @@
   grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: 16px;
 }
-
 
 /* ── Glass Card ──────────────────────────── */
 
@@ -424,22 +447,33 @@
   flex-direction: column;
   gap: 16px;
   cursor: pointer;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
   position: relative;
   overflow: hidden;
 }
 
 .sandbox-card::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: 20px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 60%
+  );
   pointer-events: none;
 }
 
 [data-theme="light"] .sandbox-card::before {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, transparent 60%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    transparent 60%
+  );
 }
 
 .sandbox-card:hover {
@@ -451,7 +485,6 @@
 .sandbox-card:active {
   transform: translateY(0) scale(0.99);
 }
-
 
 /* ── Card Top Row ────────────────────────── */
 
@@ -531,7 +564,6 @@
   height: 15px;
 }
 
-
 /* ── Card Body ───────────────────────────── */
 
 .sandbox-card-body {
@@ -559,7 +591,6 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
 
 /* ── Card Meta & Tags ────────────────────── */
 
@@ -594,7 +625,6 @@
   opacity: 0.8;
 }
 
-
 /* ── Card Footer ─────────────────────────── */
 
 .sandbox-card-footer {
@@ -622,7 +652,6 @@
   margin-left: auto;
   color: var(--text-tertiary);
 }
-
 
 /* ── Modal Overlay ───────────────────────── */
 
@@ -662,16 +691,24 @@
 }
 
 .sandbox-modal::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: 24px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 60%
+  );
   pointer-events: none;
 }
 
 [data-theme="light"] .sandbox-modal::before {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, transparent 60%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    transparent 60%
+  );
 }
 
 @keyframes sandbox-modal-in {
@@ -693,7 +730,6 @@
   margin: 0 0 28px 0;
   line-height: 1.2;
 }
-
 
 /* ── Form Styles ─────────────────────────── */
 
@@ -748,7 +784,6 @@
   min-height: 88px;
 }
 
-
 /* ── Purpose Checkboxes ──────────────────── */
 
 .sandbox-purposes {
@@ -759,9 +794,9 @@
 }
 
 .sandbox-purpose-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   padding: 10px 16px;
   background: var(--bg-inset);
   border: 1.5px solid var(--border-default);
@@ -775,6 +810,12 @@
   letter-spacing: -0.005em;
 }
 
+.sandbox-purpose-item span {
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .sandbox-purpose-item:hover {
   background: var(--bg-hover);
   border-color: var(--border-hover);
@@ -782,10 +823,43 @@
 }
 
 .sandbox-purpose-item input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-default);
+  border-radius: 4px;
   cursor: pointer;
-  accent-color: var(--accent);
+  position: relative;
+  transition: all 0.2s ease;
+  background: var(--bg-elevated);
+  flex-shrink: 0;
+}
+
+.sandbox-purpose-item input[type="checkbox"]:hover {
+  border-color: var(--accent);
+}
+
+.sandbox-purpose-item input[type="checkbox"]:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.sandbox-purpose-item input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.sandbox-purpose-item input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-bg);
 }
 
 .sandbox-purpose-item input[type="checkbox"]:checked + span {
@@ -803,7 +877,6 @@
   flex-shrink: 0;
   opacity: 0.6;
 }
-
 
 /* ── Add Custom Purpose ─────────────────── */
 
@@ -898,7 +971,6 @@
   color: var(--danger);
 }
 
-
 /* ── Modal Actions ───────────────────────── */
 
 .sandbox-modal-actions {
@@ -955,9 +1027,7 @@
   box-shadow: none;
 }
 
-
 /* (Removed old chat page CSS - now in SandboxChat.css) */
-
 
 /* ============================================
    RESPONSIVE — Tablet
@@ -1022,7 +1092,6 @@
     border-radius: 14px;
   }
 }
-
 
 /* ============================================
    RESPONSIVE — Mobile
