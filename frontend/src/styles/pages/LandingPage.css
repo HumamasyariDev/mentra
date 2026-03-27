@@ -315,7 +315,7 @@
 .lp-planet--tasks .lp-planet-orb {
   width: 160px;
   height: 160px;
-  opacity: 0.35;
+  opacity: 0.6;
   --orb-color: rgba(167, 139, 250, 0.5);
   --orb-glow: rgba(167, 139, 250, 0.15);
 }
@@ -351,7 +351,7 @@
 .lp-planet--pomodoro .lp-planet-orb {
   width: 110px;
   height: 110px;
-  opacity: 0.3;
+  opacity: 0.55;
   --orb-color: rgba(251, 146, 60, 0.45);
   --orb-glow: rgba(251, 146, 60, 0.12);
 }
@@ -387,7 +387,7 @@
 .lp-planet--forest .lp-planet-orb {
   width: 85px;
   height: 85px;
-  opacity: 0.28;
+  opacity: 0.5;
   --orb-color: rgba(52, 211, 153, 0.4);
   --orb-glow: rgba(52, 211, 153, 0.1);
 }
@@ -423,7 +423,7 @@
 .lp-planet--schedule .lp-planet-orb {
   width: 95px;
   height: 95px;
-  opacity: 0.28;
+  opacity: 0.5;
   --orb-color: rgba(56, 189, 248, 0.4);
   --orb-glow: rgba(56, 189, 248, 0.1);
 }
@@ -460,7 +460,7 @@
 .lp-planet--ai-chat .lp-planet-orb {
   width: 45px;
   height: 45px;
-  opacity: 0.18;
+  opacity: 0.4;
   --orb-color: rgba(192, 132, 252, 0.4);
   --orb-glow: rgba(192, 132, 252, 0.08);
 }
@@ -497,7 +497,7 @@
 .lp-planet--forum .lp-planet-orb {
   width: 38px;
   height: 38px;
-  opacity: 0.15;
+  opacity: 0.35;
   --orb-color: rgba(129, 140, 248, 0.4);
   --orb-glow: rgba(129, 140, 248, 0.08);
 }

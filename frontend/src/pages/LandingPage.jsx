@@ -28,18 +28,18 @@ gsap.registerPlugin(ScrollTrigger);
  */
 const LP_QUALITY = {
   low: {
-    starCount: 20,
-    showPlanets: false,
+    starCount: 25,
+    showPlanets: true,    // Always show planets for visual consistency
     showShootingStar: false,
     showOrbitalRings: false,
     showNoise: false,
   },
   mid: {
-    starCount: 40,
-    showPlanets: true,    // CSS gradient replacements, not real SVGs
+    starCount: 45,
+    showPlanets: true,
     showShootingStar: true,
     showOrbitalRings: true,
-    showNoise: false,     // noise overlay is expensive even on mid
+    showNoise: false,
   },
   high: {
     starCount: 80,
