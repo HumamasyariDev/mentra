@@ -227,6 +227,7 @@
   inset: 0;
   pointer-events: none;
   overflow: hidden;
+  z-index: 5;
 }
 
 .lp-planet {
@@ -236,6 +237,14 @@
   align-items: center;
   will-change: transform;
   transform: translateZ(0);
+  z-index: 1;
+}
+
+.lp-planet-img {
+  position: relative;
+  z-index: 2;
+  filter: saturate(1.1);
+  transition: opacity 0.3s ease;
 }
 
 .lp-planet-glow {

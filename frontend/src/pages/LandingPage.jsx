@@ -180,8 +180,8 @@ export default function LandingPage() {
                   alt=""
                   className="lp-planet-img"
                   draggable={false}
-                  loading="lazy"
-                  decoding="async"
+                  loading="eager"
+                  fetchPriority="high"
                 />
                 <span className="lp-planet-label">{planet.label}</span>
               </div>
