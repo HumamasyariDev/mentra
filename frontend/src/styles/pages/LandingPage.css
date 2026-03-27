@@ -670,6 +670,18 @@
   transform: scale(1.03);
 }
 
+.landing-nav-cta--dashboard {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: #fff;
+}
+
+.landing-nav-cta--dashboard:hover {
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.4);
+}
+
 /* Language toggle — desktop */
 .landing-nav-lang-toggle {
   display: flex;
@@ -804,6 +816,18 @@
 .mobile-nav-cta:hover {
   box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
   transform: scale(1.05);
+}
+
+.mobile-nav-cta--dashboard {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  color: #fff;
+}
+
+.mobile-nav-cta--dashboard:hover {
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
 }
 
 /* ============================================

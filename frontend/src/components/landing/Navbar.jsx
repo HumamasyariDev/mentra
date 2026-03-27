@@ -3,10 +3,11 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LayoutDashboard } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useMagneticHover } from '../../hooks/useMagneticHover';
+import { useAuth } from '../../contexts/AuthContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,6 +16,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const { t, i18n } = useTranslation(['landing']);
+  const { user } = useAuth();
   
   const logoRef = useMagneticHover(0.3);
   const ctaRef = useMagneticHover(0.2);
@@ -104,8 +106,17 @@ export default function Navbar() {
               <span className="landing-nav-lang-divider">/</span>
               <span className={`landing-nav-lang-option ${currentLang === 'en' ? 'landing-nav-lang-option--active' : ''}`}>EN</span>
             </button>
-            <Link to="/login" className="landing-nav-link">{t('landing:navbar.login')}</Link>
-            <Link to="/register" ref={ctaRef} className="landing-nav-cta">{t('landing:navbar.getStarted')}</Link>
+            {user ? (
+              <Link to="/dashboard" ref={ctaRef} className="landing-nav-cta landing-nav-cta--dashboard">
+                <LayoutDashboard size={18} />
+                <span>{t('landing:navbar.dashboard')}</span>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" className="landing-nav-link">{t('landing:navbar.login')}</Link>
+                <Link to="/register" ref={ctaRef} className="landing-nav-cta">{t('landing:navbar.getStarted')}</Link>
+              </>
+            )}
           </div>
 
           <button className="landing-nav-hamburger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
@@ -130,8 +141,17 @@ export default function Navbar() {
             <span className="landing-nav-lang-divider">/</span>
             <span className={`landing-nav-lang-option ${currentLang === 'en' ? 'landing-nav-lang-option--active' : ''}`}>EN</span>
           </button>
-          <Link to="/login" className="mobile-nav-link mobile-nav-link--muted" onClick={() => setMobileOpen(false)}>{t('landing:navbar.login')}</Link>
-          <Link to="/register" className="mobile-nav-cta" onClick={() => setMobileOpen(false)}>{t('landing:navbar.getStarted')}</Link>
+          {user ? (
+            <Link to="/dashboard" className="mobile-nav-cta mobile-nav-cta--dashboard" onClick={() => setMobileOpen(false)}>
+              <LayoutDashboard size={18} />
+              <span>{t('landing:navbar.dashboard')}</span>
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className="mobile-nav-link mobile-nav-link--muted" onClick={() => setMobileOpen(false)}>{t('landing:navbar.login')}</Link>
+              <Link to="/register" className="mobile-nav-cta" onClick={() => setMobileOpen(false)}>{t('landing:navbar.getStarted')}</Link>
+            </>
+          )}
         </div>
       )}
     </>
