@@ -41,7 +41,15 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response?.status === 401) {
+    const url = error.config?.url;
+    
+    // Don't redirect if error is from login/register endpoints
+    // Those errors should be handled by the login/register page
+    const isAuthEndpoint = url?.includes("/login") || url?.includes("/register");
+    
+    if (error.response?.status === 401 && !isAuthEndpoint) {
+      // Only redirect to login if 401 from protected endpoints
+      // This means the token is invalid/expired
       localStorage.removeItem("mentra_token");
       localStorage.removeItem("mentra_user");
       window.location.href = "/login";

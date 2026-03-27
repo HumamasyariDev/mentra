@@ -29,6 +29,7 @@ const SandboxChat = React.lazy(() => import("./pages/SandboxChat"));
 const Forum = React.lazy(() => import("./pages/Forum"));
 const Forest = React.lazy(() => import("./pages/Forest"));
 const Users = React.lazy(() => import("./pages/Users"));
+const NotFound = React.lazy(() => import("./pages/NotFound"));
 const MentraAgentWithSessions = React.lazy(
   () => import("./agents/MentraAgentWithSessions"),
 );
@@ -111,11 +112,8 @@ export default function App() {
                     <Route path="/users" element={<Users />} />
                   </Route>
 
-                  {/* Default redirect */}
-                  <Route
-                    path="*"
-                    element={<Navigate to="/dashboard" replace />}
-                  />
+                  {/* 404 Not Found for unmatched routes */}
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
             </TransitionWrapper>

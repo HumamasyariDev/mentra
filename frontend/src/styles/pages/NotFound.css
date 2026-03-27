@@ -1,0 +1,354 @@
+/* ============================================
+   404 NOT FOUND PAGE — Epic Cosmic Design
+   Bold typography, stunning visuals
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ── Page Container ── */
+.notfound-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #030014;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Gradient Orbs ── */
+.notfound-gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  animation: orb-float 15s ease-in-out infinite;
+}
+
+.notfound-gradient-orb-1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.35) 0%, transparent 70%);
+  top: -20%;
+  left: -10%;
+  animation-delay: 0s;
+}
+
+.notfound-gradient-orb-2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.25) 0%, transparent 70%);
+  bottom: -15%;
+  right: -10%;
+  animation-delay: -5s;
+}
+
+.notfound-gradient-orb-3 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -10s;
+}
+
+@keyframes orb-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+/* ── Stars ── */
+.notfound-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.notfound-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: star-twinkle 3s ease-in-out infinite;
+}
+
+.notfound-star--bright {
+  width: 3px;
+  height: 3px;
+  background: #fff;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* ── Shooting Star ── */
+.notfound-shooting-star {
+  position: absolute;
+  top: 20%;
+  left: 0;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #fff, transparent);
+  animation: shooting 4s ease-in-out infinite;
+  animation-delay: 2s;
+  opacity: 0;
+}
+
+@keyframes shooting {
+  0% { transform: translateX(-100px) translateY(0); opacity: 0; }
+  5% { opacity: 1; }
+  30% { transform: translateX(100vw) translateY(100px); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* ── Content ── */
+.notfound-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  max-width: 800px;
+}
+
+/* ── Hero 404 Typography ── */
+.notfound-hero {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.notfound-404-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.notfound-404-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(180px, 35vw, 350px);
+  font-weight: 700;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(139, 92, 246, 0.15);
+  letter-spacing: -0.05em;
+  user-select: none;
+  pointer-events: none;
+}
+
+.notfound-404 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(120px, 25vw, 220px);
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.05em;
+  background: linear-gradient(
+    135deg,
+    #fff 0%,
+    #a78bfa 25%,
+    #ec4899 50%,
+    #8b5cf6 75%,
+    #fff 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 5s ease infinite;
+  filter: drop-shadow(0 0 60px rgba(139, 92, 246, 0.5));
+  line-height: 1;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ── Astronaut/Rocket ── */
+.notfound-astronaut {
+  position: absolute;
+  top: 20%;
+  right: -15%;
+  animation: float-astronaut 4s ease-in-out infinite;
+}
+
+.notfound-rocket-icon {
+  width: 48px;
+  height: 48px;
+  color: #a78bfa;
+  transform: rotate(45deg);
+  filter: drop-shadow(0 0 20px rgba(167, 139, 250, 0.6));
+}
+
+@keyframes float-astronaut {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+}
+
+/* ── Text Content ── */
+.notfound-text {
+  margin-bottom: 2.5rem;
+}
+
+.notfound-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 600;
+  color: #f8fafc;
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.notfound-subtitle {
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  color: #94a3b8;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 500px;
+}
+
+/* ── Action Buttons ── */
+.notfound-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.notfound-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 14px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+}
+
+.notfound-btn-primary {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+  color: #fff;
+  box-shadow: 
+    0 4px 20px rgba(139, 92, 246, 0.4),
+    0 0 0 1px rgba(139, 92, 246, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.notfound-btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 8px 30px rgba(139, 92, 246, 0.5),
+    0 0 0 1px rgba(139, 92, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.notfound-btn-ghost {
+  background: rgba(255, 255, 255, 0.03);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.notfound-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+}
+
+/* ── Footer Logo ── */
+.notfound-footer {
+  margin-top: 1rem;
+}
+
+.notfound-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.notfound-logo-link:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.notfound-logo {
+  height: 28px;
+  width: auto;
+}
+
+.notfound-logo-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .notfound-content {
+    padding: 1.5rem;
+  }
+
+  .notfound-astronaut {
+    top: 10%;
+    right: -5%;
+  }
+
+  .notfound-rocket-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .notfound-actions {
+    flex-direction: column;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .notfound-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .notfound-astronaut {
+    display: none;
+  }
+
+  .notfound-gradient-orb-1 {
+    width: 300px;
+    height: 300px;
+  }
+
+  .notfound-gradient-orb-2 {
+    width: 250px;
+    height: 250px;
+  }
+
+  .notfound-gradient-orb-3 {
+    display: none;
+  }
+}
