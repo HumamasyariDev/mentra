@@ -1,23 +1,10 @@
 import React, { useEffect, useRef, useCallback, useMemo } from 'react';
 import '../../styles/components/dashboard/GalaxyCanvas.css';
+import { getDeviceTierOnce } from '../../hooks/useDeviceTier';
 
 /** Check if user prefers reduced motion */
 const prefersReducedMotion = () =>
   window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-
-/**
- * Detect device capability tier: 'low', 'mid', or 'high'.
- * Uses navigator.hardwareConcurrency, deviceMemory, and a heuristic for mobile.
- */
-const getDeviceTier = () => {
-  const cores = navigator.hardwareConcurrency || 2;
-  const mem = navigator.deviceMemory || 4; // deviceMemory is Chrome-only, default 4
-  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-
-  if (isMobile || cores <= 2 || mem <= 2) return 'low';
-  if (cores <= 4 || mem <= 4) return 'mid';
-  return 'high';
-};
 
 /** Quality presets per device tier */
 const QUALITY_PRESETS = {
@@ -64,7 +51,7 @@ const GalaxyCanvas = ({
   // Device tier and quality preset (computed once)
   const quality = useMemo(() => {
     if (prefersReducedMotion()) return QUALITY_PRESETS.low;
-    const tier = getDeviceTier();
+    const tier = getDeviceTierOnce();
     return QUALITY_PRESETS[tier];
   }, []);
 

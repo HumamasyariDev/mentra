@@ -1,8 +1,10 @@
 import { usePageTitle } from "../hooks/usePageTitle";
-import React, { Suspense, useMemo, useRef } from 'react';
+import React, { Suspense, useMemo, useRef, useEffect } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useReducedMotion } from '../hooks/useReducedMotion';
+import { useDeviceTier } from '../hooks/useDeviceTier';
 import '../styles/pages/LandingPage.css';
 
 /* ── Above-the-fold: eager ── */
@@ -18,35 +20,58 @@ const FAQ = React.lazy(() => import('../components/landing/FAQ'));
 const CTAFooter = React.lazy(() => import('../components/landing/CTAFooter'));
 const Footer = React.lazy(() => import('../components/landing/Footer'));
 
-// Planet assets — reused from the auth/dashboard cosmos
-import planetTasks from '../assets/dashboard_planets/planet_tasks.svg';
-import planetPomodoro from '../assets/dashboard_planets/planet_pomodoro.svg';
-import planetForest from '../assets/dashboard_planets/planet_forest.svg';
-import planetSchedule from '../assets/dashboard_planets/planet_schedule.svg';
-import planetAiChat from '../assets/dashboard_planets/planet_ai_chat.svg';
-import planetForum from '../assets/dashboard_planets/planet_forum.svg';
-
 gsap.registerPlugin(ScrollTrigger);
 
-const PLANETS = [
-  { src: planetTasks, id: 'tasks', label: 'Tasks', className: 'lp-planet lp-planet--tasks' },
-  { src: planetPomodoro, id: 'pomodoro', label: 'Pomodoro', className: 'lp-planet lp-planet--pomodoro' },
-  { src: planetForest, id: 'forest', label: 'Forest', className: 'lp-planet lp-planet--forest' },
-  { src: planetSchedule, id: 'schedule', label: 'Schedule', className: 'lp-planet lp-planet--schedule' },
-  { src: planetAiChat, id: 'ai-chat', label: 'AI Chat', className: 'lp-planet lp-planet--ai-chat' },
-  { src: planetForum, id: 'forum', label: 'Forum', className: 'lp-planet lp-planet--forum' },
+/**
+ * Landing-page quality presets per device tier.
+ * Controls star count, whether to show planets/shooting-star/noise, etc.
+ */
+const LP_QUALITY = {
+  low: {
+    starCount: 20,
+    showPlanets: false,
+    showShootingStar: false,
+    showOrbitalRings: false,
+    showNoise: false,
+  },
+  mid: {
+    starCount: 40,
+    showPlanets: true,    // CSS gradient replacements, not real SVGs
+    showShootingStar: true,
+    showOrbitalRings: true,
+    showNoise: false,     // noise overlay is expensive even on mid
+  },
+  high: {
+    starCount: 80,
+    showPlanets: true,
+    showShootingStar: true,
+    showOrbitalRings: true,
+    showNoise: true,
+  },
+};
+
+/**
+ * CSS-gradient planet replacements — lightweight circles that mimic planet colors
+ * without loading 5MB SVG files. Displayed at low opacity anyway (0.15-0.35).
+ */
+const CSS_PLANETS = [
+  { id: 'tasks',    label: 'Tasks',    className: 'lp-planet lp-planet--tasks' },
+  { id: 'pomodoro', label: 'Pomodoro', className: 'lp-planet lp-planet--pomodoro' },
+  { id: 'forest',   label: 'Forest',   className: 'lp-planet lp-planet--forest' },
+  { id: 'schedule', label: 'Schedule', className: 'lp-planet lp-planet--schedule' },
+  { id: 'ai-chat',  label: 'AI Chat',  className: 'lp-planet lp-planet--ai-chat' },
+  { id: 'forum',    label: 'Forum',    className: 'lp-planet lp-planet--forum' },
 ];
 
 /** Pre-generate star positions deterministically */
 function generateStars(count) {
   const seededRandom = (i, offset = 0) => {
-
     const x = Math.sin(i * 127.1 + offset * 311.7) * 43758.5453;
     return x - Math.floor(x);
   };
   return Array.from({ length: count }, (_, i) => ({
     key: i,
-    bright: i < 12,
+    bright: i < Math.max(5, Math.floor(count * 0.15)),
     style: {
       left: `${seededRandom(i, 0) * 100}%`,
       top: `${seededRandom(i, 1) * 100}%`,
@@ -58,45 +83,64 @@ function generateStars(count) {
   }));
 }
 
-const STARS = generateStars(80);
-
 export default function LandingPage() {
   usePageTitle(null);
 
+  const prefersReducedMotion = useReducedMotion();
+  const deviceTier = useDeviceTier(prefersReducedMotion);
+  const quality = LP_QUALITY[deviceTier];
+
   const pageRef = useRef(null);
 
+  // Generate stars based on device tier
+  const stars = useMemo(() => generateStars(quality.starCount), [quality.starCount]);
+
   const starElements = useMemo(() => (
-    STARS.map((star) => (
+    stars.map((star) => (
       <div
         key={star.key}
         className={`lp-star${star.bright ? ' lp-star--bright' : ''}`}
         style={star.style}
       />
     ))
-  ), []);
+  ), [stars]);
+
+  // Apply tier CSS class to root for CSS-level optimizations
+  useEffect(() => {
+    const el = pageRef.current;
+    if (!el) return;
+    el.classList.remove('lp-tier-low', 'lp-tier-mid', 'lp-tier-high');
+    el.classList.add(`lp-tier-${deviceTier}`);
+  }, [deviceTier]);
 
   useGSAP(() => {
-    // Shooting star repeating animation
-    gsap.fromTo('.lp-shooting-star',
-      { x: '-10vw', y: '0', opacity: 0 },
-      {
-        x: '110vw', y: '30vh', opacity: 0,
-        duration: 2, ease: 'power1.in',
-        repeat: -1, repeatDelay: 8,
-        keyframes: {
-          '0%': { opacity: 0 },
-          '5%': { opacity: 1 },
-          '30%': { opacity: 0.8 },
-          '100%': { opacity: 0 }
-        }
-      }
-    );
+    if (prefersReducedMotion) return;
 
-    // Orbital rings slow rotation
-    gsap.to('.lp-orbital-ring--1', { rotation: 360, duration: 120, repeat: -1, ease: 'none' });
-    gsap.to('.lp-orbital-ring--2', { rotation: -360, duration: 160, repeat: -1, ease: 'none' });
-    gsap.to('.lp-orbital-ring--3', { rotation: 360, duration: 200, repeat: -1, ease: 'none' });
-  }, { scope: pageRef });
+    // Shooting star — only on mid/high
+    if (quality.showShootingStar) {
+      gsap.fromTo('.lp-shooting-star',
+        { x: '-10vw', y: '0', opacity: 0 },
+        {
+          x: '110vw', y: '30vh', opacity: 0,
+          duration: 2, ease: 'power1.in',
+          repeat: -1, repeatDelay: 8,
+          keyframes: {
+            '0%': { opacity: 0 },
+            '5%': { opacity: 1 },
+            '30%': { opacity: 0.8 },
+            '100%': { opacity: 0 }
+          }
+        }
+      );
+    }
+
+    // Orbital rings slow rotation — only on mid/high
+    if (quality.showOrbitalRings) {
+      gsap.to('.lp-orbital-ring--1', { rotation: 360, duration: 120, repeat: -1, ease: 'none' });
+      gsap.to('.lp-orbital-ring--2', { rotation: -360, duration: 160, repeat: -1, ease: 'none' });
+      gsap.to('.lp-orbital-ring--3', { rotation: 360, duration: 200, repeat: -1, ease: 'none' });
+    }
+  }, { scope: pageRef, dependencies: [prefersReducedMotion, quality] });
 
   return (
     <div ref={pageRef} className="landing-page">
@@ -109,28 +153,27 @@ export default function LandingPage() {
           {starElements}
         </div>
 
-        <div className="lp-shooting-star" />
+        {quality.showShootingStar && <div className="lp-shooting-star" />}
 
-        <div className="lp-orbital-ring lp-orbital-ring--1" />
-        <div className="lp-orbital-ring lp-orbital-ring--2" />
-        <div className="lp-orbital-ring lp-orbital-ring--3" />
+        {quality.showOrbitalRings && (
+          <>
+            <div className="lp-orbital-ring lp-orbital-ring--1" />
+            <div className="lp-orbital-ring lp-orbital-ring--2" />
+            <div className="lp-orbital-ring lp-orbital-ring--3" />
+          </>
+        )}
 
-        <div className="lp-planets">
-          {PLANETS.map((planet) => (
-            <div key={planet.id} className={planet.className}>
-              <div className="lp-planet-glow" />
-              <img
-                src={planet.src}
-                alt=""
-                className="lp-planet-img"
-                draggable={false}
-                loading="lazy"
-                decoding="async"
-              />
-              <span className="lp-planet-label">{planet.label}</span>
-            </div>
-          ))}
-        </div>
+        {quality.showPlanets && (
+          <div className="lp-planets">
+            {CSS_PLANETS.map((planet) => (
+              <div key={planet.id} className={planet.className}>
+                <div className="lp-planet-glow" />
+                <div className="lp-planet-orb" />
+                <span className="lp-planet-label">{planet.label}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── Page content ── */}

@@ -4,11 +4,15 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useTranslation } from 'react-i18next';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useDeviceTier } from '../../hooks/useDeviceTier';
 
 // Only the full-grown tree
 import pineFinal from '../../assets/pine_purple/pine_purple_stage_final.png';
 
 gsap.registerPlugin(ScrollTrigger);
+
+/** Tree counts per device tier */
+const TREE_COUNTS = { low: 18, mid: 30, high: 45 };
 
 /**
  * Planetary-curve tree layout — mirrors the app's Forest.jsx algorithm.
@@ -49,20 +53,21 @@ function getTreeLayout(index, total) {
   };
 }
 
-const TREE_COUNT = 45;
-
 export default function ForestShowcase() {
   const sectionRef = useRef(null);
   const prefersReducedMotion = useReducedMotion();
+  const deviceTier = useDeviceTier(prefersReducedMotion);
   const { t } = useTranslation(['landing']);
+
+  const treeCount = TREE_COUNTS[deviceTier];
 
   // Pre-compute tree layout
   const trees = useMemo(() =>
-    Array.from({ length: TREE_COUNT }, (_, i) => ({
+    Array.from({ length: treeCount }, (_, i) => ({
       id: i,
-      ...getTreeLayout(i, TREE_COUNT),
+      ...getTreeLayout(i, treeCount),
     })),
-    []
+    [treeCount]
   );
 
   useGSAP(() => {
@@ -153,20 +158,22 @@ export default function ForestShowcase() {
       );
     });
 
-    // Ambient sway on all trees
-    gsap.utils.toArray('.forest-showcase-tree').forEach((tree, i) => {
-      gsap.to(tree, {
-        rotation: `+=${1.5 + Math.sin(i) * 1}`,
-        duration: 4 + (i % 3),
-        yoyo: true,
-        repeat: -1,
-        ease: 'sine.inOut',
-        delay: i * 0.2,
+    // Ambient sway — skip on low-end to save CPU
+    if (deviceTier !== 'low') {
+      gsap.utils.toArray('.forest-showcase-tree').forEach((tree, i) => {
+        gsap.to(tree, {
+          rotation: `+=${1.5 + Math.sin(i) * 1}`,
+          duration: 4 + (i % 3),
+          yoyo: true,
+          repeat: -1,
+          ease: 'sine.inOut',
+          delay: i * 0.2,
+        });
       });
-    });
+    }
 
     return () => mm.revert();
-  }, { scope: sectionRef, dependencies: [prefersReducedMotion] });
+  }, { scope: sectionRef, dependencies: [prefersReducedMotion, deviceTier] });
 
   return (
     <div ref={sectionRef}>
