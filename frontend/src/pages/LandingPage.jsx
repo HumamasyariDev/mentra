@@ -123,18 +123,18 @@ export default function LandingPage() {
   useGSAP(() => {
     if (prefersReducedMotion) return;
 
-    // Shooting star — only on mid/high
+    // Shooting star — only on mid/high, quick streak across top of screen
     if (quality.showShootingStar) {
       gsap.fromTo('.lp-shooting-star',
-        { x: '-10vw', y: '0', opacity: 0 },
+        { x: '-5vw', y: '0', opacity: 0 },
         {
-          x: '110vw', y: '30vh', opacity: 0,
-          duration: 2, ease: 'power1.in',
-          repeat: -1, repeatDelay: 8,
+          x: '105vw', y: '15vh', opacity: 0,
+          duration: 1.5, ease: 'power1.in',
+          repeat: -1, repeatDelay: 12,
           keyframes: {
             '0%': { opacity: 0 },
-            '5%': { opacity: 1 },
-            '30%': { opacity: 0.8 },
+            '10%': { opacity: 0.8 },
+            '40%': { opacity: 0.5 },
             '100%': { opacity: 0 }
           }
         }
