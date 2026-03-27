@@ -7,6 +7,14 @@ import { useReducedMotion } from '../hooks/useReducedMotion';
 import { useDeviceTier } from '../hooks/useDeviceTier';
 import '../styles/pages/LandingPage.css';
 
+/* ── Planet SVG assets ── */
+import planetTasks from '../assets/dashboard_planets/planet_tasks.svg';
+import planetPomodoro from '../assets/dashboard_planets/planet_pomodoro.svg';
+import planetForest from '../assets/dashboard_planets/planet_forest.svg';
+import planetSchedule from '../assets/dashboard_planets/planet_schedule.svg';
+import planetAiChat from '../assets/dashboard_planets/planet_ai_chat.svg';
+import planetForum from '../assets/dashboard_planets/planet_forum.svg';
+
 /* ── Above-the-fold: eager ── */
 import Navbar from '../components/landing/Navbar';
 import Hero from '../components/landing/Hero';
@@ -51,16 +59,15 @@ const LP_QUALITY = {
 };
 
 /**
- * CSS-gradient planet replacements — lightweight circles that mimic planet colors
- * without loading 5MB SVG files. Displayed at low opacity anyway (0.15-0.35).
+ * Planet SVG images — actual detailed planet graphics like login page
  */
-const CSS_PLANETS = [
-  { id: 'tasks',    label: 'Tasks',    className: 'lp-planet lp-planet--tasks' },
-  { id: 'pomodoro', label: 'Pomodoro', className: 'lp-planet lp-planet--pomodoro' },
-  { id: 'forest',   label: 'Forest',   className: 'lp-planet lp-planet--forest' },
-  { id: 'schedule', label: 'Schedule', className: 'lp-planet lp-planet--schedule' },
-  { id: 'ai-chat',  label: 'AI Chat',  className: 'lp-planet lp-planet--ai-chat' },
-  { id: 'forum',    label: 'Forum',    className: 'lp-planet lp-planet--forum' },
+const PLANETS = [
+  { id: 'tasks',    src: planetTasks,    label: 'Tasks',    className: 'lp-planet lp-planet--tasks' },
+  { id: 'pomodoro', src: planetPomodoro, label: 'Pomodoro', className: 'lp-planet lp-planet--pomodoro' },
+  { id: 'forest',   src: planetForest,   label: 'Forest',   className: 'lp-planet lp-planet--forest' },
+  { id: 'schedule', src: planetSchedule, label: 'Schedule', className: 'lp-planet lp-planet--schedule' },
+  { id: 'ai-chat',  src: planetAiChat,   label: 'AI Chat',  className: 'lp-planet lp-planet--ai-chat' },
+  { id: 'forum',    src: planetForum,    label: 'Forum',    className: 'lp-planet lp-planet--forum' },
 ];
 
 /** Pre-generate star positions deterministically */
@@ -165,10 +172,17 @@ export default function LandingPage() {
 
         {quality.showPlanets && (
           <div className="lp-planets">
-            {CSS_PLANETS.map((planet) => (
+            {PLANETS.map((planet) => (
               <div key={planet.id} className={planet.className}>
                 <div className="lp-planet-glow" />
-                <div className="lp-planet-orb" />
+                <img
+                  src={planet.src}
+                  alt=""
+                  className="lp-planet-img"
+                  draggable={false}
+                  loading="lazy"
+                  decoding="async"
+                />
                 <span className="lp-planet-label">{planet.label}</span>
               </div>
             ))}

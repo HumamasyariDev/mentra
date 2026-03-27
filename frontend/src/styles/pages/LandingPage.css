@@ -309,7 +309,7 @@
 
 .lp-planet--tasks .lp-planet-img {
   width: 160px;
-  opacity: 0.35;
+  opacity: 0.7;
 }
 
 .lp-planet--tasks .lp-planet-orb {
@@ -345,7 +345,7 @@
 
 .lp-planet--pomodoro .lp-planet-img {
   width: 110px;
-  opacity: 0.3;
+  opacity: 0.65;
 }
 
 .lp-planet--pomodoro .lp-planet-orb {
@@ -381,7 +381,7 @@
 
 .lp-planet--forest .lp-planet-img {
   width: 85px;
-  opacity: 0.28;
+  opacity: 0.6;
 }
 
 .lp-planet--forest .lp-planet-orb {
@@ -417,7 +417,7 @@
 
 .lp-planet--schedule .lp-planet-img {
   width: 95px;
-  opacity: 0.28;
+  opacity: 0.6;
 }
 
 .lp-planet--schedule .lp-planet-orb {
@@ -453,8 +453,7 @@
 
 .lp-planet--ai-chat .lp-planet-img {
   width: 45px;
-  opacity: 0.18;
-  filter: saturate(0.7) blur(0.3px);
+  opacity: 0.5;
 }
 
 .lp-planet--ai-chat .lp-planet-orb {
@@ -490,8 +489,7 @@
 
 .lp-planet--forum .lp-planet-img {
   width: 38px;
-  opacity: 0.15;
-  filter: saturate(0.7) blur(0.3px);
+  opacity: 0.45;
 }
 
 .lp-planet--forum .lp-planet-orb {
