@@ -482,16 +482,26 @@ export default function Sandbox() {
                 <label>{t("sandbox:formPurposeLabel")}</label>
                 <div className="sandbox-purposes">
                   {/* Preset purposes */}
-                  {PURPOSE_OPTIONS.map((purpose) => (
-                    <label key={purpose.id} className="sandbox-purpose-item">
-                      <input
-                        type="checkbox"
-                        checked={formData.purposes.includes(purpose.id)}
-                        onChange={() => togglePurpose(purpose.id)}
-                      />
-                      <span>{purpose.label}</span>
-                    </label>
-                  ))}
+                  {PURPOSE_OPTIONS.map((purpose) => {
+                    const Icon = PURPOSE_ICONS[purpose.id];
+                    const isChecked = formData.purposes.includes(purpose.id);
+                    return (
+                      <label 
+                        key={purpose.id} 
+                        className={`sandbox-purpose-item ${isChecked ? 'checked' : ''}`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => togglePurpose(purpose.id)}
+                        />
+                        <div className="sandbox-purpose-icon">
+                          {Icon && <Icon size={18} />}
+                        </div>
+                        <span>{purpose.label}</span>
+                      </label>
+                    );
+                  })}
 
                   {/* Custom purposes from existing sandboxes */}
                   {customPurposes.map((cp) => (
