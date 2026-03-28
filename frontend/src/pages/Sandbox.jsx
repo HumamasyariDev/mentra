@@ -443,12 +443,20 @@ export default function Sandbox() {
       {(showModal || editingSandbox) && (
         <div className="sandbox-modal-overlay" onClick={closeModal}>
           <div className="sandbox-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>
-              {editingSandbox
-                ? t("sandbox:modalTitleEdit")
-                : t("sandbox:modalTitleNew")}
-            </h2>
+            {/* Header */}
+            <div className="sandbox-modal-header">
+              <h2>
+                {editingSandbox
+                  ? t("sandbox:modalTitleEdit")
+                  : t("sandbox:modalTitleNew")}
+              </h2>
+              <button type="button" className="sandbox-modal-close" onClick={closeModal}>
+                <X size={20} />
+              </button>
+            </div>
+
             <form onSubmit={handleSubmit}>
+              {/* Name Input */}
               <div className="sandbox-form-group">
                 <label>{t("sandbox:formName")}</label>
                 <input
@@ -463,10 +471,12 @@ export default function Sandbox() {
                   autoFocus
                 />
               </div>
+
+              {/* Description */}
               <div className="sandbox-form-group">
                 <label>
                   {t("sandbox:formDescription")}{" "}
-                  <span>({t("common:optional")})</span>
+                  <span className="sandbox-label-hint">({t("common:optional")})</span>
                 </label>
                 <textarea
                   value={formData.description}
@@ -475,50 +485,63 @@ export default function Sandbox() {
                   }
                   className="sandbox-form-textarea"
                   placeholder={t("sandbox:formDescriptionPlaceholder")}
-                  rows="3"
+                  rows="2"
                 />
               </div>
+
+              {/* Purpose Selection */}
               <div className="sandbox-form-group">
                 <label>{t("sandbox:formPurposeLabel")}</label>
-                <div className="sandbox-purposes">
-                  {/* Preset purposes */}
+                <div className="sandbox-purposes-grid">
                   {PURPOSE_OPTIONS.map((purpose) => {
                     const Icon = PURPOSE_ICONS[purpose.id];
                     const isChecked = formData.purposes.includes(purpose.id);
                     return (
-                      <label 
-                        key={purpose.id} 
-                        className={`sandbox-purpose-item ${isChecked ? 'checked' : ''}`}
+                      <button
+                        key={purpose.id}
+                        type="button"
+                        className={`sandbox-purpose-card ${isChecked ? 'selected' : ''}`}
+                        onClick={() => togglePurpose(purpose.id)}
                       >
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => togglePurpose(purpose.id)}
-                        />
-                        <div className="sandbox-purpose-icon">
-                          {Icon && <Icon size={18} />}
+                        <div className="sandbox-purpose-card-icon">
+                          {Icon && <Icon size={24} />}
                         </div>
-                        <span>{purpose.label}</span>
-                      </label>
+                        <span className="sandbox-purpose-card-label">{purpose.label}</span>
+                        {isChecked && (
+                          <div className="sandbox-purpose-card-check">
+                            <Check size={14} />
+                          </div>
+                        )}
+                      </button>
                     );
                   })}
 
-                  {/* Custom purposes from existing sandboxes */}
-                  {customPurposes.map((cp) => (
-                    <label key={cp} className="sandbox-purpose-item custom">
-                      <input
-                        type="checkbox"
-                        checked={formData.purposes.includes(cp)}
-                        onChange={() => togglePurpose(cp)}
-                      />
-                      <Tag size={14} />
-                      <span>{cp.replace(/-/g, " ")}</span>
-                    </label>
-                  ))}
+                  {/* Custom purposes */}
+                  {customPurposes.map((cp) => {
+                    const isChecked = formData.purposes.includes(cp);
+                    return (
+                      <button
+                        key={cp}
+                        type="button"
+                        className={`sandbox-purpose-card custom ${isChecked ? 'selected' : ''}`}
+                        onClick={() => togglePurpose(cp)}
+                      >
+                        <div className="sandbox-purpose-card-icon">
+                          <Tag size={24} />
+                        </div>
+                        <span className="sandbox-purpose-card-label">{cp.replace(/-/g, " ")}</span>
+                        {isChecked && (
+                          <div className="sandbox-purpose-card-check">
+                            <Check size={14} />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
 
-                  {/* Add custom purpose button / input */}
+                  {/* Add custom */}
                   {isAddingCustom ? (
-                    <div className="sandbox-purpose-add-input">
+                    <div className="sandbox-purpose-card sandbox-purpose-card-input">
                       <input
                         type="text"
                         value={customInput}
@@ -534,34 +557,29 @@ export default function Sandbox() {
                         autoFocus
                         maxLength={50}
                       />
-                      <button
-                        type="button"
-                        className="sandbox-purpose-confirm"
-                        onClick={confirmCustomPurpose}
-                        disabled={!customInput.trim()}
-                      >
-                        <Check size={16} />
-                      </button>
-                      <button
-                        type="button"
-                        className="sandbox-purpose-cancel"
-                        onClick={cancelCustomPurpose}
-                      >
-                        <X size={16} />
-                      </button>
+                      <div className="sandbox-purpose-card-input-actions">
+                        <button type="button" onClick={confirmCustomPurpose} disabled={!customInput.trim()}>
+                          <Check size={16} />
+                        </button>
+                        <button type="button" onClick={cancelCustomPurpose}>
+                          <X size={16} />
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <button
                       type="button"
-                      className="sandbox-purpose-add-btn"
+                      className="sandbox-purpose-card sandbox-purpose-card-add"
                       onClick={() => setIsAddingCustom(true)}
                     >
-                      <Plus size={16} />
+                      <Plus size={24} />
                     </button>
                   )}
                 </div>
               </div>
-              <div className="sandbox-modal-actions">
+
+              {/* Actions */}
+              <div className="sandbox-modal-footer">
                 <button
                   type="button"
                   onClick={closeModal}
